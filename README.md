@@ -6,13 +6,13 @@ Aplicación de accesibilidad cognitiva para la justicia. Desarrollada en el DATA
 
 ## Qué hace
 
-PUENTE ayuda a personas neurodivergentes (autismo, TDAH, dislexia, ceguera) a entender y prepararse para procesos judiciales:
+Accesibilidad cognitiva para personas con autismo, TDAH, dislexia o ceguera que tienen que ir al juzgado.
 
-- **Citación accesible**: convierte documentos judiciales en lectura clara, lectura fácil, pictogramas y audio
-- **Pasaporte de Ajustes**: indica qué adaptaciones necesitas sin revelar tu diagnóstico
-- **Ensaya**: practica responder preguntas como las del juicio
-- **Sala Previa**: conoce el juzgado antes de ir, con control de estímulos
-- **Panel profesional**: genera el perfil de ajustes según la Guía del CGPJ
+- **Citación accesible**: documentos judiciales en lectura clara, lectura fácil, pictogramas y audio
+- **Pasaporte de Ajustes**: QR con las adaptaciones que necesitas, sin revelar diagnóstico
+- **Ensaya**: practica responder preguntas del juicio
+- **Sala Previa**: conoce el juzgado antes de ir
+- **Panel profesional**: genera el perfil de ajustes (Guía CGPJ 2025)
 
 ## Arquitectura
 

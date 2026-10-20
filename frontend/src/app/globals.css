@@ -28,14 +28,23 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold;
     @apply focus:ring-4 focus:ring-puente-400 focus:ring-offset-2;
+    transition: background-color 150ms ease-out, transform 150ms ease-out, border-color 150ms ease-out;
     min-height: 56px;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
   }
 
   .btn-primary {
     @apply btn bg-puente-600 text-white;
-    @apply hover:bg-puente-700 active:bg-puente-800;
+    @apply hover:bg-puente-700;
+  }
+
+  .btn-primary:active {
+    @apply bg-puente-800;
   }
 
   .btn-secondary {
@@ -50,10 +59,15 @@
 
   .card {
     @apply bg-white rounded-tarjeta p-6 shadow-sm border border-puente-100;
+    transition: box-shadow 200ms ease-out, border-color 200ms ease-out;
   }
 
   .card-destacada {
     @apply card border-2 border-puente-300 shadow-md;
+  }
+
+  a.card:hover, button.card:hover {
+    @apply cursor-pointer;
   }
 
   .lectura-facil {

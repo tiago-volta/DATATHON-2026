@@ -13,8 +13,8 @@ export default function Inicio() {
             <span className="text-puente-600">a tu manera</span>
           </h1>
           <p className="text-xl text-puente-600 max-w-2xl mx-auto">
-            Te ayudamos a entender la justicia. Convertimos los documentos del juzgado 
-            en información clara, con pictogramas y voz.
+            Entiende la justicia. Documentos del juzgado en lenguaje claro, 
+            con pictogramas y lectura en voz alta.
           </p>
         </section>
 
@@ -32,8 +32,8 @@ export default function Inicio() {
                     Tengo una citación
                   </h3>
                   <p className="text-puente-600">
-                    Sube o pega tu citación del juzgado. Te la explicamos en lenguaje claro, 
-                    con pictogramas y te la leemos en voz alta.
+                    Pega el texto de tu citación. La convertimos en lenguaje claro, 
+                    con pictogramas y voz.
                   </p>
                 </div>
               </div>
@@ -47,8 +47,8 @@ export default function Inicio() {
                     Crear mi Pasaporte de Ajustes
                   </h3>
                   <p className="text-puente-600">
-                    Indica qué necesitas para que te atiendan bien. 
-                    Genera un código QR que puedes enseñar en el juzgado.
+                    Indica qué adaptaciones necesitas. 
+                    Genera un QR para enseñar en el juzgado.
                   </p>
                 </div>
               </div>
@@ -89,7 +89,7 @@ export default function Inicio() {
             Conoce a Luis y a Juan
           </h2>
           <p className="text-center text-puente-600 mb-6">
-            Dos ejemplos de cómo PUENTE puede ayudarte según tu situación.
+            Dos ejemplos de uso según tu situación.
           </p>
           
           <div className="grid md:grid-cols-2 gap-6">
