@@ -7,12 +7,13 @@ import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
 import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
-import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
 import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
+import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
+import { escenaPorIndice } from '@/lib/sala-previa/escenas'
 import {
   ESTIMULOS_VACIOS,
   NIVELES,
@@ -45,6 +46,7 @@ export default function PaginaSalaPrevia() {
   const motorRef = useRef<MotorAudioSala | null>(null)
   const [fase, setFase] = useState<Fase>('intro')
   const [nivelActual, setNivelActual] = useState(0)
+  const [escenaIndice, setEscenaIndice] = useState(0)
   const [valores, setValores] = useState<ValoresEstimulo>(ESTIMULOS_VACIOS)
   const [enCalma, setEnCalma] = useState(false)
   const [audioListo, setAudioListo] = useState(false)
@@ -54,6 +56,7 @@ export default function PaginaSalaPrevia() {
   const [modoAudioguia, setModoAudioguia] = useState(false)
 
   const nivel = NIVELES[nivelActual]
+  const escena = escenaPorIndice(escenaIndice)
 
   useEffect(() => {
     setProgreso(cargarProgreso())
@@ -94,10 +97,16 @@ export default function PaginaSalaPrevia() {
     setEnCalma(false)
     setFase('simulacion')
     setNivelActual(0)
+    setEscenaIndice(0)
     aplicarValores(NIVELES[0].preset)
     setProgreso((p) => registrarPractica(marcarNivel(p, 0)))
     setMensaje('Nivel 0. Sala casi vacía. Subes solo si quieres.')
   }
+
+  /** Cambia de escena del juzgado sin tocar los estímulos elegidos. */
+  const cambiarEscena = useCallback((indice: number) => {
+    setEscenaIndice(indice)
+  }, [])
 
   const volverAIntro = () => {
     motorRef.current?.detener(true)
@@ -174,12 +183,12 @@ export default function PaginaSalaPrevia() {
 
   const descripcionAudioguia = useMemo(() => {
     const partes = [
-      nivel.audioguia,
+      escena.audioguia,
       `Ruido: ${Math.round(valores.ruido)}. Luz: ${Math.round(valores.luz)}. Gente: ${Math.round(valores.gente)}. Eco: ${Math.round(valores.eco)}.`,
       enCalma ? 'Modo calma activo. Los estímulos están bajos.' : '',
     ]
     return partes.filter(Boolean).join(' ')
-  }, [nivel, valores, enCalma])
+  }, [escena, valores, enCalma])
 
   return (
     <>
@@ -197,8 +206,8 @@ export default function PaginaSalaPrevia() {
             Sala Previa
           </h1>
           <p className="text-lg text-puente-600 max-w-2xl">
-            Practica el ambiente del juzgado por capas. Empiezas en silencio.
-            Subes solo cuando tú digas.
+            Recorre las fases del día en el juzgado: entrada, control, espera y
+            sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
           </p>
         </header>
 
@@ -227,14 +236,19 @@ export default function PaginaSalaPrevia() {
 
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
-                <EscenaSensorial nivel={nivel} valores={valores} enCalma={enCalma} />
+                <RecorridoEscenas
+                  indice={escenaIndice}
+                  onCambiar={cambiarEscena}
+                  valores={valores}
+                  enCalma={enCalma}
+                />
 
                 <div className="card">
                   <div className="flex justify-between items-start gap-4 mb-3">
                     <h2 className="font-bold text-puente-800">Audioguía</h2>
                     <BotonLeerEnVoz texto={descripcionAudioguia} etiqueta="Escuchar sala" />
                   </div>
-                  <p className="text-puente-700">{nivel.audioguia}</p>
+                  <p className="text-puente-700">{escena.audioguia}</p>
                   {modoAudioguia && (
                     <p className="text-puente-600 mt-3 text-sm" aria-live="polite">
                       Ahora: ruido {Math.round(valores.ruido)}, luz {Math.round(valores.luz)},

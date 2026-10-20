@@ -15,6 +15,32 @@ export interface NivelSala {
   preset: ValoresEstimulo
 }
 
+/** Escenas físicas del día en el juzgado (recorrido narrativo). */
+export type IdEscenaJuzgado =
+  | 'entrada'
+  | 'control-seguridad'
+  | 'sala-espera'
+  | 'sala-vistas'
+
+export interface RolEscena {
+  nombre: string
+  explicacion: string
+}
+
+export interface EscenaJuzgado {
+  id: IdEscenaJuzgado
+  titulo: string
+  /** Frase corta en lectura fácil: qué pasa aquí. */
+  frase: string
+  roles: RolEscena[]
+  /**
+   * Índice en NIVELES: solo referencia informativa del ambiente típico.
+   * Nunca se aplica sola al cambiar de escena.
+   */
+  nivelTipicoId: number
+  audioguia: string
+}
+
 export interface Insignia {
   id: string
   nombre: string

@@ -310,6 +310,17 @@
   to { opacity: 1; }
 }
 
+@keyframes puente-escena-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes revelar {
   from {
     opacity: 0;

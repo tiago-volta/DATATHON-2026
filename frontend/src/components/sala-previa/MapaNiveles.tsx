@@ -11,7 +11,7 @@ interface Props {
 export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) {
   return (
     <nav aria-label="Mapa de niveles de la sala" className="card">
-      <h2 className="font-bold text-puente-800 mb-4">Tu recorrido</h2>
+      <h2 className="font-bold text-puente-800 mb-4">Niveles de estímulo</h2>
       <ol className="flex flex-col gap-3">
         {NIVELES.map((nivel) => {
           const alcanzable = nivel.id <= nivelMaximo + 1
