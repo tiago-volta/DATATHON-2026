@@ -76,7 +76,7 @@ export default function Inicio() {
                     Visitar la sala antes
                   </h3>
                   <p className="text-puente-600">
-                    Conoce cómo es un juzgado y qué te vas a encontrar el día de tu cita.
+                    Prueba el ambiente del juzgado por capas: ruido, luz y gente, a tu ritmo.
                   </p>
                 </div>
               </div>

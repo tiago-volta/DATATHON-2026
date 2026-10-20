@@ -11,7 +11,7 @@ Accesibilidad cognitiva para personas con autismo, TDAH, dislexia o ceguera que 
 - **Citación accesible**: documentos judiciales en lectura clara, lectura fácil, pictogramas y audio
 - **Pasaporte de Ajustes**: QR con las adaptaciones que necesitas, sin revelar diagnóstico
 - **Ensaya**: practica responder preguntas del juicio
-- **Sala Previa**: conoce el juzgado antes de ir
+- **Sala Previa**: simulación sensorial por niveles (ruido, luz, gente, eco) con pausa y check-in de confort
 - **Panel profesional**: genera el perfil de ajustes (Guía CGPJ 2025)
 
 ## Arquitectura
