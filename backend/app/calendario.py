@@ -1,32 +1,53 @@
 """
 Generación de archivos .ics para recordatorios de plazos judiciales.
+Implementación simple sin dependencias externas.
 """
 
-from ics import Calendar, Event
 from datetime import datetime, timedelta
 from typing import List
+import uuid
 
 
 def generar_ics(plazos: List[dict], titulo: str = "Citación Judicial") -> str:
-    cal = Calendar()
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//PUENTE//Accesibilidad Justicia//ES",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+    ]
     
     for plazo in plazos:
-        evento = Event()
-        evento.name = f"PUENTE: {plazo['descripcion']}"
-        
         fecha = datetime.strptime(plazo["fecha"], "%Y-%m-%d")
-        evento.begin = fecha.replace(hour=8, minute=0)
-        evento.duration = timedelta(hours=1)
-        evento.description = f"{titulo}\n\n{plazo['descripcion']}"
+        fecha_inicio = fecha.replace(hour=8, minute=0)
+        fecha_fin = fecha.replace(hour=9, minute=0)
         
-        cal.events.add(evento)
+        uid = str(uuid.uuid4())
+        lines.extend([
+            "BEGIN:VEVENT",
+            f"UID:{uid}",
+            f"DTSTAMP:{datetime.now().strftime('%Y%m%dT%H%M%SZ')}",
+            f"DTSTART:{fecha_inicio.strftime('%Y%m%dT%H%M%S')}",
+            f"DTEND:{fecha_fin.strftime('%Y%m%dT%H%M%S')}",
+            f"SUMMARY:PUENTE: {plazo['descripcion']}",
+            f"DESCRIPTION:{titulo}",
+            "END:VEVENT",
+        ])
         
         for dias_antes in [7, 2, 1]:
-            if plazo["dias_restantes"] > dias_antes:
-                recordatorio = Event()
-                recordatorio.name = f"Recordatorio: {plazo['descripcion']} en {dias_antes} días"
-                recordatorio.begin = (fecha - timedelta(days=dias_antes)).replace(hour=10, minute=0)
-                recordatorio.duration = timedelta(minutes=30)
-                cal.events.add(recordatorio)
+            if plazo.get("dias_restantes", 0) > dias_antes:
+                fecha_recordatorio = fecha - timedelta(days=dias_antes)
+                uid_rec = str(uuid.uuid4())
+                lines.extend([
+                    "BEGIN:VEVENT",
+                    f"UID:{uid_rec}",
+                    f"DTSTAMP:{datetime.now().strftime('%Y%m%dT%H%M%SZ')}",
+                    f"DTSTART:{fecha_recordatorio.replace(hour=10).strftime('%Y%m%dT%H%M%S')}",
+                    f"DTEND:{fecha_recordatorio.replace(hour=10, minute=30).strftime('%Y%m%dT%H%M%S')}",
+                    f"SUMMARY:Recordatorio: {plazo['descripcion']} en {dias_antes} días",
+                    f"DESCRIPTION:Recordatorio de {titulo}",
+                    "END:VEVENT",
+                ])
     
-    return str(cal)
+    lines.append("END:VCALENDAR")
+    return "\r\n".join(lines)

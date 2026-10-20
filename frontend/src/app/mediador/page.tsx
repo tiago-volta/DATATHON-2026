@@ -27,7 +27,12 @@ const EJEMPLOS_PREGUNTAS = [
 
 export default function PaginaMediador() {
   const [pregunta, setPregunta] = useState('')
-  const [resultado, setResultado] = useState<typeof EJEMPLOS_PREGUNTAS[0] | null>(null)
+  const [resultado, setResultado] = useState<{
+    original: string
+    problemas: string[]
+    reformulada: string | null
+    semaforo: string
+  } | null>(null)
   const [analizado, setAnalizado] = useState(false)
 
   const analizarPregunta = () => {
