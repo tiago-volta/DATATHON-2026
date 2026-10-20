@@ -12,10 +12,10 @@ interface Props {
 
 const MAX_SILUETAS = 12
 
-function nivelPalabra(valor: number): string {
-  if (valor < 34) return 'bajo'
-  if (valor < 67) return 'medio'
-  return 'alto'
+function nivelPalabra(valor: number): 'Bajo' | 'Medio' | 'Alto' {
+  if (valor < 34) return 'Bajo'
+  if (valor < 67) return 'Medio'
+  return 'Alto'
 }
 
 function SiluetasSuaves({

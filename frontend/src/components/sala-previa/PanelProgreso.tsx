@@ -29,7 +29,7 @@ export function PanelProgreso({ progreso, mensaje }: Props) {
             }}
           />
         </div>
-        <p className="text-sm text-puente-600 mt-2">
+        <p className="text-sm text-puente-700 mt-2">
           {progreso.confianza} de 100. Sube al practicar a tu ritmo.
         </p>
       </div>

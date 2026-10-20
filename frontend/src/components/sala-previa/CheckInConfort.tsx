@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
@@ -93,6 +93,8 @@ interface Props {
   onQuedarse: (confort: ConfortCheckIn, molestias: IdEstimulo[]) => void
   onBajarNivel: (confort: ConfortCheckIn, molestias: IdEstimulo[]) => void
   onBajarEstimulos: (molestias: IdEstimulo[]) => void
+  /** Cierra sin elegir (Escape / botón). Sin trampa de foco. */
+  onCerrar: () => void
   puedeBajar: boolean
   puedeSubir: boolean
 }
@@ -104,6 +106,7 @@ export function CheckInConfort({
   onQuedarse,
   onBajarNivel,
   onBajarEstimulos,
+  onCerrar,
   puedeBajar,
   puedeSubir,
 }: Props) {
@@ -111,8 +114,31 @@ export function CheckInConfort({
   const [confort, setConfort] = useState<ConfortCheckIn | null>(null)
   const [molestias, setMolestias] = useState<IdEstimulo[]>([])
   const [estimulosBajados, setEstimulosBajados] = useState(false)
+  const cerrarRef = useRef<HTMLButtonElement>(null)
+  const tituloId = useId()
+  const descId = useId()
 
   const necesitaApoyo = confort === 'regular' || confort === 'mal'
+
+  useEffect(() => {
+    const previo = document.activeElement as HTMLElement | null
+    // Foco inicial en cerrar: Escape y Tab siguen el orden natural (sin atrapar).
+    cerrarRef.current?.focus()
+    return () => {
+      previo?.focus?.()
+    }
+  }, [])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onCerrar()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onCerrar])
 
   useEffect(() => {
     if (!necesitaApoyo) return
@@ -145,15 +171,31 @@ export function CheckInConfort({
     <div
       role="dialog"
       aria-modal="true"
-      aria-labelledby="checkin-titulo"
-      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-4 bg-puente-900/40"
+      aria-labelledby={tituloId}
+      aria-describedby={descId}
+      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-4 pb-28 bg-puente-900/40"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCerrar()
+      }}
     >
-      <div className="bg-white rounded-tarjeta shadow-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
-        <h2 id="checkin-titulo" className="text-2xl font-bold text-puente-800 mb-2">
-          ¿Cómo te sientes?
-        </h2>
-        <p className="text-puente-600 mb-6">
-          Acabas de estar en: {nivelNombre}. No hay respuesta correcta.
+      <div className="bg-white rounded-tarjeta shadow-lg max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h2 id={tituloId} className="text-2xl font-bold text-puente-800">
+            ¿Cómo te sientes?
+          </h2>
+          <button
+            ref={cerrarRef}
+            type="button"
+            className="btn-ghost min-h-[44px] min-w-[44px] px-3 py-2 shrink-0"
+            onClick={onCerrar}
+            aria-label="Cerrar check-in"
+          >
+            Cerrar
+          </button>
+        </div>
+        <p id={descId} className="text-puente-700 mb-6">
+          Acabas de estar en: {nivelNombre}. No hay respuesta correcta. Pulsa Escape
+          o Cerrar para volver.
         </p>
 
         <div
@@ -197,8 +239,9 @@ export function CheckInConfort({
         {confort === 'bien' && (
           <div className="space-y-4">
             <p
-              className="bg-accent-success/15 border border-accent-success rounded-lg p-4 text-puente-800"
+              className="bg-accent-success/15 border border-accent-success rounded-lg p-4 text-puente-900"
               role="status"
+              aria-live="polite"
             >
               {puedeSubir
                 ? 'Bien. Vas a tu ritmo. Si quieres, puedes subir de nivel. Si no, quédate aquí.'
@@ -228,12 +271,13 @@ export function CheckInConfort({
         {necesitaApoyo && (
           <div className="space-y-4">
             <p
-              className={`rounded-lg p-4 text-puente-800 ${
+              className={`rounded-lg p-4 text-puente-900 ${
                 confort === 'mal'
                   ? 'bg-accent-alert/15 border border-accent-alert'
                   : 'bg-calma-sage border border-puente-200'
               }`}
               role="status"
+              aria-live="polite"
             >
               {confort === 'mal'
                 ? 'Está bien parar. Bajamos los estímulos. Puedes pedir ajustes para el juzgado.'
@@ -306,11 +350,11 @@ export function CheckInConfort({
           </div>
         )}
 
-        <p className="text-xs text-puente-500 mt-6">
+        <p className="text-xs text-puente-700 mt-6">
           Pictogramas:{' '}
           <a
             href="https://arasaac.org"
-            className="underline underline-offset-2 hover:text-puente-700"
+            className="underline underline-offset-2 hover:text-puente-800 min-h-[44px] inline-flex items-center"
             target="_blank"
             rel="noopener noreferrer"
           >

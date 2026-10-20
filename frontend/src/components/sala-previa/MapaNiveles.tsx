@@ -24,12 +24,12 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
                 type="button"
                 onClick={() => onSeleccionar(nivel.id)}
                 disabled={!alcanzable}
-                className={`w-full text-left flex items-center gap-3 p-3 rounded-suave border-2 ${
+                className={`w-full text-left flex items-center gap-3 p-3 min-h-[56px] rounded-suave border-2 ${
                   actual
                     ? 'border-puente-500 bg-puente-50'
                     : visitado
                       ? 'border-puente-200 bg-white hover:border-puente-300'
-                      : 'border-puente-100 bg-calma-cream text-puente-400'
+                      : 'border-puente-100 bg-calma-cream text-puente-600'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
                 style={{ transition: 'border-color 200ms ease-out, background-color 200ms ease-out' }}
                 aria-current={actual ? 'step' : undefined}
@@ -51,7 +51,7 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
           )
         })}
       </ol>
-      <p className="text-sm text-puente-500 mt-4">
+      <p className="text-sm text-puente-700 mt-4">
         Solo avanzas cuando tú quieras. No hay límite de tiempo.
       </p>
     </nav>

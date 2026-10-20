@@ -41,13 +41,13 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
       className={`card-destacada max-w-2xl ${reduced ? '' : 'animate-fade-soft'}`}
       aria-labelledby={tituloId}
     >
-      <p className="text-sm font-medium text-puente-500 mb-2" aria-live="polite">
+      <p className="text-sm font-medium text-puente-700 mb-2" aria-live="polite">
         Intro · paso {paso + 1} de {total}
       </p>
       <h2 id={tituloId} className="text-2xl font-bold text-puente-800 mb-3">
         {actual.titulo}
       </h2>
-      <p className="text-lg text-puente-700 mb-6">{actual.cuerpo}</p>
+      <p className="text-lg text-puente-800 mb-6">{actual.cuerpo}</p>
 
       {esUltimo && (
         <div
@@ -113,7 +113,7 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
         )}
       </div>
 
-      <p className="text-sm text-puente-500 mt-4">{CREDITO_AUDIO}</p>
+      <p className="text-sm text-puente-700 mt-4">{CREDITO_AUDIO}</p>
     </section>
   )
 }

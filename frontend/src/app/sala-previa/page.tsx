@@ -126,14 +126,24 @@ export default function PaginaSalaPrevia() {
       gente: 0,
       eco: 0,
     }))
-    setMensaje('Calma. Puedes seguir cuando quieras.')
+    setMensaje(
+      fase === 'intro'
+        ? 'Calma. Puedes empezar cuando quieras.'
+        : 'Calma. Puedes seguir cuando quieras.'
+    )
   }
 
   const reanudar = () => {
     setEnCalma(false)
-    aplicarValores(NIVELES[nivelActual].preset)
+    if (fase !== 'intro') {
+      aplicarValores(NIVELES[nivelActual].preset)
+    }
     setMensaje(null)
   }
+
+  const cerrarCheckIn = useCallback(() => {
+    setFase('simulacion')
+  }, [])
 
   const onSlider = (id: IdEstimulo, valor: number) => {
     if (enCalma) setEnCalma(false)
@@ -194,9 +204,12 @@ export default function PaginaSalaPrevia() {
     <>
       <Cabecera />
 
-      <main id="contenido-principal" className="max-w-5xl mx-auto px-4 py-8 pb-28">
+      <main id="contenido-principal" className="max-w-5xl mx-auto px-4 py-8 pb-32">
         <nav className="mb-6">
-          <Link href="/" className="text-puente-600 hover:text-puente-800">
+          <Link
+            href="/"
+            className="inline-flex items-center min-h-[44px] text-puente-700 hover:text-puente-900"
+          >
             ← Volver al inicio
           </Link>
         </nav>
@@ -205,11 +218,21 @@ export default function PaginaSalaPrevia() {
           <h1 className="text-3xl font-bold text-puente-800 mb-2">
             Sala Previa
           </h1>
-          <p className="text-lg text-puente-600 max-w-2xl">
+          <p className="text-lg text-puente-700 max-w-2xl">
             Recorre las fases del día en el juzgado: entrada, control, espera y
             sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
           </p>
         </header>
+
+        {mensaje && fase === 'intro' && (
+          <p
+            className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-900 max-w-2xl"
+            role="status"
+            aria-live="polite"
+          >
+            {mensaje}
+          </p>
+        )}
 
         {fase === 'intro' && <IntroSalaPrevia onEmpezar={empezarNivel0} />}
 
@@ -228,7 +251,7 @@ export default function PaginaSalaPrevia() {
                 Ver intro otra vez
               </button>
               {audioListo && (
-                <span className="text-sm text-puente-500 self-center">
+                <span className="text-sm text-puente-700 self-center">
                   Audio activo. Usa los controles o la pausa.
                 </span>
               )}
@@ -250,7 +273,7 @@ export default function PaginaSalaPrevia() {
                   </div>
                   <p className="text-puente-700">{escena.audioguia}</p>
                   {modoAudioguia && (
-                    <p className="text-puente-600 mt-3 text-sm" aria-live="polite">
+                    <p className="text-puente-700 mt-3 text-sm" aria-live="polite">
                       Ahora: ruido {Math.round(valores.ruido)}, luz {Math.round(valores.luz)},
                       gente {Math.round(valores.gente)}, eco {Math.round(valores.eco)}.
                     </p>
@@ -305,7 +328,7 @@ export default function PaginaSalaPrevia() {
                     <h2 className="font-bold text-puente-800 mb-2">
                       Para tu Pasaporte
                     </h2>
-                    <p className="text-puente-600 mb-3">
+                    <p className="text-puente-700 mb-3">
                       Marcaste estímulos que te molestan. Puedes pedir estos ajustes:
                     </p>
                     <ul className="space-y-2 mb-4">
@@ -327,14 +350,12 @@ export default function PaginaSalaPrevia() {
               </div>
             </div>
 
-            <p className="text-sm text-puente-500 mt-8">{CREDITO_AUDIO}</p>
+            <p className="text-sm text-puente-700 mt-8">{CREDITO_AUDIO}</p>
           </>
         )}
       </main>
 
-      {fase !== 'intro' && (
-        <BotonCalma enCalma={enCalma} onPausa={pausarCalma} onReanudar={reanudar} />
-      )}
+      <BotonCalma enCalma={enCalma} onPausa={pausarCalma} onReanudar={reanudar} />
 
       {fase === 'checkin' && (
         <CheckInConfort
@@ -343,6 +364,7 @@ export default function PaginaSalaPrevia() {
           puedeBajar={nivelActual > 0}
           puedeSubir={nivelActual < NIVELES.length - 1}
           onBajarEstimulos={bajarEstimulosMolestos}
+          onCerrar={cerrarCheckIn}
           onContinuar={(confort, molestias) => {
             trasCheckIn(confort, molestias)
             setFase('simulacion')
