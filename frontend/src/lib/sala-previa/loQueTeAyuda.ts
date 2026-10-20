@@ -198,14 +198,31 @@ export function fraseMolestia(id: IdEstimulo, nivel: NivelMolestia): string {
 
 /** Frase en primera persona para un ajuste: «Me ayuda…». */
 export function fraseAyuda(ajusteId: string): string {
-  const ajuste = AJUSTES_DISPONIBLES.find((a) => a.id === ajusteId)
-  if (!ajuste) return `Me ayuda: ${ajusteId}`
-  const nombre = ajuste.nombre
-  // Primera persona sin repetir «Me ayuda» si el nombre ya empieza igual.
-  if (/^poder /i.test(nombre)) {
-    return `Me ayuda poder ${nombre.slice(6)}`
+  switch (ajusteId) {
+    case 'sala-tranquila':
+      return 'Me ayuda esperar en una sala tranquila'
+    case 'luz-tenue':
+      return 'Me ayuda la luz tenue'
+    case 'pausas':
+      return 'Me ayudan las pausas cuando las necesito'
+    case 'mas-tiempo':
+      return 'Me ayuda tener más tiempo para responder'
+    case 'preguntas-claras':
+      return 'Me ayudan las preguntas claras, de una en una'
+    case 'facilitador':
+      return 'Me ayuda una persona facilitadora'
+    case 'acompanante':
+      return 'Me ayuda poder ir con un acompañante'
+    case 'documentos-voz':
+      return 'Me ayuda que me lean los documentos'
+    case 'descripcion-pruebas':
+      return 'Me ayuda la descripción de pruebas visuales'
+    default: {
+      const ajuste = AJUSTES_DISPONIBLES.find((a) => a.id === ajusteId)
+      if (!ajuste) return `Me ayuda: ${ajusteId}`
+      return `Me ayuda: ${ajuste.nombre.charAt(0).toLowerCase()}${ajuste.nombre.slice(1)}`
+    }
   }
-  return `Me ayuda: ${nombre.charAt(0).toLowerCase()}${nombre.slice(1)}`
 }
 
 /** Etiqueta corta del nivel para lectores de pantalla. */

@@ -224,7 +224,7 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
                     <input
                       id={inputId}
                       type="checkbox"
-                      className="mt-1 w-5 h-5 accent-puente-600 shrink-0"
+                      className="mt-1 w-5 h-5 shrink-0 rounded border-puente-400 text-puente-600 focus:ring-puente-400"
                       checked={checked}
                       onChange={() => toggle(ajuste.id)}
                     />
