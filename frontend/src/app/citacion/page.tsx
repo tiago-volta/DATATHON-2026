@@ -14,7 +14,36 @@ Procedimiento: Diligencias Previas 245/2026
 
 CÉDULA DE CITACIÓN
 
-Se cita a D. LUIS GARCÍA FERNÁNDEZ para que comparezca ante este Juzgado el día 10 de noviembre de 2026, a las 10:00 horas, en calidad de TESTIGO...`
+Se cita a D. LUIS GARCÍA FERNÁNDEZ, con DNI 32.XXX.XXX-Y, domiciliado en C/ Ejemplo, 15, 15001 A Coruña, para que comparezca ante este Juzgado el día 10 de noviembre de 2026, a las 10:00 horas, en calidad de TESTIGO, a fin de prestar declaración en las Diligencias Previas arriba referenciadas.
+
+Se le apercibe de que, si no comparece sin causa justificada, podrá ser sancionado con multa de 200 a 5.000 euros. Deberá acudir provisto de su documento nacional de identidad.`
+
+const EJEMPLO_JUAN = `JUZGADO DE INSTRUCCIÓN Nº 7 DE A CORUÑA
+Juicio por Delito Leve 892/2026
+
+CÉDULA DE CITACIÓN
+
+Se cita a D. JUAN MARTÍNEZ LÓPEZ para que comparezca ante este Juzgado el día 12 de noviembre de 2026, a las 09:30 horas, en calidad de INVESTIGADO, para la celebración del juicio por delito leve de estafa (art. 248 CP, cuantía inferior a 400 euros) por los hechos ocurridos el 3 de octubre de 2026 relativos a una compraventa en línea.
+
+Se le informa de sus derechos conforme al artículo 118 de la Ley de Enjuiciamiento Criminal: derecho a guardar silencio, a designar abogado o solicitar uno de oficio y a presentar pruebas de descargo hasta el día del juicio.`
+
+const TERMINOS_JUDICIALES = /\b(juzgado|citaci[oó]n|cita|comparezca|comparecer|procedimiento|diligencias|juicio|testigo|investigad[oa]|demandad[oa]|demandante|vista|declaraci[oó]n|tribunal|audiencia|letrad[oa]|fiscal|sentencia|notificaci[oó]n|c[eé]dula|autos|expediente|delito|instrucci[oó]n|penal|civil|denuncia|querella)\b/i
+
+function validarTextoCitacion(valor: string): string | null {
+  const limpio = valor.trim()
+  if (!limpio) {
+    return 'Pega o escribe el texto de tu citación.'
+  }
+  const soloLetras = limpio.replace(/[^\p{L}]/gu, '')
+  const palabras = limpio.split(/\s+/).filter(Boolean)
+  if (limpio.length < 30 || soloLetras.length < 20 || palabras.length < 5) {
+    return 'El texto es demasiado corto. Pega al menos un párrafo de la carta que recibiste del juzgado.'
+  }
+  if (!TERMINOS_JUDICIALES.test(limpio)) {
+    return 'El texto no parece una citación ni un documento del juzgado. Pega el texto de tu carta judicial o usa uno de los ejemplos de abajo.'
+  }
+  return null
+}
 
 export default function PaginaCitacion() {
   const [paso, setPaso] = useState<'entrada' | 'procesando' | 'resultado'>('entrada')
@@ -22,10 +51,12 @@ export default function PaginaCitacion() {
   const [modoLectura, setModoLectura] = useState<'clara' | 'facil'>('clara')
   const [resultado, setResultado] = useState<CitacionProcesada | null>(null)
   const [error, setError] = useState('')
+  const [errorCalendario, setErrorCalendario] = useState('')
 
   const procesarCitacion = async () => {
-    if (!texto.trim()) {
-      setError('Pega o escribe el texto de tu citación')
+    const errorValidacion = validarTextoCitacion(texto)
+    if (errorValidacion) {
+      setError(errorValidacion)
       return
     }
 
@@ -37,7 +68,7 @@ export default function PaginaCitacion() {
       const response = await fetch(`${apiUrl}/api/procesar-citacion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto, perfil: null }),
+        body: JSON.stringify({ texto: texto.trim(), perfil: null }),
       })
 
       if (!response.ok) throw new Error('Error al procesar')
@@ -46,33 +77,42 @@ export default function PaginaCitacion() {
       setResultado(data)
       setPaso('resultado')
     } catch {
-      setError('No se pudo procesar la citación. Inténtalo de nuevo.')
+      setError('No se pudo procesar la citación. Comprueba que el servidor esté encendido e inténtalo de nuevo.')
       setPaso('entrada')
     }
   }
 
   const descargarCalendario = async () => {
-    if (!resultado) return
-    
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-    const response = await fetch(`${apiUrl}/api/generar-ics?titulo=Citación Judicial`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(resultado.plazos),
-    })
-    
-    const blob = await response.blob()
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'citacion_puente.ics'
-    a.click()
+    if (!resultado || resultado.plazos.length === 0) return
+    setErrorCalendario('')
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const params = new URLSearchParams({ titulo: 'Citación Judicial' })
+      const response = await fetch(`${apiUrl}/api/generar-ics?${params.toString()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(resultado.plazos),
+      })
+
+      if (!response.ok) throw new Error('Error al generar calendario')
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'citacion_puente.ics'
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch {
+      setErrorCalendario('No se pudo descargar el archivo de calendario. Inténtalo de nuevo.')
+    }
   }
 
   return (
     <>
       <Cabecera />
-      
+
       <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
         <nav className="mb-8" aria-label="Pasos del proceso">
           <ol className="flex items-center gap-2 text-sm">
@@ -92,7 +132,7 @@ export default function PaginaCitacion() {
               Entender tu citación
             </h1>
             <p className="text-lg text-puente-600 mb-8">
-              Pega aquí el texto de la citación que has recibido del juzgado. 
+              Pega aquí el texto de la citación que has recibido del juzgado.
               Te la explicamos de forma clara.
             </p>
 
@@ -103,27 +143,50 @@ export default function PaginaCitacion() {
               <textarea
                 id="citacion"
                 value={texto}
-                onChange={(e) => setTexto(e.target.value)}
+                onChange={(e) => {
+                  setTexto(e.target.value)
+                  if (error) setError('')
+                }}
+                maxLength={8000}
                 className="textarea-accesible"
-                placeholder="Pega aquí el texto de tu citación…"
+                placeholder="Pega aquí el texto de tu citación judicial…"
                 rows={10}
+                aria-invalid={Boolean(error)}
+                aria-describedby={error ? 'ayuda-citacion error-citacion' : 'ayuda-citacion'}
               />
-              
+              <p id="ayuda-citacion" className="text-sm text-puente-500">
+                Incluye el texto donde aparece el juzgado, la fecha y en qué calidad te citan (testigo, investigado...).
+              </p>
+
               {error && (
-                <p className="text-red-600 font-medium" role="alert">
+                <p id="error-citacion" className="text-red-700 font-medium" role="alert">
                   {error}
                 </p>
               )}
 
-              <div className="flex flex-wrap gap-4">
-                <button onClick={procesarCitacion} className="btn-primary">
+              <div className="flex flex-wrap gap-3 pt-2">
+                <button type="button" onClick={procesarCitacion} className="btn-primary">
                   Procesar citación
                 </button>
                 <button
-                  onClick={() => setTexto(EJEMPLO_LUIS)}
+                  type="button"
+                  onClick={() => {
+                    setTexto(EJEMPLO_LUIS)
+                    setError('')
+                  }}
                   className="btn-ghost"
                 >
-                  Usar ejemplo (Luis)
+                  Ejemplo Luis (testigo)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTexto(EJEMPLO_JUAN)
+                    setError('')
+                  }}
+                  className="btn-ghost"
+                >
+                  Ejemplo Juan (investigado)
                 </button>
               </div>
             </div>
@@ -131,7 +194,7 @@ export default function PaginaCitacion() {
         )}
 
         {paso === 'procesando' && (
-          <section className="text-center py-16">
+          <section className="text-center py-16" aria-live="polite">
             <div className="animate-pulse">
               <p className="text-xl text-puente-600">Procesando tu citación...</p>
               <p className="text-puente-500 mt-2">Esto tarda unos segundos</p>
@@ -170,10 +233,33 @@ export default function PaginaCitacion() {
                   </dd>
                 </div>
               </dl>
+
+              {resultado.datos_clave.que_llevar && resultado.datos_clave.que_llevar.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-puente-200">
+                  <h3 className="font-bold text-puente-800 mb-2">Qué tienes que llevar</h3>
+                  <ul className="list-disc pl-5 text-puente-700 space-y-1">
+                    {resultado.datos_clave.que_llevar.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {resultado.datos_clave.derechos && resultado.datos_clave.derechos.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-puente-200">
+                  <h3 className="font-bold text-puente-800 mb-2">Tus derechos</h3>
+                  <ul className="list-disc pl-5 text-puente-700 space-y-1">
+                    {resultado.datos_clave.derechos.map((derecho) => (
+                      <li key={derecho}>{derecho}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-2 mb-6">
               <button
+                type="button"
                 onClick={() => setModoLectura('clara')}
                 className={`btn ${modoLectura === 'clara' ? 'btn-primary' : 'btn-secondary'}`}
                 aria-pressed={modoLectura === 'clara'}
@@ -181,6 +267,7 @@ export default function PaginaCitacion() {
                 Lectura clara
               </button>
               <button
+                type="button"
                 onClick={() => setModoLectura('facil')}
                 className={`btn ${modoLectura === 'facil' ? 'btn-primary' : 'btn-secondary'}`}
                 aria-pressed={modoLectura === 'facil'}
@@ -194,7 +281,7 @@ export default function PaginaCitacion() {
                 <h2 className="text-xl font-bold text-puente-800">
                   {modoLectura === 'clara' ? 'En lenguaje claro' : 'En lectura fácil'}
                 </h2>
-                <BotonLeerEnVoz 
+                <BotonLeerEnVoz
                   texto={modoLectura === 'clara' ? resultado.lectura_clara : resultado.lectura_facil}
                 />
               </div>
@@ -243,12 +330,17 @@ export default function PaginaCitacion() {
                     </li>
                   ))}
                 </ul>
-                <button onClick={descargarCalendario} className="btn-secondary mt-4 w-full">
+                <button type="button" onClick={descargarCalendario} className="btn-secondary mt-4 w-full">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   Añadir a mi calendario
                 </button>
+                {errorCalendario && (
+                  <p className="text-sm text-red-700 font-medium mt-2" role="alert">
+                    {errorCalendario}
+                  </p>
+                )}
               </div>
             )}
 
@@ -256,7 +348,7 @@ export default function PaginaCitacion() {
               <h2 className="text-xl font-bold text-puente-800 mb-4">
                 Fases del proceso
               </h2>
-              <LineaTiempo 
+              <LineaTiempo
                 fases={resultado.datos_clave.rol === 'investigado' ? FASES_INVESTIGADO : FASES_TESTIGO}
                 faseActual={1}
               />
@@ -267,7 +359,7 @@ export default function PaginaCitacion() {
                 Puedes pedir ajustes
               </h2>
               <p className="text-puente-600 mb-4">
-                Tienes derecho a pedir adaptaciones para tu comparecencia: una sala tranquila, 
+                Tienes derecho a pedir adaptaciones para tu comparecencia: una sala tranquila,
                 más tiempo, que te expliquen las cosas de otra forma...
               </p>
               <Link href="/pasaporte" className="btn-primary">
@@ -276,7 +368,14 @@ export default function PaginaCitacion() {
             </div>
 
             <button
-              onClick={() => { setPaso('entrada'); setResultado(null); setTexto(''); }}
+              type="button"
+              onClick={() => {
+                setPaso('entrada')
+                setResultado(null)
+                setTexto('')
+                setError('')
+                setErrorCalendario('')
+              }}
               className="btn-ghost"
             >
               ← Procesar otra citación

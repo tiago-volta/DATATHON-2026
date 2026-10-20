@@ -5,16 +5,29 @@ import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 
-const NIVELES = [
+interface PreguntaItem {
+  texto: string
+  ayuda?: {
+    explicacion: string
+    ejemplos: string[]
+  }
+}
+
+const NIVELES: {
+  id: number
+  nombre: string
+  descripcion: string
+  preguntas: PreguntaItem[]
+}[] = [
   {
     id: 1,
     nombre: 'Preguntas claras',
     descripcion: 'Preguntas sencillas como las que te hará el juez al principio.',
     preguntas: [
-      '¿Cómo te llamas?',
-      '¿Dónde vives?',
-      '¿A qué te dedicas?',
-      '¿Conoces a la persona de la que hablamos?',
+      { texto: '¿Cómo te llamas?' },
+      { texto: '¿Dónde vives?' },
+      { texto: '¿A qué te dedicas?' },
+      { texto: '¿Conoces a la persona de la que hablamos?' },
     ],
   },
   {
@@ -22,10 +35,10 @@ const NIVELES = [
     nombre: 'Preguntas de los abogados',
     descripcion: 'Preguntas más concretas sobre lo que pasó.',
     preguntas: [
-      '¿Qué día ocurrieron los hechos?',
-      '¿Dónde estabas tú en ese momento?',
-      '¿Qué viste exactamente?',
-      '¿Había alguien más contigo?',
+      { texto: '¿Qué día ocurrieron los hechos?' },
+      { texto: '¿Dónde estabas tú en ese momento?' },
+      { texto: '¿Qué viste exactamente?' },
+      { texto: '¿Había alguien más contigo?' },
     ],
   },
   {
@@ -33,9 +46,39 @@ const NIVELES = [
     nombre: 'Preguntas difíciles',
     descripcion: 'Preguntas que pueden confundir. Aprende a pedir que te las repitan.',
     preguntas: [
-      '¿No es cierto que usted no vio bien lo que pasó?',
-      '¿Cómo puede estar seguro si estaba lejos y había poca luz?',
-      '¿Por qué debería creerle a usted y no a la otra persona?',
+      {
+        texto: '¿No es cierto que usted no vio bien lo que pasó?',
+        ayuda: {
+          explicacion:
+            'Tiene una doble negación ("no es cierto... que no vio"). Está hecha para confundirte.',
+          ejemplos: [
+            '"Perdone, no entiendo la pregunta con dos negaciones. ¿Me pregunta si vi lo que pasó?"',
+            '"Sí vi lo que pasó desde donde yo estaba."',
+          ],
+        },
+      },
+      {
+        texto: '¿Cómo puede estar seguro si estaba lejos y había poca luz?',
+        ayuda: {
+          explicacion:
+            'Junta varias cosas a la vez (distancia y luz) y pone en duda tu palabra.',
+          ejemplos: [
+            '"¿Puede hacerme una pregunta cada vez, por favor?"',
+            '"Había una farola encendida y pude verlo con claridad."',
+          ],
+        },
+      },
+      {
+        texto: '¿Por qué debería creerle a usted y no a la otra persona?',
+        ayuda: {
+          explicacion:
+            'Es una pregunta intimidante. Tú no tienes que explicar lo que dice otra persona, solo lo que tú sabes.',
+          ejemplos: [
+            '"Yo solo puedo contar lo que vi y escuché."',
+            '"Necesito un momento para responder con calma, por favor."',
+          ],
+        },
+      },
     ],
   },
 ]
@@ -46,26 +89,60 @@ export default function PaginaEnsaya() {
   const [respuesta, setRespuesta] = useState('')
   const [mostrarAyuda, setMostrarAyuda] = useState(false)
   const [iniciado, setIniciado] = useState(false)
+  const [completado, setCompletado] = useState(false)
+  const [preguntasRespondidas, setPreguntasRespondidas] = useState(0)
 
   const nivel = NIVELES[nivelActual]
-  const pregunta = nivel?.preguntas[preguntaActual]
+  const itemPregunta = nivel?.preguntas[preguntaActual]
+  const esPrimera = nivelActual === 0 && preguntaActual === 0
+  const esUltima =
+    nivelActual === NIVELES.length - 1 &&
+    preguntaActual === nivel.preguntas.length - 1
 
   const siguientePregunta = () => {
+    if (respuesta.trim().length > 0) {
+      setPreguntasRespondidas((prev) => prev + 1)
+    }
     setRespuesta('')
     setMostrarAyuda(false)
-    
+
     if (preguntaActual < nivel.preguntas.length - 1) {
-      setPreguntaActual(prev => prev + 1)
+      setPreguntaActual((prev) => prev + 1)
     } else if (nivelActual < NIVELES.length - 1) {
-      setNivelActual(prev => prev + 1)
+      setNivelActual((prev) => prev + 1)
       setPreguntaActual(0)
+    } else {
+      setCompletado(true)
     }
+  }
+
+  const preguntaAnterior = () => {
+    setRespuesta('')
+    setMostrarAyuda(false)
+
+    if (preguntaActual > 0) {
+      setPreguntaActual((prev) => prev - 1)
+    } else if (nivelActual > 0) {
+      const nivelPrevio = NIVELES[nivelActual - 1]
+      setNivelActual((prev) => prev - 1)
+      setPreguntaActual(nivelPrevio.preguntas.length - 1)
+    }
+  }
+
+  const reiniciar = () => {
+    setNivelActual(0)
+    setPreguntaActual(0)
+    setRespuesta('')
+    setMostrarAyuda(false)
+    setCompletado(false)
+    setPreguntasRespondidas(0)
+    setIniciado(true)
   }
 
   return (
     <>
       <Cabecera />
-      
+
       <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/" className="text-puente-600 hover:text-puente-800">
@@ -79,7 +156,7 @@ export default function PaginaEnsaya() {
               Ensaya tu declaración
             </h1>
             <p className="text-xl text-puente-700 max-w-xl mb-8">
-              Practica responder preguntas como las que te harán en el juzgado. 
+              Practica responder preguntas como las que te harán en el juzgado.
               Hay tres niveles, de más fácil a más difícil.
             </p>
 
@@ -95,13 +172,53 @@ export default function PaginaEnsaya() {
               ))}
             </div>
 
-            <button onClick={() => setIniciado(true)} className="btn-primary text-xl px-8">
+            <button
+              type="button"
+              onClick={() => setIniciado(true)}
+              className="btn-primary text-xl px-8"
+            >
               Empezar a practicar
             </button>
 
             <p className="text-puente-500 mt-6">
               Puedes parar cuando quieras. No hay respuestas buenas ni malas.
             </p>
+          </section>
+        ) : completado ? (
+          <section className="card-destacada" aria-live="polite">
+            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+              Has terminado el ensayo
+            </h1>
+            <p className="text-lg text-puente-700 mb-4">
+              Has recorrido los 3 niveles de preguntas
+              {preguntasRespondidas > 0
+                ? ` y has escrito ${preguntasRespondidas} ${preguntasRespondidas === 1 ? 'respuesta' : 'respuestas'}.`
+                : '.'}
+            </p>
+            <div className="bg-calma-sage rounded-lg p-4 mb-6 text-puente-800 space-y-2">
+              <p className="font-bold">Recuerda para el día del juzgado:</p>
+              <ul className="list-disc pl-5 space-y-1 text-puente-700">
+                <li>Si no entiendes una pregunta, tienes derecho a pedir que la repitan con palabras sencillas.</li>
+                <li>Si no recuerdas un dato exacto, puedes decir: &ldquo;No lo recuerdo con seguridad&rdquo;.</li>
+                <li>Puedes pedir una pausa si necesitas tranquilizarte.</li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/pasaporte?ajustes=preguntas-claras,mas-tiempo,pausas"
+                className="btn-primary text-center flex-1"
+              >
+                Añadir estos ajustes a mi Pasaporte
+              </Link>
+              <button
+                type="button"
+                onClick={reiniciar}
+                className="btn-secondary"
+              >
+                Practicar otra vez
+              </button>
+            </div>
           </section>
         ) : (
           <section>
@@ -110,7 +227,7 @@ export default function PaginaEnsaya() {
                 <p className="text-sm text-puente-500">Nivel {nivelActual + 1} de 3</p>
                 <h1 className="text-2xl font-bold text-puente-800">{nivel.nombre}</h1>
               </div>
-              <span className="etiqueta-info">
+              <span className="etiqueta-info" aria-live="polite">
                 Pregunta {preguntaActual + 1} de {nivel.preguntas.length}
               </span>
             </div>
@@ -136,33 +253,35 @@ export default function PaginaEnsaya() {
             <div className="card-destacada mb-6">
               <div className="flex justify-between items-start mb-4">
                 <p className="text-sm text-puente-500">Te preguntan:</p>
-                <BotonLeerEnVoz texto={pregunta} etiqueta="Escuchar" />
+                <BotonLeerEnVoz texto={itemPregunta.texto} etiqueta="Escuchar" />
               </div>
               <p className="text-2xl text-puente-800 font-medium">
-                {pregunta}
+                {itemPregunta.texto}
               </p>
             </div>
 
-            {nivelActual === 2 && (
+            {itemPregunta.ayuda && (
               <button
+                type="button"
                 onClick={() => setMostrarAyuda(!mostrarAyuda)}
+                aria-expanded={mostrarAyuda}
                 className="btn-ghost mb-4 w-full"
               >
                 {mostrarAyuda ? 'Ocultar ayuda' : '¿Esta pregunta te confunde? Ver ayuda'}
               </button>
             )}
 
-            {mostrarAyuda && (
-              <div className="bg-accent-alert/10 border-2 border-accent-alert rounded-tarjeta p-6 mb-6">
+            {mostrarAyuda && itemPregunta.ayuda && (
+              <div className="bg-accent-alert/10 border-2 border-accent-alert rounded-tarjeta p-6 mb-6" aria-live="polite">
                 <h2 className="font-bold text-puente-800 mb-2">Esta pregunta es confusa</h2>
                 <p className="text-puente-700 mb-4">
-                  Tiene una doble negación o está formulada para confundirte. 
-                  <strong> No tienes que responder así. </strong>
-                  Puedes decir:
+                  {itemPregunta.ayuda.explicacion}{' '}
+                  <strong>No tienes que responder con prisa.</strong> Puedes decir:
                 </p>
-                <ul className="space-y-2 text-puente-700">
-                  <li>"Perdone, no he entendido la pregunta. ¿Puede repetirla de otra forma?"</li>
-                  <li>"¿Me está preguntando si vi lo que pasó?"</li>
+                <ul className="list-disc pl-5 space-y-2 text-puente-700">
+                  {itemPregunta.ayuda.ejemplos.map((ej) => (
+                    <li key={ej}>{ej}</li>
+                  ))}
                 </ul>
               </div>
             )}
@@ -174,28 +293,48 @@ export default function PaginaEnsaya() {
               <textarea
                 id="respuesta"
                 value={respuesta}
-                onChange={(e) => setRespuesta(e.target.value)}
+                onChange={(e) => setRespuesta(e.target.value.slice(0, 500))}
+                maxLength={500}
                 className="textarea-accesible"
                 placeholder="Escribe lo que responderías…"
                 rows={4}
+                aria-describedby="ayuda-respuesta"
               />
-              <p className="text-sm text-puente-500 mt-2">
-                Esto es solo práctica. Nadie más ve lo que escribes.
-              </p>
+              <div className="flex justify-between items-center text-sm text-puente-500 mt-2" id="ayuda-respuesta">
+                <span>Esto es solo práctica. Nadie más ve lo que escribes.</span>
+                <span aria-hidden="true">{respuesta.length}/500</span>
+              </div>
             </div>
 
-            <div className="flex gap-4">
-              <button onClick={siguientePregunta} className="btn-primary flex-1">
-                {preguntaActual < nivel.preguntas.length - 1 
-                  ? 'Siguiente pregunta' 
-                  : nivelActual < NIVELES.length - 1 
+            <div className="flex flex-wrap gap-4">
+              {!esPrimera && (
+                <button
+                  type="button"
+                  onClick={preguntaAnterior}
+                  className="btn-secondary"
+                >
+                  ← Anterior
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={siguientePregunta}
+                className="btn-primary flex-1"
+              >
+                {preguntaActual < nivel.preguntas.length - 1
+                  ? 'Siguiente pregunta'
+                  : !esUltima
                     ? 'Siguiente nivel'
-                    : 'Terminar'}
+                    : 'Terminar ensayo'}
               </button>
             </div>
 
-            <button 
-              onClick={() => setIniciado(false)} 
+            <button
+              type="button"
+              onClick={() => {
+                setIniciado(false)
+                setCompletado(false)
+              }}
               className="btn-ghost mt-4 w-full"
             >
               Salir del ensayo

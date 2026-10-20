@@ -23,7 +23,7 @@ export function ControlesEstimulo({ valores, deshabilitado, onChange }: Props) {
 
       {ORDEN.map((id) => {
         const meta = ESTIMULOS_META[id]
-        const valor = valores[id]
+        const valor = Math.min(100, Math.max(0, Math.round(valores[id] || 0)))
         const etiqueta = etiquetaNivelEstimulo(valor, id)
         return (
           <div key={id}>
@@ -43,7 +43,10 @@ export function ControlesEstimulo({ valores, deshabilitado, onChange }: Props) {
               max={100}
               step={1}
               value={valor}
-              onChange={(e) => onChange(id, Number(e.target.value))}
+              onChange={(e) => {
+                const limpio = Math.min(100, Math.max(0, Math.round(Number(e.target.value) || 0)))
+                onChange(id, limpio)
+              }}
               className="w-full accent-puente-600 h-3"
               aria-valuemin={0}
               aria-valuemax={100}

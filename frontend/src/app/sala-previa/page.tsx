@@ -114,7 +114,8 @@ export default function PaginaSalaPrevia() {
 
   const onSlider = (id: IdEstimulo, valor: number) => {
     if (enCalma) setEnCalma(false)
-    const siguientes = { ...valores, [id]: valor }
+    const limpio = Math.min(100, Math.max(0, Math.round(valor)))
+    const siguientes = { ...valores, [id]: limpio }
     aplicarValores(siguientes)
   }
 
@@ -319,6 +320,7 @@ export default function PaginaSalaPrevia() {
         <CheckInConfort
           nivelNombre={nivel.nombre}
           puedeBajar={nivelActual > 0}
+          puedeSubir={nivelActual < NIVELES.length - 1}
           onContinuar={(confort, molestias) => {
             trasCheckIn(confort, molestias)
             setFase('simulacion')

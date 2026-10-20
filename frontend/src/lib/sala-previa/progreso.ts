@@ -1,7 +1,8 @@
 import type { IdEstimulo, ProgresoSala } from './tipos'
-import { INSIGNIAS } from './niveles'
+import { INSIGNIAS, NIVELES } from './niveles'
 
 const CLAVE = 'puente-sala-previa-progreso'
+const ESTIMULOS_VALIDOS: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
 
 const INICIAL: ProgresoSala = {
   nivelMaximo: 0,
@@ -23,12 +24,51 @@ function ayerISO(): string {
   return d.toISOString().slice(0, 10)
 }
 
+function sanitizarProgreso(raw: Partial<ProgresoSala>): ProgresoSala {
+  const maxIdx = NIVELES.length - 1
+  const nivelMaximo = Number.isFinite(raw.nivelMaximo)
+    ? Math.min(maxIdx, Math.max(0, Math.trunc(raw.nivelMaximo!)))
+    : INICIAL.nivelMaximo
+  const confianza = Number.isFinite(raw.confianza)
+    ? Math.min(100, Math.max(0, Math.round(raw.confianza!)))
+    : INICIAL.confianza
+  const racha = Number.isFinite(raw.racha)
+    ? Math.max(0, Math.trunc(raw.racha!))
+    : INICIAL.racha
+  const sesionesCompletadas = Number.isFinite(raw.sesionesCompletadas)
+    ? Math.max(0, Math.trunc(raw.sesionesCompletadas!))
+    : INICIAL.sesionesCompletadas
+  const ultimaPractica =
+    typeof raw.ultimaPractica === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.ultimaPractica)
+      ? raw.ultimaPractica
+      : null
+  const molestias = Array.isArray(raw.molestias)
+    ? Array.from(
+        new Set(raw.molestias.filter((m): m is IdEstimulo => ESTIMULOS_VALIDOS.includes(m as IdEstimulo)))
+      )
+    : []
+  const insigniasValidas = new Set(INSIGNIAS.map((i) => i.id))
+  const insignias = Array.isArray(raw.insignias)
+    ? Array.from(new Set(raw.insignias.filter((id): id is string => insigniasValidas.has(id))))
+    : []
+
+  return {
+    nivelMaximo,
+    insignias,
+    confianza,
+    racha,
+    ultimaPractica,
+    molestias,
+    sesionesCompletadas,
+  }
+}
+
 export function cargarProgreso(): ProgresoSala {
   if (typeof window === 'undefined') return { ...INICIAL }
   try {
     const raw = localStorage.getItem(CLAVE)
     if (!raw) return { ...INICIAL }
-    return { ...INICIAL, ...JSON.parse(raw) }
+    return sanitizarProgreso(JSON.parse(raw))
   } catch {
     return { ...INICIAL }
   }
@@ -36,13 +76,17 @@ export function cargarProgreso(): ProgresoSala {
 
 export function guardarProgreso(progreso: ProgresoSala) {
   if (typeof window === 'undefined') return
-  localStorage.setItem(CLAVE, JSON.stringify(progreso))
+  try {
+    localStorage.setItem(CLAVE, JSON.stringify(sanitizarProgreso(progreso)))
+  } catch {
+    /* ignore storage quota / private mode */
+  }
 }
 
 export function registrarPractica(progreso: ProgresoSala): ProgresoSala {
   const hoy = hoyISO()
   if (progreso.ultimaPractica === hoy) {
-    return progreso
+    return otorgarInsignias(progreso)
   }
 
   let racha = 1
@@ -61,18 +105,20 @@ export function registrarPractica(progreso: ProgresoSala): ProgresoSala {
 }
 
 export function marcarNivel(progreso: ProgresoSala, nivel: number): ProgresoSala {
-  const nivelMaximo = Math.max(progreso.nivelMaximo, nivel)
+  const nivelSeguro = Math.min(NIVELES.length - 1, Math.max(0, Math.trunc(nivel)))
+  const nivelMaximo = Math.max(progreso.nivelMaximo, nivelSeguro)
   return otorgarInsignias({ ...progreso, nivelMaximo })
 }
 
 export function sumarConfianza(progreso: ProgresoSala, delta: number): ProgresoSala {
   return {
     ...progreso,
-    confianza: Math.min(100, Math.max(0, progreso.confianza + delta)),
+    confianza: Math.min(100, Math.max(0, Math.round(progreso.confianza + delta))),
   }
 }
 
 export function anadirMolestia(progreso: ProgresoSala, estimulo: IdEstimulo): ProgresoSala {
+  if (!ESTIMULOS_VALIDOS.includes(estimulo)) return progreso
   if (progreso.molestias.includes(estimulo)) return progreso
   return otorgarInsignias({
     ...progreso,

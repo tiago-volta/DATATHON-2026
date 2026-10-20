@@ -4,12 +4,14 @@ Minimal FastAPI backend for the DATAthon Justicia 2026 hackathon.
 Mock-first approach with optional LLM integration.
 """
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from datetime import datetime
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 import os
+import re
 from dotenv import load_dotenv
 
 from .llm import procesar_citacion
@@ -33,16 +35,57 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+TERMINOS_JUDICIALES_RE = re.compile(
+    r"\b(juzgado|citaci[oó]n|cita|comparezca|comparecer|procedimiento|diligencias|juicio|testigo|"
+    r"investigad[oa]|demandad[oa]|demandante|vista|declaraci[oó]n|tribunal|audiencia|letrad[oa]|"
+    r"fiscal|sentencia|notificaci[oó]n|c[eé]dula|autos|expediente|delito|instrucci[oó]n|penal|civil|denuncia|querella)\b",
+    re.IGNORECASE,
+)
+
 
 class CitacionInput(BaseModel):
     texto: str
-    perfil: Optional[str] = None  # "tea", "tdah", "dislexia", "ceguera", etc.
+    perfil: Optional[str] = None
+
+    @field_validator("texto")
+    @classmethod
+    def validar_texto(cls, v: str) -> str:
+        limpio = v.strip()
+        solo_letras = re.sub(r"[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜçÇ]", "", limpio)
+        if len(limpio) < 30 or len(solo_letras) < 20:
+            raise ValueError("El texto de la citación es demasiado corto.")
+        if not TERMINOS_JUDICIALES_RE.search(limpio):
+            raise ValueError("El texto no parece una citación ni un documento judicial.")
+        return limpio[:8000]
 
 
 class PlazoItem(BaseModel):
     descripcion: str
     fecha: str
     dias_restantes: int
+
+    @field_validator("descripcion")
+    @classmethod
+    def validar_descripcion(cls, v: str) -> str:
+        limpio = v.strip()
+        if not limpio:
+            raise ValueError("La descripción del plazo no puede estar vacía.")
+        return limpio[:200]
+
+    @field_validator("fecha")
+    @classmethod
+    def validar_fecha(cls, v: str) -> str:
+        limpio = v.strip()
+        try:
+            datetime.strptime(limpio, "%Y-%m-%d")
+        except ValueError:
+            raise ValueError("La fecha debe tener formato YYYY-MM-DD.")
+        return limpio
+
+    @field_validator("dias_restantes")
+    @classmethod
+    def validar_dias(cls, v: int) -> int:
+        return max(0, v)
 
 
 class CitacionResponse(BaseModel):
@@ -56,9 +99,43 @@ class CitacionResponse(BaseModel):
 
 class PasaporteInput(BaseModel):
     nombre: str
-    necesidades: List[str]
+    necesidades: List[str] = []
     ajustes_solicitados: List[str]
     contacto_emergencia: Optional[str] = None
+
+    @field_validator("nombre")
+    @classmethod
+    def validar_nombre(cls, v: str) -> str:
+        limpio = v.strip()
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜçÇ\s'\-]{2,60}$", limpio):
+            raise ValueError("El nombre solo puede contener letras y espacios (entre 2 y 60 caracteres).")
+        solo_letras = re.sub(r"[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜçÇ]", "", limpio)
+        if len(solo_letras) < 2 or re.match(r"^(.)\1+$", solo_letras, re.IGNORECASE):
+            raise ValueError("Introduce un nombre válido.")
+        return limpio
+
+    @field_validator("ajustes_solicitados")
+    @classmethod
+    def validar_ajustes(cls, v: List[str]) -> List[str]:
+        limpios = [item.strip() for item in v if item and item.strip()]
+        if not limpios:
+            raise ValueError("Debes seleccionar al menos un ajuste.")
+        return limpios[:15]
+
+    @field_validator("contacto_emergencia")
+    @classmethod
+    def validar_contacto(cls, v: Optional[str]) -> Optional[str]:
+        if v is None or not v.strip():
+            return None
+        limpio = v.strip()
+        if not re.match(r"^\+?[\d\s]{9,18}$", limpio):
+            raise ValueError("El contacto de emergencia debe ser un teléfono válido (solo números y espacios).")
+        digitos = re.sub(r"\D", "", limpio)
+        if not (9 <= len(digitos) <= 15) or re.match(r"^(\d)\1+$", digitos):
+            raise ValueError("Introduce un número de teléfono válido (entre 9 y 15 dígitos).")
+        if not limpio.startswith("+") and not re.match(r"^[6789]\d{8}$", digitos):
+            raise ValueError("Los teléfonos en España deben empezar por 6, 7, 8 o 9 y tener 9 cifras.")
+        return limpio
 
 
 class PasaporteResponse(BaseModel):
@@ -84,35 +161,34 @@ async def procesar_citacion_endpoint(input_data: CitacionInput):
     Con mock activado, detecta si es el caso de Luis o Juan.
     """
     texto = input_data.texto.lower()
-    
-    # Detectar si es un caso de demo (Luis o Juan)
-    if "luis" in texto or "testigo" in texto.lower() or "tea" in input_data.perfil.lower() if input_data.perfil else False:
-        resultado = MOCK_RESPONSE_LUIS
-    elif "juan" in texto or "investigado" in texto or "estafa" in texto:
-        resultado = MOCK_RESPONSE_JUAN
+
+    if "juan" in texto or "investigado" in texto or "estafa" in texto or "delito leve" in texto:
+        resultado = dict(MOCK_RESPONSE_JUAN)
+    elif "luis" in texto or "testigo" in texto or ("tea" in input_data.perfil.lower() if input_data.perfil else False):
+        resultado = dict(MOCK_RESPONSE_LUIS)
     else:
-        # Intentar procesar con LLM si hay API key
         provider = os.getenv("LLM_PROVIDER", "mock")
         if provider != "mock" and (os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")):
             resultado = await procesar_citacion(input_data.texto, input_data.perfil)
         else:
-            resultado = MOCK_RESPONSE_LUIS
-    
-    # Obtener pictogramas de ARASAAC
+            resultado = dict(MOCK_RESPONSE_LUIS)
+
     pictogramas = await obtener_pictogramas(resultado["pictogram_keywords"])
     resultado["pictogramas"] = pictogramas
-    
+
     return CitacionResponse(**resultado)
 
 
 @app.post("/api/generar-ics")
 async def generar_calendario(plazos: List[PlazoItem], titulo: str = "Citación Judicial"):
     """Genera un archivo .ics con los plazos y recordatorios."""
+    if not plazos:
+        raise HTTPException(status_code=400, detail="Debes incluir al menos un plazo para generar el calendario.")
     ics_content = generar_ics(plazos, titulo)
     return Response(
         content=ics_content,
         media_type="text/calendar",
-        headers={"Content-Disposition": f"attachment; filename=citacion_puente.ics"}
+        headers={"Content-Disposition": "attachment; filename=citacion_puente.ics"}
     )
 
 
@@ -123,23 +199,29 @@ async def crear_pasaporte(input_data: PasaporteInput):
     import qrcode
     import base64
     from io import BytesIO
-    
-    pasaporte_id = str(uuid.uuid4())[:8]
-    
-    # Generar marca (sin diagnóstico)
+    from urllib.parse import urlencode
+
+    pasaporte_id = str(uuid.uuid4())[:8].upper()
     marca = f"Persona con necesidades de ajuste: {', '.join(input_data.ajustes_solicitados[:3])}"
-    
-    # Generar QR
-    qr_data = f"PUENTE:{pasaporte_id}"
+
+    frontend_base = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    query = {
+        "id": pasaporte_id,
+        "n": input_data.nombre,
+        "a": ",".join(input_data.ajustes_solicitados),
+    }
+    if input_data.contacto_emergencia:
+        query["c"] = input_data.contacto_emergencia
+    qr_data = f"{frontend_base}/pasaporte/ver?{urlencode(query)}"
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(qr_data)
     qr.make(fit=True)
     img = qr.make_image(fill_color="#1e3a5f", back_color="white")
-    
+
     buffer = BytesIO()
     img.save(buffer, format="PNG")
     qr_base64 = base64.b64encode(buffer.getvalue()).decode()
-    
+
     return PasaporteResponse(
         id=pasaporte_id,
         qr_url=f"data:image/png;base64,{qr_base64}",
@@ -151,10 +233,10 @@ async def crear_pasaporte(input_data: PasaporteInput):
 async def obtener_fases(orden: str):
     """Devuelve las fases del proceso judicial según el orden jurisdiccional."""
     from .mock_data import FASES_JUDICIALES
-    
+
     if orden not in FASES_JUDICIALES:
         raise HTTPException(status_code=404, detail=f"Orden '{orden}' no encontrado")
-    
+
     return FASES_JUDICIALES[orden]
 
 

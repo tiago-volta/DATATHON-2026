@@ -20,6 +20,7 @@ interface Props {
   onQuedarse: (confort: EscalaConfort, molestias: IdEstimulo[]) => void
   onBajarNivel: (confort: EscalaConfort, molestias: IdEstimulo[]) => void
   puedeBajar: boolean
+  puedeSubir: boolean
 }
 
 export function CheckInConfort({
@@ -28,6 +29,7 @@ export function CheckInConfort({
   onQuedarse,
   onBajarNivel,
   puedeBajar,
+  puedeSubir,
 }: Props) {
   const [confort, setConfort] = useState<EscalaConfort | null>(null)
   const [molestias, setMolestias] = useState<IdEstimulo[]>([])
@@ -115,17 +117,21 @@ export function CheckInConfort({
             )}
             {regular && (
               <p className="bg-calma-sage rounded-lg p-4 mb-4 text-puente-800" role="status">
-                Puedes quedarte un poco más o probar el siguiente cuando quieras.
+                {puedeSubir
+                  ? 'Puedes quedarte un poco más o probar el siguiente cuando quieras.'
+                  : 'Estás en el nivel más alto. Puedes quedarte aquí o bajar un nivel.'}
               </p>
             )}
             {!incomodo && !regular && (
               <p className="bg-accent-success/15 border border-accent-success rounded-lg p-4 mb-4 text-puente-800" role="status">
-                Bien. Si quieres, prueba el siguiente nivel. Si no, quédate aquí.
+                {puedeSubir
+                  ? 'Bien. Si quieres, prueba el siguiente nivel. Si no, quédate aquí.'
+                  : 'Bien. Ya has llegado al nivel más alto de la Sala Previa.'}
               </p>
             )}
 
             <div className="flex flex-col gap-3">
-              {!incomodo && (
+              {!incomodo && puedeSubir && (
                 <button
                   type="button"
                   className="btn-primary w-full"
@@ -136,7 +142,7 @@ export function CheckInConfort({
               )}
               <button
                 type="button"
-                className="btn-secondary w-full"
+                className={!incomodo && puedeSubir ? 'btn-secondary w-full' : 'btn-primary w-full'}
                 onClick={() => onQuedarse(confort, molestias)}
               >
                 Quedarme aquí

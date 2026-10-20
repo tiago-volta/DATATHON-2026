@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Cabecera } from '@/components/Cabecera'
-import { TarjetaRol } from '@/components/TarjetaRol'
 
 const PASOS_CGPJ = [
   {
@@ -75,14 +75,85 @@ const AJUSTES_POR_PERFIL = {
 }
 
 export default function PaginaProfesional() {
+  const router = useRouter()
   const [perfilSeleccionado, setPerfilSeleccionado] = useState<keyof typeof AJUSTES_POR_PERFIL | null>(null)
+  const [ajustesMarcados, setAjustesMarcados] = useState<string[]>([])
+  const [informeGenerado, setInformeGenerado] = useState<string[] | null>(null)
+  const [codigoEntrada, setCodigoEntrada] = useState('')
+  const [errorCodigo, setErrorCodigo] = useState('')
 
   const perfil = perfilSeleccionado ? AJUSTES_POR_PERFIL[perfilSeleccionado] : null
+
+  const seleccionarPerfil = (key: keyof typeof AJUSTES_POR_PERFIL) => {
+    setPerfilSeleccionado(key)
+    setAjustesMarcados(AJUSTES_POR_PERFIL[key].ajustes)
+    setInformeGenerado(null)
+  }
+
+  const toggleAjustePerfil = (ajuste: string) => {
+    setAjustesMarcados((prev) =>
+      prev.includes(ajuste) ? prev.filter((a) => a !== ajuste) : [...prev, ajuste]
+    )
+    setInformeGenerado(null)
+  }
+
+  const handleCodigoChange = (raw: string) => {
+    setErrorCodigo('')
+    if (raw.includes('/pasaporte/ver') || raw.startsWith('http')) {
+      setCodigoEntrada(raw.trim())
+      return
+    }
+    const limpio = raw.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10)
+    if (raw && raw.toUpperCase().replace(/\s/g, '') !== limpio) {
+      setErrorCodigo('El código solo contiene letras y números (sin espacios ni símbolos).')
+    }
+    setCodigoEntrada(limpio)
+  }
+
+  const consultarPasaporte = (e: FormEvent) => {
+    e.preventDefault()
+    const valor = codigoEntrada.trim()
+    if (!valor) {
+      setErrorCodigo('Escribe el código de 8 caracteres o pega el enlace del Pasaporte.')
+      return
+    }
+
+    if (valor.includes('/pasaporte/ver?')) {
+      const idx = valor.indexOf('/pasaporte/ver?')
+      router.push(valor.slice(idx))
+      return
+    }
+
+    if (!/^[A-Z0-9]{6,10}$/.test(valor)) {
+      setErrorCodigo('Introduce un código válido de entre 6 y 10 letras o números (ej: A1B2C3D4).')
+      return
+    }
+
+    try {
+      const guardado = localStorage.getItem('puente-pasaporte')
+      if (guardado) {
+        const datos = JSON.parse(guardado)
+        if (datos?.id?.toUpperCase() === valor && typeof datos.url === 'string') {
+          const idx = datos.url.indexOf('/pasaporte/ver?')
+          if (idx !== -1) {
+            router.push(datos.url.slice(idx))
+            return
+          }
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+
+    setErrorCodigo(
+      `No encontramos el Pasaporte con código ${valor} en este dispositivo. Escanea el código QR de la persona o pega el enlace completo.`
+    )
+  }
 
   return (
     <>
       <Cabecera />
-      
+
       <main id="contenido-principal" className="max-w-4xl mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/" className="text-puente-600 hover:text-puente-800">
@@ -128,7 +199,9 @@ export default function PaginaProfesional() {
             {Object.entries(AJUSTES_POR_PERFIL).map(([key, value]) => (
               <button
                 key={key}
-                onClick={() => setPerfilSeleccionado(key as keyof typeof AJUSTES_POR_PERFIL)}
+                type="button"
+                onClick={() => seleccionarPerfil(key as keyof typeof AJUSTES_POR_PERFIL)}
+                aria-pressed={perfilSeleccionado === key}
                 className={`px-4 py-2 rounded-full font-medium transition-colors ${
                   perfilSeleccionado === key
                     ? 'bg-puente-600 text-white'
@@ -149,6 +222,8 @@ export default function PaginaProfesional() {
                     <input
                       type="checkbox"
                       id={`ajuste-${i}`}
+                      checked={ajustesMarcados.includes(ajuste)}
+                      onChange={() => toggleAjustePerfil(ajuste)}
                       className="mt-1 w-5 h-5 accent-puente-600"
                     />
                     <label htmlFor={`ajuste-${i}`} className="text-puente-700">
@@ -157,9 +232,40 @@ export default function PaginaProfesional() {
                   </li>
                 ))}
               </ul>
-              <button className="btn-primary mt-6 w-full">
+              <button
+                type="button"
+                disabled={ajustesMarcados.length === 0}
+                onClick={() => setInformeGenerado([...ajustesMarcados])}
+                className="btn-primary mt-6 w-full"
+              >
                 Generar informe de ajustes
               </button>
+
+              {informeGenerado && (
+                <div
+                  className="mt-6 p-5 bg-calma-sage rounded-suave border border-puente-200"
+                  aria-live="polite"
+                >
+                  <h4 className="font-bold text-puente-800 mb-2">
+                    Informe individualizado de ajustes (Guía CGPJ 2025)
+                  </h4>
+                  <p className="text-sm text-puente-600 mb-3">
+                    Medidas propuestas para incorporar al expediente (Art. 7 bis LEC / Art. 109 LECrim):
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-puente-800 mb-4">
+                    {informeGenerado.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="btn-secondary text-sm"
+                  >
+                    Imprimir informe
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </section>
@@ -168,21 +274,43 @@ export default function PaginaProfesional() {
           <h2 className="text-2xl font-bold text-puente-800 mb-4">
             Leer Pasaporte de Ajustes
           </h2>
-          <div className="card">
-            <p className="text-puente-600 mb-4">
-              Escanea o introduce el código de un Pasaporte para ver los ajustes que la persona ha indicado.
+          <form className="card" onSubmit={consultarPasaporte} noValidate>
+            <label
+              htmlFor="codigo-pasaporte"
+              className="block font-medium text-puente-700 mb-2"
+            >
+              Código o enlace del Pasaporte
+            </label>
+            <p id="ayuda-codigo" className="text-puente-600 text-sm mb-4">
+              Introduce el código alfanumérico (ej: A1B2C3D4) o pega el enlace completo del código QR.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <input
+                id="codigo-pasaporte"
                 type="text"
+                value={codigoEntrada}
+                onChange={(e) => handleCodigoChange(e.target.value)}
                 placeholder="Código del Pasaporte (ej: A1B2C3D4)"
                 className="input-accesible flex-1"
+                aria-invalid={Boolean(errorCodigo)}
+                aria-describedby={
+                  errorCodigo ? 'ayuda-codigo error-codigo' : 'ayuda-codigo'
+                }
               />
-              <button className="btn-primary">
+              <button type="submit" className="btn-primary">
                 Consultar
               </button>
             </div>
-          </div>
+            {errorCodigo && (
+              <p
+                id="error-codigo"
+                className="text-sm text-red-700 font-medium mt-3"
+                role="alert"
+              >
+                {errorCodigo}
+              </p>
+            )}
+          </form>
         </section>
 
         <section className="mb-12">

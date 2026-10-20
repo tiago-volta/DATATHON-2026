@@ -54,7 +54,7 @@ export default function DemoJuan() {
   return (
     <>
       <Cabecera />
-      
+
       <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/" className="text-puente-600 hover:text-puente-800">
@@ -69,7 +69,7 @@ export default function DemoJuan() {
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
             <p className="text-puente-700">
-              Juan tiene TDAH combinado y es ciego. Necesita que le lean los documentos en voz alta, 
+              Juan tiene TDAH combinado y es ciego. Necesita que le lean los documentos en voz alta,
               le cuesta concentrarse en explicaciones largas y necesita pausas frecuentes.
             </p>
           </div>
@@ -81,13 +81,14 @@ export default function DemoJuan() {
             Juan usa lector de pantalla. Esta demo está pensada para escucharse.
           </p>
           <button
+            type="button"
             onClick={() => setModoVoz(!modoVoz)}
             className="btn bg-white text-puente-800 hover:bg-puente-50"
             aria-pressed={modoVoz}
           >
             {modoVoz ? (
               <>
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" />
                   <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" />
                 </svg>
@@ -95,7 +96,7 @@ export default function DemoJuan() {
               </>
             ) : (
               <>
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 </svg>
                 Leer resumen en voz alta
@@ -113,7 +114,9 @@ export default function DemoJuan() {
           ].map((s) => (
             <button
               key={s.id}
+              type="button"
               onClick={() => setSeccion(s.id as typeof seccion)}
+              aria-current={seccion === s.id ? 'true' : undefined}
               className={`px-4 py-2 rounded-full font-medium transition-colors ${
                 seccion === s.id
                   ? 'bg-puente-600 text-white'
@@ -130,13 +133,13 @@ export default function DemoJuan() {
             <h2 className="text-2xl font-bold text-puente-800 mb-4">La situación de Juan</h2>
             <div className="space-y-4 text-lg text-puente-700">
               <p>
-                Juan vendió un objeto de segunda mano por internet. El comprador dice que nunca 
-                lo recibió y le ha denunciado por estafa. Juan cree que hubo un problema con el 
+                Juan vendió un objeto de segunda mano por internet. El comprador dice que nunca
+                lo recibió y le ha denunciado por estafa. Juan cree que hubo un problema con el
                 envío, pero no tiene forma de demostrarlo fácilmente.
               </p>
               <p>
-                Juan recibe una citación para un juicio por delito leve. Como es ciego, necesita 
-                que alguien le lea la carta. Además, con su TDAH le cuesta mucho leer documentos 
+                Juan recibe una citación para un juicio por delito leve. Como es ciego, necesita
+                que alguien le lea la carta. Además, con su TDAH le cuesta mucho leer documentos
                 largos sin perderse.
               </p>
               <p>
@@ -149,7 +152,7 @@ export default function DemoJuan() {
                 <li>Pedir ajustes: lectura en voz alta, pausas, descripción de pruebas</li>
               </ul>
             </div>
-            <button onClick={() => setSeccion('citacion')} className="btn-primary mt-6">
+            <button type="button" onClick={() => setSeccion('citacion')} className="btn-primary mt-6">
               Escuchar su citación →
             </button>
           </section>
@@ -194,7 +197,7 @@ export default function DemoJuan() {
               </div>
             </div>
 
-            <button onClick={() => setSeccion('linea-tiempo')} className="btn-primary">
+            <button type="button" onClick={() => setSeccion('linea-tiempo')} className="btn-primary">
               Ver la línea de tiempo →
             </button>
           </section>
@@ -204,7 +207,7 @@ export default function DemoJuan() {
           <section>
             <h2 className="text-2xl font-bold text-puente-800 mb-2">Mi línea de tiempo</h2>
             <p className="text-puente-600 mb-6">
-              Juan necesita ordenar los hechos para contarlos bien. Esta herramienta le ayuda 
+              Juan necesita ordenar los hechos para contarlos bien. Esta herramienta le ayuda
               a construir su versión de forma organizada.
             </p>
 
@@ -244,7 +247,7 @@ export default function DemoJuan() {
             <h3 className="text-xl font-bold text-puente-800 mb-4">Fases del proceso</h3>
             <LineaTiempo fases={FASES_INVESTIGADO} faseActual={1} />
 
-            <button onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
+            <button type="button" onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
               Ver qué ajustes puede pedir →
             </button>
           </section>
@@ -254,7 +257,7 @@ export default function DemoJuan() {
           <section>
             <h2 className="text-2xl font-bold text-puente-800 mb-2">Ajustes para Juan</h2>
             <p className="text-puente-600 mb-6">
-              Juan tiene dos condiciones: TDAH y ceguera. Puede pedir ajustes por ambas 
+              Juan tiene dos condiciones: TDAH y ceguera. Puede pedir ajustes por ambas
               (Art. 118 LECrim, Ley 15/2022: discriminación múltiple).
             </p>
 
@@ -303,10 +306,13 @@ export default function DemoJuan() {
                 Crear el Pasaporte de Juan
               </h3>
               <p className="text-puente-600 mb-4">
-                Su Pasaporte mostrará que necesita ajustes de accesibilidad visual y de 
+                Su Pasaporte mostrará que necesita ajustes de accesibilidad visual y de
                 atención, sin revelar diagnósticos específicos.
               </p>
-              <Link href="/pasaporte" className="btn-primary">
+              <Link
+                href="/pasaporte?ajustes=documentos-voz,descripcion-pruebas,pausas,preguntas-claras,acompanante"
+                className="btn-primary"
+              >
                 Ir a crear Pasaporte
               </Link>
             </div>

@@ -52,7 +52,7 @@ export default function DemoLuis() {
   return (
     <>
       <Cabecera />
-      
+
       <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
         <nav className="mb-6">
           <Link href="/" className="text-puente-600 hover:text-puente-800">
@@ -67,7 +67,7 @@ export default function DemoLuis() {
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
             <p className="text-puente-700">
-              Luis tiene autismo (TEA nivel 1). Le cuesta entender las frases con doble sentido, 
+              Luis tiene autismo (TEA nivel 1). Le cuesta entender las frases con doble sentido,
               los ambientes ruidosos le agobian y necesita saber qué va a pasar con antelación.
             </p>
           </div>
@@ -83,6 +83,7 @@ export default function DemoLuis() {
           ].map((s) => (
             <button
               key={s.id}
+              type="button"
               onClick={() => setSeccion(s.id as typeof seccion)}
               className={`px-4 py-2 rounded-full font-medium transition-colors ${
                 seccion === s.id
@@ -101,14 +102,14 @@ export default function DemoLuis() {
             <h2 className="text-2xl font-bold text-puente-800 mb-4">La situación de Luis</h2>
             <div className="space-y-4 text-lg text-puente-700">
               <p>
-                Luis presenció un incidente en su barrio y la policía tomó sus datos. 
-                Dos semanas después, recibe una carta del juzgado: es una citación para 
+                Luis presenció un incidente en su barrio y la policía tomó sus datos.
+                Dos semanas después, recibe una carta del juzgado: es una citación para
                 declarar como testigo.
               </p>
               <p>
-                Luis nunca ha ido a un juzgado. No sabe cómo es, qué tiene que hacer, 
-                ni quién le va a preguntar qué. La carta usa palabras que no entiende: 
-                "se le apercibe", "a los efectos oportunos"...
+                Luis nunca ha ido a un juzgado. No sabe cómo es, qué tiene que hacer,
+                ni quién le va a preguntar qué. La carta usa palabras que no entiende:
+                &ldquo;se le apercibe&rdquo;, &ldquo;a los efectos oportunos&rdquo;...
               </p>
               <p>
                 <strong>PUENTE le ayuda a:</strong>
@@ -122,6 +123,7 @@ export default function DemoLuis() {
               </ul>
             </div>
             <button
+              type="button"
               onClick={() => setSeccion('citacion')}
               className="btn-primary mt-6"
             >
@@ -154,13 +156,17 @@ export default function DemoLuis() {
 
             <div className="flex gap-2 mb-4">
               <button
+                type="button"
                 onClick={() => setModoLectura('clara')}
+                aria-pressed={modoLectura === 'clara'}
                 className={`btn ${modoLectura === 'clara' ? 'btn-primary' : 'btn-secondary'}`}
               >
                 Lectura clara
               </button>
               <button
+                type="button"
                 onClick={() => setModoLectura('facil')}
+                aria-pressed={modoLectura === 'facil'}
                 className={`btn ${modoLectura === 'facil' ? 'btn-primary' : 'btn-secondary'}`}
               >
                 Lectura fácil
@@ -172,7 +178,7 @@ export default function DemoLuis() {
                 <h2 className="text-xl font-bold text-puente-800">
                   {modoLectura === 'clara' ? 'En lenguaje claro' : 'En lectura fácil'}
                 </h2>
-                <BotonLeerEnVoz 
+                <BotonLeerEnVoz
                   texto={modoLectura === 'clara' ? LUIS_LECTURA_CLARA : LUIS_LECTURA_FACIL}
                 />
               </div>
@@ -182,7 +188,7 @@ export default function DemoLuis() {
             </div>
 
             <div className="flex gap-4 mt-6">
-              <button onClick={() => setSeccion('fases')} className="btn-primary">
+              <button type="button" onClick={() => setSeccion('fases')} className="btn-primary">
                 Ver las fases del proceso →
               </button>
             </div>
@@ -196,7 +202,7 @@ export default function DemoLuis() {
               Esto es lo que va a pasar, paso a paso. Luis está en la fase 1.
             </p>
             <LineaTiempo fases={FASES_TESTIGO} faseActual={1} />
-            <button onClick={() => setSeccion('roles')} className="btn-primary mt-8">
+            <button type="button" onClick={() => setSeccion('roles')} className="btn-primary mt-8">
               Ver quién estará en la sala →
             </button>
           </section>
@@ -220,7 +226,7 @@ export default function DemoLuis() {
                 />
               ))}
             </div>
-            <button onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
+            <button type="button" onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
               Ver qué ajustes puede pedir →
             </button>
           </section>
@@ -256,10 +262,13 @@ export default function DemoLuis() {
                 Crear el Pasaporte de Luis
               </h3>
               <p className="text-puente-600 mb-4">
-                Con el Pasaporte, Luis puede mostrar en el juzgado qué necesita, 
+                Con el Pasaporte, Luis puede mostrar en el juzgado qué necesita,
                 sin tener que explicar su diagnóstico.
               </p>
-              <Link href="/pasaporte" className="btn-primary">
+              <Link
+                href="/pasaporte?ajustes=sala-tranquila,preguntas-claras,mas-tiempo,facilitador"
+                className="btn-primary"
+              >
                 Ir a crear Pasaporte
               </Link>
             </div>
