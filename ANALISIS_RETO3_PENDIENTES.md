@@ -39,10 +39,10 @@ El PDF destaca explícitamente 5 condiciones: **TEA, TDAH, Dislexia, Discalculia
   3. **Ajustes para Juicio Telemático (Videollamada)**: Añadir en el Pasaporte y en Sala Previa orientaciones para comparecencia por videoconferencia (cámara, turnos de palabra, entorno sin distracciones).
 
 ### C. Requisitos específicos del Caso de Uso de Juan (Diapositiva 37)
-La diapositiva 37 detalla 9 puntos sobre Juan (32 años, TDAH combinado + invidente, acusado de estafa leve del **art. 249 CP** — ojo: en nuestro `mock_data.py` ponía `art. 248 CP`, conviene mencionar `arts. 248 y 249 CP` como en la diapositiva):
+La diapositiva 37 detalla 9 puntos sobre Juan (32 años, TDAH combinado + invidente, acusado de estafa leve del **art. 249 CP** — en `mock_data.py` ponía solo `art. 248 CP`, conviene mencionar `arts. 248 y 249 CP` como en la diapositiva):
 - **Qué falta del caso de Juan**:
   1. **Constructor interactivo de Línea de Tiempo ("Organizar mi relato")**: En `/demo/juan` la línea de tiempo es estática. El PDF dice: *"Tiene problemas para organizar el relato de los hechos y olvida datos relevantes"* y *"Responde de forma impulsiva"*. Si permitimos **añadir/ordenar hitos por voz o texto** y descargar una **"Chuleta / Guion de apoyo para llevar a la sala"** (ajustado a su derecho a usar notas de apoyo por TDAH), clavamos el caso de uso.
-  2. **Describir pruebas visuales (IA / Accesibilidad para ceguera)**: El PDF dice: *"Tiene dificultades para revisar pruebas documentales o digitales presentadas únicamente en formato visual"*. En `/demo/juan` (o en `/citacion`) podemos incluir una sección **"Pruebas del expediente descritas por voz"** (ej. descripción auditiva detallada del pantallazo de Wallapop, el justificante de Bizum y el resguardo de Correos).
+  2. **Describir pruebas visuales (IA / Accesibilidad para ceguera)**: El PDF dice: *"Tiene dificultades para revisar pruebas documentales o digitales presentadas únicamente en formato visual"*. En `/demo/juan` podemos incluir una sección **"Pruebas del expediente descritas por voz"** (descripción auditiva detallada del pantallazo de Wallapop, el justificante de Bizum y el resguardo de Correos).
   3. **Acreditación sin grado oficial de discapacidad (Flag / Informes clínicos)**: La diapositiva 34 habla de *"Integración con otros organismos para reconocimientos oficiales de discapacidad o 'de algún modo' flag para identificar a las personas"* y la 37 recalca que Juan *"No tiene reconocido oficialmente un grado de discapacidad por TDAH, pero aporta informes clínicos acreditativos"*. En `/pasaporte` y `/profesional` debemos explicitar las **3 vías de acreditación** (Tarjeta/Grado oficial, Informe clínico/asociativo como ANHIDA/ASPERGA, o Detección de oficio por el juzgado según Guía CGPJ 2025).
 
 ### D. Requisitos específicos del Caso de Uso de Luis (Diapositiva 36)
@@ -54,49 +54,82 @@ La diapositiva 34 pide explícitamente:
 - **"Aplicación de IA como mediadores"**
 - **"Suma de varias IAs: lectura fácil, lectura clara..."**
 - **Qué falta**:
-  1. `/mediador` actualmente solo ejecuta 5 expresiones regulares en el navegador y siempre devuelve una frase genérica de sugerencia, excepto en los 3 ejemplos fijos.
-  2. Crear un endpoint en el backend `POST /api/analizar-pregunta` que combine **reglas deterministas + reescritura automática de la pregunta** (convirtiendo cualquier pregunta con doble negación o compuesta en 2-3 preguntas simples y literales listas para leer en sala) hará que `/mediador` sea realmente inteligente.
-  3. Mostrar visiblemente en la UI el **Pipeline Multi-IA** de PUENTE:
+  1. Crear un endpoint en el backend `POST /api/analizar-pregunta` que combine **reglas deterministas + reescritura automática de la pregunta** (convirtiendo cualquier pregunta con doble negación o compuesta en 2-3 preguntas simples y literales listas para leer en sala).
+  2. Mostrar visiblemente en la UI el **Pipeline Multi-IA** de PUENTE:
      - *Agente 1 (Extractor Procesal)* → extrae plazos, rol, artículos y obligaciones.
      - *Agente 2 (Adaptador UNE)* → genera Lectura Clara (ISO 24495-1) + Lectura Fácil (UNE 153101) + adaptación numérica (Discalculia).
      - *Agente 3 (Traductor Visual/Auditivo)* → selecciona pictogramas ARASAAC y genera guion de voz pausado.
      - *Agente 4 (Mediador de Interrogatorio)* → reformula preguntas capciosas en tiempo real.
 
 ### F. Asociaciones Colaboradoras y Colegios Profesionales (Diapositivas 34, 38 y 39)
-En la diapositiva 39 aparece una entidad clave del jurado local que **no estaba citada en nuestro Panel Profesional**:
-- **Espazo Compartido (Universidade da Coruña - UDC)**: título propio de la UDC para jóvenes con discapacidad intelectual y/o TEA, con apoyo de Fundación ONCE y FSE.
-- También menciona la diapositiva 34 la integración con **Colegios profesionales específicos (Abogacía / Turno de oficio especializado, Psicología, Intérpretes y Facilitadores)**.
-- **Qué hacer**: Añadir **Espazo Compartido (UDC)** junto a **ANHIDA Coruña**, **ASPERGA** y **Fundación ONCE** en `/profesional` y en el pie/créditos, además de incluir la solicitud de facilitador procesal o turno especializado.
+- Añadir **Espazo Compartido (Universidade da Coruña - UDC)** junto a **ANHIDA Coruña**, **ASPERGA** y **Fundación ONCE** en `/profesional` y en el pie/créditos, además de incluir la derivación a colegios profesionales / turno de oficio especializado y facilitadores.
 
 ---
 
-## 3. Plan de Acción Priorizado (Para ganar Técnica + Innovación)
+## 3. División del Trabajo entre las 3 Personas
 
-### Prioridad 1 — Impacto directo en el Jurado del Reto 3 (Rápido, ~1-2 horas)
-1. **Actualizar Asociaciones y Marco del Reto 3 en `/profesional` y demos**:
-   - Incluir **Espazo Compartido (UDC)**, **ANHIDA Coruña**, **ASPERGA** y **Fundación ONCE**.
-   - Corregir en el caso de Juan la referencia al **art. 249 CP** (junto al 248 CP) y añadir la nota sobre **acreditación mediante informe clínico sin necesidad de grado oficial de discapacidad** (flag CGPJ / sistema de gestión procesal).
-2. **Completar `/demo/juan` con los puntos de la Diapositiva 37**:
-   - Añadir el bloque **"Pruebas visuales descritas en audio"** (captura de Wallapop, Bizum y envío de Correos descritos para lector de pantalla y con botón de voz).
-   - Hacer interactiva su **Línea de tiempo** (poder añadir un recuerdo por texto o voz y botón de imprimir/llevar guion a la sala).
-3. **Añadir "¿Quién estará en la sala?" (incluyendo Perito) y modo Discalculia en `/citacion`**:
-   - Mostrar las tarjetas de roles (`TarjetaRol`) también dentro del resultado de `/citacion`.
-   - Añadir soporte de **Discalculia** (traducir importes y plazos en un bloque visual claro sin cifras confusas).
-   - Añadir un tercer botón de ejemplo: **"Ejemplo de Sentencia adaptada"**.
+Reparto diseñado para que **una persona se dedique al 100 % a UI/UX** y las otras dos se repartan **IA/Backend/Documentos** y **Casos de Uso/Voz/Profesional**, tocando archivos distintos para evitar conflictos de Git:
 
-### Prioridad 2 — Diferenciación Técnica ("Suma de varias IAs" y Voz, ~1-2 horas)
-4. **Mejorar `/mediador` con reformulación real (`POST /api/analizar-pregunta`)**:
-   - Que no solo diga *"Divide esta pregunta"*, sino que **reescriba automáticamente la pregunta** del abogado/juez en frases simples y literales.
-5. **Dictado por voz (Web Speech API) en `/ensaya`**:
-   - Permitir que el usuario responda a las preguntas del simulador **hablando por el micrófono** (cubre ceguera de Juan + disgrafía de la diapositiva 31).
-6. **Subida de documento PDF/TXT en `/citacion`**:
-   - Permitir subir un archivo `.pdf` o `.txt` de citación además de pegar el texto.
+| Persona | Rol en el equipo | Archivos principales que toca |
+|---------|------------------|-------------------------------|
+| **Persona 1** | **UI/UX, Diseño Visual y Accesibilidad** | `globals.css`, `tailwind.config.js`, `page.tsx` (Inicio), `components/*`, `sala-previa/*`, `pasaporte/*` (diseño visual e impresión) |
+| **Persona 2** | **IA, Backend, Procesador de Documentos y Mediador** | `backend/app/*`, `citacion/page.tsx`, `mediador/page.tsx`, `lib/api.ts` |
+| **Persona 3** | **Casos de Uso (Juan/Luis), Voz, Panel Profesional y Pitch** | `demo/juan/page.tsx`, `demo/luis/page.tsx`, `ensaya/page.tsx`, `profesional/page.tsx`, `lib/contenido.ts`, Pitch Deck |
 
-### Prioridad 3 — Presentación y Pitch (Jueves 18:00 y Viernes 09:00)
-7. **Guion de Demo en vivo (3 minutos)**:
-   - Minuto 1: El problema real (Luis con TEA ante una cédula incomprensible y una sala ruidosa; Juan ciego y con TDAH ante una acusación de estafa online sin grado oficial reconocido).
-   - Minuto 2: Demo en directo (Procesar citación + Sala Previa + escanear el QR del Pasaporte con un móvil real en el escenario).
-   - Minuto 3: Vista del Juez/LAJ (`/profesional` + `/mediador` reformulando una pregunta capciosa en vivo + integración con LexNET/Minerva mediante *flag* de ajustes sin diagnóstico).
-8. **Deck de Pitch (PPTX)**:
-   - Alinear las diapositivas con los dos premios del DATAthon (**Mejor Solución Técnica** por el pipeline multi-IA + Web Audio API + accesibilidad WCAG 2.2/COGA, y **Mejor Solución Innovadora** por la Sala Previa sensorial y el Pasaporte QR sin diagnóstico).
+---
 
+### Persona 1 — UI/UX, Diseño Visual y Accesibilidad (100 % dedicada a interfaz)
+
+**Objetivo**: Que la aplicación se vea impecable en móvil y escritorio, cumpla WCAG 2.2 AA / COGA y gane el premio por experiencia de usuario.
+
+- [ ] **1. Barra / Selector de Modo Sensorial y Accesibilidad en `Cabecera.tsx`**:
+  - Añadir controles rápidos persistentes: tamaño de letra (`A` / `A+`), modo de **baja estimulación** (reduce contrastes bruscos y desactiva animaciones) y tipografía espaciada para dislexia (`.espaciado-lectura`).
+- [ ] **2. Pulido visual de Inicio (`page.tsx`) y navegación coherente**:
+  - Unificar el estilo visual de todas las tarjetas, botones de retorno (`← Volver al inicio`) y migas de pan (`.pasos-nav`) en todas las pantallas.
+  - Añadir en el `footer` los logos/menciones de las 4 entidades colaboradoras del Reto 3 (**ANHIDA Coruña, ASPERGA, Espazo Compartido UDC, Fundación ONCE**).
+- [ ] **3. Diseño de Tarjeta Física / Impresión del Pasaporte (`pasaporte/page.tsx` y `pasaporte/ver/page.tsx`)**:
+  - Mejorar el diseño visual del Pasaporte generado y de la vista escaneable `/pasaporte/ver` para que parezca un documento oficial acreditativo limpio en móvil.
+  - Añadir estilos `@media print` en `globals.css` para que al pulsar **"Imprimir o guardar"** salga solo la tarjeta del Pasaporte con el QR o el Informe CGPJ limpio en 1 página A4.
+- [ ] **4. Pulido visual de `Sala Previa` (`components/sala-previa/*`)**:
+  - Mejorar la ilustración/escena vectorial de `EscenaSensorial.tsx` para que los cambios de luz, siluetas de gente y ondas de sonido se perciban con claridad y suavidad.
+- [ ] **5. Auditoría final de Teclado, Contraste y Móvil**:
+  - Probar el recorrido completo en vista móvil (375px) y solo con tecla `Tab` + lector de pantalla, asegurando que ningún foco quede oculto y todos los botones cumplan el área táctil mínima de 44x44px (`56px` en nuestro sistema).
+
+---
+
+### Persona 2 — IA, Backend, Citación/Sentencia y Mediador
+
+**Objetivo**: Cubrir los requisitos técnicos del Reto 3 ("Suma de varias IAs", adaptación de sentencias, discalculia, subida de documentos y mediador inteligente) para ganar el premio a **Mejor Solución Técnica**.
+
+- [ ] **1. Pipeline "Suma de varias IAs" visible en `/citacion` y `backend/app/`**:
+  - Mostrar durante y después del procesado qué hace cada módulo de IA (Extractor Procesal → Adaptador UNE Lectura Fácil/Clara → Adaptador Numérico para Discalculia → Selector ARASAAC).
+- [ ] **2. Modo Sentencia adaptada en `/citacion` y `mock_data.py` (Diapositiva 35)**:
+  - Añadir un tercer botón de ejemplo: **"Ejemplo Sentencia (lectura fácil)"** inspirado en el caso real de la diapositiva 35, explicando qué ha decidido el juez, qué significa cada parte del fallo y qué plazo hay para recurrir.
+- [ ] **3. Subida de archivo PDF / Imagen en `/citacion`**:
+  - Añadir un input accesible para subir un PDF o archivo de texto de la citación (`POST /api/procesar-archivo` o extracción en cliente/servidor) además de pegar texto.
+- [ ] **4. Bloque de adaptación para Discalculia en `/citacion` (Diapositiva 31)**:
+  - Añadir en el resultado de `/citacion` un bloque específico para números y plazos: cantidades escritas en letra + equivalencia cotidiana, y cuenta atrás visual de fechas.
+- [ ] **5. Reescritura automática en `/mediador` (`POST /api/analizar-pregunta`)**:
+  - Crear endpoint en FastAPI que no solo detecte los problemas (doble negación, compuesta, sugestiva, intimidante, jerga), sino que **devuelva la pregunta ya reformulada** lista para que el juez o abogado la lea en sala.
+
+---
+
+### Persona 3 — Casos de Uso (Juan y Luis), Voz, Panel Profesional y Pitch
+
+**Objetivo**: Clavar punto por punto los casos de uso de las diapositivas 31 a 39 y preparar la defensa ante el jurado y las asociaciones colaboradoras.
+
+- [ ] **1. Completar el Caso de Uso de Juan en `/demo/juan` (Diapositiva 37)**:
+  - **Constructor interactivo de Línea de Tiempo**: permitir a Juan añadir nuevos hechos (por texto o voz) para no olvidar datos relevantes y botón para descargar/imprimir su **Guion de apoyo para la declaración**.
+  - **Descripción por voz de pruebas visuales**: añadir tarjeta con las 3 pruebas del caso de estafa online (anuncio de Wallapop, captura de Bizum de 350 € y resguardo de Correos) con su descripción textual y botón de lectura en voz alta para personas ciegas.
+  - Actualizar referencia legal a **arts. 248 y 249 CP** y destacar que **no tiene grado oficial de discapacidad por TDAH, sino informe clínico acreditativo**.
+- [ ] **2. Completar el Caso de Uso de Luis y Roles en `/demo/luis` y `lib/contenido.ts` (Diapositivas 32 y 36)**:
+  - Añadir los ajustes `lenguaje-literal`, `anticipacion` y `juicio-telematico` en `AJUSTES_DISPONIBLES` (`lib/contenido.ts`).
+  - Añadir el rol de **Perito / Médico Forense** en `ROLES` (`lib/contenido.ts`) y mostrar también las tarjetas de roles ("¿Quién estará en la sala?") dentro de `/citacion`.
+- [ ] **3. Respuesta por Voz (Micrófono / Disgrafía y Ceguera) en `/ensaya` (Diapositiva 31)**:
+  - Añadir un botón **"Responder hablando"** usando `webkitSpeechRecognition` / `SpeechRecognition` del navegador para transcribir la respuesta del usuario sin necesidad de usar el teclado (cubre disgrafía y ceguera).
+- [ ] **4. Actualizar Panel Profesional (`/profesional`) con requisitos de las Diapositivas 34, 38 y 39**:
+  - Añadir **Espazo Compartido (Universidade da Coruña - UDC)** junto a **ANHIDA Coruña**, **ASPERGA** y **Fundación ONCE**.
+  - Añadir perfiles de **Discalculia** y **Disgrafía** en `AJUSTES_POR_PERFIL`.
+  - Añadir el selector de **Vía de identificación / Flag procesal** (1. Reconocimiento oficial de discapacidad, 2. Informe clínico o de asociación colaboradora sin grado oficial —caso de Juan—, 3. Detección de oficio según Guía CGPJ 2025) y derivación a colegios profesionales / facilitadores.
+- [ ] **5. Preparar el Pitch Deck y Guion de Demo (Jueves 18:00 y Viernes 09:00)**:
+  - Estructurar la presentación de 3-5 minutos conectando cada pantalla de PUENTE con las diapositivas del reto y hacer prueba de escaneo del QR en vivo desde el móvil.
