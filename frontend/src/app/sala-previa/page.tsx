@@ -12,6 +12,7 @@ import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
 import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
 import { MedidorConfianza } from '@/components/sala-previa/MedidorConfianza'
+import { PanelLoQueTeAyuda } from '@/components/sala-previa/PanelLoQueTeAyuda'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
 import { useConfianza } from '@/hooks/useConfianza'
@@ -19,14 +20,20 @@ import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
-import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import { escenaPorIndice } from '@/lib/sala-previa/escenas'
 import {
   ESTIMULOS_VACIOS,
   NIVELES,
-  ajustesDesdeMolestias,
   bajarEstimulosAComodo,
 } from '@/lib/sala-previa/niveles'
+import {
+  cargarLoQueTeAyuda,
+  derivarDesdeMolestiasProgreso,
+  guardarLoQueTeAyuda,
+  registrarCalmaLoQueTeAyuda,
+  registrarCheckInLoQueTeAyuda,
+  type LoQueTeAyuda,
+} from '@/lib/sala-previa/loQueTeAyuda'
 import {
   anadirMolestia,
   cargarProgreso,
@@ -60,6 +67,12 @@ export default function PaginaSalaPrevia() {
   const [audioListo, setAudioListo] = useState(false)
   const [progreso, setProgreso] = useState<ProgresoSala>(PROGRESO_INICIAL)
   const [progresoListo, setProgresoListo] = useState(false)
+  const [loQueTeAyuda, setLoQueTeAyuda] = useState<LoQueTeAyuda>({
+    molestias: [],
+    ayudas: [],
+    usoCalma: false,
+    checkIns: 0,
+  })
   const [mensaje, setMensaje] = useState<string | null>(null)
   const [modoAudioguia, setModoAudioguia] = useState(false)
   /** Evita reaplicar el deep-link Ensaya → Sala Previa. */
@@ -90,7 +103,19 @@ export default function PaginaSalaPrevia() {
   const escena = escenaPorIndice(escenaIndice)
 
   useEffect(() => {
-    setProgreso(cargarProgreso())
+    const cargado = cargarProgreso()
+    setProgreso(cargado)
+    let resumen = cargarLoQueTeAyuda()
+    // Migración suave: si hay molestias antiguas y aún no hay resumen, derívalo.
+    if (
+      resumen.molestias.length === 0 &&
+      resumen.ayudas.length === 0 &&
+      cargado.molestias.length > 0
+    ) {
+      const derivado = derivarDesdeMolestiasProgreso(cargado.molestias)
+      if (derivado) resumen = derivado
+    }
+    setLoQueTeAyuda(resumen)
     setProgresoListo(true)
     motorRef.current = new MotorAudioSala()
     return () => {
@@ -102,6 +127,11 @@ export default function PaginaSalaPrevia() {
     if (!progresoListo) return
     guardarProgreso(progreso)
   }, [progreso, progresoListo])
+
+  useEffect(() => {
+    if (!progresoListo) return
+    guardarLoQueTeAyuda(loQueTeAyuda)
+  }, [loQueTeAyuda, progresoListo])
 
   const aplicarValores = useCallback((nuevos: ValoresEstimulo, segundos?: number) => {
     setValores(nuevos)
@@ -217,6 +247,7 @@ export default function PaginaSalaPrevia() {
       eco: 0,
     }))
     desbloquear('primera-calma')
+    setLoQueTeAyuda((d) => registrarCalmaLoQueTeAyuda(d))
     setMensaje(
       fase === 'intro'
         ? 'Calma. Cuidarte está bien. Puedes empezar cuando quieras.'
@@ -255,6 +286,9 @@ export default function PaginaSalaPrevia() {
 
   const trasCheckIn = (confort: ConfortCheckIn, molestias: IdEstimulo[]) => {
     procesarMolestias(molestias)
+    setLoQueTeAyuda((d) =>
+      registrarCheckInLoQueTeAyuda(d, confort, molestias, valores)
+    )
     if (confort === 'bien') {
       // Solo "bien" suma; regular/mal no restan. El aviso lo muestra MedidorConfianza.
       registrarConfianza('checkin-bien')
@@ -275,12 +309,6 @@ export default function PaginaSalaPrevia() {
     },
     [valores, aplicarValores]
   )
-
-  const enlacePasaporte = useMemo(() => {
-    const ids = ajustesDesdeMolestias(progreso.molestias)
-    if (ids.length === 0) return '/pasaporte'
-    return `/pasaporte?ajustes=${ids.join(',')}`
-  }, [progreso.molestias])
 
   const descripcionAudioguia = useMemo(() => {
     const partes = [
@@ -335,6 +363,7 @@ export default function PaginaSalaPrevia() {
               bienvenida={bienvenidaPractica}
               onDescartarBienvenida={descartarBienvenidaPractica}
             />
+            {progresoListo && <PanelLoQueTeAyuda dato={loQueTeAyuda} />}
           </div>
         )}
 
@@ -440,30 +469,7 @@ export default function PaginaSalaPrevia() {
                   onDescartarBienvenida={descartarBienvenidaPractica}
                 />
 
-                {progreso.molestias.length > 0 && (
-                  <div className="card border-2 border-accent-success">
-                    <h2 className="font-bold text-puente-800 mb-2">
-                      Para tu Pasaporte
-                    </h2>
-                    <p className="text-puente-700 mb-3">
-                      Marcaste estímulos que te molestan. Puedes pedir estos ajustes:
-                    </p>
-                    <ul className="space-y-2 mb-4">
-                      {ajustesDesdeMolestias(progreso.molestias).map((id) => {
-                        const ajuste = AJUSTES_DISPONIBLES.find((a) => a.id === id)
-                        return (
-                          <li key={id} className="flex gap-2 text-puente-700">
-                            <span aria-hidden="true">✓</span>
-                            <span>{ajuste?.nombre ?? id}</span>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                    <Link href={enlacePasaporte} className="btn-primary w-full">
-                      Añadir a mi Pasaporte
-                    </Link>
-                  </div>
-                )}
+                <PanelLoQueTeAyuda dato={loQueTeAyuda} />
               </div>
             </div>
 
