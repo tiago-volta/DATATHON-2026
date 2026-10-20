@@ -8,10 +8,10 @@ interface Props {
 
 export function TarjetaRol({ nombre, descripcion, queHace, comoReconocerlo, icono }: Props) {
   return (
-    <article className="card hover:shadow-md transition-shadow">
+    <article className="card">
       <div className="flex items-start gap-4">
-        <span className="text-4xl" role="img" aria-hidden="true">{icono}</span>
-        <div className="flex-1">
+        <span className="text-2xl leading-none pt-1" aria-hidden="true">{icono}</span>
+        <div className="flex-1 min-w-0">
           <h3 className="text-xl font-bold text-puente-800 mb-2">{nombre}</h3>
           <p className="text-puente-600 mb-3">{descripcion}</p>
           

@@ -2,22 +2,21 @@ import Link from 'next/link'
 
 export function Cabecera() {
   return (
-    <header className="bg-white border-b border-puente-100">
-      <nav className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 text-puente-700 hover:text-puente-900">
-          <svg className="w-10 h-10" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2.5" fill="none" />
-            <path d="M12 24 L20 16 L28 24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            <path d="M20 16 L20 28" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <header className="border-b-2 border-puente-900 bg-calma-cream">
+      <nav className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between gap-4" aria-label="Principal">
+        <Link href="/" className="flex items-center gap-3 text-puente-900 hover:text-puente-700 min-w-0">
+          <svg className="w-9 h-9 shrink-0" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M7 27V18" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
+            <path d="M33 27V18" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
+            <path d="M7 18c4.2-7 21.8-7 26 0" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
+            <path d="M6 27h28" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
           </svg>
-          <span className="text-2xl font-bold">PUENTE</span>
+          <span className="text-2xl font-bold tracking-tight" translate="no">PUENTE</span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          <Link href="/pasaporte" className="btn-ghost text-base">
-            Mi Pasaporte
-          </Link>
-        </div>
+        <Link href="/pasaporte" className="font-bold text-puente-800 underline underline-offset-4 hover:text-puente-600 shrink-0">
+          Mi Pasaporte
+        </Link>
       </nav>
     </header>
   )

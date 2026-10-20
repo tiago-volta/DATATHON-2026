@@ -74,14 +74,11 @@ export default function PaginaEnsaya() {
         </nav>
 
         {!iniciado ? (
-          <section className="text-center">
-            <div className="w-24 h-24 rounded-full bg-puente-100 flex items-center justify-center text-5xl mx-auto mb-6">
-              🎯
-            </div>
-            <h1 className="text-3xl font-bold text-puente-800 mb-4">
+          <section>
+            <h1 className="text-3xl font-bold text-puente-800 mb-4 max-w-[16ch]">
               Ensaya tu declaración
             </h1>
-            <p className="text-xl text-puente-600 max-w-xl mx-auto mb-8">
+            <p className="text-xl text-puente-700 max-w-xl mb-8">
               Practica responder preguntas como las que te harán en el juzgado. 
               Hay tres niveles, de más fácil a más difícil.
             </p>
@@ -118,10 +115,21 @@ export default function PaginaEnsaya() {
               </span>
             </div>
 
-            <div className="w-full bg-puente-100 rounded-full h-2 mb-8">
-              <div 
-                className="bg-puente-600 h-2 rounded-full transition-all"
-                style={{ width: `${((preguntaActual + 1) / nivel.preguntas.length) * 100}%` }}
+            <div
+              className="w-full bg-puente-100 rounded-full h-2 mb-8 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={1}
+              aria-valuemax={nivel.preguntas.length}
+              aria-valuenow={preguntaActual + 1}
+              aria-label="Avance de las preguntas"
+            >
+              <div
+                className="bg-puente-600 h-2 rounded-full origin-left"
+                style={{
+                  width: '100%',
+                  transform: `scaleX(${(preguntaActual + 1) / nivel.preguntas.length})`,
+                  transition: 'transform 200ms cubic-bezier(0.23, 1, 0.32, 1)',
+                }}
               />
             </div>
 
@@ -168,7 +176,7 @@ export default function PaginaEnsaya() {
                 value={respuesta}
                 onChange={(e) => setRespuesta(e.target.value)}
                 className="textarea-accesible"
-                placeholder="Escribe lo que responderías..."
+                placeholder="Escribe lo que responderías…"
                 rows={4}
               />
               <p className="text-sm text-puente-500 mt-2">

@@ -63,14 +63,9 @@ export default function DemoJuan() {
         </nav>
 
         <header className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-20 h-20 rounded-full bg-puente-100 flex items-center justify-center text-4xl">
-              🦯
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-puente-800">Juan, 32 años</h1>
-              <p className="text-lg text-puente-600">Investigado en un juicio por delito leve</p>
-            </div>
+          <div className="mb-4">
+            <h1 className="text-3xl font-bold text-puente-800">Juan, 32 años</h1>
+            <p className="text-lg text-puente-700">Investigado en un juicio por delito leve</p>
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
             <p className="text-puente-700">

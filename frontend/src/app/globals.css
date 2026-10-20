@@ -5,15 +5,24 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
   html {
     font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
     scroll-behavior: smooth;
+    scroll-padding-top: 1.5rem;
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     @apply bg-calma-cream text-puente-900;
     font-size: 18px;
     line-height: 1.7;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   *:focus-visible {
@@ -22,16 +31,17 @@
 
   h1, h2, h3, h4 {
     @apply font-bold text-puente-800;
-    line-height: 1.3;
+    line-height: 1.25;
+    text-wrap: balance;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold;
-    @apply focus:ring-4 focus:ring-puente-400 focus:ring-offset-2;
-    transition: background-color 150ms ease-out, transform 150ms ease-out, border-color 150ms ease-out;
+    @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold cursor-pointer;
+    transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out), border-color 160ms var(--ease-out);
     min-height: 56px;
+    touch-action: manipulation;
   }
 
   .btn:active {
@@ -58,16 +68,23 @@
   }
 
   .card {
-    @apply bg-white rounded-tarjeta p-6 shadow-sm border border-puente-100;
-    transition: box-shadow 200ms ease-out, border-color 200ms ease-out;
+    @apply bg-calma-mist rounded-tarjeta p-6 border border-puente-200;
+    box-shadow: 0 1px 0 rgb(26 59 70 / 0.04), 0 10px 24px rgb(26 59 70 / 0.05);
+    transition: border-color 180ms var(--ease-out);
   }
 
   .card-destacada {
     @apply card border-2 border-puente-300 shadow-md;
   }
 
-  a.card:hover, button.card:hover {
+  a.card, button.card {
     @apply cursor-pointer;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a.card:hover, button.card:hover {
+      @apply border-puente-400;
+    }
   }
 
   .lectura-facil {
@@ -92,8 +109,8 @@
 
   .input-accesible {
     @apply w-full px-5 py-4 text-lg rounded-suave border-2 border-puente-200 bg-white;
-    @apply focus:border-puente-500 focus:ring-4 focus:ring-puente-100;
-    @apply placeholder:text-puente-400;
+    @apply focus-visible:border-puente-500 focus-visible:ring-4 focus-visible:ring-puente-100;
+    @apply placeholder:text-puente-600;
     min-height: 56px;
   }
 
@@ -157,6 +174,70 @@
 
 .sala-flicker {
   animation: sala-flicker-soft 4.5s ease-in-out infinite;
+}
+
+.marco {
+  min-height: 100vh;
+  box-shadow: inset 0 0 0 0 transparent;
+}
+
+@media (min-width: 768px) {
+  .marco {
+    box-shadow: inset 10px 0 0 #1a4652;
+  }
+}
+
+.hoja {
+  display: block;
+  background: #f7f8f6;
+  border: 2px solid #1a4652;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 0 rgb(26 59 70 / 0.06), 0 16px 32px rgb(26 59 70 / 0.06);
+  transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
+  touch-action: manipulation;
+}
+
+.hoja {
+  cursor: pointer;
+}
+
+.hoja:active {
+  transform: scale(0.985);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hoja:hover {
+    background: #ffffff;
+  }
+}
+
+.revelar {
+  animation: aparecer 420ms var(--ease-out) both;
+}
+
+.camino {
+  animation: revelar 320ms var(--ease-out) both;
+}
+
+.camino:nth-child(1) { animation-delay: 70ms; }
+.camino:nth-child(2) { animation-delay: 120ms; }
+.camino:nth-child(3) { animation-delay: 170ms; }
+
+@keyframes aparecer {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes revelar {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

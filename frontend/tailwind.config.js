@@ -20,10 +20,10 @@ module.exports = {
           950: '#0d252e',
         },
         calma: {
-          cream: '#fdfbf7',
-          sand: '#f5f0e8',
-          sage: '#e8ede9',
-          mist: '#f0f4f5',
+          cream: '#eef1ee',
+          sand: '#e3eae6',
+          sage: '#d7e2dc',
+          mist: '#f7f8f6',
         },
         accent: {
           warm: '#e8a87c',
@@ -44,8 +44,8 @@ module.exports = {
         'lectura': '1.5rem',
       },
       borderRadius: {
-        'suave': '1rem',
-        'tarjeta': '1.5rem',
+        'suave': '0.75rem',
+        'tarjeta': '0.75rem',
       }
     },
   },

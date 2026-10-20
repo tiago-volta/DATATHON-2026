@@ -105,7 +105,7 @@ export default function PaginaCitacion() {
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 className="textarea-accesible"
-                placeholder="Pega aquí el texto de tu citación..."
+                placeholder="Pega aquí el texto de tu citación…"
                 rows={10}
               />
               
