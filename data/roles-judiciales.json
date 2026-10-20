@@ -1,0 +1,65 @@
+[
+  {
+    "id": "juez",
+    "nombre": "Juez / Jueza",
+    "descripcion": "La persona que dirige el juicio y toma la decisión final.",
+    "que_hace": "Escucha a todos, hace preguntas y decide quién tiene razón.",
+    "como_reconocerlo": "Lleva toga negra y se sienta en el lugar más alto de la sala.",
+    "icono": "⚖️",
+    "pictograma_keyword": "juez"
+  },
+  {
+    "id": "fiscal",
+    "nombre": "Fiscal",
+    "descripcion": "Representa al Estado y a la sociedad.",
+    "que_hace": "En casos penales, acusa a la persona investigada.",
+    "como_reconocerlo": "Lleva toga negra y se sienta a un lado de la sala.",
+    "icono": "🏛️",
+    "pictograma_keyword": "fiscal"
+  },
+  {
+    "id": "laj",
+    "nombre": "Letrado/a de la Administración de Justicia",
+    "descripcion": "Antes se llamaba Secretario Judicial.",
+    "que_hace": "Se encarga de los papeles, las fechas y que todo se haga bien.",
+    "como_reconocerlo": "Lleva toga negra y se sienta cerca del juez.",
+    "icono": "📋",
+    "pictograma_keyword": "secretario"
+  },
+  {
+    "id": "abogado_defensor",
+    "nombre": "Tu abogado/a",
+    "descripcion": "El abogado que te defiende.",
+    "que_hace": "Te ayuda, habla por ti y defiende tus derechos.",
+    "como_reconocerlo": "Lleva toga negra y se sienta a tu lado.",
+    "icono": "👔",
+    "pictograma_keyword": "abogado"
+  },
+  {
+    "id": "abogado_acusacion",
+    "nombre": "Abogado/a de la acusación",
+    "descripcion": "El abogado de la otra parte o de la víctima.",
+    "que_hace": "Defiende a la otra persona y puede hacerte preguntas.",
+    "como_reconocerlo": "Lleva toga negra y se sienta enfrente.",
+    "icono": "👔",
+    "pictograma_keyword": "abogado"
+  },
+  {
+    "id": "facilitador",
+    "nombre": "Facilitador/a",
+    "descripcion": "Una persona que te ayuda a entender y comunicarte.",
+    "que_hace": "Adapta las preguntas, te explica las cosas y te ayuda si te bloqueas.",
+    "como_reconocerlo": "No lleva toga. Se sienta cerca de ti.",
+    "icono": "🤝",
+    "pictograma_keyword": "ayuda"
+  },
+  {
+    "id": "testigo",
+    "nombre": "Testigo",
+    "descripcion": "Persona que vio o sabe algo del caso.",
+    "que_hace": "Cuenta lo que sabe. Tiene que decir la verdad.",
+    "como_reconocerlo": "No lleva toga. Entra a la sala cuando le llaman.",
+    "icono": "👁️",
+    "pictograma_keyword": "testigo"
+  }
+]
