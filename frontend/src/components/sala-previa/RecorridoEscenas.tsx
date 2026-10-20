@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useId, useRef } from 'react'
+import Link from 'next/link'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
 import {
@@ -164,6 +165,24 @@ export function RecorridoEscenas({ indice, onCambiar, valores, enCalma }: Props)
           Siguiente
         </button>
       </nav>
+
+      {seguro >= TOTAL_ESCENAS - 1 && (
+        <div
+          className="rounded-suave border-2 border-puente-200 bg-calma-sage/40 p-4 space-y-3"
+          aria-live="polite"
+        >
+          <p className="text-puente-800">
+            Has llegado a la sala de vistas. Si quieres, puedes ensayar las
+            preguntas que te pueden hacer, a tu ritmo.
+          </p>
+          <Link
+            href="/ensaya?desde=sala-previa"
+            className="btn-primary inline-flex text-center"
+          >
+            Ensayar lo que te van a preguntar
+          </Link>
+        </div>
+      )}
     </section>
   )
 }

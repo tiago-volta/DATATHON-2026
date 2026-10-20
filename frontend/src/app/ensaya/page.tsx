@@ -11,6 +11,7 @@ import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
+import { nivelSensorialConservado } from '@/lib/sala-previa/progreso'
 
 /** Pictogramas ARASAAC (CC BY-NC-SA, Sergio Palao / Gobierno de Aragón). */
 function urlArasaac(id: number) {
@@ -183,6 +184,8 @@ export default function PaginaEnsaya() {
   const [mostrarAyuda, setMostrarAyuda] = useState(false)
   const [iniciado, setIniciado] = useState(false)
   const [completado, setCompletado] = useState(false)
+  /** Nivel de Ensaya acabado: muestra CTA a Sala Previa antes de seguir. */
+  const [nivelAcabado, setNivelAcabado] = useState<number | null>(null)
   const [preguntasRespondidas, setPreguntasRespondidas] = useState(0)
   const {
     conseguidas: insigniasUtiles,
@@ -207,6 +210,25 @@ export default function PaginaEnsaya() {
     nivelActual === NIVELES.length - 1 &&
     preguntaActual === nivel.preguntas.length - 1
 
+  /** Enlace a Sala Previa con el nivel sensorial que ya tenga la persona (nunca al alza). */
+  const enlaceSalaPrevia = () => {
+    const nivelSala = nivelSensorialConservado()
+    return `/sala-previa?desde=ensaya&nivel=${nivelSala}`
+  }
+
+  const seguirTrasNivel = () => {
+    if (nivelAcabado === null) return
+    const idx = NIVELES.findIndex((n) => n.id === nivelAcabado)
+    if (idx < 0 || idx >= NIVELES.length - 1) {
+      setNivelAcabado(null)
+      setCompletado(true)
+      return
+    }
+    setNivelActual(idx + 1)
+    setPreguntaActual(0)
+    setNivelAcabado(null)
+  }
+
   const siguientePregunta = () => {
     if (respuesta.trim().length > 0) {
       setPreguntasRespondidas((prev) => prev + 1)
@@ -222,11 +244,11 @@ export default function PaginaEnsaya() {
       // Terminaste las preguntas de este nivel → insignia útil + confianza.
       desbloquear('ensaye-1-nivel')
       registrarConfianza('ensaya-nivel', nivel.id)
-      setNivelActual((prev) => prev + 1)
-      setPreguntaActual(0)
+      setNivelAcabado(nivel.id)
     } else {
       desbloquear('ensaye-1-nivel')
       registrarConfianza('ensaya-nivel', nivel.id)
+      setNivelAcabado(nivel.id)
       setCompletado(true)
     }
   }
@@ -250,9 +272,16 @@ export default function PaginaEnsaya() {
     setRespuesta('')
     setMostrarAyuda(false)
     setCompletado(false)
+    setNivelAcabado(null)
     setPreguntasRespondidas(0)
     setIniciado(true)
   }
+
+  const nivelAcabadoMeta =
+    nivelAcabado !== null ? NIVELES.find((n) => n.id === nivelAcabado) : null
+  const hayMasNiveles =
+    nivelAcabado !== null &&
+    NIVELES.findIndex((n) => n.id === nivelAcabado) < NIVELES.length - 1
 
   return (
     <>
@@ -352,6 +381,39 @@ export default function PaginaEnsaya() {
               , Sergio Palao, Gobierno de Aragón. Licencia CC BY-NC-SA.
             </p>
           </section>
+        ) : nivelAcabado !== null && !completado && nivelAcabadoMeta ? (
+          <section className="card-destacada" aria-live="polite">
+            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+              Has terminado el nivel
+            </h1>
+            <p className="text-lg text-puente-700 mb-6">
+              Completaste «{nivelAcabadoMeta.nombre}». Puedes seguir ensayando o
+              probar la sala del juzgado con calma, en el nivel sensorial que ya
+              tengas.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+              <Link
+                href={enlaceSalaPrevia()}
+                className="btn-primary text-center flex-1"
+              >
+                Probar la sala con calma
+              </Link>
+              {hayMasNiveles && (
+                <button
+                  type="button"
+                  onClick={seguirTrasNivel}
+                  className="btn-secondary"
+                >
+                  Seguir ensayando
+                </button>
+              )}
+            </div>
+
+            <p className="text-puente-600 text-sm">
+              La sala no sube el estímulo por ti. Empiezas donde lo dejaste.
+            </p>
+          </section>
         ) : completado ? (
           <section className="card-destacada" aria-live="polite">
             <h1 className="text-3xl font-bold text-puente-800 mb-3">
@@ -372,21 +434,34 @@ export default function PaginaEnsaya() {
               </ul>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-3 mb-4">
               <Link
-                href="/pasaporte?ajustes=preguntas-claras,mas-tiempo,pausas"
-                className="btn-primary text-center flex-1"
+                href={enlaceSalaPrevia()}
+                className="btn-primary text-center"
               >
-                Añadir estos ajustes a mi Pasaporte
+                Probar la sala con calma
               </Link>
-              <button
-                type="button"
-                onClick={reiniciar}
-                className="btn-secondary"
-              >
-                Practicar otra vez
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/pasaporte?ajustes=preguntas-claras,mas-tiempo,pausas"
+                  className="btn-secondary text-center flex-1"
+                >
+                  Añadir estos ajustes a mi Pasaporte
+                </Link>
+                <button
+                  type="button"
+                  onClick={reiniciar}
+                  className="btn-ghost"
+                >
+                  Practicar otra vez
+                </button>
+              </div>
             </div>
+
+            <p className="text-puente-600 text-sm mb-6">
+              Si pruebas la sala, entras en el nivel sensorial que ya tengas. No
+              subimos nada por ti.
+            </p>
 
             <div className="mt-8 max-w-md space-y-4">
               <PanelDiasPractica

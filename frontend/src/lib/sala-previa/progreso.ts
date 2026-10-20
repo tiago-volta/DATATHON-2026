@@ -2,6 +2,8 @@ import type { IdEstimulo, ProgresoSala } from './tipos'
 import { INSIGNIAS, NIVELES } from './niveles'
 
 const CLAVE = 'puente-sala-previa-progreso'
+/** Intro 2.1 vista: clave aparte para no mezclar con el progreso de niveles. */
+const CLAVE_INTRO = 'puente-sala-previa-intro-vista'
 const ESTIMULOS_VALIDOS: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
 
 const INICIAL: ProgresoSala = {
@@ -116,6 +118,33 @@ export function anadirMolestia(progreso: ProgresoSala, estimulo: IdEstimulo): Pr
     ...progreso,
     molestias: [...progreso.molestias, estimulo],
   })
+}
+
+/** ¿Ya se vio la intro de Sala Previa? (para no repetirla al entrar desde Ensaya). */
+export function introYaVista(): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    return localStorage.getItem(CLAVE_INTRO) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function marcarIntroVista() {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(CLAVE_INTRO, '1')
+  } catch {
+    /* ignore storage quota / private mode */
+  }
+}
+
+/**
+ * Nivel sensorial conservado para deep-links (Ensaya → Sala Previa).
+ * Usa nivelMaximo guardado; si no hay progreso, 0. Nunca inventa un nivel más alto.
+ */
+export function nivelSensorialConservado(): number {
+  return cargarProgreso().nivelMaximo
 }
 
 function otorgarInsignias(progreso: ProgresoSala): ProgresoSala {
