@@ -12,29 +12,6 @@ export function PanelProgreso({ progreso, mensaje }: Props) {
   return (
     <aside className="card space-y-5" aria-label="Tu progreso">
       <div>
-        <h2 className="font-bold text-puente-800 mb-2">Confianza</h2>
-        <div
-          className="w-full h-3 rounded-full bg-puente-100 overflow-hidden"
-          role="meter"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={progreso.confianza}
-          aria-label="Nivel de confianza"
-        >
-          <div
-            className="h-full bg-puente-600 rounded-full"
-            style={{
-              width: `${progreso.confianza}%`,
-              transition: 'width 1.2s ease-out',
-            }}
-          />
-        </div>
-        <p className="text-sm text-puente-700 mt-2">
-          {progreso.confianza} de 100. Sube al practicar a tu ritmo.
-        </p>
-      </div>
-
-      <div>
         <h2 className="font-bold text-puente-800 mb-2">Racha de práctica</h2>
         <p className="text-puente-700">
           {progreso.racha === 0

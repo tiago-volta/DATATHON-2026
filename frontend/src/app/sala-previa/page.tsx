@@ -11,8 +11,10 @@ import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
 import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
 import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
+import { MedidorConfianza } from '@/components/sala-previa/MedidorConfianza'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
+import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
@@ -29,7 +31,6 @@ import {
   guardarProgreso,
   marcarNivel,
   registrarPractica,
-  sumarConfianza,
 } from '@/lib/sala-previa/progreso'
 import type { ConfortCheckIn, IdEstimulo, ProgresoSala, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
@@ -63,6 +64,13 @@ export default function PaginaSalaPrevia() {
     desbloquear,
     descartarAviso,
   } = useInsigniasUtiles()
+  const {
+    score: scoreConfianza,
+    etiqueta: etiquetaConfianza,
+    mensaje: mensajeConfianza,
+    registrar: registrarConfianza,
+    descartarMensaje: descartarMensajeConfianza,
+  } = useConfianza()
 
   const nivel = NIVELES[nivelActual]
   const escena = escenaPorIndice(escenaIndice)
@@ -101,9 +109,11 @@ export default function PaginaSalaPrevia() {
         }
         return next
       })
+      // Confianza en paralelo: practicar un nivel suma una vez (nunca resta).
+      queueMicrotask(() => registrarConfianza('nivel-probado', id))
       if (opts?.checkin) setFase('checkin')
     },
-    [aplicarValores, desbloquear]
+    [aplicarValores, desbloquear, registrarConfianza]
   )
 
   const empezarNivel0 = async () => {
@@ -116,6 +126,7 @@ export default function PaginaSalaPrevia() {
     setEscenaIndice(0)
     aplicarValores(NIVELES[0].preset)
     setProgreso((p) => registrarPractica(marcarNivel(p, 0)))
+    registrarConfianza('nivel-probado', 0)
     setMensaje('Nivel 0. Sala casi vacía. Subes solo si quieres.')
   }
 
@@ -182,10 +193,10 @@ export default function PaginaSalaPrevia() {
   const trasCheckIn = (confort: ConfortCheckIn, molestias: IdEstimulo[]) => {
     procesarMolestias(molestias)
     if (confort === 'bien') {
-      setProgreso((p) => sumarConfianza(p, 8))
-      setMensaje('Bien. Vas a tu ritmo.')
+      // Solo "bien" suma; regular/mal no restan. El aviso lo muestra MedidorConfianza.
+      registrarConfianza('checkin-bien')
+      setMensaje(null)
     } else if (confort === 'regular') {
-      setProgreso((p) => sumarConfianza(p, 3))
       setMensaje('Está bien quedarse. No hay prisa.')
     } else {
       setMensaje('Parar también cuenta. Cuida tu espacio.')
@@ -337,6 +348,12 @@ export default function PaginaSalaPrevia() {
                   nivelActual={nivelActual}
                   nivelMaximo={progreso.nivelMaximo}
                   onSeleccionar={(id) => irANivel(id)}
+                />
+                <MedidorConfianza
+                  score={scoreConfianza}
+                  etiqueta={etiquetaConfianza}
+                  mensaje={mensajeConfianza}
+                  onDescartarMensaje={descartarMensajeConfianza}
                 />
                 <PanelInsignias conseguidas={insigniasUtiles} />
                 <PanelProgreso progreso={progreso} mensaje={mensaje} />

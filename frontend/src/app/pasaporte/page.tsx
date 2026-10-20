@@ -6,6 +6,7 @@ import { QRCodeSVG } from 'qrcode.react'
 import { Cabecera } from '@/components/Cabecera'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
+import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
@@ -43,6 +44,7 @@ export default function PaginaPasaporte() {
     desbloquear,
     descartarAviso,
   } = useInsigniasUtiles()
+  const { registrar: registrarConfianza } = useConfianza()
 
   useEffect(() => {
     let nombreGuardado = ''
@@ -175,6 +177,8 @@ export default function PaginaPasaporte() {
     setQrUrl(url)
     setPaso('resultado')
     desbloquear('pedi-ajustes')
+    // Confianza en paralelo: generar Pasaporte (con ajustes) suma una vez.
+    registrarConfianza('pasaporte')
     try {
       localStorage.setItem(
         'puente-pasaporte',

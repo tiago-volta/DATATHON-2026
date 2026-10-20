@@ -7,6 +7,7 @@ import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { Pictograma } from '@/components/Pictograma'
+import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 
 /** Pictogramas ARASAAC (CC BY-NC-SA, Sergio Palao / Gobierno de Aragón). */
@@ -187,6 +188,7 @@ export default function PaginaEnsaya() {
     desbloquear,
     descartarAviso,
   } = useInsigniasUtiles()
+  const { registrar: registrarConfianza } = useConfianza()
 
   const nivel = NIVELES[nivelActual]
   const itemPregunta = nivel?.preguntas[preguntaActual]
@@ -205,12 +207,14 @@ export default function PaginaEnsaya() {
     if (preguntaActual < nivel.preguntas.length - 1) {
       setPreguntaActual((prev) => prev + 1)
     } else if (nivelActual < NIVELES.length - 1) {
-      // Terminaste las preguntas de este nivel → insignia útil.
+      // Terminaste las preguntas de este nivel → insignia útil + confianza.
       desbloquear('ensaye-1-nivel')
+      registrarConfianza('ensaya-nivel', nivel.id)
       setNivelActual((prev) => prev + 1)
       setPreguntaActual(0)
     } else {
       desbloquear('ensaye-1-nivel')
+      registrarConfianza('ensaya-nivel', nivel.id)
       setCompletado(true)
     }
   }
