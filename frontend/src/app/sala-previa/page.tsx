@@ -12,10 +12,12 @@ import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
+import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
   ESTIMULOS_VACIOS,
   NIVELES,
   ajustesDesdeMolestias,
+  bajarEstimulosAComodo,
 } from '@/lib/sala-previa/niveles'
 import {
   anadirMolestia,
@@ -25,7 +27,7 @@ import {
   registrarPractica,
   sumarConfianza,
 } from '@/lib/sala-previa/progreso'
-import type { EscalaConfort, IdEstimulo, ProgresoSala, ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import type { ConfortCheckIn, IdEstimulo, ProgresoSala, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
 type Fase = 'intro' | 'simulacion' | 'checkin'
 
@@ -141,18 +143,28 @@ export default function PaginaSalaPrevia() {
     })
   }
 
-  const trasCheckIn = (confort: EscalaConfort, molestias: IdEstimulo[]) => {
+  const trasCheckIn = (confort: ConfortCheckIn, molestias: IdEstimulo[]) => {
     procesarMolestias(molestias)
-    if (confort >= 4) {
+    if (confort === 'bien') {
       setProgreso((p) => sumarConfianza(p, 8))
       setMensaje('Bien. Vas a tu ritmo.')
-    } else if (confort === 3) {
+    } else if (confort === 'regular') {
       setProgreso((p) => sumarConfianza(p, 3))
       setMensaje('Está bien quedarse. No hay prisa.')
     } else {
       setMensaje('Parar también cuenta. Cuida tu espacio.')
     }
   }
+
+  const bajarEstimulosMolestos = useCallback(
+    (molestias: IdEstimulo[]) => {
+      setEnCalma(false)
+      const siguientes = bajarEstimulosAComodo(valores, molestias)
+      aplicarValores(siguientes)
+      setMensaje('Estímulos más bajos. Puedes seguir cuando quieras.')
+    },
+    [valores, aplicarValores]
+  )
 
   const enlacePasaporte = useMemo(() => {
     const ids = ajustesDesdeMolestias(progreso.molestias)
@@ -283,16 +295,15 @@ export default function PaginaSalaPrevia() {
                       Marcaste estímulos que te molestan. Puedes pedir estos ajustes:
                     </p>
                     <ul className="space-y-2 mb-4">
-                      {ajustesDesdeMolestias(progreso.molestias).map((id) => (
-                        <li key={id} className="flex gap-2 text-puente-700">
-                          <span aria-hidden="true">✓</span>
-                          <span>
-                            {id === 'luz-tenue'
-                              ? 'Luz tenue en la sala'
-                              : 'Esperar en una sala tranquila'}
-                          </span>
-                        </li>
-                      ))}
+                      {ajustesDesdeMolestias(progreso.molestias).map((id) => {
+                        const ajuste = AJUSTES_DISPONIBLES.find((a) => a.id === id)
+                        return (
+                          <li key={id} className="flex gap-2 text-puente-700">
+                            <span aria-hidden="true">✓</span>
+                            <span>{ajuste?.nombre ?? id}</span>
+                          </li>
+                        )
+                      })}
                     </ul>
                     <Link href={enlacePasaporte} className="btn-primary w-full">
                       Añadir a mi Pasaporte
@@ -314,8 +325,10 @@ export default function PaginaSalaPrevia() {
       {fase === 'checkin' && (
         <CheckInConfort
           nivelNombre={nivel.nombre}
+          valores={valores}
           puedeBajar={nivelActual > 0}
           puedeSubir={nivelActual < NIVELES.length - 1}
+          onBajarEstimulos={bajarEstimulosMolestos}
           onContinuar={(confort, molestias) => {
             trasCheckIn(confort, molestias)
             setFase('simulacion')

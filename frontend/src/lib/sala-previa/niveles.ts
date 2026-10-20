@@ -9,7 +9,15 @@ export const ESTIMULOS_VACIOS: ValoresEstimulo = {
 
 export const ESTIMULOS_META: Record<
   IdEstimulo,
-  { etiqueta: string; descripcion: string; bajo: string; medio: string; alto: string; ajustePasaporte: string }
+  {
+    etiqueta: string
+    descripcion: string
+    bajo: string
+    medio: string
+    alto: string
+    /** Ajustes del Pasaporte sugeridos si este estímulo molesta. */
+    ajustesPasaporte: string[]
+  }
 > = {
   ruido: {
     etiqueta: 'Ruido',
@@ -17,7 +25,7 @@ export const ESTIMULOS_META: Record<
     bajo: 'Silencio',
     medio: 'Suave',
     alto: 'Fuerte',
-    ajustePasaporte: 'sala-tranquila',
+    ajustesPasaporte: ['sala-tranquila', 'pausas'],
   },
   luz: {
     etiqueta: 'Luz',
@@ -25,7 +33,7 @@ export const ESTIMULOS_META: Record<
     bajo: 'Tenue',
     medio: 'Normal',
     alto: 'Intensa',
-    ajustePasaporte: 'luz-tenue',
+    ajustesPasaporte: ['luz-tenue'],
   },
   gente: {
     etiqueta: 'Gente',
@@ -33,7 +41,7 @@ export const ESTIMULOS_META: Record<
     bajo: 'Vacía',
     medio: 'Algunas',
     alto: 'Llena',
-    ajustePasaporte: 'sala-tranquila',
+    ajustesPasaporte: ['sala-tranquila'],
   },
   eco: {
     etiqueta: 'Voces y eco',
@@ -41,9 +49,15 @@ export const ESTIMULOS_META: Record<
     bajo: 'Ninguna',
     medio: 'Lejanas',
     alto: 'Cercanas',
-    ajustePasaporte: 'sala-tranquila',
+    ajustesPasaporte: ['pausas', 'sala-tranquila'],
   },
 }
+
+/** Umbral a partir del cual un estímulo se considera alto / molesto. */
+export const UMBRAL_ESTIMULO_ALTO = 55
+
+/** Nivel cómodo al que bajar estímulos altos tras check-in regular/mal. */
+export const NIVEL_ESTIMULO_COMODO = 18
 
 export const NIVELES: NivelSala[] = [
   {
@@ -137,6 +151,34 @@ export function etiquetaNivelEstimulo(valor: number, estimulo: IdEstimulo): stri
 }
 
 export function ajustesDesdeMolestias(molestias: IdEstimulo[]): string[] {
-  const ids = new Set(molestias.map((m) => ESTIMULOS_META[m].ajustePasaporte))
+  const ids = new Set<string>()
+  for (const m of molestias) {
+    for (const id of ESTIMULOS_META[m].ajustesPasaporte) {
+      ids.add(id)
+    }
+  }
   return Array.from(ids)
+}
+
+/** Estímulos por encima del umbral (candidatos a molestia). */
+export function molestiasDesdeValores(valores: ValoresEstimulo): IdEstimulo[] {
+  return (Object.keys(valores) as IdEstimulo[]).filter(
+    (id) => (valores[id] ?? 0) >= UMBRAL_ESTIMULO_ALTO
+  )
+}
+
+/** Baja los estímulos indicados a un nivel cómodo; el resto no cambia. */
+export function bajarEstimulosAComodo(
+  valores: ValoresEstimulo,
+  molestias: IdEstimulo[],
+  objetivo = NIVEL_ESTIMULO_COMODO
+): ValoresEstimulo {
+  const next = { ...valores }
+  const targets = molestias.length > 0 ? molestias : (Object.keys(valores) as IdEstimulo[])
+  for (const id of targets) {
+    if ((next[id] ?? 0) > objetivo) {
+      next[id] = objetivo
+    }
+  }
+  return next
 }

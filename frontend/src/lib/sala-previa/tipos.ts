@@ -21,7 +21,8 @@ export interface Insignia {
   descripcion: string
 }
 
-export type EscalaConfort = 1 | 2 | 3 | 4 | 5
+/** Check-in de confort en Sala Previa (3 opciones). */
+export type ConfortCheckIn = 'bien' | 'regular' | 'mal'
 
 export interface ProgresoSala {
   nivelMaximo: number

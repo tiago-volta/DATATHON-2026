@@ -75,6 +75,11 @@ export default function PaginaPasaporte() {
         ajustes: ajustesCombinados,
       })
     }
+
+    // Deep-link ?ajustes=: si ya hay nombre válido, ir directo a marcar/revisar ajustes.
+    if (idsUrl.length > 0 && nombreGuardado && validarNombre(nombreGuardado) === null) {
+      setPaso('ajustes')
+    }
   }, [])
 
   const handleNombreChange = (raw: string) => {
