@@ -4,9 +4,21 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
+import { Pictograma } from '@/components/Pictograma'
+
+/** Pictogramas ARASAAC (CC BY-NC-SA, Sergio Palao / Gobierno de Aragón). */
+function urlArasaac(id: number) {
+  return `https://static.arasaac.org/pictograms/${id}/${id}_500.png`
+}
+
+interface PictoRef {
+  id: number
+  keyword: string
+}
 
 interface PreguntaItem {
   texto: string
+  pictogramas: PictoRef[]
   ayuda?: {
     explicacion: string
     ejemplos: string[]
@@ -17,37 +29,89 @@ const NIVELES: {
   id: number
   nombre: string
   descripcion: string
+  pictograma: PictoRef
   preguntas: PreguntaItem[]
 }[] = [
   {
     id: 1,
     nombre: 'Preguntas claras',
     descripcion: 'Preguntas sencillas como las que te hará el juez al principio.',
+    pictograma: { id: 9847, keyword: 'preguntar' },
     preguntas: [
-      { texto: '¿Cómo te llamas?' },
-      { texto: '¿Dónde vives?' },
-      { texto: '¿A qué te dedicas?' },
-      { texto: '¿Conoces a la persona de la que hablamos?' },
+      {
+        texto: '¿Cómo te llamas?',
+        pictogramas: [
+          { id: 27357, keyword: 'nombre' },
+          { id: 6517, keyword: 'hablar' },
+        ],
+      },
+      {
+        texto: '¿Dónde vives?',
+        pictogramas: [
+          { id: 6964, keyword: 'casa' },
+        ],
+      },
+      {
+        texto: '¿A qué te dedicas?',
+        pictogramas: [
+          { id: 16087, keyword: 'trabajo' },
+        ],
+      },
+      {
+        texto: '¿Conoces a la persona de la que hablamos?',
+        pictogramas: [
+          { id: 34560, keyword: 'persona' },
+          { id: 7117, keyword: 'gente' },
+        ],
+      },
     ],
   },
   {
     id: 2,
     nombre: 'Preguntas de los abogados',
     descripcion: 'Preguntas más concretas sobre lo que pasó.',
+    pictograma: { id: 11291, keyword: 'juez' },
     preguntas: [
-      { texto: '¿Qué día ocurrieron los hechos?' },
-      { texto: '¿Dónde estabas tú en ese momento?' },
-      { texto: '¿Qué viste exactamente?' },
-      { texto: '¿Había alguien más contigo?' },
+      {
+        texto: '¿Qué día ocurrieron los hechos?',
+        pictogramas: [
+          { id: 32488, keyword: 'calendario' },
+        ],
+      },
+      {
+        texto: '¿Dónde estabas tú en ese momento?',
+        pictogramas: [
+          { id: 6964, keyword: 'lugar' },
+          { id: 34560, keyword: 'tú' },
+        ],
+      },
+      {
+        texto: '¿Qué viste exactamente?',
+        pictogramas: [
+          { id: 6564, keyword: 'ver' },
+        ],
+      },
+      {
+        texto: '¿Había alguien más contigo?',
+        pictogramas: [
+          { id: 7117, keyword: 'gente' },
+          { id: 34560, keyword: 'persona' },
+        ],
+      },
     ],
   },
   {
     id: 3,
     nombre: 'Preguntas difíciles',
     descripcion: 'Preguntas que pueden confundir. Aprende a pedir que te las repitan.',
+    pictograma: { id: 11697, keyword: 'no entender' },
     preguntas: [
       {
         texto: '¿No es cierto que usted no vio bien lo que pasó?',
+        pictogramas: [
+          { id: 11697, keyword: 'no entender' },
+          { id: 6564, keyword: 'ver' },
+        ],
         ayuda: {
           explicacion:
             'Tiene una doble negación ("no es cierto... que no vio"). Está hecha para confundirte.',
@@ -59,6 +123,11 @@ const NIVELES: {
       },
       {
         texto: '¿Cómo puede estar seguro si estaba lejos y había poca luz?',
+        pictogramas: [
+          { id: 30385, keyword: 'lejos' },
+          { id: 8619, keyword: 'luz' },
+          { id: 6564, keyword: 'ver' },
+        ],
         ayuda: {
           explicacion:
             'Junta varias cosas a la vez (distancia y luz) y pone en duda tu palabra.',
@@ -70,6 +139,11 @@ const NIVELES: {
       },
       {
         texto: '¿Por qué debería creerle a usted y no a la otra persona?',
+        pictogramas: [
+          { id: 8715, keyword: 'verdad' },
+          { id: 6517, keyword: 'hablar' },
+          { id: 34560, keyword: 'persona' },
+        ],
         ayuda: {
           explicacion:
             'Es una pregunta intimidante. Tú no tienes que explicar lo que dice otra persona, solo lo que tú sabes.',
@@ -81,6 +155,19 @@ const NIVELES: {
       },
     ],
   },
+]
+
+const PICTOS_INTRO: PictoRef[] = [
+  { id: 6517, keyword: 'hablar' },
+  { id: 6572, keyword: 'oír' },
+  { id: 9847, keyword: 'preguntar' },
+  { id: 2380, keyword: 'escribir' },
+]
+
+const PICTOS_AYUDA: PictoRef[] = [
+  { id: 11697, keyword: 'no entender' },
+  { id: 36109, keyword: 'pausa' },
+  { id: 32826, keyword: 'calma' },
 ]
 
 export default function PaginaEnsaya() {
@@ -155,18 +242,47 @@ export default function PaginaEnsaya() {
             <h1 className="text-3xl font-bold text-puente-800 mb-4 max-w-[16ch]">
               Ensaya tu declaración
             </h1>
-            <p className="text-xl text-puente-700 max-w-xl mb-8">
+            <p className="text-xl text-puente-700 max-w-xl mb-6">
               Practica responder preguntas como las que te harán en el juzgado.
               Hay tres niveles, de más fácil a más difícil.
+            </p>
+
+            <div
+              className="flex flex-wrap gap-4 justify-center mb-8 p-4 rounded-tarjeta bg-white/70 border border-puente-100"
+              aria-label="Pictogramas: hablar, oír, preguntar, escribir"
+            >
+              {PICTOS_INTRO.map((p) => (
+                <Pictograma
+                  key={p.id}
+                  url={urlArasaac(p.id)}
+                  keyword={p.keyword}
+                  size="md"
+                />
+              ))}
+            </div>
+            <p className="text-sm text-puente-600 mb-8 text-center max-w-xl mx-auto">
+              Cada pregunta lleva pictogramas para entenderla mejor si lees con
+              apoyos visuales o si usas lengua de signos junto al texto.
             </p>
 
             <div className="grid gap-4 mb-8 text-left">
               {NIVELES.map((n, i) => (
                 <div key={n.id} className="card flex items-start gap-4">
-                  <span className="paso-indicador shrink-0">{i + 1}</span>
-                  <div>
-                    <h2 className="font-bold text-puente-800">{n.nombre}</h2>
-                    <p className="text-puente-600">{n.descripcion}</p>
+                  <span className="paso-indicador shrink-0" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h2 className="font-bold text-puente-800">{n.nombre}</h2>
+                        <p className="text-puente-600">{n.descripcion}</p>
+                      </div>
+                      <Pictograma
+                        url={urlArasaac(n.pictograma.id)}
+                        keyword={n.pictograma.keyword}
+                        size="sm"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -182,6 +298,18 @@ export default function PaginaEnsaya() {
 
             <p className="text-puente-500 mt-6">
               Puedes parar cuando quieras. No hay respuestas buenas ni malas.
+            </p>
+            <p className="text-xs text-puente-500 mt-8">
+              Pictogramas:{' '}
+              <a
+                href="https://arasaac.org"
+                className="underline underline-offset-2 hover:text-puente-700"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ARASAAC
+              </a>
+              , Sergio Palao, Gobierno de Aragón. Licencia CC BY-NC-SA.
             </p>
           </section>
         ) : completado ? (
@@ -251,11 +379,26 @@ export default function PaginaEnsaya() {
             </div>
 
             <div className="card-destacada mb-6">
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between items-start mb-4 gap-3">
                 <p className="text-sm text-puente-500">Te preguntan:</p>
                 <BotonLeerEnVoz texto={itemPregunta.texto} etiqueta="Escuchar" />
               </div>
-              <p className="text-2xl text-puente-800 font-medium">
+
+              <div
+                className="flex flex-wrap gap-4 justify-center mb-5"
+                aria-label="Pictogramas de apoyo a la pregunta"
+              >
+                {itemPregunta.pictogramas.map((p) => (
+                  <Pictograma
+                    key={`${p.id}-${p.keyword}`}
+                    url={urlArasaac(p.id)}
+                    keyword={p.keyword}
+                    size="lg"
+                  />
+                ))}
+              </div>
+
+              <p className="text-2xl text-puente-800 font-medium text-center">
                 {itemPregunta.texto}
               </p>
             </div>
@@ -273,6 +416,16 @@ export default function PaginaEnsaya() {
 
             {mostrarAyuda && itemPregunta.ayuda && (
               <div className="bg-accent-alert/10 border-2 border-accent-alert rounded-tarjeta p-6 mb-6" aria-live="polite">
+                <div className="flex flex-wrap gap-3 justify-center mb-4" aria-hidden="true">
+                  {PICTOS_AYUDA.map((p) => (
+                    <Pictograma
+                      key={p.id}
+                      url={urlArasaac(p.id)}
+                      keyword={p.keyword}
+                      size="sm"
+                    />
+                  ))}
+                </div>
                 <h2 className="font-bold text-puente-800 mb-2">Esta pregunta es confusa</h2>
                 <p className="text-puente-700 mb-4">
                   {itemPregunta.ayuda.explicacion}{' '}
@@ -287,9 +440,18 @@ export default function PaginaEnsaya() {
             )}
 
             <div className="card mb-6">
-              <label htmlFor="respuesta" className="block font-bold text-puente-800 mb-3">
-                Tu respuesta (opcional)
-              </label>
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <label htmlFor="respuesta" className="block font-bold text-puente-800">
+                  Tu respuesta (opcional)
+                </label>
+                <div className="shrink-0" aria-hidden="true">
+                  <Pictograma
+                    url={urlArasaac(9031)}
+                    keyword="responder"
+                    size="sm"
+                  />
+                </div>
+              </div>
               <textarea
                 id="respuesta"
                 value={respuesta}
@@ -339,6 +501,19 @@ export default function PaginaEnsaya() {
             >
               Salir del ensayo
             </button>
+
+            <p className="text-xs text-puente-500 mt-8 text-center">
+              Pictogramas:{' '}
+              <a
+                href="https://arasaac.org"
+                className="underline underline-offset-2 hover:text-puente-700"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ARASAAC
+              </a>
+              , Sergio Palao, Gobierno de Aragón. Licencia CC BY-NC-SA.
+            </p>
           </section>
         )}
       </main>
