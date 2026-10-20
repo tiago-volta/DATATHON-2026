@@ -1,0 +1,84 @@
+{
+  "penal_testigo": {
+    "titulo": "Proceso penal - Testigo",
+    "descripcion": "Fases cuando te llaman como testigo en un caso penal",
+    "fases": [
+      {
+        "numero": 1,
+        "nombre": "Citación",
+        "descripcion": "Recibes una carta que te dice que tienes que ir al juzgado.",
+        "icono": "📬",
+        "que_hacer": "Lee bien la fecha, hora y lugar. Guarda la carta."
+      },
+      {
+        "numero": 2,
+        "nombre": "Preparación",
+        "descripcion": "Los días antes del juicio, puedes prepararte.",
+        "icono": "📝",
+        "que_hacer": "Recuerda lo que viste. Puedes pedir ajustes si los necesitas."
+      },
+      {
+        "numero": 3,
+        "nombre": "Llegada al juzgado",
+        "descripcion": "El día de la cita, llegas al juzgado.",
+        "icono": "🏛️",
+        "que_hacer": "Llega 15 minutos antes. Pasa el control de seguridad. Espera a que te llamen."
+      },
+      {
+        "numero": 4,
+        "nombre": "Declaración",
+        "descripcion": "Entras en la sala y cuentas lo que sabes.",
+        "icono": "🗣️",
+        "que_hacer": "Di la verdad. Si no entiendes una pregunta, pide que te la repitan."
+      },
+      {
+        "numero": 5,
+        "nombre": "Fin",
+        "descripcion": "Cuando terminas, te puedes ir.",
+        "icono": "✅",
+        "que_hacer": "Ya has cumplido. Normalmente no tienes que volver."
+      }
+    ]
+  },
+  "penal_investigado": {
+    "titulo": "Proceso penal - Investigado (delito leve)",
+    "descripcion": "Fases cuando te investigan por un delito leve",
+    "fases": [
+      {
+        "numero": 1,
+        "nombre": "Citación",
+        "descripcion": "Recibes una carta que dice que te acusan de algo.",
+        "icono": "📬",
+        "que_hacer": "Lee bien tus derechos. Busca un abogado."
+      },
+      {
+        "numero": 2,
+        "nombre": "Buscar abogado",
+        "descripcion": "Tienes derecho a un abogado que te ayude.",
+        "icono": "👔",
+        "que_hacer": "Si no tienes dinero, pide uno de oficio (gratis). Cuéntale todo."
+      },
+      {
+        "numero": 3,
+        "nombre": "Preparar pruebas",
+        "descripcion": "Busca pruebas que demuestren tu versión.",
+        "icono": "🔍",
+        "que_hacer": "Mensajes, fotos, testigos... Todo lo que te ayude."
+      },
+      {
+        "numero": 4,
+        "nombre": "El juicio",
+        "descripcion": "Vas al juzgado y se celebra el juicio.",
+        "icono": "⚖️",
+        "que_hacer": "Tu abogado te guía. Puedes hablar o guardar silencio."
+      },
+      {
+        "numero": 5,
+        "nombre": "Sentencia",
+        "descripcion": "El juez decide si eres culpable o inocente.",
+        "icono": "📜",
+        "que_hacer": "Si no estás de acuerdo, puedes recurrir con tu abogado."
+      }
+    ]
+  }
+}

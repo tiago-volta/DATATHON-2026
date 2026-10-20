@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-calma-cream text-puente-900;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-4 ring-puente-400 ring-offset-2 ring-offset-calma-cream;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-bold text-puente-800;
+    line-height: 1.3;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold;
+    @apply focus:ring-4 focus:ring-puente-400 focus:ring-offset-2;
+    transition: background-color 150ms ease-out, transform 150ms ease-out, border-color 150ms ease-out;
+    min-height: 56px;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  .btn-primary {
+    @apply btn bg-puente-600 text-white;
+    @apply hover:bg-puente-700;
+  }
+
+  .btn-primary:active {
+    @apply bg-puente-800;
+  }
+
+  .btn-secondary {
+    @apply btn bg-calma-sand text-puente-700 border-2 border-puente-200;
+    @apply hover:bg-puente-100 hover:border-puente-300;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-puente-600;
+    @apply hover:bg-puente-50;
+  }
+
+  .card {
+    @apply bg-white rounded-tarjeta p-6 shadow-sm border border-puente-100;
+    transition: box-shadow 200ms ease-out, border-color 200ms ease-out;
+  }
+
+  .card-destacada {
+    @apply card border-2 border-puente-300 shadow-md;
+  }
+
+  a.card:hover, button.card:hover {
+    @apply cursor-pointer;
+  }
+
+  .lectura-facil {
+    @apply text-lectura leading-loose;
+  }
+
+  .lectura-facil p {
+    @apply mb-4;
+  }
+
+  .lectura-facil strong {
+    @apply text-puente-700 font-bold;
+  }
+
+  .paso-indicador {
+    @apply flex items-center justify-center w-12 h-12 rounded-full bg-puente-100 text-puente-700 font-bold text-xl;
+  }
+
+  .paso-activo .paso-indicador {
+    @apply bg-puente-600 text-white;
+  }
+
+  .input-accesible {
+    @apply w-full px-5 py-4 text-lg rounded-suave border-2 border-puente-200 bg-white;
+    @apply focus:border-puente-500 focus:ring-4 focus:ring-puente-100;
+    @apply placeholder:text-puente-400;
+    min-height: 56px;
+  }
+
+  .textarea-accesible {
+    @apply input-accesible resize-none;
+    min-height: 200px;
+  }
+
+  .etiqueta {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium;
+  }
+
+  .etiqueta-info {
+    @apply etiqueta bg-accent-info/20 text-puente-700;
+  }
+
+  .etiqueta-exito {
+    @apply etiqueta bg-accent-success/20 text-puente-800;
+  }
+
+  .etiqueta-alerta {
+    @apply etiqueta bg-accent-alert/20 text-puente-800;
+  }
+}
+
+@layer utilities {
+  .texto-grande {
+    font-size: 1.25rem;
+    line-height: 1.8;
+  }
+
+  .texto-muy-grande {
+    font-size: 1.5rem;
+    line-height: 1.9;
+  }
+
+  .espaciado-lectura {
+    letter-spacing: 0.02em;
+    word-spacing: 0.1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "sala-tranquila",
+    "nombre": "Esperar en una sala tranquila",
+    "descripcion": "Un espacio con menos ruido y gente mientras esperas.",
+    "perfiles": ["tea", "tdah", "ansiedad"],
+    "base_legal": "Art. 7 bis.2.c LEC"
+  },
+  {
+    "id": "preguntas-claras",
+    "nombre": "Preguntas claras, de una en una",
+    "descripcion": "Que te hagan preguntas sencillas y esperen tu respuesta.",
+    "perfiles": ["tea", "tdah", "dislexia", "discapacidad-intelectual"],
+    "base_legal": "Guía CGPJ 2025"
+  },
+  {
+    "id": "pausas",
+    "nombre": "Pausas cuando las necesite",
+    "descripcion": "Poder descansar un momento si te sientes agobiado.",
+    "perfiles": ["tea", "tdah", "ansiedad"],
+    "base_legal": "Art. 7 bis.2.c LEC"
+  },
+  {
+    "id": "mas-tiempo",
+    "nombre": "Más tiempo para responder",
+    "descripcion": "No tener prisa para pensar las respuestas.",
+    "perfiles": ["tea", "tdah", "dislexia", "discapacidad-intelectual"],
+    "base_legal": "Art. 7 bis.2.c LEC"
+  },
+  {
+    "id": "facilitador",
+    "nombre": "Persona facilitadora",
+    "descripcion": "Alguien que me ayude a entender y comunicarme.",
+    "perfiles": ["tea", "discapacidad-intelectual"],
+    "base_legal": "Art. 7 bis.2.c LEC, Protocolo Plena inclusión"
+  },
+  {
+    "id": "documentos-voz",
+    "nombre": "Documentos leídos en voz alta",
+    "descripcion": "Que me lean los papeles importantes.",
+    "perfiles": ["ceguera", "dislexia"],
+    "base_legal": "Art. 7 bis.2.a LEC"
+  },
+  {
+    "id": "descripcion-pruebas",
+    "nombre": "Descripción de pruebas visuales",
+    "descripcion": "Que me expliquen qué hay en las fotos o vídeos.",
+    "perfiles": ["ceguera"],
+    "base_legal": "Convenio MJ-ONCE 2025"
+  },
+  {
+    "id": "acompanante",
+    "nombre": "Poder ir con un acompañante",
+    "descripcion": "Una persona de confianza que esté conmigo.",
+    "perfiles": ["tea", "tdah", "ansiedad", "ceguera"],
+    "base_legal": "Art. 7 bis.2.d LEC"
+  },
+  {
+    "id": "lenguaje-literal",
+    "nombre": "Lenguaje literal, sin dobles sentidos",
+    "descripcion": "Que me hablen de forma directa, sin ironías ni metáforas.",
+    "perfiles": ["tea"],
+    "base_legal": "Guía Autismo España 2025"
+  },
+  {
+    "id": "anticipacion",
+    "nombre": "Anticipar cada paso",
+    "descripcion": "Que me expliquen qué va a pasar antes de que pase.",
+    "perfiles": ["tea"],
+    "base_legal": "Guía CGPJ 2025"
+  }
+]
