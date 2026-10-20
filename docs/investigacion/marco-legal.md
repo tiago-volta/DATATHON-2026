@@ -46,7 +46,11 @@ Derechos específicos (art. 7 bis.2):
 
 **Contexto para Juan (investigado por estafa)**:
 
-⚠️ **Corrección importante**: Tras la reforma de la LO 14/2022, el art. 249 CP ya no contempla estafa leve para las modalidades de estafa informática o uso fraudulento de medios de pago. Solo la estafa "clásica" del art. 248 CP admite delito leve si el perjuicio ≤400€.
+**Estafa leve (art. 248 CP, párrafo 3º)**: Si lo defraudado ≤400€, multa de 1 a 3 meses (salvo agravantes del art. 250). Redacción vigente desde LO 1/2026, de 8 de abril (multirreincidencia).
+
+⚠️ **Nota**: Tras LO 14/2022, las modalidades del art. 249 CP (estafa informática, uso fraudulento de medios de pago) ya no admiten delito leve aunque el perjuicio sea ≤400€.
+
+*Fuente: BOE-A-1995-25444, consolidado a octubre 2026 (https://www.boe.es/buscar/act.php?id=BOE-A-1995-25444)*
 
 Para un delito leve genuino (arts. 964 y ss. LECrim):
 - **Plazo de señalamiento**: máximo 7 días hábiles

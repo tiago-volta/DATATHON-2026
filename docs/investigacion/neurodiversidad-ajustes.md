@@ -61,11 +61,21 @@ Este documento analiza las barreras específicas que cada perfil neurodivergente
 - Usar expresiones como "cuéntame con tus palabras" (puede bloquearse)
 - Interrumpir durante una respuesta larga
 
-### 1.5 Recursos en Galicia
+### 1.5 Barreras documentadas (Autismo España, 2025)
+
+Según la guía de comunicación accesible en el ámbito judicial:
+
+- **Malinterpretación de conducta**: El 70% de profesionales judiciales no ha recibido formación sobre TEA
+- **Preguntas inadecuadas**: Las preguntas abiertas o ambiguas generan bloqueo
+- **Credibilidad cuestionada**: La falta de contacto visual o el tono monótono se interpretan erróneamente como falta de veracidad
+- **Sobrecarga sensorial**: Las esperas en pasillos ruidosos provocan crisis que se interpretan como mal comportamiento
+
+### 1.6 Recursos en Galicia
 
 - **ASPERGA**: 881 917 318, asperga.org (A Coruña, Santiago)
 - **Autismo Galicia**: autismogalicia.org (federación)
-- **Guía Autismo España 2025**: Comunicación accesible en ámbito judicial
+- **Guía Autismo España 2025**: autismo.org.es/comunicacion-accesible-justicia
+- **Protocolo de detección de TEA en adultos** (Autismo España): autismo.org.es/deteccion
 
 ---
 
@@ -128,11 +138,19 @@ Juan tiene TDAH pero puede no tener el 33% de grado de discapacidad:
 - El baremo RD 888/2022 incluye criterios para TDAH
 - La Ley 15/2022 prohíbe discriminación por "condición de salud"
 
-### 2.6 Recursos en Galicia
+### 2.6 Prevalencia y detección tardía
+
+- El TDAH afecta al 5-7% de la población adulta (FEAADAH)
+- El 50% de adultos con TDAH no están diagnosticados
+- Mayor riesgo de conflictos con la justicia por impulsividad y dificultades de planificación
+- El diagnóstico tardío impide solicitar ajustes a tiempo
+
+### 2.7 Recursos en Galicia
 
 - **ANHIDA Coruña**: 981 903 830, anhidacoruna.com
-- **FEGADAH**: Federación Gallega de TDAH
-- **FEAADAH**: Federación Española
+- **FEGADAH**: Federación Gallega de TDAH (fegadah.org)
+- **FEAADAH**: Federación Española (feaadah.org)
+- **Guía TDAH adultos** (FEAADAH): feaadah.org/guia-adultos
 
 ---
 
@@ -230,11 +248,27 @@ Encuesta a 367 personas con DI privadas de libertad en 14 CCAA:
 
 ### 4.6 Barreras identificadas (informe ENABLE, 2023)
 
+El proyecto europeo ENABLE (Plena inclusión España) identificó:
+
 - No hay instrumentos para valorar apoyos necesarios en proceso penal
 - La detección tardía es la barrera más grave
 - Los agentes jurídicos desconocen cómo aplicar los ajustes
 - No existe sistema de gestión de casos que transmita la información entre procedimientos
 - El facilitador suele actuar solo en el juicio, no desde el primer contacto
+
+### 4.7 Estadísticas de condenas (informe "A Cada Lado", Plena inclusión 2019)
+
+Datos de la mayor encuesta a personas con DI en prisión en España:
+
+| Indicador | Porcentaje |
+|-----------|------------|
+| Procedimientos que consideraron la DI | 31% |
+| Sin certificado de discapacidad previo | 51% |
+| Sin contacto con movimiento asociativo | 86% |
+| Condenas a penas privativas de libertad | 90,2% |
+| Suspensión o sustitución de pena | 3% |
+
+**Conclusión**: La falta de detección temprana y de ajustes lleva a un exceso de encarcelamiento evitable.
 
 ### 4.8 Recursos en Galicia
 
@@ -301,6 +335,8 @@ Encuesta a 367 personas con DI privadas de libertad en 14 CCAA:
 - A cargo de la Administración de Justicia
 - La persona puede rechazar un intérprete inadecuado
 
+**RD 674/2023**: Actualiza el catálogo de cualificaciones profesionales de intérpretes de LSE, exigiendo formación específica para contextos judiciales.
+
 **Otros ajustes:**
 - Bucle magnético para usuarios de audífonos
 - Subtitulado en tiempo real (CART)
@@ -308,11 +344,22 @@ Encuesta a 367 personas con DI privadas de libertad en 14 CCAA:
 - Una sola persona hablando a la vez
 - Posición que permita ver al intérprete y al tribunal
 
-### 6.4 Recursos
+### 6.4 Barreras denunciadas (CNSE, 2025)
 
-- **FAXPG**: Federación de Asociaciones de Persoas Xordas de Galicia
-- **CNSE**: Confederación Estatal de Personas Sordas
+La CNSE ha documentado las siguientes barreras persistentes:
+
+- **Escasez de intérpretes cualificados**: No todos los intérpretes de LSE tienen formación en contexto judicial
+- **Demoras en provisión**: Citaciones sin tiempo para conseguir intérprete
+- **Falta de bucles magnéticos operativos**: Muchas salas tienen el equipamiento pero no funciona
+- **Desconocimiento de profesionales**: Jueces y abogados que hablan directamente a la persona sorda en vez de al intérprete
+- **Ausencia de señalética visual**: Turnos de palabra y llamadas solo por voz
+
+### 6.5 Recursos
+
+- **FAXPG**: Federación de Asociaciones de Persoas Xordas de Galicia (faxpg.es)
+- **CNSE**: Confederación Estatal de Personas Sordas (cnse.es)
 - **ASZA** (Aragón, referencia): Servicios de intérprete judicial
+- **FILSE**: Federación de Intérpretes de LSE
 
 ---
 
@@ -358,11 +405,30 @@ Encuesta a 367 personas con DI privadas de libertad en 14 CCAA:
 - Pausas para gestionar la atención
 - Audio de la citación con información clara
 
-### 7.4 Recursos en Galicia
+### 7.4 Convenio ONCE-Ministerio de Justicia (octubre 2025)
+
+En octubre de 2025, Fundación ONCE firmó convenio con el Ministerio de Justicia para:
+
+- Formar a personal de la Administración de Justicia en accesibilidad
+- Auditar accesibilidad de sedes judiciales
+- Mejorar señalización y orientación para personas con discapacidad visual
+- Desarrollar guías de buenas prácticas
+
+### 7.5 Guía para profesionales judiciales (ONCE)
+
+La ONCE dispone de una guía de atención a personas con discapacidad visual que incluye:
+
+- **Orientación**: Describir verbalmente el espacio y las personas presentes
+- **Documentación**: Entregar en formato digital accesible (PDF/A etiquetado) con antelación suficiente
+- **Pruebas visuales**: El juez debe describir verbalmente fotos y vídeos de forma detallada
+- **No tocar sin avisar**: Preguntar siempre antes de guiar físicamente a alguien
+
+### 7.6 Recursos en Galicia
 
 - **ONCE Galicia**: 981 206 900, once.es
 - **Fundación ONCE Baja Visión**: 91 709 77 77
 - **Centro de Recursos Educativos ONCE Pontevedra**
+- **Servicio de Atención al Usuario ONCE**: 900 666 888 (gratuito)
 
 ---
 
@@ -435,7 +501,18 @@ Portal Aragonés de Comunicación Aumentativa y Alternativa. Ofrece más de 40.0
 ## Referencias clave
 
 1. Guía CGPJ 2025: Protección de derechos de personas con discapacidad en proceso penal
-2. Guía Autismo España 2025: Comunicación accesible en ámbito judicial
+2. Guía Autismo España 2025: Comunicación accesible en ámbito judicial (autismo.org.es)
 3. UNE 153101:2018 EX: Lectura fácil
-4. ARASAAC: arasaac.org
+4. ARASAAC: arasaac.org (CC BY-NC-SA, Gobierno de Aragón)
 5. FADEMGA: fademga.org (facilitación en Galicia)
+6. Informe "A Cada Lado" (Plena inclusión, 2019): plenainclusion.org/publicaciones/a-cada-lado
+7. Informe ENABLE (Plena inclusión, 2023): plenainclusion.org/enable
+8. RD 674/2023: Cualificaciones profesionales de intérpretes de LSE
+9. Convenio Fundación ONCE-Ministerio de Justicia (octubre 2025)
+10. CNSE - Barreras en el acceso a la justicia (2025): cnse.es
+11. FEAADAH - Guía TDAH adultos: feaadah.org
+
+---
+
+*Documento actualizado: octubre 2026*
+*Consulta: 20 de octubre de 2026*
