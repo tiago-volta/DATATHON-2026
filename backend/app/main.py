@@ -129,8 +129,18 @@ async def crear_pasaporte(input_data: PasaporteInput):
     # Generar marca (sin diagnóstico)
     marca = f"Persona con necesidades de ajuste: {', '.join(input_data.ajustes_solicitados[:3])}"
     
-    # Generar QR
-    qr_data = f"PUENTE:{pasaporte_id}"
+    # QR apunta a la vista escaneable del frontend (URL absoluta)
+    from urllib.parse import urlencode
+
+    frontend_base = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
+    query = {
+        "id": pasaporte_id,
+        "n": input_data.nombre,
+        "a": ",".join(input_data.ajustes_solicitados),
+    }
+    if input_data.contacto_emergencia:
+        query["c"] = input_data.contacto_emergencia
+    qr_data = f"{frontend_base}/pasaporte/ver?{urlencode(query)}"
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(qr_data)
     qr.make(fit=True)
