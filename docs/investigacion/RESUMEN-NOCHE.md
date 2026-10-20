@@ -13,7 +13,10 @@
 - **Indefensión** al no poder expresarse adecuadamente
 - **Estigma** si revelan su diagnóstico
 
-Sin apoyos, **el 67% de casos con personas con discapacidad intelectual son sobreseídos** (UAVDI).
+**Datos clave:**
+- Sin apoyos, el **67% de casos con DI son sobreseídos** (UAVDI)
+- Solo el **31% de procedimientos** considera la DI de la persona juzgada (Plena inclusión, 2019)
+- El **51%** no tenía certificado de discapacidad antes del delito
 
 ---
 

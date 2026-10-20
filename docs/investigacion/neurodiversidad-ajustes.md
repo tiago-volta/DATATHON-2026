@@ -218,10 +218,32 @@ El RD 888/2022 incluye por primera vez criterios de valoración para DEA. Pueden
 - Con facilitador: 24% de casos sobreseídos
 - Más de 1.400 casos atendidos desde 2010
 
-### 4.5 Recursos en Galicia
+### 4.5 Datos del estudio "A Cada Lado" (Plena inclusión, 2019)
+
+Encuesta a 367 personas con DI privadas de libertad en 14 CCAA:
+
+- **Solo el 31%** de los procedimientos tuvo en cuenta la discapacidad intelectual
+- El 51% no tenía certificado de discapacidad antes del delito
+- El 86% no había contactado nunca con el movimiento asociativo
+- El 89% de condenas son penas privativas de libertad
+- Solo el 3% de casos suspenden o sustituyen la pena
+
+### 4.6 Barreras identificadas (informe ENABLE, 2023)
+
+- No hay instrumentos para valorar apoyos necesarios en proceso penal
+- La detección tardía es la barrera más grave
+- Los agentes jurídicos desconocen cómo aplicar los ajustes
+- No existe sistema de gestión de casos que transmita la información entre procedimientos
+- El facilitador suele actuar solo en el juicio, no desde el primer contacto
+
+### 4.8 Recursos en Galicia
 
 - **FADEMGA Plena inclusión Galicia**: Facilitación y lectura fácil
 - **Plena inclusión España**: plenainclusion.org
+- **Espazo Compartido (UDC)**: Título propio para personas con DI/TEA
+  - https://udc.gal/espazocompartido/
+  - 18-30 años, ≥33% discapacidad
+  - Campus de Elviña, A Coruña
 
 ---
 

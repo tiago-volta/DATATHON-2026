@@ -215,6 +215,15 @@
   - Vía Pasteur 53-B, Santiago de Compostela
   - Consultado: octubre 2026
 
+### Formación universitaria
+
+- **Espazo Compartido - UDC** (Título propio para personas con DI/TEA)
+  - https://udc.gal/espazocompartido/
+  - Nivel Inicial + Nivel Avanzado (38 ECTS)
+  - Matrícula bonificada 100% por Fundación ONCE
+  - Campus de Elviña, A Coruña
+  - Consultado: octubre 2026
+
 ### Sordera
 
 - **FAXPG** (Federación de Asociaciones de Persoas Xordas de Galicia)
@@ -268,6 +277,22 @@
 - **UAVDI** (Unidad de Atención a Víctimas con Discapacidad Intelectual)
   - Fundación Carmen Pardo-Valcarce
   - Datos sobre impacto del facilitador: 67% vs 24% sobreseimientos
+  - Consultado: octubre 2026
+
+- **Estudio "A Cada Lado"** (Plena inclusión, 2019)
+  - 367 personas con DI privadas de libertad encuestadas
+  - Solo 31% de procedimientos tuvo en cuenta la DI
+  - https://www.plenainclusion.org/noticias/solo-en-el-31-de-los-procedimientos-judiciales-se-tiene-en-cuenta-la-discapacidad-intelectual-de-la-persona-juzgada/
+  - Consultado: octubre 2026
+
+- **Documento ENABLE** (Plena inclusión / UE, 2023)
+  - Barreras de personas con DI en sistema judicial español
+  - https://www.plenainclusion.org/wp-content/uploads/2023/07/NBP-Enable-SPA-baja.pdf
+  - Consultado: octubre 2026
+
+- **Artículo científico sobre facilitador** (Scielo, 2024)
+  - Comparación internacional de la figura del facilitador
+  - https://scielo.isciii.es/scielo.php?pid=S0210-16962024000100002&script=sci_arttext
   - Consultado: octubre 2026
 
 ---
