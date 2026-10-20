@@ -4,7 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
+import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
+import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { Pictograma } from '@/components/Pictograma'
+import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 
 /** Pictogramas ARASAAC (CC BY-NC-SA, Sergio Palao / Gobierno de Aragón). */
 function urlArasaac(id: number) {
@@ -178,6 +181,12 @@ export default function PaginaEnsaya() {
   const [iniciado, setIniciado] = useState(false)
   const [completado, setCompletado] = useState(false)
   const [preguntasRespondidas, setPreguntasRespondidas] = useState(0)
+  const {
+    conseguidas: insigniasUtiles,
+    aviso: avisoInsignia,
+    desbloquear,
+    descartarAviso,
+  } = useInsigniasUtiles()
 
   const nivel = NIVELES[nivelActual]
   const itemPregunta = nivel?.preguntas[preguntaActual]
@@ -196,9 +205,12 @@ export default function PaginaEnsaya() {
     if (preguntaActual < nivel.preguntas.length - 1) {
       setPreguntaActual((prev) => prev + 1)
     } else if (nivelActual < NIVELES.length - 1) {
+      // Terminaste las preguntas de este nivel → insignia útil.
+      desbloquear('ensaye-1-nivel')
       setNivelActual((prev) => prev + 1)
       setPreguntaActual(0)
     } else {
+      desbloquear('ensaye-1-nivel')
       setCompletado(true)
     }
   }
@@ -299,6 +311,11 @@ export default function PaginaEnsaya() {
             <p className="text-puente-500 mt-6">
               Puedes parar cuando quieras. No hay respuestas buenas ni malas.
             </p>
+
+            <div className="mt-10 max-w-md">
+              <PanelInsignias conseguidas={insigniasUtiles} />
+            </div>
+
             <p className="text-xs text-puente-500 mt-8">
               Pictogramas:{' '}
               <a
@@ -346,6 +363,10 @@ export default function PaginaEnsaya() {
               >
                 Practicar otra vez
               </button>
+            </div>
+
+            <div className="mt-8 max-w-md">
+              <PanelInsignias conseguidas={insigniasUtiles} />
             </div>
           </section>
         ) : (
@@ -517,6 +538,8 @@ export default function PaginaEnsaya() {
           </section>
         )}
       </main>
+
+      <AvisoInsignia insignia={avisoInsignia} onDescartar={descartarAviso} />
     </>
   )
 }

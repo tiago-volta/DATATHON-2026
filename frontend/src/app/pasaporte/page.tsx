@@ -4,6 +4,9 @@ import { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
 import { Cabecera } from '@/components/Cabecera'
+import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
+import { PanelInsignias } from '@/components/insignias/PanelInsignias'
+import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
   buildPasaporteUrl,
@@ -34,6 +37,12 @@ export default function PaginaPasaporte() {
   const [pasaporteId, setPasaporteId] = useState('')
   const [qrUrl, setQrUrl] = useState('')
   const [copiado, setCopiado] = useState(false)
+  const {
+    conseguidas: insigniasUtiles,
+    aviso: avisoInsignia,
+    desbloquear,
+    descartarAviso,
+  } = useInsigniasUtiles()
 
   useEffect(() => {
     let nombreGuardado = ''
@@ -80,7 +89,12 @@ export default function PaginaPasaporte() {
     if (idsUrl.length > 0 && nombreGuardado && validarNombre(nombreGuardado) === null) {
       setPaso('ajustes')
     }
-  }, [])
+
+    // Abrir Pasaporte con ajustes (query o ya guardados) → insignia útil.
+    if (idsUrl.length > 0 || ajustesGuardados.length > 0) {
+      desbloquear('pedi-ajustes')
+    }
+  }, [desbloquear])
 
   const handleNombreChange = (raw: string) => {
     const limpio = sanitizarNombre(raw)
@@ -160,6 +174,7 @@ export default function PaginaPasaporte() {
     setPasaporteId(id)
     setQrUrl(url)
     setPaso('resultado')
+    desbloquear('pedi-ajustes')
     try {
       localStorage.setItem(
         'puente-pasaporte',
@@ -586,7 +601,13 @@ export default function PaginaPasaporte() {
             </div>
           </section>
         )}
+
+        <div className="mt-10 max-w-md mx-auto">
+          <PanelInsignias conseguidas={insigniasUtiles} />
+        </div>
       </main>
+
+      <AvisoInsignia insignia={avisoInsignia} onDescartar={descartarAviso} />
     </>
   )
 }

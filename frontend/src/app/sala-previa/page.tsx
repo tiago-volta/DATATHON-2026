@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
+import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
+import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
 import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
@@ -11,6 +13,7 @@ import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
+import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import { escenaPorIndice } from '@/lib/sala-previa/escenas'
@@ -54,6 +57,12 @@ export default function PaginaSalaPrevia() {
   const [progresoListo, setProgresoListo] = useState(false)
   const [mensaje, setMensaje] = useState<string | null>(null)
   const [modoAudioguia, setModoAudioguia] = useState(false)
+  const {
+    conseguidas: insigniasUtiles,
+    aviso: avisoInsignia,
+    desbloquear,
+    descartarAviso,
+  } = useInsigniasUtiles()
 
   const nivel = NIVELES[nivelActual]
   const escena = escenaPorIndice(escenaIndice)
@@ -84,10 +93,17 @@ export default function PaginaSalaPrevia() {
       setNivelActual(id)
       setEnCalma(false)
       aplicarValores(destino.preset)
-      setProgreso((p) => marcarNivel(p, id))
+      setProgreso((p) => {
+        const next = marcarNivel(p, id)
+        // Nuevo máximo ≥ 1 = completaste al menos un nivel (más allá de la sala vacía).
+        if (next.nivelMaximo > p.nivelMaximo && next.nivelMaximo >= 1) {
+          queueMicrotask(() => desbloquear('ensaye-1-nivel'))
+        }
+        return next
+      })
       if (opts?.checkin) setFase('checkin')
     },
-    [aplicarValores]
+    [aplicarValores, desbloquear]
   )
 
   const empezarNivel0 = async () => {
@@ -126,10 +142,11 @@ export default function PaginaSalaPrevia() {
       gente: 0,
       eco: 0,
     }))
+    desbloquear('primera-calma')
     setMensaje(
       fase === 'intro'
-        ? 'Calma. Puedes empezar cuando quieras.'
-        : 'Calma. Puedes seguir cuando quieras.'
+        ? 'Calma. Cuidarte está bien. Puedes empezar cuando quieras.'
+        : 'Calma. Cuidarte está bien. Puedes seguir cuando quieras.'
     )
   }
 
@@ -321,6 +338,7 @@ export default function PaginaSalaPrevia() {
                   nivelMaximo={progreso.nivelMaximo}
                   onSeleccionar={(id) => irANivel(id)}
                 />
+                <PanelInsignias conseguidas={insigniasUtiles} />
                 <PanelProgreso progreso={progreso} mensaje={mensaje} />
 
                 {progreso.molestias.length > 0 && (
@@ -356,6 +374,7 @@ export default function PaginaSalaPrevia() {
       </main>
 
       <BotonCalma enCalma={enCalma} onPausa={pausarCalma} onReanudar={reanudar} />
+      <AvisoInsignia insignia={avisoInsignia} onDescartar={descartarAviso} />
 
       {fase === 'checkin' && (
         <CheckInConfort
