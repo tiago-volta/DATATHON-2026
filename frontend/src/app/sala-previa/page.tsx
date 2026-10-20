@@ -16,6 +16,8 @@ import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
+import { usePractica } from '@/hooks/usePractica'
+import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import { escenaPorIndice } from '@/lib/sala-previa/escenas'
@@ -71,6 +73,14 @@ export default function PaginaSalaPrevia() {
     registrar: registrarConfianza,
     descartarMensaje: descartarMensajeConfianza,
   } = useConfianza()
+  const {
+    total: totalDiasPractica,
+    estaSemana: diasPracticaSemana,
+    semana: semanaPractica,
+    bienvenida: bienvenidaPractica,
+    registrar: registrarDiaPractica,
+    descartarBienvenida: descartarBienvenidaPractica,
+  } = usePractica()
 
   const nivel = NIVELES[nivelActual]
   const escena = escenaPorIndice(escenaIndice)
@@ -126,6 +136,7 @@ export default function PaginaSalaPrevia() {
     setEscenaIndice(0)
     aplicarValores(NIVELES[0].preset)
     setProgreso((p) => registrarPractica(marcarNivel(p, 0)))
+    registrarDiaPractica()
     registrarConfianza('nivel-probado', 0)
     setMensaje('Nivel 0. Sala casi vacía. Subes solo si quieres.')
   }
@@ -262,7 +273,18 @@ export default function PaginaSalaPrevia() {
           </p>
         )}
 
-        {fase === 'intro' && <IntroSalaPrevia onEmpezar={empezarNivel0} />}
+        {fase === 'intro' && (
+          <div className="space-y-6 max-w-2xl">
+            <IntroSalaPrevia onEmpezar={empezarNivel0} />
+            <PanelDiasPractica
+              semana={semanaPractica}
+              total={totalDiasPractica}
+              estaSemana={diasPracticaSemana}
+              bienvenida={bienvenidaPractica}
+              onDescartarBienvenida={descartarBienvenidaPractica}
+            />
+          </div>
+        )}
 
         {fase !== 'intro' && (
           <>
@@ -356,7 +378,15 @@ export default function PaginaSalaPrevia() {
                   onDescartarMensaje={descartarMensajeConfianza}
                 />
                 <PanelInsignias conseguidas={insigniasUtiles} />
-                <PanelProgreso progreso={progreso} mensaje={mensaje} />
+                <PanelProgreso
+                  progreso={progreso}
+                  mensaje={mensaje}
+                  semana={semanaPractica}
+                  totalDias={totalDiasPractica}
+                  diasEstaSemana={diasPracticaSemana}
+                  bienvenida={bienvenidaPractica}
+                  onDescartarBienvenida={descartarBienvenidaPractica}
+                />
 
                 {progreso.molestias.length > 0 && (
                   <div className="card border-2 border-accent-success">

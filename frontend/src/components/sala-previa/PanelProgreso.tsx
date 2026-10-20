@@ -2,26 +2,45 @@
 
 import { INSIGNIAS } from '@/lib/sala-previa/niveles'
 import type { ProgresoSala } from '@/lib/sala-previa/tipos'
+import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
+import type { DiaSemana } from '@/lib/practica'
 
 interface Props {
   progreso: ProgresoSala
   mensaje?: string | null
+  /** Vista amable de días (compartida con Ensaya). */
+  semana?: DiaSemana[]
+  totalDias?: number
+  diasEstaSemana?: number
+  bienvenida?: string | null
+  onDescartarBienvenida?: () => void
 }
 
-export function PanelProgreso({ progreso, mensaje }: Props) {
+/**
+ * Progreso de Sala Previa: días de práctica (sin castigo) + insignias locales.
+ * La racha antigua de días seguidos se sustituyó por el conteo amable.
+ */
+export function PanelProgreso({
+  progreso,
+  mensaje,
+  semana = [],
+  totalDias = 0,
+  diasEstaSemana = 0,
+  bienvenida = null,
+  onDescartarBienvenida,
+}: Props) {
   return (
-    <aside className="card space-y-5" aria-label="Tu progreso">
-      <div>
-        <h2 className="font-bold text-puente-800 mb-2">Racha de práctica</h2>
-        <p className="text-puente-700">
-          {progreso.racha === 0
-            ? 'Aún no hay racha. Hoy cuenta como el primer día.'
-            : `${progreso.racha} día${progreso.racha === 1 ? '' : 's'} seguido${progreso.racha === 1 ? '' : 's'}.`}
-        </p>
-      </div>
+    <aside className="space-y-5" aria-label="Tu progreso">
+      <PanelDiasPractica
+        semana={semana}
+        total={totalDias}
+        estaSemana={diasEstaSemana}
+        bienvenida={bienvenida}
+        onDescartarBienvenida={onDescartarBienvenida}
+      />
 
-      <div>
-        <h2 className="font-bold text-puente-800 mb-3">Insignias</h2>
+      <div className="card space-y-3">
+        <h2 className="font-bold text-puente-800">Insignias de la sala</h2>
         <ul className="space-y-2">
           {INSIGNIAS.map((ins) => {
             const conseguida = progreso.insignias.includes(ins.id)
@@ -49,7 +68,11 @@ export function PanelProgreso({ progreso, mensaje }: Props) {
       </div>
 
       {mensaje && (
-        <p className="bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-800" role="status" aria-live="polite">
+        <p
+          className="bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-800"
+          role="status"
+          aria-live="polite"
+        >
           {mensaje}
         </p>
       )}

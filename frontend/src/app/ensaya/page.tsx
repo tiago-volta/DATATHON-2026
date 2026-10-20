@@ -7,8 +7,10 @@ import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { Pictograma } from '@/components/Pictograma'
+import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
+import { usePractica } from '@/hooks/usePractica'
 
 /** Pictogramas ARASAAC (CC BY-NC-SA, Sergio Palao / Gobierno de Aragón). */
 function urlArasaac(id: number) {
@@ -189,6 +191,14 @@ export default function PaginaEnsaya() {
     descartarAviso,
   } = useInsigniasUtiles()
   const { registrar: registrarConfianza } = useConfianza()
+  const {
+    total: totalDiasPractica,
+    estaSemana: diasPracticaSemana,
+    semana: semanaPractica,
+    bienvenida: bienvenidaPractica,
+    registrar: registrarDiaPractica,
+    descartarBienvenida: descartarBienvenidaPractica,
+  } = usePractica()
 
   const nivel = NIVELES[nivelActual]
   const itemPregunta = nivel?.preguntas[preguntaActual]
@@ -201,6 +211,8 @@ export default function PaginaEnsaya() {
     if (respuesta.trim().length > 0) {
       setPreguntasRespondidas((prev) => prev + 1)
     }
+    // Avanzar cuenta como práctica del día (compartida con Sala Previa).
+    registrarDiaPractica()
     setRespuesta('')
     setMostrarAyuda(false)
 
@@ -316,7 +328,14 @@ export default function PaginaEnsaya() {
               Puedes parar cuando quieras. No hay respuestas buenas ni malas.
             </p>
 
-            <div className="mt-10 max-w-md">
+            <div className="mt-10 max-w-md space-y-4">
+              <PanelDiasPractica
+                semana={semanaPractica}
+                total={totalDiasPractica}
+                estaSemana={diasPracticaSemana}
+                bienvenida={bienvenidaPractica}
+                onDescartarBienvenida={descartarBienvenidaPractica}
+              />
               <PanelInsignias conseguidas={insigniasUtiles} />
             </div>
 
@@ -369,7 +388,14 @@ export default function PaginaEnsaya() {
               </button>
             </div>
 
-            <div className="mt-8 max-w-md">
+            <div className="mt-8 max-w-md space-y-4">
+              <PanelDiasPractica
+                semana={semanaPractica}
+                total={totalDiasPractica}
+                estaSemana={diasPracticaSemana}
+                bienvenida={bienvenidaPractica}
+                onDescartarBienvenida={descartarBienvenidaPractica}
+              />
               <PanelInsignias conseguidas={insigniasUtiles} />
             </div>
           </section>

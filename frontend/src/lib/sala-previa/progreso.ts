@@ -18,12 +18,6 @@ function hoyISO(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
-function ayerISO(): string {
-  const d = new Date()
-  d.setDate(d.getDate() - 1)
-  return d.toISOString().slice(0, 10)
-}
-
 function sanitizarProgreso(raw: Partial<ProgresoSala>): ProgresoSala {
   const maxIdx = NIVELES.length - 1
   const nivelMaximo = Number.isFinite(raw.nivelMaximo)
@@ -89,10 +83,8 @@ export function registrarPractica(progreso: ProgresoSala): ProgresoSala {
     return otorgarInsignias(progreso)
   }
 
-  let racha = 1
-  if (progreso.ultimaPractica === ayerISO()) {
-    racha = progreso.racha + 1
-  }
+  // Suma días practicados; no reinicia si hubo pausa (sin castigo).
+  const racha = progreso.racha + 1
 
   const siguiente: ProgresoSala = {
     ...progreso,
