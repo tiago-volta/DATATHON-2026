@@ -1,0 +1,142 @@
+import type { IdEstimulo, Insignia, NivelSala, ValoresEstimulo } from './tipos'
+
+export const ESTIMULOS_VACIOS: ValoresEstimulo = {
+  ruido: 0,
+  luz: 0,
+  gente: 0,
+  eco: 0,
+}
+
+export const ESTIMULOS_META: Record<
+  IdEstimulo,
+  { etiqueta: string; descripcion: string; bajo: string; medio: string; alto: string; ajustePasaporte: string }
+> = {
+  ruido: {
+    etiqueta: 'Ruido',
+    descripcion: 'Murmullos, pasos y puertas',
+    bajo: 'Silencio',
+    medio: 'Suave',
+    alto: 'Fuerte',
+    ajustePasaporte: 'sala-tranquila',
+  },
+  luz: {
+    etiqueta: 'Luz',
+    descripcion: 'Brillo y fluorescentes de la sala',
+    bajo: 'Tenue',
+    medio: 'Normal',
+    alto: 'Intensa',
+    ajustePasaporte: 'luz-tenue',
+  },
+  gente: {
+    etiqueta: 'Gente',
+    descripcion: 'Personas y siluetas en la sala',
+    bajo: 'Vacía',
+    medio: 'Algunas',
+    alto: 'Llena',
+    ajustePasaporte: 'sala-tranquila',
+  },
+  eco: {
+    etiqueta: 'Voces y eco',
+    descripcion: 'Voces lejanas y reverberación',
+    bajo: 'Ninguna',
+    medio: 'Lejanas',
+    alto: 'Cercanas',
+    ajustePasaporte: 'sala-tranquila',
+  },
+}
+
+export const NIVELES: NivelSala[] = [
+  {
+    id: 0,
+    nombre: 'Sala vacía',
+    descripcion: 'Silencio y poca luz. Empiezas aquí.',
+    audioguia:
+      'Estás en una sala de vistas vacía. No hay gente. La luz es suave. No se oye casi nada. Puedes quedarte el tiempo que necesites.',
+    preset: { ruido: 0, luz: 8, gente: 0, eco: 0 },
+  },
+  {
+    id: 1,
+    nombre: 'Primeros sonidos',
+    descripcion: 'Un murmullo muy bajo. La sala sigue casi vacía.',
+    audioguia:
+      'Ahora se oye un murmullo muy suave, como gente lejos. La luz sube un poco. Sigue habiendo casi nadie en la sala.',
+    preset: { ruido: 18, luz: 20, gente: 8, eco: 10 },
+  },
+  {
+    id: 2,
+    nombre: 'Pasos lejanos',
+    descripcion: 'Algún paso y una puerta al fondo.',
+    audioguia:
+      'Se oyen pasos lejanos y a veces una puerta. Hay pocas personas. La luz es cómoda, sin fluorescentes fuertes.',
+    preset: { ruido: 35, luz: 35, gente: 22, eco: 22 },
+  },
+  {
+    id: 3,
+    nombre: 'Ambiente de espera',
+    descripcion: 'Más gente y más sonido, aún controlable.',
+    audioguia:
+      'La sala se parece a una zona de espera. Hay más personas y murmullos. Si te molesta, baja los controles o pulsa Volver a la calma.',
+    preset: { ruido: 52, luz: 50, gente: 45, eco: 40 },
+  },
+  {
+    id: 4,
+    nombre: 'Sala ocupada',
+    descripcion: 'Casi como un día normal en el juzgado.',
+    audioguia:
+      'Hay bastante gente y más eco. La luz es más fuerte, como fluorescentes. Practica bajar lo que te moleste. Tú mandas.',
+    preset: { ruido: 70, luz: 68, gente: 65, eco: 58 },
+  },
+  {
+    id: 5,
+    nombre: 'Vista real',
+    descripcion: 'Ambiente completo. Puedes bajar cualquier estímulo.',
+    audioguia:
+      'Este es el nivel más alto: sala llena, ruido y luz intensos. No tienes que quedarte. Si quieres, baja un control o vuelve a la calma.',
+    preset: { ruido: 88, luz: 85, gente: 90, eco: 80 },
+  },
+]
+
+export const INSIGNIAS: Insignia[] = [
+  {
+    id: 'primer-paso',
+    nombre: 'Primer paso',
+    descripcion: 'Entraste en la sala vacía.',
+  },
+  {
+    id: 'explorador',
+    nombre: 'Explorador del juzgado',
+    descripcion: 'Llegaste al nivel 2.',
+  },
+  {
+    id: 'paso-firme',
+    nombre: 'Paso firme',
+    descripcion: 'Llegaste al nivel 4.',
+  },
+  {
+    id: 'sala-superada',
+    nombre: 'Sala superada',
+    descripcion: 'Probaste el nivel Vista real.',
+  },
+  {
+    id: 'conoce-limites',
+    nombre: 'Conoce tus límites',
+    descripcion: 'Marcaste un estímulo que te molesta.',
+  },
+  {
+    id: 'constancia',
+    nombre: 'Práctica constante',
+    descripcion: 'Tres días seguidos de práctica.',
+  },
+]
+
+export function etiquetaNivelEstimulo(valor: number, estimulo: IdEstimulo): string {
+  const meta = ESTIMULOS_META[estimulo]
+  if (valor < 25) return meta.bajo
+  if (valor < 65) return meta.medio
+  return meta.alto
+}
+
+export function ajustesDesdeMolestias(molestias: IdEstimulo[]): string[] {
+  const ids = new Set(molestias.map((m) => ESTIMULOS_META[m].ajustePasaporte))
+  return Array.from(ids)
+}
