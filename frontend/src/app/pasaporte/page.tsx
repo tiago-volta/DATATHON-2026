@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Cabecera } from '@/components/Cabecera'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
@@ -19,6 +19,15 @@ export default function PaginaPasaporte() {
     contacto: '',
   })
   const [pasaporteId, setPasaporteId] = useState('')
+
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get('ajustes')
+    if (!raw) return
+    const ids = raw.split(',').filter((id) => AJUSTES_DISPONIBLES.some((a) => a.id === id))
+    if (ids.length === 0) return
+    setDatos((prev) => ({ ...prev, ajustes: Array.from(new Set([...prev.ajustes, ...ids])) }))
+    setPaso('ajustes')
+  }, [])
 
   const toggleAjuste = (id: string) => {
     setDatos(prev => ({
@@ -130,11 +139,12 @@ export default function PaginaPasaporte() {
                 <button
                   key={ajuste.id}
                   onClick={() => toggleAjuste(ajuste.id)}
-                  className={`w-full text-left p-5 rounded-tarjeta border-2 transition-all ${
+                  className={`w-full text-left p-5 rounded-tarjeta border-2 ${
                     datos.ajustes.includes(ajuste.id)
                       ? 'border-puente-500 bg-puente-50'
                       : 'border-puente-200 bg-white hover:border-puente-300'
                   }`}
+                  style={{ transition: 'border-color 200ms ease-out, background-color 200ms ease-out' }}
                   aria-pressed={datos.ajustes.includes(ajuste.id)}
                 >
                   <div className="flex items-start gap-4">

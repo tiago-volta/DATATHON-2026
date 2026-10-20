@@ -134,6 +134,29 @@
     letter-spacing: 0.02em;
     word-spacing: 0.1em;
   }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@keyframes sala-flicker-soft {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 0.92; }
+  52% { opacity: 1; }
+  96% { opacity: 0.96; }
+}
+
+.sala-flicker {
+  animation: sala-flicker-soft 4.5s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -141,5 +164,9 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .sala-flicker {
+    animation: none !important;
   }
 }

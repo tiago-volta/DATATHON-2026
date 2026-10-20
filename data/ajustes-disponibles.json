@@ -7,6 +7,13 @@
     "base_legal": "Art. 7 bis.2.c LEC"
   },
   {
+    "id": "luz-tenue",
+    "nombre": "Luz tenue en la sala",
+    "descripcion": "Evitar fluorescentes fuertes o luz muy intensa.",
+    "perfiles": ["tea", "ansiedad"],
+    "base_legal": "Art. 7 bis.2.c LEC"
+  },
+  {
     "id": "preguntas-claras",
     "nombre": "Preguntas claras, de una en una",
     "descripcion": "Que te hagan preguntas sencillas y esperen tu respuesta.",

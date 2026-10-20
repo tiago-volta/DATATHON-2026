@@ -120,6 +120,12 @@ export const AJUSTES_DISPONIBLES = [
     para: ['tea', 'tdah', 'ansiedad'],
   },
   {
+    id: 'luz-tenue',
+    nombre: 'Luz tenue en la sala',
+    descripcion: 'Evitar fluorescentes fuertes o luz muy intensa.',
+    para: ['tea', 'ansiedad'],
+  },
+  {
     id: 'preguntas-claras',
     nombre: 'Preguntas claras, de una en una',
     descripcion: 'Que te hagan preguntas sencillas y esperen tu respuesta.',

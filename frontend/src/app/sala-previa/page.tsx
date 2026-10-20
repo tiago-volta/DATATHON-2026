@@ -1,236 +1,342 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
+import { BotonCalma } from '@/components/sala-previa/BotonCalma'
+import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
+import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
+import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
+import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
+import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
+import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
+import {
+  ESTIMULOS_VACIOS,
+  NIVELES,
+  ajustesDesdeMolestias,
+} from '@/lib/sala-previa/niveles'
+import {
+  anadirMolestia,
+  cargarProgreso,
+  guardarProgreso,
+  marcarNivel,
+  registrarPractica,
+  sumarConfianza,
+} from '@/lib/sala-previa/progreso'
+import type { EscalaConfort, IdEstimulo, ProgresoSala, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
-const ESCENAS = [
-  {
-    id: 'entrada',
-    nombre: 'Entrada al edificio',
-    descripcion: 'Llegas al juzgado. Es un edificio grande con puertas de cristal.',
-    audioguia: 'Al llegar, verás un edificio grande. Las puertas de entrada son de cristal y se abren automáticamente. Dentro hay un vestíbulo amplio.',
-    consejos: [
-      'Llega 15 minutos antes de tu cita',
-      'Ten el DNI y la citación a mano',
-      'Si vas con acompañante, puede entrar contigo',
-    ],
-  },
-  {
-    id: 'seguridad',
-    nombre: 'Control de seguridad',
-    descripcion: 'Tienes que pasar por un control como en el aeropuerto.',
-    audioguia: 'Después de entrar, hay un control de seguridad. Es como el del aeropuerto: dejas tus cosas en una bandeja, pasas por un arco y las recoges al otro lado. Los agentes de seguridad llevan uniforme.',
-    consejos: [
-      'Deja el móvil y las llaves en la bandeja',
-      'Si tienes marcapasos u otro dispositivo, avisa al guardia',
-      'Los objetos punzantes no se pueden entrar',
-    ],
-  },
-  {
-    id: 'espera',
-    nombre: 'Zona de espera',
-    descripcion: 'Esperas hasta que te llamen por tu nombre.',
-    audioguia: 'Después del control, hay un pasillo con bancos donde esperar. Habrá otras personas esperando también. Pueden llamarte por megafonía o puede salir alguien a buscarte. Escucha tu nombre o el número de tu sala.',
-    consejos: [
-      'Puedes pedir esperar en un sitio más tranquilo',
-      'Puedes llevar auriculares o tapones si el ruido te molesta',
-      'Si necesitas ir al baño, pregunta dónde está antes',
-    ],
-  },
-  {
-    id: 'sala',
-    nombre: 'La sala de vistas',
-    descripcion: 'Entras en la sala donde se hace el juicio.',
-    audioguia: 'La sala es una habitación con varios muebles. Al fondo hay una mesa elevada donde se sienta el juez. A los lados hay mesas para los abogados. Hay sillas para el público y un sitio específico para ti cuando te llamen.',
-    consejos: [
-      'No hables hasta que te pregunten',
-      'Si no entiendes algo, puedes pedir que te lo repitan',
-      'Puedes pedir una pausa si lo necesitas',
-    ],
-  },
-]
+type Fase = 'intro' | 'simulacion' | 'checkin'
+
+const PROGRESO_INICIAL: ProgresoSala = {
+  nivelMaximo: 0,
+  insignias: [],
+  confianza: 20,
+  racha: 0,
+  ultimaPractica: null,
+  molestias: [],
+  sesionesCompletadas: 0,
+}
 
 export default function PaginaSalaPrevia() {
-  const [escenaActual, setEscenaActual] = useState(0)
-  const [nivelRuido, setNivelRuido] = useState(30)
-  const [nivelLuz, setNivelLuz] = useState(50)
-  const [nivelGente, setNivelGente] = useState(30)
+  const motorRef = useRef<MotorAudioSala | null>(null)
+  const [fase, setFase] = useState<Fase>('intro')
+  const [nivelActual, setNivelActual] = useState(0)
+  const [valores, setValores] = useState<ValoresEstimulo>(ESTIMULOS_VACIOS)
+  const [enCalma, setEnCalma] = useState(false)
+  const [audioListo, setAudioListo] = useState(false)
+  const [progreso, setProgreso] = useState<ProgresoSala>(PROGRESO_INICIAL)
+  const [progresoListo, setProgresoListo] = useState(false)
+  const [mensaje, setMensaje] = useState<string | null>(null)
+  const [modoAudioguia, setModoAudioguia] = useState(false)
 
-  const escena = ESCENAS[escenaActual]
+  const nivel = NIVELES[nivelActual]
+
+  useEffect(() => {
+    setProgreso(cargarProgreso())
+    setProgresoListo(true)
+    motorRef.current = new MotorAudioSala()
+    return () => {
+      motorRef.current?.detener(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!progresoListo) return
+    guardarProgreso(progreso)
+  }, [progreso, progresoListo])
+
+  const aplicarValores = useCallback((nuevos: ValoresEstimulo, segundos?: number) => {
+    setValores(nuevos)
+    motorRef.current?.actualizar(nuevos, segundos)
+  }, [])
+
+  const irANivel = useCallback(
+    (id: number, opts?: { checkin?: boolean }) => {
+      const destino = NIVELES[id]
+      if (!destino) return
+      setNivelActual(id)
+      setEnCalma(false)
+      aplicarValores(destino.preset)
+      setProgreso((p) => marcarNivel(p, id))
+      if (opts?.checkin) setFase('checkin')
+    },
+    [aplicarValores]
+  )
+
+  const empezar = async () => {
+    await motorRef.current?.iniciar()
+    setAudioListo(true)
+    setFase('simulacion')
+    setProgreso((p) => registrarPractica(marcarNivel(p, 0)))
+    aplicarValores(NIVELES[0].preset)
+    setNivelActual(0)
+    setMensaje('Primer paso. Estás en la sala vacía.')
+  }
+
+  const pausarCalma = () => {
+    setEnCalma(true)
+    motorRef.current?.volverACalma()
+    setValores((v) => ({
+      ruido: 0,
+      luz: Math.min(v.luz, 12),
+      gente: 0,
+      eco: 0,
+    }))
+    setMensaje('Calma. Puedes seguir cuando quieras.')
+  }
+
+  const reanudar = () => {
+    setEnCalma(false)
+    aplicarValores(NIVELES[nivelActual].preset)
+    setMensaje(null)
+  }
+
+  const onSlider = (id: IdEstimulo, valor: number) => {
+    if (enCalma) setEnCalma(false)
+    const siguientes = { ...valores, [id]: valor }
+    aplicarValores(siguientes)
+  }
+
+  const procesarMolestias = (molestias: IdEstimulo[]) => {
+    setProgreso((p) => {
+      let next = p
+      for (const m of molestias) {
+        next = anadirMolestia(next, m)
+      }
+      return next
+    })
+  }
+
+  const trasCheckIn = (confort: EscalaConfort, molestias: IdEstimulo[]) => {
+    procesarMolestias(molestias)
+    if (confort >= 4) {
+      setProgreso((p) => sumarConfianza(p, 8))
+      setMensaje('Bien. Vas a tu ritmo.')
+    } else if (confort === 3) {
+      setProgreso((p) => sumarConfianza(p, 3))
+      setMensaje('Está bien quedarse. No hay prisa.')
+    } else {
+      setMensaje('Parar también cuenta. Cuida tu espacio.')
+    }
+  }
+
+  const enlacePasaporte = useMemo(() => {
+    const ids = ajustesDesdeMolestias(progreso.molestias)
+    if (ids.length === 0) return '/pasaporte'
+    return `/pasaporte?ajustes=${ids.join(',')}`
+  }, [progreso.molestias])
+
+  const descripcionAudioguia = useMemo(() => {
+    const partes = [
+      nivel.audioguia,
+      `Ruido: ${Math.round(valores.ruido)}. Luz: ${Math.round(valores.luz)}. Gente: ${Math.round(valores.gente)}. Eco: ${Math.round(valores.eco)}.`,
+      enCalma ? 'Modo calma activo. Los estímulos están bajos.' : '',
+    ]
+    return partes.filter(Boolean).join(' ')
+  }, [nivel, valores, enCalma])
 
   return (
     <>
       <Cabecera />
-      
-      <main id="contenido-principal" className="max-w-4xl mx-auto px-4 py-8">
+
+      <main id="contenido-principal" className="max-w-5xl mx-auto px-4 py-8 pb-28">
         <nav className="mb-6">
           <Link href="/" className="text-puente-600 hover:text-puente-800">
             ← Volver al inicio
           </Link>
         </nav>
 
-        <h1 className="text-3xl font-bold text-puente-800 mb-2">
-          Visita la sala antes de ir
-        </h1>
-        <p className="text-lg text-puente-600 mb-8">
-          Conoce cómo es un juzgado para que no te pille de sorpresa el día de tu cita.
-        </p>
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-puente-800 mb-2">
+            Sala Previa
+          </h1>
+          <p className="text-lg text-puente-600 max-w-2xl">
+            Practica el ambiente del juzgado por capas. Empiezas en silencio.
+            Subes solo cuando tú digas.
+          </p>
+        </header>
 
-        <nav className="flex gap-2 mb-6 overflow-x-auto pb-2" aria-label="Escenas">
-          {ESCENAS.map((e, i) => (
-            <button
-              key={e.id}
-              onClick={() => setEscenaActual(i)}
-              className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-colors ${
-                escenaActual === i
-                  ? 'bg-puente-600 text-white'
-                  : 'bg-puente-100 text-puente-700 hover:bg-puente-200'
-              }`}
-            >
-              {i + 1}. {e.nombre}
+        {fase === 'intro' && (
+          <section className="card-destacada max-w-2xl">
+            <h2 className="text-2xl font-bold text-puente-800 mb-4">
+              Cómo funciona
+            </h2>
+            <ul className="space-y-3 text-puente-700 mb-6">
+              <li>Empiezas en el nivel 0: sala vacía y en silencio.</li>
+              <li>Cada estímulo tiene su control: ruido, luz, gente, voces.</li>
+              <li>Los cambios llegan despacio. Nada salta de golpe.</li>
+              <li>
+                El botón <strong>Pausa / Volver a la calma</strong> baja todo
+                en cuanto lo pulses.
+              </li>
+              <li>Entre niveles te preguntamos cómo te sientes. Tú decides si avanzas.</li>
+            </ul>
+            <button type="button" className="btn-primary w-full sm:w-auto" onClick={empezar}>
+              Empezar en la sala vacía
             </button>
-          ))}
-        </nav>
+            <p className="text-sm text-puente-500 mt-4">{CREDITO_AUDIO}</p>
+          </section>
+        )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div 
-              className="aspect-video rounded-tarjeta flex items-center justify-center relative overflow-hidden"
-              style={{
-                backgroundColor: `hsl(200, 20%, ${90 - nivelLuz * 0.4}%)`,
-              }}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center p-8">
-                  <p className="text-6xl mb-4" aria-hidden="true">
-                    {escena.id === 'entrada' && '🏛️'}
-                    {escena.id === 'seguridad' && '🚪'}
-                    {escena.id === 'espera' && '🪑'}
-                    {escena.id === 'sala' && '⚖️'}
-                  </p>
-                  <p className="text-xl font-bold text-puente-800">{escena.nombre}</p>
-                  <p className="text-puente-600 mt-2 max-w-md">{escena.descripcion}</p>
-                </div>
-              </div>
-              
-              {nivelGente > 50 && (
-                <div className="absolute bottom-4 left-4 right-4 flex justify-around opacity-50">
-                  {Array.from({ length: Math.floor(nivelGente / 20) }).map((_, i) => (
-                    <span key={i} className="text-3xl">👤</span>
-                  ))}
-                </div>
+        {fase !== 'intro' && (
+          <>
+            <div className="flex flex-wrap gap-3 mb-6">
+              <button
+                type="button"
+                className={`btn ${modoAudioguia ? 'btn-primary' : 'btn-secondary'}`}
+                aria-pressed={modoAudioguia}
+                onClick={() => setModoAudioguia((v) => !v)}
+              >
+                Modo audioguía
+              </button>
+              {audioListo && (
+                <span className="text-sm text-puente-500 self-center">
+                  Audio activo. Usa los controles o la pausa.
+                </span>
               )}
             </div>
 
-            <div className="card mt-4">
-              <div className="flex justify-between items-start mb-3">
-                <h2 className="font-bold text-puente-800">Audioguía</h2>
-                <BotonLeerEnVoz texto={escena.audioguia} etiqueta="Escuchar" />
-              </div>
-              <p className="text-puente-700">{escena.audioguia}</p>
-            </div>
-          </div>
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-4">
+                <EscenaSensorial nivel={nivel} valores={valores} enCalma={enCalma} />
 
-          <div className="space-y-4">
-            <div className="card">
-              <h2 className="font-bold text-puente-800 mb-4">Ajusta el ambiente</h2>
-              <p className="text-sm text-puente-600 mb-4">
-                Prueba cómo te sentirías con diferentes niveles de estímulos.
-              </p>
-
-              <div className="space-y-6">
-                <div>
-                  <label htmlFor="ruido" className="flex justify-between text-sm text-puente-700 mb-2">
-                    <span>Ruido</span>
-                    <span>{nivelRuido < 30 ? 'Poco' : nivelRuido < 70 ? 'Normal' : 'Mucho'}</span>
-                  </label>
-                  <input
-                    type="range"
-                    id="ruido"
-                    min="0"
-                    max="100"
-                    value={nivelRuido}
-                    onChange={(e) => setNivelRuido(Number(e.target.value))}
-                    className="w-full accent-puente-600"
-                  />
+                <div className="card">
+                  <div className="flex justify-between items-start gap-4 mb-3">
+                    <h2 className="font-bold text-puente-800">Audioguía</h2>
+                    <BotonLeerEnVoz texto={descripcionAudioguia} etiqueta="Escuchar sala" />
+                  </div>
+                  <p className="text-puente-700">{nivel.audioguia}</p>
+                  {modoAudioguia && (
+                    <p className="text-puente-600 mt-3 text-sm" aria-live="polite">
+                      Ahora: ruido {Math.round(valores.ruido)}, luz {Math.round(valores.luz)},
+                      gente {Math.round(valores.gente)}, eco {Math.round(valores.eco)}.
+                    </p>
+                  )}
                 </div>
 
-                <div>
-                  <label htmlFor="luz" className="flex justify-between text-sm text-puente-700 mb-2">
-                    <span>Luz</span>
-                    <span>{nivelLuz < 30 ? 'Tenue' : nivelLuz < 70 ? 'Normal' : 'Fuerte'}</span>
-                  </label>
-                  <input
-                    type="range"
-                    id="luz"
-                    min="0"
-                    max="100"
-                    value={nivelLuz}
-                    onChange={(e) => setNivelLuz(Number(e.target.value))}
-                    className="w-full accent-puente-600"
-                  />
-                </div>
+                <ControlesEstimulo
+                  valores={valores}
+                  onChange={onSlider}
+                  deshabilitado={enCalma}
+                />
 
-                <div>
-                  <label htmlFor="gente" className="flex justify-between text-sm text-puente-700 mb-2">
-                    <span>Gente</span>
-                    <span>{nivelGente < 30 ? 'Poca' : nivelGente < 70 ? 'Normal' : 'Mucha'}</span>
-                  </label>
-                  <input
-                    type="range"
-                    id="gente"
-                    min="0"
-                    max="100"
-                    value={nivelGente}
-                    onChange={(e) => setNivelGente(Number(e.target.value))}
-                    className="w-full accent-puente-600"
-                  />
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => setFase('checkin')}
+                  >
+                    ¿Cómo me siento?
+                  </button>
+                  {nivelActual < NIVELES.length - 1 && (
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={() => setFase('checkin')}
+                    >
+                      Quiero subir de nivel
+                    </button>
+                  )}
+                  {nivelActual > 0 && (
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      onClick={() => irANivel(nivelActual - 1)}
+                    >
+                      Bajar un nivel
+                    </button>
+                  )}
                 </div>
+              </div>
+
+              <div className="space-y-4">
+                <MapaNiveles
+                  nivelActual={nivelActual}
+                  nivelMaximo={progreso.nivelMaximo}
+                  onSeleccionar={(id) => irANivel(id)}
+                />
+                <PanelProgreso progreso={progreso} mensaje={mensaje} />
+
+                {progreso.molestias.length > 0 && (
+                  <div className="card border-2 border-accent-success">
+                    <h2 className="font-bold text-puente-800 mb-2">
+                      Para tu Pasaporte
+                    </h2>
+                    <p className="text-puente-600 mb-3">
+                      Marcaste estímulos que te molestan. Puedes pedir estos ajustes:
+                    </p>
+                    <ul className="space-y-2 mb-4">
+                      {ajustesDesdeMolestias(progreso.molestias).map((id) => (
+                        <li key={id} className="flex gap-2 text-puente-700">
+                          <span aria-hidden="true">✓</span>
+                          <span>
+                            {id === 'luz-tenue'
+                              ? 'Luz tenue en la sala'
+                              : 'Esperar en una sala tranquila'}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link href={enlacePasaporte} className="btn-primary w-full">
+                      Añadir a mi Pasaporte
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="card">
-              <h2 className="font-bold text-puente-800 mb-3">Consejos</h2>
-              <ul className="space-y-2">
-                {escena.consejos.map((consejo, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-accent-success shrink-0" aria-hidden="true">✓</span>
-                    <span className="text-puente-700 text-sm">{consejo}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {(nivelRuido > 60 || nivelLuz > 70 || nivelGente > 60) && (
-              <div className="bg-accent-alert/10 border border-accent-alert rounded-lg p-4">
-                <p className="text-sm text-puente-700">
-                  <strong>¿Te agobia este nivel?</strong> Puedes pedir esperar en un sitio más tranquilo. 
-                  Es tu derecho.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={() => setEscenaActual(Math.max(0, escenaActual - 1))}
-            disabled={escenaActual === 0}
-            className="btn-secondary disabled:opacity-50"
-          >
-            ← Anterior
-          </button>
-          <button
-            onClick={() => setEscenaActual(Math.min(ESCENAS.length - 1, escenaActual + 1))}
-            disabled={escenaActual === ESCENAS.length - 1}
-            className="btn-primary disabled:opacity-50"
-          >
-            Siguiente →
-          </button>
-        </div>
+            <p className="text-sm text-puente-500 mt-8">{CREDITO_AUDIO}</p>
+          </>
+        )}
       </main>
+
+      {fase !== 'intro' && (
+        <BotonCalma enCalma={enCalma} onPausa={pausarCalma} onReanudar={reanudar} />
+      )}
+
+      {fase === 'checkin' && (
+        <CheckInConfort
+          nivelNombre={nivel.nombre}
+          puedeBajar={nivelActual > 0}
+          onContinuar={(confort, molestias) => {
+            trasCheckIn(confort, molestias)
+            setFase('simulacion')
+            if (nivelActual < NIVELES.length - 1) {
+              irANivel(nivelActual + 1)
+            }
+          }}
+          onQuedarse={(confort, molestias) => {
+            trasCheckIn(confort, molestias)
+            setFase('simulacion')
+          }}
+          onBajarNivel={(confort, molestias) => {
+            trasCheckIn(confort, molestias)
+            setFase('simulacion')
+            irANivel(Math.max(0, nivelActual - 1))
+          }}
+        />
+      )}
     </>
   )
 }
