@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "docling": {
+      "command": "uvx",
+      "args": ["--from", "docling-mcp", "docling-mcp-server", "--transport", "stdio"],
+      "description": "Convierte PDF y DOCX en Markdown estructurado. Útil para procesar citaciones judiciales."
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "description": "Documentación actualizada de librerías (Next.js, FastAPI, etc.)"
+    }
+  }
+}
