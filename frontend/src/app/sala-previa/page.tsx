@@ -8,6 +8,7 @@ import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
 import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
 import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
+import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
@@ -84,14 +85,25 @@ export default function PaginaSalaPrevia() {
     [aplicarValores]
   )
 
-  const empezar = async () => {
+  const empezarNivel0 = async () => {
+    // El audio solo arranca aquí, tras el aviso de la intro.
     await motorRef.current?.iniciar()
     setAudioListo(true)
+    setEnCalma(false)
     setFase('simulacion')
-    setProgreso((p) => registrarPractica(marcarNivel(p, 0)))
-    aplicarValores(NIVELES[0].preset)
     setNivelActual(0)
-    setMensaje('Primer paso. Estás en la sala vacía.')
+    aplicarValores(NIVELES[0].preset)
+    setProgreso((p) => registrarPractica(marcarNivel(p, 0)))
+    setMensaje('Nivel 0. Sala casi vacía. Subes solo si quieres.')
+  }
+
+  const volverAIntro = () => {
+    motorRef.current?.detener(true)
+    setAudioListo(false)
+    setEnCalma(false)
+    setValores(ESTIMULOS_VACIOS)
+    setFase('intro')
+    setMensaje(null)
   }
 
   const pausarCalma = () => {
@@ -178,27 +190,7 @@ export default function PaginaSalaPrevia() {
           </p>
         </header>
 
-        {fase === 'intro' && (
-          <section className="card-destacada max-w-2xl">
-            <h2 className="text-2xl font-bold text-puente-800 mb-4">
-              Cómo funciona
-            </h2>
-            <ul className="space-y-3 text-puente-700 mb-6">
-              <li>Empiezas en el nivel 0: sala vacía y en silencio.</li>
-              <li>Cada estímulo tiene su control: ruido, luz, gente, voces.</li>
-              <li>Los cambios llegan despacio. Nada salta de golpe.</li>
-              <li>
-                El botón <strong>Pausa / Volver a la calma</strong> baja todo
-                en cuanto lo pulses.
-              </li>
-              <li>Entre niveles te preguntamos cómo te sientes. Tú decides si avanzas.</li>
-            </ul>
-            <button type="button" className="btn-primary w-full sm:w-auto" onClick={empezar}>
-              Empezar en la sala vacía
-            </button>
-            <p className="text-sm text-puente-500 mt-4">{CREDITO_AUDIO}</p>
-          </section>
-        )}
+        {fase === 'intro' && <IntroSalaPrevia onEmpezar={empezarNivel0} />}
 
         {fase !== 'intro' && (
           <>
@@ -210,6 +202,9 @@ export default function PaginaSalaPrevia() {
                 onClick={() => setModoAudioguia((v) => !v)}
               >
                 Modo audioguía
+              </button>
+              <button type="button" className="btn-ghost" onClick={volverAIntro}>
+                Ver intro otra vez
               </button>
               {audioListo && (
                 <span className="text-sm text-puente-500 self-center">
