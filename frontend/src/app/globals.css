@@ -18,15 +18,39 @@
   }
 
   body {
-    @apply bg-calma-cream text-puente-900;
+    @apply text-puente-900;
     font-size: 18px;
     line-height: 1.7;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+    background-color: #f4f9fa;
+    background-image:
+      radial-gradient(ellipse 120% 80% at 10% -10%, rgba(62, 163, 188, 0.18), transparent 55%),
+      radial-gradient(ellipse 90% 60% at 100% 0%, rgba(94, 163, 122, 0.12), transparent 50%),
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(26, 85, 102, 0.06), transparent 45%),
+      linear-gradient(180deg, #eef5f7 0%, #f4f9fa 40%, #e8f2f4 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  body > * {
+    position: relative;
+    z-index: 1;
   }
 
   *:focus-visible {
-    @apply outline-none ring-4 ring-puente-400 ring-offset-2 ring-offset-calma-cream;
+    @apply outline-none ring-4 ring-puente-400 ring-offset-2;
+    ring-offset-color: #f4f9fa;
   }
 
   h1, h2, h3, h4 {
@@ -37,9 +61,38 @@
 }
 
 @layer components {
+  .page-shell {
+    @apply max-w-3xl mx-auto px-4 py-8 md:py-10;
+  }
+
+  .page-shell-wide {
+    @apply max-w-5xl mx-auto px-4 py-8 md:py-10;
+  }
+
+  .page-hero {
+    @apply relative overflow-hidden mb-10;
+  }
+
+  .page-hero-bg {
+    @apply absolute inset-0 -z-10;
+    background:
+      radial-gradient(ellipse 80% 70% at 15% 20%, rgba(62, 163, 188, 0.22), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 10%, rgba(174, 220, 232, 0.45), transparent 55%),
+      linear-gradient(165deg, rgba(238, 247, 249, 0.95) 0%, rgba(232, 242, 244, 0.7) 100%);
+  }
+
+  .brand-mark {
+    @apply inline-flex items-center gap-3 text-puente-700 font-bold;
+  }
+
+  .brand-mark-lg {
+    @apply brand-mark text-4xl md:text-5xl tracking-tight;
+  }
+
   .btn {
     @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold cursor-pointer;
-    transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out), border-color 160ms var(--ease-out);
+    @apply focus:ring-4 focus:ring-puente-400 focus:ring-offset-2;
+    transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
     min-height: 56px;
     touch-action: manipulation;
   }
@@ -48,9 +101,14 @@
     transform: scale(0.97);
   }
 
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+    transform: none;
+  }
+
   .btn-primary {
-    @apply btn bg-puente-600 text-white;
-    @apply hover:bg-puente-700;
+    @apply btn bg-puente-600 text-white shadow-sm;
+    @apply hover:bg-puente-700 hover:shadow-md;
   }
 
   .btn-primary:active {
@@ -58,19 +116,18 @@
   }
 
   .btn-secondary {
-    @apply btn bg-calma-sand text-puente-700 border-2 border-puente-200;
-    @apply hover:bg-puente-100 hover:border-puente-300;
+    @apply btn bg-white/80 text-puente-700 border-2 border-puente-200 backdrop-blur-sm;
+    @apply hover:bg-puente-50 hover:border-puente-300;
   }
 
   .btn-ghost {
     @apply btn bg-transparent text-puente-600;
-    @apply hover:bg-puente-50;
+    @apply hover:bg-puente-100/70;
   }
 
   .card {
-    @apply bg-calma-mist rounded-tarjeta p-6 border border-puente-200;
-    box-shadow: 0 1px 0 rgb(26 59 70 / 0.04), 0 10px 24px rgb(26 59 70 / 0.05);
-    transition: border-color 180ms var(--ease-out);
+    @apply bg-white/90 backdrop-blur-sm rounded-tarjeta p-6 shadow-sm border border-puente-200;
+    transition: box-shadow 200ms ease-out, border-color 200ms ease-out, transform 200ms ease-out;
   }
 
   .card-destacada {
@@ -78,12 +135,13 @@
   }
 
   a.card, button.card {
-    @apply cursor-pointer;
+    @apply block text-left w-full cursor-pointer;
   }
 
   @media (hover: hover) and (pointer: fine) {
     a.card:hover, button.card:hover {
-      @apply border-puente-400;
+      @apply border-puente-400 shadow-md;
+      transform: translateY(-2px);
     }
   }
 
@@ -107,6 +165,14 @@
     @apply bg-puente-600 text-white;
   }
 
+  .pasos-nav {
+    @apply flex items-center gap-2 text-sm flex-wrap mb-8;
+  }
+
+  .pasos-nav [aria-current='step'] {
+    @apply font-bold text-puente-700;
+  }
+
   .input-accesible {
     @apply w-full px-5 py-4 text-lg rounded-suave border-2 border-puente-200 bg-white;
     @apply focus-visible:border-puente-500 focus-visible:ring-4 focus-visible:ring-puente-100;
@@ -120,19 +186,32 @@
   }
 
   .etiqueta {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-suave text-sm font-medium;
   }
 
   .etiqueta-info {
-    @apply etiqueta bg-accent-info/20 text-puente-700;
+    @apply etiqueta bg-accent-info/25 text-puente-800;
   }
 
   .etiqueta-exito {
-    @apply etiqueta bg-accent-success/20 text-puente-800;
+    @apply etiqueta bg-accent-success/25 text-puente-900;
   }
 
   .etiqueta-alerta {
-    @apply etiqueta bg-accent-alert/20 text-puente-800;
+    @apply etiqueta bg-accent-alert/25 text-puente-900;
+  }
+
+  .panel-suave {
+    @apply rounded-tarjeta bg-calma-sage/80 border border-puente-100 p-6 md:p-8;
+  }
+
+  .link-atras {
+    @apply inline-flex items-center gap-2 text-puente-600 hover:text-puente-800 font-medium mb-6;
+    transition: color 150ms ease-out;
+  }
+
+  .avatar-inicial {
+    @apply w-20 h-20 rounded-full bg-gradient-to-br from-puente-500 to-puente-700 text-white flex items-center justify-center text-3xl font-bold shadow-md;
   }
 }
 
@@ -163,6 +242,11 @@
     white-space: nowrap;
     border-width: 0;
   }
+
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.12s; }
+  .stagger-3 { animation-delay: 0.2s; }
+  .stagger-4 { animation-delay: 0.28s; }
 }
 
 @keyframes sala-flicker-soft {
@@ -196,9 +280,6 @@
   box-shadow: 0 1px 0 rgb(26 59 70 / 0.06), 0 16px 32px rgb(26 59 70 / 0.06);
   transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
   touch-action: manipulation;
-}
-
-.hoja {
   cursor: pointer;
 }
 
@@ -249,5 +330,9 @@
 
   .sala-flicker {
     animation: none !important;
+  }
+
+  a.card:hover, button.card:hover {
+    transform: none;
   }
 }

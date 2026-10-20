@@ -7,29 +7,29 @@ module.exports = {
     extend: {
       colors: {
         puente: {
-          50: '#f0f7f9',
-          100: '#d9eef3',
-          200: '#b3dce7',
-          300: '#7cc3d6',
+          50: '#eef7f9',
+          100: '#d5eef3',
+          200: '#aedce8',
+          300: '#78c3d4',
           400: '#3fa3bc',
-          500: '#2a8299',
-          600: '#1e6a7f',
+          500: '#268399',
+          600: '#1c6a7f',
           700: '#1a5566',
-          800: '#1a4652',
-          900: '#1a3b46',
-          950: '#0d252e',
+          800: '#164652',
+          900: '#153b45',
+          950: '#0c252e',
         },
         calma: {
-          cream: '#eef1ee',
-          sand: '#e3eae6',
-          sage: '#d7e2dc',
-          mist: '#f7f8f6',
+          cream: '#f4f9fa',
+          sand: '#e8f2f4',
+          sage: '#dfece8',
+          mist: '#eef5f7',
         },
         accent: {
-          warm: '#e8a87c',
-          success: '#7eb88c',
-          alert: '#d4a373',
-          info: '#8cb4c9',
+          warm: '#c4896a',
+          success: '#5ea37a',
+          alert: '#c49a5c',
+          info: '#6a9eb8',
         }
       },
       fontFamily: {
@@ -46,7 +46,21 @@ module.exports = {
       borderRadius: {
         'suave': '0.75rem',
         'tarjeta': '0.75rem',
-      }
+      },
+      keyframes: {
+        'rise-in': {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'fade-soft': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'rise-in': 'rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'fade-soft': 'fade-soft 0.7s ease-out both',
+      },
     },
   },
   plugins: [],
