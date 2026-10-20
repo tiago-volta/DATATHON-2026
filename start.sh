@@ -16,6 +16,9 @@ limpiar() {
   echo "Cerrando PUENTE..."
   [[ -n "$PID_FRONTEND" ]] && kill "$PID_FRONTEND" 2>/dev/null || true
   [[ -n "$PID_BACKEND" ]] && kill "$PID_BACKEND" 2>/dev/null || true
+  # Hijos de next/uvicorn
+  pkill -P "$PID_FRONTEND" 2>/dev/null || true
+  pkill -P "$PID_BACKEND" 2>/dev/null || true
   wait 2>/dev/null || true
   echo "Listo."
 }
@@ -30,22 +33,20 @@ necesita() {
 
 necesita python3
 necesita npm
+necesita curl
 
 echo "==> Backend"
 cd "$ROOT/backend"
 if [[ ! -d venv ]]; then
   python3 -m venv venv
 fi
-# shellcheck disable=SC1091
-source venv/bin/activate
-pip install -q -r requirements.txt
+./venv/bin/pip install -q -r requirements.txt
 if [[ ! -f .env && -f .env.example ]]; then
   cp .env.example .env
   echo "    Creado backend/.env desde .env.example"
 fi
-uvicorn app.main:app --reload --host 127.0.0.1 --port "$BACKEND_PORT" &
+./venv/bin/uvicorn app.main:app --reload --host 127.0.0.1 --port "$BACKEND_PORT" &
 PID_BACKEND=$!
-deactivate 2>/dev/null || true
 
 echo "==> Frontend"
 cd "$ROOT/frontend"
@@ -64,7 +65,6 @@ echo ""
 echo "Ctrl+C para parar ambos."
 echo ""
 
-# Espera a que el frontend responda (hasta ~60s)
 for _ in $(seq 1 60); do
   if curl -sf "http://127.0.0.1:$FRONTEND_PORT" >/dev/null 2>&1; then
     break
@@ -72,7 +72,6 @@ for _ in $(seq 1 60); do
   sleep 1
 done
 
-# Abrir navegador si se puede (macOS / Linux con xdg)
 if [[ "${OPEN_BROWSER:-1}" != "0" ]]; then
   if command -v open >/dev/null 2>&1; then
     open "http://localhost:$FRONTEND_PORT" 2>/dev/null || true

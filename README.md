@@ -54,26 +54,34 @@ graph TB
 
 ## Ejecutar
 
+### Un solo comando (recomendado)
+
+```bash
+chmod +x start.sh   # solo la primera vez
+./start.sh
+```
+
+Instala dependencias si faltan, arranca API (:8000) y web (:3000), y abre el navegador.  
+`Ctrl+C` para parar ambos. Sin abrir navegador: `OPEN_BROWSER=0 ./start.sh`.
+
 ### Requisitos
 
 - Python 3.11+
 - Node.js 18+
-- npm o pnpm
+- npm
 
-### Backend
+### A mano (si prefieres)
 
 ```bash
+# Backend
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env
 uvicorn app.main:app --reload --port 8000
-```
 
-### Frontend
-
-```bash
+# Frontend (otra terminal)
 cd frontend
 npm install
 npm run dev
