@@ -1,5 +1,7 @@
 'use client'
 
+import { useId } from 'react'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { NIVELES } from '@/lib/sala-previa/niveles'
 
 interface Props {
@@ -8,51 +10,167 @@ interface Props {
   onSeleccionar: (nivel: number) => void
 }
 
-export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) {
+type EstadoNivel = 'actual' | 'desbloqueado' | 'bloqueado'
+
+function estadoDeNivel(id: number, nivelActual: number, nivelMaximo: number): EstadoNivel {
+  if (id === nivelActual) return 'actual'
+  if (id <= nivelMaximo) return 'desbloqueado'
+  return 'bloqueado'
+}
+
+function IconoHecho() {
   return (
-    <nav aria-label="Mapa de niveles de la sala" className="card">
-      <h2 className="font-bold text-puente-800 mb-4">Niveles de estímulo</h2>
-      <ol className="flex flex-col gap-3">
+    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path
+        d="M4.5 10.5 8 14l7.5-8"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function IconoAqui() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="2" />
+      <circle cx="10" cy="10" r="2.75" fill="currentColor" />
+    </svg>
+  )
+}
+
+function IconoTodaviaNo() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="2" strokeDasharray="3 3" />
+      <path d="M7.5 10h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+const META_ESTADO: Record<
+  EstadoNivel,
+  {
+    etiqueta: string
+    explicacion: string
+    Icono: () => JSX.Element
+  }
+> = {
+  actual: {
+    etiqueta: 'Estás aquí',
+    explicacion: 'Nivel en el que estás ahora.',
+    Icono: IconoAqui,
+  },
+  desbloqueado: {
+    etiqueta: 'Hecho',
+    explicacion: 'Ya lo practicaste. Puedes volver cuando quieras.',
+    Icono: IconoHecho,
+  },
+  bloqueado: {
+    etiqueta: 'Todavía no',
+    explicacion: 'Este nivel se abre cuando subas a tu ritmo.',
+    Icono: IconoTodaviaNo,
+  },
+}
+
+export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) {
+  const reduced = useReducedMotion()
+  const tituloId = useId()
+  const ayudaId = useId()
+
+  return (
+    <nav aria-labelledby={tituloId} className="card">
+      <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+        Tu mapa de niveles
+      </h2>
+      <p id={ayudaId} className="text-sm text-puente-700 mb-4">
+        Seis pasos, del silencio a la sala llena. Solo avanzas si tú quieres.
+      </p>
+
+      <ol className="flex flex-col gap-2" aria-describedby={ayudaId}>
         {NIVELES.map((nivel) => {
-          const alcanzable = nivel.id <= nivelMaximo + 1
-          const visitado = nivel.id <= nivelMaximo
-          const actual = nivel.id === nivelActual
+          const estado = estadoDeNivel(nivel.id, nivelActual, nivelMaximo)
+          const meta = META_ESTADO[estado]
+          const { Icono } = meta
+          const desbloqueado = estado !== 'bloqueado'
+          const estadoId = `mapa-nivel-${nivel.id}-estado`
 
           return (
             <li key={nivel.id}>
               <button
                 type="button"
-                onClick={() => onSeleccionar(nivel.id)}
-                disabled={!alcanzable}
-                className={`w-full text-left flex items-center gap-3 p-3 min-h-[56px] rounded-suave border-2 ${
-                  actual
-                    ? 'border-puente-500 bg-puente-50'
-                    : visitado
-                      ? 'border-puente-200 bg-white hover:border-puente-300'
-                      : 'border-puente-100 bg-calma-cream text-puente-600'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-                style={{ transition: 'border-color 200ms ease-out, background-color 200ms ease-out' }}
-                aria-current={actual ? 'step' : undefined}
+                onClick={() => {
+                  if (desbloqueado) onSeleccionar(nivel.id)
+                }}
+                disabled={!desbloqueado}
+                aria-disabled={!desbloqueado}
+                aria-current={estado === 'actual' ? 'step' : undefined}
+                aria-describedby={estadoId}
+                className={`w-full text-left flex items-center gap-3 px-3 py-3 min-h-[48px] rounded-suave border-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400 focus-visible:ring-offset-2 ${
+                  estado === 'actual'
+                    ? 'border-puente-600 bg-puente-50 shadow-sm'
+                    : estado === 'desbloqueado'
+                      ? 'border-puente-200 bg-white hover:border-puente-400 hover:bg-calma-mist/40'
+                      : 'border-puente-100 bg-calma-mist/50 text-puente-700 cursor-not-allowed'
+                }`}
+                style={{
+                  transition: reduced
+                    ? 'none'
+                    : 'border-color 180ms ease-out, background-color 180ms ease-out',
+                }}
               >
                 <span
-                  className={`paso-indicador shrink-0 w-10 h-10 text-base ${
-                    actual ? 'bg-puente-600 text-white' : visitado ? 'bg-accent-success/30 text-puente-800' : ''
+                  className={`shrink-0 flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-suave border-2 ${
+                    estado === 'actual'
+                      ? 'border-puente-600 bg-puente-600 text-white'
+                      : estado === 'desbloqueado'
+                        ? 'border-accent-success/60 bg-accent-success/20 text-puente-800'
+                        : 'border-puente-200 bg-white text-puente-600'
                   }`}
                   aria-hidden="true"
                 >
-                  {visitado && !actual ? '✓' : nivel.id}
+                  <Icono />
                 </span>
-                <span>
-                  <span className="font-bold block text-puente-800">{nivel.nombre}</span>
-                  <span className="text-sm text-puente-600">{nivel.descripcion}</span>
+
+                <span className="flex-1 min-w-0">
+                  <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <span className="font-bold text-puente-800">
+                      Nivel {nivel.id}. {nivel.nombre}
+                    </span>
+                    <span
+                      id={estadoId}
+                      className={`text-sm font-medium ${
+                        estado === 'actual'
+                          ? 'text-puente-800'
+                          : estado === 'desbloqueado'
+                            ? 'text-puente-700'
+                            : 'text-puente-600'
+                      }`}
+                    >
+                      {meta.etiqueta}
+                      <span className="sr-only">. {meta.explicacion}</span>
+                    </span>
+                  </span>
+                  <span className="block text-sm text-puente-700 mt-0.5">
+                    {nivel.descripcion}
+                  </span>
                 </span>
+
+                {desbloqueado && estado !== 'actual' && (
+                  <span className="shrink-0 text-sm text-puente-700 font-medium hidden sm:inline">
+                    Volver
+                  </span>
+                )}
               </button>
             </li>
           )
         })}
       </ol>
+
       <p className="text-sm text-puente-700 mt-4">
-        Solo avanzas cuando tú quieras. No hay límite de tiempo.
+        No hay puntos ni ranking. Puedes repetir un nivel hecho cuando quieras.
       </p>
     </nav>
   )
