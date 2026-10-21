@@ -42,14 +42,9 @@ export function ResumenPerfil() {
           Crea una cuenta con tu email. Así guardamos tu perfil y tu progreso
           aunque cambies de dispositivo.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
-          <Link href="/registro" className="btn-primary">
-            Crear cuenta
-          </Link>
-          <Link href="/login" className="btn-secondary">
-            Entrar
-          </Link>
-        </div>
+        <p className="text-court-700 max-w-[40ch] mt-4">
+          Pulsa Crear cuenta o Entrar, arriba a la derecha.
+        </p>
       </section>
     )
   }

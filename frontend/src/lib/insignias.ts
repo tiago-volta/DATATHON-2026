@@ -108,7 +108,7 @@ export const TOTAL_INSIGNIAS = INSIGNIAS_UTILES.length
 /** Apartados de la app con medallas propias (panel inferior). */
 export type ApartadoInsignias = 'pasaporte' | 'ensaya' | 'sala-previa'
 
-/** Medallas relacionadas con cada sección (el perfil de cabecera muestra todas). */
+/** Medallas relacionadas con cada sección (el perfil muestra todas). */
 export const INSIGNIAS_POR_APARTADO: Record<ApartadoInsignias, IdInsigniaUtil[]> = {
   pasaporte: ['pedi-ajustes'],
   ensaya: [
@@ -132,7 +132,7 @@ export function insigniasDeApartado(apartado: ApartadoInsignias): InsigniaUtil[]
   return ids.map((id) => metaInsignia(id))
 }
 
-/** Evento en window cuando cambian las medallas (cabecera / otras pestañas). */
+/** Evento en window cuando cambian las medallas (perfil y otras pestañas). */
 export const EVENTO_INSIGNIAS = 'InclusiveCourt:insignias-cambiadas'
 
 export function avisarCambioInsignias(ids: IdInsigniaUtil[]) {

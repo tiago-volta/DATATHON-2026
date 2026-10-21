@@ -15,6 +15,7 @@ import {
 } from '@/lib/perfil/perfil'
 import { sanitizarNombre, validarNombre } from '@/lib/pasaporte'
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
+import { MedallasPerfil } from '@/components/perfil/MedallasPerfil'
 
 export default function PaginaPerfil() {
   const router = useRouter()
@@ -241,6 +242,8 @@ export default function PaginaPerfil() {
           </button>
         </div>
       </form>
+
+      <MedallasPerfil />
     </main>
   )
 }

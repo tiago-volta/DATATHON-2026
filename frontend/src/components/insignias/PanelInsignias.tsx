@@ -41,7 +41,7 @@ export function PanelInsignias({
     titulo ??
     (apartado ? TITULO_INSIGNIAS_APARTADO[apartado] : 'Insignias útiles')
   const ayuda = apartado
-    ? 'Medallas que puedes conseguir en este apartado. El resto está en tu perfil (arriba a la derecha).'
+    ? 'Medallas que puedes conseguir en este apartado. El resto está en tu perfil.'
     : 'Premian cuidarte y practicar a tu ritmo. No hay ranking ni reloj.'
 
   const cuerpo = (
