@@ -15,8 +15,12 @@ import { MedidorConfianza } from '@/components/sala-previa/MedidorConfianza'
 import { PanelLoQueTeAyuda } from '@/components/sala-previa/PanelLoQueTeAyuda'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
+import { BotonEscucharPedido } from '@/components/voz/BotonEscucharPedido'
+import { EscuchaContinuaAudioguia } from '@/components/voz/EscuchaContinuaAudioguia'
 import { useAudioguiaSala } from '@/hooks/useAudioguiaSala'
 import { useConfianza } from '@/hooks/useConfianza'
+import { useModoVoz } from '@/hooks/useModoVoz'
+import type { ResultadoPeticionVoz } from '@/lib/voz/asistenteVoz'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
@@ -109,6 +113,41 @@ export default function PaginaSalaPrevia() {
   }, [])
 
   const audioguia = useAudioguiaSala({ atenuarParaVoz })
+  const modoVoz = useModoVoz()
+
+  const alPedidoVoz = useCallback(
+    (r: ResultadoPeticionVoz) => {
+      if (r.accion === 'activar_modo_voz') {
+        modoVoz.activar()
+        audioguia.anunciarEnVoz(r.respuestaHabla)
+        return
+      }
+      if (r.accion === 'repetir_ultimo') {
+        audioguia.repetirUltimo()
+        return
+      }
+      if (r.accion === 'parar_voz') {
+        audioguia.pararSintesis()
+        return
+      }
+      if (r.accion === 'ralentizar') {
+        // Mock: relee el último bloque (el TTS natural no expone rate fácilmente).
+        audioguia.anunciarEnVoz(r.respuestaHabla)
+        window.setTimeout(() => audioguia.repetirUltimo(), 1200)
+        return
+      }
+      // explicar, ayuda, desconocido…
+      audioguia.anunciarEnVoz(r.respuestaHabla)
+    },
+    // Métodos estables del hook; evitamos depender del objeto entero.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intencional
+    [
+      modoVoz.activar,
+      audioguia.repetirUltimo,
+      audioguia.pararSintesis,
+      audioguia.anunciarEnVoz,
+    ]
+  )
 
   const contextoAudioguia = useMemo(
     () => ({
@@ -398,6 +437,11 @@ export default function PaginaSalaPrevia() {
 
         {fase !== 'intro' && (
           <>
+            <EscuchaContinuaAudioguia
+              audioguiaActiva={audioguia.activo}
+              hablando={audioguia.hablando}
+              onResultado={alPedidoVoz}
+            />
             <div className="flex flex-wrap gap-3 mb-6 items-center">
               <button
                 type="button"
@@ -410,6 +454,9 @@ export default function PaginaSalaPrevia() {
               >
                 {audioguia.etiquetaBoton}
               </button>
+              {(modoVoz.activo || audioguia.activo) && (
+                <BotonEscucharPedido onResultado={alPedidoVoz} siempreVisible />
+              )}
               <button type="button" className="btn-ghost" onClick={volverAIntro}>
                 Ver intro otra vez
               </button>
@@ -420,7 +467,7 @@ export default function PaginaSalaPrevia() {
               )}
               {audioguia.hablando && (
                 <span className="text-sm text-puente-700 self-center">
-                  Audioguía en curso. Puedes pausar o pararla.
+                  Audioguía en curso. Di «repite» o pulsa Escuchar pedido.
                 </span>
               )}
             </div>

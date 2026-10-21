@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
         >
           Ir al contenido principal
         </a>
+        <OnboardingVoz />
         {children}
       </body>
     </html>

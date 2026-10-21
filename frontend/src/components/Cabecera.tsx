@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { IndicadorModoVoz } from '@/components/voz/IndicadorModoVoz'
 
 export function Cabecera() {
   return (
@@ -14,9 +15,12 @@ export function Cabecera() {
           <span className="text-2xl font-bold tracking-tight" translate="no">PUENTE</span>
         </Link>
 
-        <Link href="/pasaporte" className="font-bold text-puente-800 underline underline-offset-4 hover:text-puente-600 shrink-0">
-          Mi Pasaporte
-        </Link>
+        <div className="flex items-center gap-4 shrink-0">
+          <IndicadorModoVoz />
+          <Link href="/pasaporte" className="font-bold text-puente-800 underline underline-offset-4 hover:text-puente-600">
+            Mi Pasaporte
+          </Link>
+        </div>
       </nav>
     </header>
   )

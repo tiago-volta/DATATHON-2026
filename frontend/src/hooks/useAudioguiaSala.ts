@@ -5,6 +5,7 @@ import {
   construirBloquesAudioguia,
   leerBloquesEnVoz,
   vozNaturalDisponible,
+  type BloqueAudioguia,
   type ContextoAudioguia,
 } from '@/lib/sala-previa/audioguia'
 
@@ -17,6 +18,7 @@ export interface ControlesAmbientales {
  * Modo audioguía de Sala Previa.
  * Voz natural vía /api/tts (edge-tts); fallback speechSynthesis.
  * Solo arranca con gesto del usuario (clic del botón). No auto-inicia.
+ * Guarda el último guion leído para `repetirUltimo()` (Modo con voz).
  */
 export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
   const [activo, setActivo] = useState(false)
@@ -25,6 +27,8 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
   const [sinSoporte, setSinSoporte] = useState(false)
   const cancelarRef = useRef<(() => void) | null>(null)
   const contextoRef = useRef<ContextoAudioguia | null>(null)
+  /** Últimos bloques hablados (para «repite» / «otra vez»). */
+  const ultimoGuionRef = useRef<BloqueAudioguia[]>([])
   const ambientalesRef = useRef(ambientales)
   ambientalesRef.current = ambientales
 
@@ -39,32 +43,44 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
     ambientalesRef.current?.atenuarParaVoz(false)
   }, [])
 
-  const leerContexto = useCallback((ctx: ContextoAudioguia) => {
-    if (!vozNaturalDisponible()) {
-      setSinSoporte(true)
-      setAnuncio(
-        'Tu navegador no puede leer en voz alta. Puedes seguir con el lector de pantalla.'
-      )
-      return
-    }
+  const hablarBloques = useCallback(
+    (bloques: BloqueAudioguia[], anuncioInicio?: string) => {
+      if (!vozNaturalDisponible()) {
+        setSinSoporte(true)
+        setAnuncio(
+          'Tu navegador no puede leer en voz alta. Puedes seguir con el lector de pantalla.'
+        )
+        return
+      }
+      if (bloques.length === 0) return
 
-    pararSintesis()
-    contextoRef.current = ctx
-    const bloques = construirBloquesAudioguia(ctx)
+      pararSintesis()
+      ultimoGuionRef.current = bloques
+      if (anuncioInicio) setAnuncio(anuncioInicio)
 
-    // Ducking: baja un poco el ambiente mientras habla la guía (sigue audible, no se corta).
-    ambientalesRef.current?.atenuarParaVoz(true)
-    setHablando(true)
+      ambientalesRef.current?.atenuarParaVoz(true)
+      setHablando(true)
 
-    const { cancelar } = leerBloquesEnVoz(bloques, {
-      onFin: () => {
-        cancelarRef.current = null
-        setHablando(false)
-        ambientalesRef.current?.atenuarParaVoz(false)
-      },
-    })
-    cancelarRef.current = cancelar
-  }, [pararSintesis])
+      const { cancelar } = leerBloquesEnVoz(bloques, {
+        onFin: () => {
+          cancelarRef.current = null
+          setHablando(false)
+          ambientalesRef.current?.atenuarParaVoz(false)
+        },
+      })
+      cancelarRef.current = cancelar
+    },
+    [pararSintesis]
+  )
+
+  const leerContexto = useCallback(
+    (ctx: ContextoAudioguia) => {
+      contextoRef.current = ctx
+      const bloques = construirBloquesAudioguia(ctx)
+      hablarBloques(bloques)
+    },
+    [hablarBloques]
+  )
 
   const activar = useCallback(
     (ctx: ContextoAudioguia) => {
@@ -120,6 +136,35 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
     }
   }, [activo, hablando, pararSintesis])
 
+  /**
+   * Vuelve a hablar el último guion. Si no hay, reconstruye desde el contexto actual.
+   * Usado por el intent `repetir` del Modo con voz.
+   */
+  const repetirUltimo = useCallback(() => {
+    const guardado = ultimoGuionRef.current
+    if (guardado.length > 0) {
+      hablarBloques(guardado, 'Te lo repito.')
+      return true
+    }
+    const ctx = contextoRef.current
+    if (ctx) {
+      const bloques = construirBloquesAudioguia({ ...ctx, soloBloqueActual: true })
+      hablarBloques(bloques, 'Te lo repito.')
+      return true
+    }
+    setAnuncio('Aún no hay nada que repetir. Activa la audioguía primero.')
+    return false
+  }, [hablarBloques])
+
+  /** Anuncia y habla un texto suelto (respuestas del asistente). */
+  const anunciarEnVoz = useCallback(
+    (texto: string) => {
+      if (!texto.trim()) return
+      hablarBloques([texto.trim()])
+    },
+    [hablarBloques]
+  )
+
   useEffect(() => {
     return () => {
       cancelarRef.current?.()
@@ -137,6 +182,9 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
     desactivar,
     alCambiarContexto,
     alCalma,
+    repetirUltimo,
+    anunciarEnVoz,
+    pararSintesis,
     etiquetaBoton: activo ? 'Parar audioguía' : 'Modo audioguía',
   }
 }

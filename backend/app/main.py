@@ -18,6 +18,7 @@ from .llm import procesar_citacion, analizar_pregunta
 from .arasaac import obtener_pictogramas
 from .calendario import generar_ics
 from .tts import MAX_CARACTERES, sintetizar_mp3, sanitizar_texto
+from .voz import interpretar_peticion
 from .mock_data import (
     MOCK_CITACION_LUIS,
     MOCK_CITACION_JUAN,
@@ -213,6 +214,27 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+class VozInput(BaseModel):
+    texto: str
+
+    @field_validator("texto")
+    @classmethod
+    def validar_texto_voz(cls, v: str) -> str:
+        limpio = (v or "").strip()
+        if len(limpio) > 500:
+            raise ValueError("El texto de voz es demasiado largo.")
+        return limpio
+
+
+@app.post("/api/voz/interpretar")
+async def voz_interpretar(input_data: VozInput):
+    """
+    Interpreta una petición hablada (MOCK por keywords).
+    TODO(Gemini): sustituir el cuerpo por LLM manteniendo el mismo JSON.
+    """
+    return interpretar_peticion(input_data.texto)
 
 
 @app.post("/api/tts")
