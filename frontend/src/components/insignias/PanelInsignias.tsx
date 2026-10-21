@@ -36,7 +36,7 @@ export function PanelInsignias({
         Premian cuidarte y practicar a tu ritmo. No hay ranking ni reloj.
       </p>
 
-      <ul className="grid grid-cols-3 sm:grid-cols-5 gap-3" aria-describedby={ayudaId}>
+      <ul className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3" aria-describedby={ayudaId}>
         {INSIGNIAS_UTILES.map((ins) => {
           const conseguida = conseguidas.includes(ins.id)
           const tipId = `${tipBaseId}-${ins.id}`

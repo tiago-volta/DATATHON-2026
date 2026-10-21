@@ -75,6 +75,18 @@ export function IconoInsignia({
       {id === 'primera-calma' && <PictogramaCalma desbloqueada={desbloqueada} />}
       {id === 'pedi-ajustes' && <PictogramaAjustes desbloqueada={desbloqueada} />}
       {id === 'ensaye-1-nivel' && <PictogramaEnsayo desbloqueada={desbloqueada} />}
+      {id === 'ensaya-nivel-1' && (
+        <PictogramaEnsayaNivel desbloqueada={desbloqueada} marcas={1} />
+      )}
+      {id === 'ensaya-nivel-2' && (
+        <PictogramaEnsayaNivel desbloqueada={desbloqueada} marcas={2} />
+      )}
+      {id === 'ensaya-nivel-3' && (
+        <PictogramaEnsayaNivel desbloqueada={desbloqueada} marcas={3} />
+      )}
+      {id === 'ensaye-con-calma' && (
+        <PictogramaEnsayeConCalma desbloqueada={desbloqueada} />
+      )}
       {id === 'casi-listo' && <PictogramaCasiListo desbloqueada={desbloqueada} />}
       {id === 'testigo-en-forma' && (
         <PictogramaTestigo desbloqueada={desbloqueada} />
@@ -154,6 +166,63 @@ function PictogramaEnsayo({ desbloqueada }: { desbloqueada: boolean }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </g>
+  )
+}
+
+/** Bloques 1–3 de Ensaya: barras de progreso calmadas. */
+function PictogramaEnsayaNivel({
+  desbloqueada,
+  marcas,
+}: {
+  desbloqueada: boolean
+  marcas: 1 | 2 | 3
+}) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  const ok = desbloqueada ? '#5EA37A' : '#9AADB5'
+  const xs = [22, 32, 42] as const
+  return (
+    <g>
+      {xs.map((x, i) => (
+        <circle
+          key={x}
+          cx={x}
+          cy="38"
+          r="4"
+          fill={i < marcas ? ok : 'none'}
+          stroke={c}
+          strokeWidth="1.75"
+          strokeDasharray={i < marcas ? undefined : '2 2'}
+        />
+      ))}
+      <path
+        d="M20 48h24"
+        stroke={c}
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.45"
+      />
+    </g>
+  )
+}
+
+function PictogramaEnsayeConCalma({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  const soft = desbloqueada ? '#5EA37A' : '#9AADB5'
+  return (
+    <g>
+      <path
+        d="M32 46c0-8 6-12 6-18C32 30 28 36 28 42c0 2.5 1.6 4 4 4z"
+        fill={c}
+        opacity="0.85"
+      />
+      <path
+        d="M24 36c2.5-1 5.5-1 8 0"
+        stroke={soft}
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <circle cx="38" cy="30" r="2" fill={soft} />
     </g>
   )
 }

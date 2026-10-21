@@ -1,13 +1,17 @@
 /**
  * Insignias útiles (Fase 3.2): premian conductas de cuidado, no la velocidad.
  * Persistencia propia en localStorage, compartida entre Sala Previa, Pasaporte y Ensaya.
- * Las 3 originales se mantienen; se añaden refuerzos por nivel (3 y 5).
+ * Las originales se mantienen; Ensaya añade medallas por nivel (ids nuevos, sin romper los viejos).
  */
 
 export type IdInsigniaUtil =
   | 'primera-calma'
   | 'pedi-ajustes'
   | 'ensaye-1-nivel'
+  | 'ensaya-nivel-1'
+  | 'ensaya-nivel-2'
+  | 'ensaya-nivel-3'
+  | 'ensaye-con-calma'
   | 'casi-listo'
   | 'testigo-en-forma'
 
@@ -53,6 +57,35 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
     pictograma: 'ensayo',
   },
   {
+    id: 'ensaya-nivel-1',
+    nombre: 'Nivel 1 de Ensaya',
+    porQueImporta: 'Completaste las preguntas claras. Buen primer paso.',
+    comoConseguirla: 'En Ensaya, termina el bloque «Preguntas claras».',
+    pictograma: 'ensayo-1',
+  },
+  {
+    id: 'ensaya-nivel-2',
+    nombre: 'Nivel 2 de Ensaya',
+    porQueImporta: 'Practicaste preguntas más concretas. Vas a tu ritmo.',
+    comoConseguirla: 'En Ensaya, termina el bloque «Preguntas de los abogados».',
+    pictograma: 'ensayo-2',
+  },
+  {
+    id: 'ensaya-nivel-3',
+    nombre: 'Nivel 3 de Ensaya',
+    porQueImporta: 'Ensayaste preguntas difíciles. Pedir que te las aclaren está bien.',
+    comoConseguirla: 'En Ensaya, termina el bloque «Preguntas difíciles».',
+    pictograma: 'ensayo-3',
+  },
+  {
+    id: 'ensaye-con-calma',
+    nombre: 'Ensayé con calma',
+    porQueImporta: 'Te sentiste bien al terminar un bloque. Eso también cuenta.',
+    comoConseguirla:
+      'Al terminar un nivel de Ensaya, responde «Bien» en el check-in de confort.',
+    pictograma: 'calma-ensayo',
+  },
+  {
     id: 'casi-listo',
     nombre: 'Casi listo',
     porQueImporta: 'Muy bien, ya casi estás.',
@@ -73,6 +106,13 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
 export const TOTAL_INSIGNIAS = INSIGNIAS_UTILES.length
 
 const IDS_VALIDOS = new Set<string>(INSIGNIAS_UTILES.map((i) => i.id))
+
+/** Mapa nivel Ensaya (1–3) → medalla concreta. */
+export const MEDALLA_NIVEL_ENSAYA: Record<1 | 2 | 3, IdInsigniaUtil> = {
+  1: 'ensaya-nivel-1',
+  2: 'ensaya-nivel-2',
+  3: 'ensaya-nivel-3',
+}
 
 function sanitizar(ids: unknown): IdInsigniaUtil[] {
   if (!Array.isArray(ids)) return []
@@ -121,6 +161,25 @@ export function desbloquearInsigniaUtil(id: IdInsigniaUtil): ResultadoDesbloqueo
   const insignias = [...actuales, id]
   guardarInsigniasUtiles(insignias)
   return { nueva: true, insignias }
+}
+
+/**
+ * Al completar un bloque de Ensaya: medalla del nivel + `ensaye-1-nivel` (compat).
+ * Devuelve la primera medalla nueva (para el toast), priorizando la del nivel.
+ */
+export function desbloquearMedallaNivelEnsaya(
+  nivel: 1 | 2 | 3
+): { nuevas: IdInsigniaUtil[]; toastId: IdInsigniaUtil | null } {
+  const idNivel = MEDALLA_NIVEL_ENSAYA[nivel]
+  const rNivel = desbloquearInsigniaUtil(idNivel)
+  const rLegacy = desbloquearInsigniaUtil('ensaye-1-nivel')
+  const nuevas: IdInsigniaUtil[] = []
+  if (rNivel.nueva) nuevas.push(idNivel)
+  if (rLegacy.nueva) nuevas.push('ensaye-1-nivel')
+  return {
+    nuevas,
+    toastId: rNivel.nueva ? idNivel : rLegacy.nueva ? 'ensaye-1-nivel' : null,
+  }
 }
 
 /**

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
+import { CheckInConfortEnsaya } from '@/components/ensaya/CheckInConfortEnsaya'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { Pictograma } from '@/components/Pictograma'
@@ -11,7 +12,9 @@ import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
+import { MEDALLA_NIVEL_ENSAYA } from '@/lib/insignias'
 import { nivelSensorialConservado } from '@/lib/sala-previa/progreso'
+import type { ConfortCheckIn } from '@/lib/sala-previa/tipos'
 
 /** Pictogramas ARASAAC (CC BY-NC-SA, Sergio Palao / Gobierno de Aragón). */
 function urlArasaac(id: number) {
@@ -186,6 +189,8 @@ export default function PaginaEnsaya() {
   const [completado, setCompletado] = useState(false)
   /** Nivel de Ensaya acabado: muestra CTA a Sala Previa antes de seguir. */
   const [nivelAcabado, setNivelAcabado] = useState<number | null>(null)
+  /** Check-in de confort tras completar un bloque (antes de CTAs). */
+  const [checkInPendiente, setCheckInPendiente] = useState(false)
   const [preguntasRespondidas, setPreguntasRespondidas] = useState(0)
   const {
     conseguidas: insigniasUtiles,
@@ -229,6 +234,35 @@ export default function PaginaEnsaya() {
     setNivelAcabado(null)
   }
 
+  /** Medalla del bloque + compat `ensaye-1-nivel` (toast = medalla del nivel). */
+  const desbloquearMedallasBloque = useCallback(
+    (idNivel: number) => {
+      if (idNivel !== 1 && idNivel !== 2 && idNivel !== 3) return
+      // Legacy sin toast: evita doble aviso/sonido.
+      desbloquear('ensaye-1-nivel', { silencioso: true })
+      desbloquear(MEDALLA_NIVEL_ENSAYA[idNivel])
+    },
+    [desbloquear]
+  )
+
+  const cerrarCheckIn = useCallback(() => {
+    setCheckInPendiente(false)
+    // Si era el último nivel, tras el check-in mostramos el resumen final.
+    if (nivelAcabado === NIVELES[NIVELES.length - 1]?.id) {
+      setCompletado(true)
+    }
+  }, [nivelAcabado])
+
+  const alResponderCheckIn = useCallback(
+    (confort: ConfortCheckIn) => {
+      if (confort === 'bien') {
+        desbloquear('ensaye-con-calma')
+      }
+      cerrarCheckIn()
+    },
+    [cerrarCheckIn, desbloquear]
+  )
+
   const siguientePregunta = () => {
     if (respuesta.trim().length > 0) {
       setPreguntasRespondidas((prev) => prev + 1)
@@ -240,16 +274,12 @@ export default function PaginaEnsaya() {
 
     if (preguntaActual < nivel.preguntas.length - 1) {
       setPreguntaActual((prev) => prev + 1)
-    } else if (nivelActual < NIVELES.length - 1) {
-      // Terminaste las preguntas de este nivel → insignia útil + confianza.
-      desbloquear('ensaye-1-nivel')
-      registrarConfianza('ensaya-nivel', nivel.id)
-      setNivelAcabado(nivel.id)
     } else {
-      desbloquear('ensaye-1-nivel')
+      // Terminaste el bloque → medallas + check-in (antes de CTAs).
+      desbloquearMedallasBloque(nivel.id)
       registrarConfianza('ensaya-nivel', nivel.id)
       setNivelAcabado(nivel.id)
-      setCompletado(true)
+      setCheckInPendiente(true)
     }
   }
 
@@ -273,6 +303,7 @@ export default function PaginaEnsaya() {
     setMostrarAyuda(false)
     setCompletado(false)
     setNivelAcabado(null)
+    setCheckInPendiente(false)
     setPreguntasRespondidas(0)
     setIniciado(true)
   }
@@ -380,7 +411,10 @@ export default function PaginaEnsaya() {
               , Sergio Palao, Gobierno de Aragón. Licencia CC BY-NC-SA.
             </p>
           </section>
-        ) : nivelAcabado !== null && !completado && nivelAcabadoMeta ? (
+        ) : nivelAcabado !== null &&
+          !completado &&
+          !checkInPendiente &&
+          nivelAcabadoMeta ? (
           <section className="card-destacada" aria-live="polite">
             <h1 className="text-3xl font-bold text-puente-800 mb-3">
               Has terminado el nivel
@@ -402,7 +436,7 @@ export default function PaginaEnsaya() {
                 <button
                   type="button"
                   onClick={seguirTrasNivel}
-                  className="btn-secondary"
+                  className="btn-secondary min-h-[44px]"
                 >
                   Seguir ensayando
                 </button>
@@ -411,6 +445,19 @@ export default function PaginaEnsaya() {
 
             <p className="text-puente-600 text-sm">
               La sala no sube el estímulo por ti. Empiezas donde lo dejaste.
+            </p>
+          </section>
+        ) : checkInPendiente && nivelAcabadoMeta ? (
+          <section className="card-destacada" aria-live="polite">
+            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+              Has terminado el nivel
+            </h1>
+            <p className="text-lg text-puente-700 mb-2">
+              Completaste «{nivelAcabadoMeta.nombre}».
+            </p>
+            <p className="text-puente-600 text-sm">
+              Antes de seguir, cuéntanos cómo te sientes. No hay respuesta
+              correcta.
             </p>
           </section>
         ) : completado ? (
@@ -643,6 +690,14 @@ export default function PaginaEnsaya() {
           </section>
         )}
       </main>
+
+      {checkInPendiente && nivelAcabadoMeta && (
+        <CheckInConfortEnsaya
+          nivelNombre={nivelAcabadoMeta.nombre}
+          onContinuar={alResponderCheckIn}
+          onCerrar={cerrarCheckIn}
+        />
+      )}
 
       <AvisoInsignia insignia={avisoInsignia} onDescartar={descartarAviso} />
     </>

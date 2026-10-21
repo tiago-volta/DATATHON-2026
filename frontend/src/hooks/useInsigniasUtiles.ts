@@ -32,19 +32,26 @@ export function useInsigniasUtiles(opts: OpcionesInsignias = {}) {
     setListo(true)
   }, [])
 
-  const desbloquear = useCallback((id: IdInsigniaUtil) => {
-    const { nueva, insignias } = desbloquearInsigniaUtil(id)
-    if (nueva) {
-      setConseguidas(insignias)
-      setAviso(metaInsignia(id))
-      const o = optsRef.current
-      sonarRecompensaInsignia({
-        enCalma: o.enCalma,
-        atenuarAmbiente: o.atenuarAmbiente,
-      })
-    }
-    return nueva
-  }, [])
+  const desbloquear = useCallback(
+    (id: IdInsigniaUtil, optsDesbloqueo?: { silencioso?: boolean }) => {
+      const { nueva, insignias } = desbloquearInsigniaUtil(id)
+      if (nueva) {
+        setConseguidas(insignias)
+        if (!optsDesbloqueo?.silencioso) {
+          setAviso(metaInsignia(id))
+          const o = optsRef.current
+          sonarRecompensaInsignia({
+            enCalma: o.enCalma,
+            atenuarAmbiente: o.atenuarAmbiente,
+          })
+        }
+      } else {
+        setConseguidas(insignias)
+      }
+      return nueva
+    },
+    []
+  )
 
   const descartarAviso = useCallback(() => {
     setAviso(null)
