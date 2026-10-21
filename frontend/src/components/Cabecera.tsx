@@ -11,13 +11,13 @@ const ENLACES = [
   { href: '/', etiqueta: 'Inicio' },
   { href: '/citacion', etiqueta: 'Citación' },
   { href: '/pasaporte', etiqueta: 'Pasaporte' },
-  { href: '/ensaya', etiqueta: 'Ensaya' },
   { href: '/sala-previa', etiqueta: 'Sala' },
   { href: '/ayuda', etiqueta: 'Ayuda' },
 ] as const
 
 function estaActivo(pathname: string, href: string) {
   if (href === '/') return pathname === '/'
+  if (href === '/sala-previa' && pathname.startsWith('/ensaya')) return true
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
