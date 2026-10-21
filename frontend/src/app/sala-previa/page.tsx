@@ -24,6 +24,8 @@ import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { escenaPorIndice } from '@/lib/sala-previa/escenas'
+import { generarAgendaEventos, type EventoSala } from '@/lib/sala-previa/eventos'
+import { NarradorAhoraDespues } from '@/components/sala-previa/NarradorAhoraDespues'
 import { cargarPerfil, guardarPerfil, ROLES_DISPONIBLES, type RolPerfil } from '@/lib/perfil/perfil'
 import {
   ESTIMULOS_VACIOS,
@@ -115,6 +117,21 @@ export default function PaginaSalaPrevia() {
     const p = cargarPerfil()
     if (p?.rol) {
       setRolUsuario(p.rol)
+    }
+  }, [])
+
+  const agenda = useMemo(() => generarAgendaEventos(cargarPerfil()), [])
+
+  const alDispararEvento = useCallback((ev: EventoSala) => {
+    if (ev.tipo === 'gente') {
+      motorRef.current?.reproducirTosMurmullo()
+    } else if (ev.tipo === 'puerta') {
+      motorRef.current?.reproducirPuerta()
+    } else if (ev.tipo === 'movil') {
+      motorRef.current?.reproducirMovil()
+    } else if (ev.tipo === 'nombre-en-alto') {
+      const nom = cargarPerfil()?.nombre || 'Luis García'
+      motorRef.current?.reproducirNombreEnAlto(nom)
     }
   }, [])
 
@@ -578,6 +595,13 @@ export default function PaginaSalaPrevia() {
                         </div>
                       </div>
                     )}
+                    <NarradorAhoraDespues
+                      agenda={agenda}
+                      enCalma={enCalma}
+                      nivel={nivelActual}
+                      onDispararEvento={alDispararEvento}
+                    />
+
                     <RecorridoEscenas
                       indice={escenaIndice}
                       onCambiar={cambiarEscena}

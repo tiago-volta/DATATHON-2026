@@ -312,6 +312,45 @@ export class MotorAudioSala {
     gain.connect(this.impulsosGain)
     source.start(now)
   }
+
+  reproducirPuerta() {
+    this.dispararPuerta()
+  }
+
+  reproducirMovil() {
+    if (!this.ctx || !this.impulsosGain) return
+    const now = this.ctx.currentTime
+    for (const offset of [0, 0.25]) {
+      const osc = this.ctx.createOscillator()
+      const gain = this.ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = 180
+      gain.gain.setValueAtTime(0.0001, now + offset)
+      gain.gain.linearRampToValueAtTime(0.08, now + offset + 0.04)
+      gain.gain.linearRampToValueAtTime(0.0001, now + offset + 0.16)
+      osc.connect(gain)
+      gain.connect(this.impulsosGain)
+      osc.start(now + offset)
+      osc.stop(now + offset + 0.18)
+    }
+  }
+
+  reproducirNombreEnAlto(nombre = 'Luis García') {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        const u = new SpeechSynthesisUtterance(`${nombre}, a la sala tres`)
+        u.lang = 'es-ES'
+        u.rate = 0.95
+        window.speechSynthesis.speak(u)
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  reproducirTosMurmullo() {
+    this.dispararPaso()
+  }
 }
 
 export const CREDITO_AUDIO =
