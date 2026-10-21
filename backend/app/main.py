@@ -11,6 +11,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 import json
+from pathlib import Path
 import os
 import re
 from dotenv import load_dotenv
@@ -637,6 +638,34 @@ async def obtener_fases(orden: str):
         raise HTTPException(status_code=404, detail=f"Orden '{orden}' no encontrado")
 
     return FASES_JUDICIALES[orden]
+
+
+def _cargar_roles_canonicos() -> list:
+    base = Path(__file__).resolve().parent
+    candidatos = [
+        base.parents[1] / "data" / "roles.json",
+        base.parent / "data" / "roles.json",
+        base / "data" / "roles.json",
+    ]
+    for ruta in candidatos:
+        if ruta.exists():
+            with open(ruta, "r", encoding="utf-8") as f:
+                return json.load(f)
+    return []
+
+
+@app.get("/api/roles")
+async def obtener_roles_canonicos(rol: Optional[str] = None):
+    """Devuelve los roles canónicos con derechos, obligaciones, ruta y FAQs legales.
+    Si se especifica ?rol=<id>, devuelve solo ese rol."""
+    roles = _cargar_roles_canonicos()
+    if rol:
+        rol_limpio = rol.strip().lower()
+        for r in roles:
+            if r.get("id") == rol_limpio:
+                return r
+        raise HTTPException(status_code=404, detail=f"Rol '{rol}' no encontrado")
+    return roles
 
 
 @app.get("/api/roles-judiciales")

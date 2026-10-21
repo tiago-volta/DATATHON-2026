@@ -120,3 +120,32 @@ def test_ayuda_preguntar():
     data = res.json()
     assert "respuesta" in data
     assert "Pasaporte" in data["respuesta"]
+
+def test_obtener_roles_todos():
+    res = client.get("/api/roles")
+    assert res.status_code == 200
+    roles = res.json()
+    assert isinstance(roles, list)
+    assert len(roles) == 4
+    ids = [r["id"] for r in roles]
+    assert "testigo" in ids
+    assert "investigado" in ids
+    assert "victima" in ids
+    assert "parte_civil" in ids
+
+
+def test_obtener_rol_especifico():
+    res = client.get("/api/roles?rol=testigo")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["id"] == "testigo"
+    assert "derechos" in data
+    assert "obligaciones" in data
+    assert "faq" in data
+    assert len(data["faq"]) >= 6
+
+
+def test_obtener_rol_inexistente():
+    res = client.get("/api/roles?rol=desconocido")
+    assert res.status_code == 404
+

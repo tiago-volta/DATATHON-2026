@@ -1,0 +1,426 @@
+[
+  {
+    "id": "testigo",
+    "nombre": "Testigo",
+    "subtitulo": "Viste o sabes algo sobre los hechos (caso Luis)",
+    "orden": "penal",
+    "descripcion": "Alguien que vio, escuchó o conoce datos de los hechos. No estás acusado de ningún delito.",
+    "icono": "👁️",
+    "ruta": [
+      {
+        "paso": 1,
+        "titulo": "Llegada y espera exterior",
+        "detalle": "Llegas al juzgado y esperas fuera de la sala de vistas (en pasillo o sala de espera de testigos). Por ley, no puedes presenciar las declaraciones previas."
+      },
+      {
+        "paso": 2,
+        "titulo": "Llamada formal",
+        "detalle": "El personal de la sala te llama por tu nombre y apellidos en voz alta."
+      },
+      {
+        "paso": 3,
+        "titulo": "Entrada y juramento/promesa",
+        "detalle": "Entras, te sitúas ante el tribunal y prestas juramento o promesa de decir la verdad (art. 433 LECrim)."
+      },
+      {
+        "paso": 4,
+        "titulo": "Preguntas de las partes",
+        "detalle": "Respondes primero a la parte que te propuso y luego a la contraria. El juez o tribunal también puede formularte preguntas aclaratorias."
+      },
+      {
+        "paso": 5,
+        "titulo": "Finalización",
+        "detalle": "El tribunal te indica que has concluido. Puedes abandonar el juzgado o permanecer en el público si la vista no es a puerta cerrada."
+      }
+    ],
+    "obligaciones": [
+      {
+        "texto": "Obligación legal de comparecer al llamamiento judicial.",
+        "articulo": "Art. 410 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a410"
+      },
+      {
+        "texto": "Obligación de decir la verdad. El falso testimonio es delito castigado con pena de prisión o multa.",
+        "articulo": "Art. 433 LECrim y Art. 458 CP",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a433"
+      }
+    ],
+    "derechos": [
+      {
+        "texto": "Dispensa de declarar contra familiares directos (cónyuge, ascendientes, descendientes o hermanos).",
+        "articulo": "Art. 416 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a416"
+      },
+      {
+        "texto": "Derecho a solicitar ajustes de procedimiento, pausas, sala tranquila y persona de apoyo o facilitador.",
+        "articulo": "Art. 7 bis LEC y Art. 109 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      },
+      {
+        "texto": "Derecho a indemnización por gastos de desplazamiento y dietas derivados de la comparecencia.",
+        "articulo": "Art. 722 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a722"
+      }
+    ],
+    "si_no_vas": {
+      "resumen": "Si no compareces ni justificas la causa, te expones a una multa de 200 a 5.000 € y la policía judicial puede ser ordenada para conducirte al juzgado.",
+      "articulo": "Art. 420 LECrim",
+      "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a420",
+      "consejo": "Si estás enfermo o tienes causa de fuerza mayor, avisa antes y presenta justificante oficial."
+    },
+    "faq": [
+      {
+        "pregunta": "¿Tengo que ir al juzgado aunque no quiera?",
+        "respuesta": "Sí. Comparecer como testigo es un deber legal obligatorio para toda la ciudadanía en España.",
+        "articulo": "Art. 410 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a410"
+      },
+      {
+        "pregunta": "¿Qué pasa si no voy a declarar?",
+        "respuesta": "Si no compareces sin causa justificada, la ley prevé multa de 200 a 5.000 € y el juez puede ordenar a la policía que te conduzca al juzgado. El juez siempre valora si tenías una justificación válida como enfermedad o fuerza mayor.",
+        "articulo": "Art. 420 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a420"
+      },
+      {
+        "pregunta": "¿Puedo decir 'no lo sé' o 'no lo recuerdo'?",
+        "respuesta": "Sí, rotundamente. Decir la verdad implica reconocer con sinceridad tus límites de memoria. Nunca debes suponer ni inventar.",
+        "articulo": "Art. 433 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a433"
+      },
+      {
+        "pregunta": "¿Puedo pedir que me repitan una pregunta o que usen palabras más sencillas?",
+        "respuesta": "Sí. Tienes derecho a entender cada pregunta antes de responder. Puedes pedir que la formulen sin tecnicismos o de una en una. Decide quien preside la sala.",
+        "articulo": "Art. 7 bis LEC y Art. 709 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      },
+      {
+        "pregunta": "¿Puedo llevar a alguien de apoyo conmigo?",
+        "respuesta": "Sí. Puedes solicitar ir con una persona de tu confianza o un facilitador procesal para que te acompañe durante la espera y en la sala.",
+        "articulo": "Art. 7 bis LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      },
+      {
+        "pregunta": "¿Puedo ver la sala antes del juicio?",
+        "respuesta": "Sí. La Guía de Buenas Prácticas del CGPJ (2025) recomienda facilitar una visita previa o anticipación visual de la sala para reducir la ansiedad.",
+        "articulo": "Guía CGPJ (2025) y RD 707/2026",
+        "enlace_boe": "https://www.poderjudicial.es"
+      }
+    ],
+    "ajustes_recomendados": [
+      "sala-tranquila",
+      "pausas",
+      "preguntas-claras",
+      "acompanante"
+    ]
+  },
+  {
+    "id": "investigado",
+    "nombre": "Investigado o acusado",
+    "subtitulo": "Persona contra la que se dirige el procedimiento penal (caso Juan)",
+    "orden": "penal",
+    "descripcion": "Persona a quien se atribuye la presunta comisión de un delito leve o menos grave.",
+    "icono": "🛡️",
+    "ruta": [
+      {
+        "paso": 1,
+        "titulo": "Entrada y consulta con abogado",
+        "detalle": "Llegas con antelación y puedes conferenciar reservadamente con tu letrado de oficio o de confianza."
+      },
+      {
+        "paso": 2,
+        "titulo": "Presencia continuada en sala",
+        "detalle": "Permaneces sentado en la sala de vistas junto a tu abogado durante todo el desarrollo del juicio."
+      },
+      {
+        "paso": 3,
+        "titulo": "Declaración voluntaria",
+        "detalle": "Se te informa de tus derechos: puedes declarar contestando a todas o solo a algunas preguntas, o guardar completo silencio."
+      },
+      {
+        "paso": 4,
+        "titulo": "Práctica de pruebas",
+        "detalle": "Se practican las declaraciones de denunciante, testigos y pruebas documentales aportadas."
+      },
+      {
+        "paso": 5,
+        "titulo": "Derecho a la última palabra",
+        "detalle": "Antes de declarar el juicio visto para sentencia, el juez te concede la última palabra por si deseas añadir algo."
+      }
+    ],
+    "obligaciones": [
+      {
+        "texto": "Comparecer al llamamiento judicial para asegurar la celebración del juicio y la efectividad de la resolución.",
+        "articulo": "Art. 967 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a967"
+      }
+    ],
+    "derechos": [
+      {
+        "texto": "Derecho a guardar silencio, a no declarar contra sí mismo y a no confesarse culpable.",
+        "articulo": "Art. 118.1.g y h LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a118"
+      },
+      {
+        "texto": "Derecho a ser asistido por abogado. En delitos leves es optativo (art. 967.1). Se puede solicitar justicia gratuita según recursos (art. 6.3.b Ley 1/1996).",
+        "articulo": "Art. 967.1 LECrim y Ley 1/1996",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a967"
+      },
+      {
+        "texto": "Derecho a ser informado de los hechos y examinar la denuncia adjunta a la citación con antelación suficiente.",
+        "articulo": "Art. 118.1.a y b LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a118"
+      },
+      {
+        "texto": "Derecho a adaptaciones de accesibilidad cognitiva, descripción verbal de pruebas visuales y documentos accesibles.",
+        "articulo": "Art. 7 bis LEC, Art. 109 LECrim y RD 707/2026",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      }
+    ],
+    "si_no_vas": {
+      "resumen": "En delitos leves, si no compareces ni justificas causa legítima, el juicio puede celebrarse en tu ausencia (art. 971 LECrim) y pueden imponerte multa de 200 a 2.000 €.",
+      "articulo": "Art. 967.2 y Art. 971 LECrim",
+      "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a967",
+      "consejo": "Acudir al juicio te permite exponer tu versión y aportar tus pruebas de descargo."
+    },
+    "faq": [
+      {
+        "pregunta": "¿Tengo que declarar obligatoriamente?",
+        "respuesta": "No. Tienes derecho a guardar silencio, a no declarar contra ti mismo y a no confesarte culpable. Puedes no contestar a ninguna o solo a algunas preguntas.",
+        "articulo": "Art. 118.1.g y h LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a118"
+      },
+      {
+        "pregunta": "¿Puedo hablar con mi abogado durante el juicio?",
+        "respuesta": "Sí. Estarás sentado a su lado durante todo el juicio y puedes consultar con él cualquier duda que surja.",
+        "articulo": "Art. 118.1.d LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a118"
+      },
+      {
+        "pregunta": "¿Tengo abogado de oficio gratuito en un delito leve?",
+        "respuesta": "En delitos leves el abogado es optativo. Puedes solicitar que te nombren uno de oficio; si el juez o tribunal aprecia complejidad o desigualdad, puede concederlo conforme a la ley.",
+        "articulo": "Art. 967.1 LECrim y Art. 6.3.b Ley 1/1996",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a967"
+      },
+      {
+        "pregunta": "¿Qué pasa si no voy al juicio por delito leve?",
+        "respuesta": "El juicio puede celebrarse en tu ausencia si has sido citado correctamente y la ley prevé multa de 200 a 2.000 €. Si tienes causa justa médica o de fuerza mayor, debes presentar justificante de inmediato.",
+        "articulo": "Arts. 967.2 y 971 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a971"
+      },
+      {
+        "pregunta": "¿Puedo pedir pausas si me saturo o me da ansiedad?",
+        "respuesta": "Sí. Puedes pedir al tribunal una pausa de tranquilidad o un vaso de agua si sientes sobrecarga cognitiva o sensorial.",
+        "articulo": "Art. 7 bis LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      },
+      {
+        "pregunta": "¿Puedo decir algo al final del juicio?",
+        "respuesta": "Sí. Tienes derecho a la última palabra antes de que el juez declare el juicio visto para sentencia, para manifestar lo que consideres en tu defensa.",
+        "articulo": "Art. 739 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a739"
+      }
+    ],
+    "ajustes_recomendados": [
+      "documentos-voz",
+      "descripcion-pruebas",
+      "pausas",
+      "preguntas-claras"
+    ]
+  },
+  {
+    "id": "victima",
+    "nombre": "Víctima o perjudicado/a",
+    "subtitulo": "Persona que ha sufrido el delito o un daño directo",
+    "orden": "penal",
+    "descripcion": "Persona que ha sufrido las consecuencias de una infracción penal o un daño a reparar.",
+    "icono": "🤝",
+    "ruta": [
+      {
+        "paso": 1,
+        "titulo": "Acogida y sala de espera independiente",
+        "detalle": "Llegas al juzgado con acceso a una sala de espera separada para evitar cualquier contacto visual o físico con la persona denunciada (art. 20 Ley 4/2015)."
+      },
+      {
+        "paso": 2,
+        "titulo": "Acompañamiento",
+        "detalle": "Puedes estar acompañada desde el primer momento por una persona de tu confianza o profesional de la Oficina de Asistencia a las Víctimas."
+      },
+      {
+        "paso": 3,
+        "titulo": "Declaración protegida",
+        "detalle": "Declaras en sala con medidas de protección acordadas (biombo, videoconferencia o prueba preconstituida) para evitar la victimización secundaria."
+      },
+      {
+        "paso": 4,
+        "titulo": "Información de la resolución",
+        "detalle": "Tienes derecho a ser notificada de todas las resoluciones relevantes y de la sentencia final, aunque no te hayas personado con abogado."
+      }
+    ],
+    "obligaciones": [
+      {
+        "texto": "Si acudes en calidad de testigo-víctima, rige la obligación de decir la verdad sobre los hechos sufridos.",
+        "articulo": "Art. 433 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a433"
+      }
+    ],
+    "derechos": [
+      {
+        "texto": "Derecho a entender y ser entendida en lenguaje claro y accesible, con apoyos y adaptaciones cognitivas.",
+        "articulo": "Art. 4 Ley 4/2015 (Estatuto de la Víctima)",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606#a4"
+      },
+      {
+        "texto": "Derecho a ir acompañada de una persona de su elección en todas las fases del proceso.",
+        "articulo": "Art. 4 y Art. 21.c Ley 4/2015",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606#a21"
+      },
+      {
+        "texto": "Medidas de protección: evitar contacto con el agresor (espacios separados, biombo, videoconferencia).",
+        "articulo": "Arts. 20, 25 y 26 Ley 4/2015 y Art. 731 bis LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606#a20"
+      },
+      {
+        "texto": "Asistencia jurídica gratuita con independencia de recursos en casos de violencia o discapacidad necesitada de especial protección.",
+        "articulo": "Art. 2.h Ley 1/1996",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1996-750#a2"
+      }
+    ],
+    "si_no_vas": {
+      "resumen": "Si has sido citada formalmente como testigo y no acudes ni justificas, puede suspenderse el juicio o aplicarse la sanción del art. 420 LECrim. Contacta con la Oficina de Asistencia a las Víctimas.",
+      "articulo": "Art. 420 LECrim y Ley 4/2015",
+      "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a420",
+      "consejo": "Comunica tus necesidades de protección con antelación para que el juzgado disponga sala separada o biombo."
+    },
+    "faq": [
+      {
+        "pregunta": "¿Tengo que coincidir cara a cara con la persona investigada?",
+        "respuesta": "No necesariamente. La ley prevé salas de espera separadas para que no tengas ningún contacto visual previo.",
+        "articulo": "Ley 4/2015 Estatuto de la Víctima",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606"
+      },
+      {
+        "pregunta": "¿Puedo declarar protegida por un biombo o por videoconferencia?",
+        "respuesta": "Sí. Puedes solicitar declarar tras un biombo o por videoconferencia desde otra sala para evitar la confrontación visual. Decide el juez.",
+        "articulo": "Art. 731 bis LECrim y Ley 4/2015",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a731bis"
+      },
+      {
+        "pregunta": "¿Puedo ir acompañada de una persona de mi confianza?",
+        "respuesta": "Sí. Tienes derecho a acudir acompañada desde el primer momento por una persona de tu elección o por personal de la Oficina de Asistencia a las Víctimas.",
+        "articulo": "Ley 4/2015 y Art. 7 bis LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606"
+      },
+      {
+        "pregunta": "¿Puedo pedir un descanso si me siento desbordada?",
+        "respuesta": "Sí. Puedes pedir una pausa para serenarte o beber agua en cualquier momento durante la declaración.",
+        "articulo": "Ley 4/2015 art. 19 y Art. 7 bis LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606#a19"
+      },
+      {
+        "pregunta": "¿Quién me ayuda a entender lo que pasa en el juzgado?",
+        "respuesta": "La Oficina de Asistencia a las Víctimas y, si lo solicitas, una persona facilitadora procesal asignada para accesibilidad.",
+        "articulo": "Ley 4/2015 y RD 707/2026",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606"
+      },
+      {
+        "pregunta": "¿Me avisarán de la sentencia y de los recursos?",
+        "respuesta": "Sí. Tienes derecho legal a ser notificada de las resoluciones principales del procedimiento, aunque no estés personada con abogado.",
+        "articulo": "Ley 4/2015 art. 7",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2015-4606#a7"
+      }
+    ],
+    "ajustes_recomendados": [
+      "sala-tranquila",
+      "acompanante",
+      "pausas",
+      "preguntas-claras"
+    ]
+  },
+  {
+    "id": "parte_civil",
+    "nombre": "Demandante o demandado/a",
+    "subtitulo": "Parte en proceso civil, familia o laboral",
+    "orden": "civil",
+    "descripcion": "Parte interviniente en un procedimiento no penal (reclamación económica, familia, vivienda o laboral).",
+    "icono": "📑",
+    "ruta": [
+      {
+        "paso": 1,
+        "titulo": "Preparación con abogado y procurador",
+        "detalle": "En la mayoría de trámites civiles compareces representada por procurador y asistida por abogado."
+      },
+      {
+        "paso": 2,
+        "titulo": "Audiencia previa o vista",
+        "detalle": "Comparecencia ante el Juzgado de Primera Instancia para fijar los hechos controvertidos o celebrar el juicio."
+      },
+      {
+        "paso": 3,
+        "titulo": "Interrogatorio de parte",
+        "detalle": "Si la otra parte solicita tu interrogatorio, responderás a las preguntas sobre hechos personales controvertidos."
+      },
+      {
+        "paso": 4,
+        "titulo": "Conclusiones y sentencia",
+        "detalle": "Los letrados formulan conclusiones jurídicas y el juzgado dicta sentencia escrita que se notifica a través del procurador."
+      }
+    ],
+    "obligaciones": [
+      {
+        "texto": "Comparecer al interrogatorio de parte si ha sido admitido por el tribunal.",
+        "articulo": "Art. 304 LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a304"
+      }
+    ],
+    "derechos": [
+      {
+        "texto": "Derecho a todos los ajustes de procedimiento y accesibilidad en sala previstos en la ley procesal civil.",
+        "articulo": "Art. 7 bis LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      },
+      {
+        "texto": "Derecho a solicitar asistencia jurídica gratuita según el baremo de ingresos familiares.",
+        "articulo": "Ley 1/1996",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1996-750"
+      }
+    ],
+    "si_no_vas": {
+      "resumen": "Si la parte demandada no comparece al juicio, se declara en rebeldía procesal. Si no acudes al interrogatorio de parte, el juez puede tener por admitidos los hechos que te perjudiquen.",
+      "articulo": "Art. 304 y Art. 496 LEC",
+      "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a304",
+      "consejo": "Consulta de inmediato con tu letrado para confirmar si tu presencia personal es requerida en la vista."
+    },
+    "faq": [
+      {
+        "pregunta": "¿Es obligatorio ir con abogado y procurador?",
+        "respuesta": "En la mayoría de pleitos civiles es obligatorio, salvo en juicios verbales cuya cuantía sea inferior a 2.000 €.",
+        "articulo": "Arts. 23 y 31 LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a23"
+      },
+      {
+        "pregunta": "¿Puedo pedir adaptaciones de accesibilidad cognitiva en un juicio civil?",
+        "respuesta": "Sí. El artículo 7 bis de la LEC se aplica plenamente a todos los procesos civiles, mercantiles y de familia.",
+        "articulo": "Art. 7 bis LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      },
+      {
+        "pregunta": "¿Qué pasa si no me presento a la vista civil?",
+        "respuesta": "Si eres la parte demandante y no acudes, se te puede tener por desistido. Si eres la demandada, el juicio se celebra en tu rebeldía.",
+        "articulo": "Arts. 414 y 442 LEC",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a414"
+      },
+      {
+        "pregunta": "¿Puedo pedir que la sentencia me la expliquen en lenguaje claro?",
+        "respuesta": "Sí. Conforme a la Ley 15/2022 y al art. 7 bis LEC, puedes pedir que las comunicaciones y fallos judiciales te sean aclarados en lectura fácil o lenguaje sencillo.",
+        "articulo": "Art. 7 bis.2 LEC y Ley 15/2022",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-2000-323#a7bis"
+      }
+    ],
+    "ajustes_recomendados": [
+      "preguntas-claras",
+      "mas-tiempo",
+      "pausas",
+      "facilitador"
+    ]
+  }
+]
