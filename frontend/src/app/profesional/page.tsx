@@ -60,6 +60,27 @@ const AJUSTES_POR_PERFIL = {
       'Más tiempo para revisar documentos',
       'Tipografía y espaciado amplios',
       'Glosario de términos jurídicos',
+      'Lectura fácil (UNA idea por línea)',
+    ],
+  },
+  discalculia: {
+    nombre: 'Discalculia',
+    ajustes: [
+      'Cifras, horas e importes también en palabras',
+      'Evitar tablas densas o porcentajes sin explicación',
+      'Plazos en días naturales y en palabras',
+      'Repetir cantidades en voz alta al notificar',
+      'Permitir calculadora o apoyo de una persona de confianza',
+    ],
+  },
+  disgrafia: {
+    nombre: 'Disgrafía',
+    ajustes: [
+      'No exigir escritura manuscrita ni formularios largos a mano',
+      'Permitir dictado, oralidad o plantillas precargadas',
+      'Aceptar escritos generados con apoyos tecnológicos',
+      'Más tiempo si debe firmar o rellenar datos',
+      'Persona de apoyo que escriba bajo instrucción de la interesada',
     ],
   },
   ceguera: {

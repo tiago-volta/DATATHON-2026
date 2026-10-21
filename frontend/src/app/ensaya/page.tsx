@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
+import { BotonDictarRespuesta } from '@/components/ensaya/BotonDictarRespuesta'
 import { CheckInConfortEnsaya } from '@/components/ensaya/CheckInConfortEnsaya'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
@@ -13,6 +14,7 @@ import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
 import { MEDALLA_NIVEL_ENSAYA } from '@/lib/insignias'
+import { leerPreferencias } from '@/lib/preferencias'
 import { nivelSensorialConservado } from '@/lib/sala-previa/progreso'
 import type { ConfortCheckIn } from '@/lib/sala-previa/tipos'
 
@@ -184,6 +186,21 @@ export default function PaginaEnsaya() {
   const [nivelActual, setNivelActual] = useState(0)
   const [preguntaActual, setPreguntaActual] = useState(0)
   const [respuesta, setRespuesta] = useState('')
+  const [evitarEscribir, setEvitarEscribir] = useState(false)
+
+  useEffect(() => {
+    const sync = () => setEvitarEscribir(leerPreferencias().evitarEscribir)
+    sync()
+    window.addEventListener('puente-preferencias-cambio', sync)
+    return () => window.removeEventListener('puente-preferencias-cambio', sync)
+  }, [])
+
+  const alDictar = useCallback((texto: string) => {
+    setRespuesta((prev) => {
+      const junta = prev.trim() ? `${prev.trim()} ${texto}` : texto
+      return junta.slice(0, 500)
+    })
+  }, [])
   const [mostrarAyuda, setMostrarAyuda] = useState(false)
   const [iniciado, setIniciado] = useState(false)
   const [completado, setCompletado] = useState(false)
@@ -612,7 +629,9 @@ export default function PaginaEnsaya() {
             <div className="card mb-6">
               <div className="flex items-center justify-between gap-3 mb-3">
                 <label htmlFor="respuesta" className="block font-bold text-puente-800">
-                  Tu respuesta (opcional)
+                  {evitarEscribir
+                    ? 'Tu respuesta (opcional: dictar o solo practicar en voz alta)'
+                    : 'Tu respuesta (opcional)'}
                 </label>
                 <div className="shrink-0" aria-hidden="true">
                   <Pictograma
@@ -622,19 +641,42 @@ export default function PaginaEnsaya() {
                   />
                 </div>
               </div>
-              <textarea
-                id="respuesta"
-                value={respuesta}
-                onChange={(e) => setRespuesta(e.target.value.slice(0, 500))}
-                maxLength={500}
-                className="textarea-accesible"
-                placeholder="Escribe lo que responderías…"
-                rows={4}
-                aria-describedby="ayuda-respuesta"
-              />
-              <div className="flex justify-between items-center text-sm text-puente-700 mt-2" id="ayuda-respuesta">
-                <span>Esto es solo práctica. Nadie más ve lo que escribes.</span>
-                <span aria-hidden="true">{respuesta.length}/500</span>
+              {evitarEscribir && (
+                <p className="text-sm text-puente-700 mb-3" id="ayuda-sin-escribir">
+                  Tienes activado «menos escritura». Puedes dictar, practicar en
+                  voz alta sin teclear y pulsar «Siguiente». Nadie te obliga a escribir.
+                </p>
+              )}
+              <div className="flex flex-wrap gap-3 mb-3">
+                <BotonDictarRespuesta onTexto={alDictar} />
+              </div>
+              {!evitarEscribir && (
+                <textarea
+                  id="respuesta"
+                  value={respuesta}
+                  onChange={(e) => setRespuesta(e.target.value.slice(0, 500))}
+                  maxLength={500}
+                  className="textarea-accesible"
+                  placeholder="Escribe lo que responderías…"
+                  rows={4}
+                  aria-describedby="ayuda-respuesta"
+                />
+              )}
+              {evitarEscribir && respuesta && (
+                <p className="p-4 rounded-suave bg-calma-sage text-puente-800" aria-live="polite">
+                  {respuesta}
+                </p>
+              )}
+              <div
+                className="flex justify-between items-center text-sm text-puente-700 mt-2"
+                id="ayuda-respuesta"
+              >
+                <span>
+                  Esto es solo práctica. Nadie más ve lo que dices o escribes.
+                </span>
+                {!evitarEscribir && (
+                  <span aria-hidden="true">{respuesta.length}/500</span>
+                )}
               </div>
             </div>
 

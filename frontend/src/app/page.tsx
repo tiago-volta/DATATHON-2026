@@ -56,6 +56,45 @@ export default function Inicio() {
           </Link>
         </p>
 
+        <section className="mb-14" aria-labelledby="titulo-aprendizaje">
+          <h2 id="titulo-aprendizaje" className="text-2xl text-puente-900 mb-2">
+            Dificultades de aprendizaje
+          </h2>
+          <p className="text-puente-700 mb-6 max-w-[42ch]">
+            PUENTE no pide diagnóstico. Activa apoyos concretos si te cuesta leer,
+            los números o escribir.
+          </p>
+          <ul className="grid gap-4 md:grid-cols-3 mb-4">
+            <li className="card">
+              <h3 className="text-lg font-bold text-puente-900 mb-2">Dislexia</h3>
+              <p className="text-puente-700 text-sm mb-3">
+                Lectura fácil, tipografía espaciada, pictogramas y documentos en voz alta.
+              </p>
+              <Link href="/pasaporte" className="link-atras mb-0">
+                Activar lectura espaciada
+              </Link>
+            </li>
+            <li className="card">
+              <h3 className="text-lg font-bold text-puente-900 mb-2">Discalculia</h3>
+              <p className="text-puente-700 text-sm mb-3">
+                Horas, plazos e importes también en palabras en tu citación.
+              </p>
+              <Link href="/citacion" className="link-atras mb-0">
+                Ver citación con cifras en palabras
+              </Link>
+            </li>
+            <li className="card">
+              <h3 className="text-lg font-bold text-puente-900 mb-2">Disgrafía</h3>
+              <p className="text-puente-700 text-sm mb-3">
+                Dictado en Ensaya y escrito de solicitud listo desde el Pasaporte.
+              </p>
+              <Link href="/pasaporte" className="link-atras mb-0">
+                Pedir menos escritura
+              </Link>
+            </li>
+          </ul>
+        </section>
+
         <section className="mb-14">
           <h2 className="text-2xl text-puente-900 mb-2">También puedes preparar el día</h2>
           <ul className="border-t border-puente-200">

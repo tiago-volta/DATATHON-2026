@@ -156,6 +156,24 @@ export const AJUSTES_DISPONIBLES = [
     para: ['ceguera', 'dislexia'],
   },
   {
+    id: 'tipografia-amplia',
+    nombre: 'Texto con tipografía y espaciado amplios',
+    descripcion: 'Letras claras, más separación entre palabras y líneas.',
+    para: ['dislexia'],
+  },
+  {
+    id: 'cifras-en-palabras',
+    nombre: 'Cifras, horas e importes en palabras',
+    descripcion: 'Que me digan los números también en palabras, sin tablas densas.',
+    para: ['discalculia'],
+  },
+  {
+    id: 'sin-exigir-escritura',
+    nombre: 'No exigirme escribir a mano o al teclado',
+    descripcion: 'Poder dictar, usar plantillas o que alguien escriba por mí.',
+    para: ['disgrafia'],
+  },
+  {
     id: 'descripcion-pruebas',
     nombre: 'Descripción de pruebas visuales',
     descripcion: 'Que me expliquen qué hay en las fotos o vídeos.',

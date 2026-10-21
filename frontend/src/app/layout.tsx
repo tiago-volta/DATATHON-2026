@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { ActivarApoyosAprendizaje } from '@/components/apoyos/ActivarApoyosAprendizaje'
 import { Cabecera } from '@/components/Cabecera'
 import { Pie } from '@/components/Pie'
 import { TutorialInicio } from '@/components/TutorialInicio'
@@ -32,6 +33,7 @@ export default function RootLayout({
         </a>
         <TutorialInicio />
         <OnboardingVoz />
+        <ActivarApoyosAprendizaje />
         <Cabecera />
         <div className="flex-1">{children}</div>
         <Pie />

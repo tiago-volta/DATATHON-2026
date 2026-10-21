@@ -5,11 +5,16 @@ import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
 import { Icono } from '@/components/Icono'
 import { Marca } from '@/components/Marca'
+import { PanelApoyosAprendizaje } from '@/components/apoyos/PanelApoyosAprendizaje'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
+import {
+  descargarEscritoAjustes,
+  redactarEscritoAjustes,
+} from '@/lib/escritoAjustes'
 import {
   buildPasaporteUrl,
   normalizarAjustes,
@@ -401,6 +406,8 @@ export default function PaginaPasaporte() {
                   </label>
                 </fieldset>
 
+                <PanelApoyosAprendizaje />
+
                 <button
                   type="submit"
                   disabled={!datos.nombre.trim()}
@@ -610,6 +617,48 @@ export default function PaginaPasaporte() {
                 Crear otro Pasaporte
               </button>
             </div>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                className="btn-secondary flex-1"
+                onClick={() => {
+                  const texto = redactarEscritoAjustes({
+                    nombre: datos.nombre,
+                    ajustes: datos.ajustes,
+                  })
+                  descargarEscritoAjustes(
+                    texto,
+                    `solicitud-ajustes-${pasaporteId || 'puente'}.txt`
+                  )
+                }}
+              >
+                Descargar escrito para el juzgado
+              </button>
+              <button
+                type="button"
+                className="btn-ghost flex-1"
+                onClick={async () => {
+                  const texto = redactarEscritoAjustes({
+                    nombre: datos.nombre,
+                    ajustes: datos.ajustes,
+                  })
+                  try {
+                    await navigator.clipboard.writeText(texto)
+                    setCopiado(true)
+                    window.setTimeout(() => setCopiado(false), 2500)
+                  } catch {
+                    /* ignore */
+                  }
+                }}
+              >
+                {copiado ? 'Escrito copiado' : 'Copiar escrito de solicitud'}
+              </button>
+            </div>
+            <p className="text-sm text-puente-700 mt-3 text-center">
+              El escrito ya está redactado (art. 7 bis LEC). Si te cuesta escribir,
+              no tienes que inventar el texto: solo descárgalo o cópialo.
+            </p>
 
             <div className="mt-8 p-4 bg-calma-sage rounded-tarjeta text-center text-puente-800">
               Este Pasaporte no muestra ningún diagnóstico. Solo indica qué

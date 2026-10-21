@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, type ChangeEvent } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
+import { PanelApoyosAprendizaje } from '@/components/apoyos/PanelApoyosAprendizaje'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { Pictograma } from '@/components/Pictograma'
 import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
 import { FASES_TESTIGO, FASES_INVESTIGADO, ROLES } from '@/lib/contenido'
 import { extraerTextoDocumentoAPI, type CitacionProcesada, type Plazo } from '@/lib/api'
+import { leerPreferencias } from '@/lib/preferencias'
 
 const EJEMPLO_LUIS = `JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA
 Procedimiento: Diligencias Previas 245/2026
@@ -517,6 +519,20 @@ export default function PaginaCitacion() {
   const [extrayendo, setExtrayendo] = useState(false)
   const [mensajeExitoArchivo, setMensajeExitoArchivo] = useState('')
   const [cargandoPrueba, setCargandoPrueba] = useState<string | null>(null)
+  const [destacarNumeros, setDestacarNumeros] = useState(false)
+
+  useEffect(() => {
+    const sync = () => {
+      const p = leerPreferencias()
+      if (p.lecturaEspaciada || p.necesitoApoyos) {
+        setModoLectura((m) => (m === 'clara' ? 'facil' : m))
+      }
+      setDestacarNumeros(p.apoyoNumeros)
+    }
+    sync()
+    window.addEventListener('puente-preferencias-cambio', sync)
+    return () => window.removeEventListener('puente-preferencias-cambio', sync)
+  }, [])
 
   const cargarCitacionPrueba = async (archivo: string, etiqueta: string) => {
     setCargandoPrueba(archivo)
@@ -818,6 +834,10 @@ export default function PaginaCitacion() {
                 </button>
               </div>
             </div>
+
+            <div className="mt-10 max-w-2xl">
+              <PanelApoyosAprendizaje titulo="Antes de transformar: ¿qué te ayuda a leer?" />
+            </div>
           </section>
         )}
 
@@ -1094,7 +1114,10 @@ export default function PaginaCitacion() {
 
             {/* Bloque de Apoyo para Discalculia (C04 + Reto 3) */}
             {apoyoNumerico.length > 0 && (
-              <div className="card mb-6">
+              <div
+                className={`card mb-6 ${destacarNumeros ? 'ring-2 ring-puente-500' : ''}`}
+                id="apoyo-discalculia"
+              >
                 <div className="flex flex-wrap justify-between items-start gap-3 mb-3">
                   <div>
                     <h2 className="text-xl font-bold text-puente-800">
@@ -1117,9 +1140,17 @@ export default function PaginaCitacion() {
                         <dt className="text-xs font-bold uppercase tracking-wide text-puente-600">
                           {item.etiqueta}
                         </dt>
-                        <dd className="text-lg font-bold text-puente-800 mt-1">{item.cifra}</dd>
+                        <dd
+                          className="text-lg font-bold text-puente-800 mt-1 numeros"
+                          data-apoyo-numero
+                        >
+                          {item.cifra}
+                        </dd>
                       </div>
-                      <p className="text-sm text-puente-700 mt-2 pt-2 border-t border-puente-200">
+                      <p
+                        className="text-sm text-puente-700 mt-2 pt-2 border-t border-puente-200"
+                        data-apoyo-numero-palabras
+                      >
                         {item.en_palabras}
                       </p>
                     </div>

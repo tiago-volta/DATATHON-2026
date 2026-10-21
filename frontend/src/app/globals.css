@@ -280,6 +280,38 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* Apoyos de aprendizaje (preferencias locales, sin diagnóstico) */
+  body.apoyo-lectura {
+    letter-spacing: 0.04em;
+    word-spacing: 0.12em;
+    line-height: 1.85;
+    font-size: 1.125rem;
+  }
+
+  body.apoyo-lectura .lectura-facil,
+  body.apoyo-lectura .textarea-accesible,
+  body.apoyo-lectura .input-accesible {
+    letter-spacing: 0.05em;
+    word-spacing: 0.14em;
+    line-height: 1.95;
+  }
+
+  body.apoyo-numeros .numeros,
+  body.apoyo-numeros [data-apoyo-numero] {
+    font-size: 1.15em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  body.apoyo-numeros [data-apoyo-numero-palabras] {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1a5566;
+  }
+
+
   .sr-only {
     position: absolute;
     width: 1px;
