@@ -1,6 +1,6 @@
 'use client'
 
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { INSIGNIAS_UTILES, type IdInsigniaUtil } from '@/lib/insignias'
 import { IconoInsignia } from './IconoInsignia'
 
@@ -11,8 +11,8 @@ interface Props {
 }
 
 /**
- * Lista clara de insignias útiles (conseguidas y pendientes).
- * Pensado para ir junto al mapa de niveles u otras zonas tranquilas.
+ * Galería de medallas: desbloqueadas a color; bloqueadas en gris.
+ * Hover y focus muestran cómo conseguirla. Sin ranking ni castigo.
  */
 export function PanelInsignias({
   conseguidas,
@@ -20,6 +20,8 @@ export function PanelInsignias({
 }: Props) {
   const tituloId = useId()
   const ayudaId = useId()
+  const tipBaseId = useId()
+  const [tipActivo, setTipActivo] = useState<IdInsigniaUtil | null>(null)
 
   return (
     <section aria-labelledby={tituloId} className="card">
@@ -30,33 +32,62 @@ export function PanelInsignias({
         Premian cuidarte y practicar a tu ritmo. No hay ranking ni reloj.
       </p>
 
-      <ul className="space-y-2" aria-describedby={ayudaId}>
+      <ul
+        className="grid grid-cols-3 gap-3"
+        aria-describedby={ayudaId}
+      >
         {INSIGNIAS_UTILES.map((ins) => {
           const conseguida = conseguidas.includes(ins.id)
+          const tipId = `${tipBaseId}-${ins.id}`
+          const visible = tipActivo === ins.id
+
           return (
-            <li
-              key={ins.id}
-              className={`flex items-start gap-3 p-3 rounded-suave border ${
-                conseguida
-                  ? 'bg-calma-sage/80 border-accent-success/40'
-                  : 'bg-puente-50/80 border-puente-100 opacity-70'
-              }`}
-            >
-              <span
-                className={`shrink-0 mt-0.5 ${
-                  conseguida ? 'text-puente-800' : 'text-puente-500'
+            <li key={ins.id} className="relative flex flex-col items-center">
+              <button
+                type="button"
+                className={`group flex flex-col items-center gap-2 w-full p-2 rounded-suave border-2 transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400 ${
+                  conseguida
+                    ? 'bg-calma-sage/70 border-accent-success/50 hover:border-puente-500'
+                    : 'bg-puente-50/90 border-puente-100 hover:border-puente-300'
                 }`}
-                aria-hidden="true"
+                aria-label={`${ins.nombre}. ${conseguida ? 'Conseguida' : 'Aún no conseguida'}. ${ins.comoConseguirla}`}
+                aria-describedby={visible ? tipId : undefined}
+                onMouseEnter={() => setTipActivo(ins.id)}
+                onMouseLeave={() => setTipActivo((v) => (v === ins.id ? null : v))}
+                onFocus={() => setTipActivo(ins.id)}
+                onBlur={() => setTipActivo((v) => (v === ins.id ? null : v))}
               >
-                <IconoInsignia id={ins.id} className="w-8 h-8" />
-              </span>
-              <span className="min-w-0">
-                <span className="font-bold text-puente-800 block">{ins.nombre}</span>
-                <span className="text-sm text-puente-700">{ins.porQueImporta}</span>
+                <IconoInsignia
+                  id={ins.id}
+                  desbloqueada={conseguida}
+                  className="w-14 h-14 sm:w-16 sm:h-16"
+                />
+                <span
+                  className={`text-xs sm:text-sm font-bold text-center leading-tight ${
+                    conseguida ? 'text-puente-800' : 'text-puente-600'
+                  }`}
+                >
+                  {ins.nombre}
+                </span>
                 <span className="sr-only">
                   {conseguida ? 'Conseguida' : 'Aún no conseguida'}
                 </span>
-              </span>
+              </button>
+
+              {visible && (
+                <div
+                  id={tipId}
+                  role="tooltip"
+                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(16rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-md p-3 text-sm text-puente-800 pointer-events-none"
+                >
+                  <p className="font-bold text-puente-800 mb-1">
+                    {conseguida ? 'Ya la tienes' : 'Cómo conseguirla'}
+                  </p>
+                  <p className="text-puente-700 leading-snug">
+                    {conseguida ? ins.porQueImporta : ins.comoConseguirla}
+                  </p>
+                </div>
+              )}
             </li>
           )
         })}

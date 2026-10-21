@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
+import { BarraProgresoInsignias } from '@/components/insignias/BarraProgresoInsignias'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
@@ -365,6 +366,11 @@ export default function PaginaSalaPrevia() {
             sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
           </p>
         </header>
+
+        <BarraProgresoInsignias
+          conseguidas={insigniasUtiles}
+          className="mb-8 max-w-2xl"
+        />
 
         {mensaje && fase === 'intro' && (
           <p

@@ -9,8 +9,8 @@ interface Props {
 }
 
 /**
- * Toast discreto al ganar una insignia. Sin confeti ni sonido.
- * Anunciado con aria-live polite; descartable.
+ * Toast en forma de medalla al ganar una insignia.
+ * Sin confeti ni sonido. Anunciado con aria-live polite; descartable.
  */
 export function AvisoInsignia({ insignia, onDescartar }: Props) {
   if (!insignia) return null
@@ -22,13 +22,33 @@ export function AvisoInsignia({ insignia, onDescartar }: Props) {
       aria-live="polite"
       aria-atomic="true"
     >
-      <div className="pointer-events-auto max-w-md w-full flex items-start gap-3 rounded-suave border-2 border-puente-300 bg-white shadow-md p-4 text-puente-900">
-        <span className="shrink-0 text-puente-700 mt-0.5" aria-hidden="true">
-          <IconoInsignia id={insignia.id} className="w-9 h-9" />
+      <div
+        className="pointer-events-auto max-w-md w-full flex items-center gap-4 rounded-suave border-2 border-puente-400 bg-gradient-to-br from-white via-calma-mist to-calma-sage/40 shadow-md p-4 text-puente-900 animate-rise-in"
+        style={{
+          boxShadow:
+            '0 4px 20px rgba(26, 85, 102, 0.12), 0 0 0 1px rgba(94, 163, 122, 0.2)',
+        }}
+      >
+        <span
+          className="shrink-0 relative flex items-center justify-center"
+          aria-hidden="true"
+        >
+          <span
+            className="absolute inset-0 rounded-full bg-accent-success/20"
+            style={{ transform: 'scale(1.15)' }}
+          />
+          <IconoInsignia
+            id={insignia.id}
+            desbloqueada
+            className="w-14 h-14 relative"
+          />
         </span>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-puente-800">
-            Nueva insignia: {insignia.nombre}
+          <p className="text-xs font-bold uppercase tracking-wide text-puente-600 mb-0.5">
+            Nueva medalla
+          </p>
+          <p className="font-bold text-puente-800 text-lg leading-tight">
+            {insignia.nombre}
           </p>
           <p className="text-sm text-puente-700 mt-1">{insignia.porQueImporta}</p>
         </div>

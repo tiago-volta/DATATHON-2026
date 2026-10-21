@@ -3,76 +3,153 @@ import type { IdInsigniaUtil } from '@/lib/insignias'
 interface Props {
   id: IdInsigniaUtil
   className?: string
+  /** Medalla a color (desbloqueada) o en gris (bloqueada). */
+  desbloqueada?: boolean
 }
 
-/** Pictograma simple (SVG) por insignia. Sin morado; tono teal/calma. */
-export function IconoInsignia({ id, className = 'w-8 h-8' }: Props) {
-  if (id === 'primera-calma') {
-    return (
-      <svg className={className} viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="2" />
-        <path
-          d="M20 28c0-8 6-12 6-18-6 2-10 8-10 14 0 2.5 1.5 4 4 4z"
-          fill="currentColor"
-          opacity="0.85"
-        />
-        <path
-          d="M14 22c2-1 4-1 6 0"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-        />
-      </svg>
-    )
-  }
+/**
+ * Medalla visual por insignia (estilo videojuego calmado).
+ * Sin morado; tonos teal / sage / oro suave.
+ */
+export function IconoInsignia({
+  id,
+  className = 'w-10 h-10',
+  desbloqueada = true,
+}: Props) {
+  const gradId = `medalla-brillo-${id}`
+  const filtros = desbloqueada
+    ? undefined
+    : { filter: 'grayscale(1) brightness(1.05)', opacity: 0.55 }
 
-  if (id === 'pedi-ajustes') {
-    return (
-      <svg className={className} viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <rect
-          x="10"
-          y="6"
-          width="20"
-          height="28"
-          rx="3"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <path
-          d="M15 16h10M15 21h10M15 26h6"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-        />
-        <path
-          d="M26 27.5 28 29.5 32 24"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    )
-  }
-
-  // ensaye-1-nivel
   return (
-    <svg className={className} viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <svg
+      className={className}
+      viewBox="0 0 64 64"
+      fill="none"
+      aria-hidden="true"
+      style={filtros}
+    >
+      {desbloqueada && (
+        <defs>
+          <radialGradient id={gradId} cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="55%" stopColor="#D4EDE8" />
+            <stop offset="100%" stopColor="#B8DCCF" />
+          </radialGradient>
+        </defs>
+      )}
+
+      {/* Cinta */}
       <path
-        d="M8 28h8v-6H8v6zm10 0h8v-12h-8v12zm10 0h8V10h-8v18z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        fill="currentColor"
-        fillOpacity="0.15"
+        d="M22 8h8l2 14H20L22 8z"
+        fill={desbloqueada ? '#1A5566' : '#94A8B0'}
       />
       <path
-        d="M11 18.5 14 21.5 19 15"
-        stroke="currentColor"
+        d="M34 8h8l2 14H32L34 8z"
+        fill={desbloqueada ? '#2E7A8C' : '#A8B8BE'}
+      />
+      <path
+        d="M30 8h4v14h-4V8z"
+        fill={desbloqueada ? '#3EA3BC' : '#B8C5CA'}
+      />
+
+      {/* Disco de medalla */}
+      <circle
+        cx="32"
+        cy="38"
+        r="20"
+        fill={desbloqueada ? '#E8F4F2' : '#E8ECEE'}
+        stroke={desbloqueada ? '#1A5566' : '#9AADB5'}
+        strokeWidth="2.5"
+      />
+      <circle
+        cx="32"
+        cy="38"
+        r="15.5"
+        stroke={desbloqueada ? '#5EA37A' : '#B0BEC4'}
+        strokeWidth="1.75"
+        strokeDasharray={desbloqueada ? undefined : '3 3'}
+        fill={desbloqueada ? `url(#${gradId})` : '#F2F4F5'}
+      />
+
+      {id === 'primera-calma' && <PictogramaCalma desbloqueada={desbloqueada} />}
+      {id === 'pedi-ajustes' && <PictogramaAjustes desbloqueada={desbloqueada} />}
+      {id === 'ensaye-1-nivel' && <PictogramaEnsayo desbloqueada={desbloqueada} />}
+    </svg>
+  )
+}
+
+function PictogramaCalma({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  return (
+    <g>
+      <path
+        d="M32 48c0-10 7.5-15 7.5-22.5C32 28 27 35.5 27 43c0 3 2 5 5 5z"
+        fill={c}
+        opacity="0.9"
+      />
+      <path
+        d="M24 40c3-1.5 6-1.5 9 0"
+        stroke={c}
         strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <circle cx="38" cy="28" r="2" fill={desbloqueada ? '#5EA37A' : '#9AADB5'} />
+    </g>
+  )
+}
+
+function PictogramaAjustes({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  return (
+    <g>
+      <rect
+        x="24"
+        y="26"
+        width="16"
+        height="22"
+        rx="2.5"
+        stroke={c}
+        strokeWidth="2"
+        fill={desbloqueada ? '#FFFFFF' : '#F5F7F8'}
+      />
+      <path
+        d="M28 32h8M28 37h8M28 42h5"
+        stroke={c}
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <path
+        d="M38 44.5 40.5 47 45 41.5"
+        stroke={desbloqueada ? '#5EA37A' : '#9AADB5'}
+        strokeWidth="2.25"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </svg>
+    </g>
+  )
+}
+
+function PictogramaEnsayo({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  const fill = desbloqueada ? '#5EA37A' : '#9AADB5'
+  return (
+    <g>
+      <path
+        d="M22 48h7v-8h-7v8zm9 0h7V34h-7v14zm9 0h7V28h-7v20z"
+        stroke={c}
+        strokeWidth="2"
+        strokeLinejoin="round"
+        fill={fill}
+        fillOpacity="0.35"
+      />
+      <path
+        d="M25 36.5 28.5 40 34 32.5"
+        stroke={desbloqueada ? '#1A5566' : '#7A8F96'}
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
   )
 }

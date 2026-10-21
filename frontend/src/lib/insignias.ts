@@ -13,6 +13,8 @@ export interface InsigniaUtil {
   nombre: string
   /** Frase corta: por qué importa. */
   porQueImporta: string
+  /** Qué hacer para conseguirla (tooltip / ayuda). */
+  comoConseguirla: string
   /** Etiqueta corta del pictograma (aria / visual). */
   pictograma: string
 }
@@ -25,6 +27,8 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
     nombre: 'Primera calma',
     porQueImporta:
       'Cuidarte está bien. Pedir una pausa no es fallar: es cuidarte.',
+    comoConseguirla:
+      'En Sala Previa, pulsa «Pausa / Volver a la calma» cuando lo necesites.',
     pictograma: 'calma',
   },
   {
@@ -32,6 +36,8 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
     nombre: 'Pedí ajustes',
     porQueImporta:
       'Pedir lo que necesitas ayuda a que te traten mejor en el juzgado.',
+    comoConseguirla:
+      'En el Pasaporte, marca al menos un ajuste o preferencia que te ayude.',
     pictograma: 'ajustes',
   },
   {
@@ -39,9 +45,13 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
     nombre: 'Ensayé 1 nivel',
     porQueImporta:
       'Practicar un poco ya suma. No hace falta correr ni terminarlo todo.',
+    comoConseguirla:
+      'Practica un nivel en Sala Previa o en Ensaya, a tu ritmo.',
     pictograma: 'ensayo',
   },
 ]
+
+export const TOTAL_INSIGNIAS = INSIGNIAS_UTILES.length
 
 const IDS_VALIDOS = new Set<string>(INSIGNIAS_UTILES.map((i) => i.id))
 
