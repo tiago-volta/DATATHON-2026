@@ -19,10 +19,13 @@ de desarrollo.
 ## Antes de escribir código
 
 1. Leer CLAUDE.md para entender la estructura
-2. Consultar la skill relevante:
+2. Abrir `.cursor/skills/puente-mapa/SKILL.md` si no está claro qué skill toca
+3. Consultar la skill relevante:
    - Cambios en UI → `.claude/skills/puente-accesibilidad/SKILL.md`
    - Textos de usuario → `.claude/skills/puente-lectura-facil/SKILL.md`
-   - Frontend → skill `frontend-design` (instalada a nivel de usuario)
+   - Pautas de interfaz → `.cursor/skills/ui-ux-pro-max/SKILL.md`
+   - Backend → `.cursor/skills/fastapi-patterns/SKILL.md`
+   - Docs de librerías → `.cursor/skills/documentation-lookup/SKILL.md`
 
 ## Reglas de estilo
 
@@ -35,9 +38,10 @@ de desarrollo.
 
 ### Commits
 
-- Mensajes en español, descriptivos, sin mencionar IA
+- Formato `tipo(módulo): descripción en español`. Tipos: feat, fix, refactor, docs, test, chore, perf, ci
+- Sin mencionar herramientas de IA
 - Un cambio lógico por commit
-- No agrupar cambios no relacionados
+- El detalle está en `CONTRIBUTING.md`
 
 ### Textos de usuario
 
