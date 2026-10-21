@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Marca } from '@/components/Marca'
+import { BotonPerfilInsignias } from '@/components/insignias/BotonPerfilInsignias'
 import { IndicadorModoVoz } from '@/components/voz/IndicadorModoVoz'
 import { useCabeceraFlotante } from '@/hooks/useCabeceraFlotante'
 
@@ -70,6 +71,7 @@ export function Cabecera() {
             >
               Para el juzgado
             </Link>
+            <BotonPerfilInsignias />
           </div>
         </nav>
         </div>

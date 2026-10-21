@@ -395,7 +395,6 @@ export default function PaginaEnsaya() {
                 bienvenida={bienvenidaPractica}
                 onDescartarBienvenida={descartarBienvenidaPractica}
               />
-              <PanelInsignias conseguidas={insigniasUtiles} />
             </div>
 
             <p className="text-xs text-puente-700 mt-8">
@@ -517,7 +516,6 @@ export default function PaginaEnsaya() {
                 bienvenida={bienvenidaPractica}
                 onDescartarBienvenida={descartarBienvenidaPractica}
               />
-              <PanelInsignias conseguidas={insigniasUtiles} />
             </div>
           </section>
         ) : (
@@ -689,6 +687,10 @@ export default function PaginaEnsaya() {
             </p>
           </section>
         )}
+
+        <div className="mt-12 max-w-2xl mx-auto">
+          <PanelInsignias conseguidas={insigniasUtiles} apartado="ensaya" />
+        </div>
       </main>
 
       {checkInPendiente && nivelAcabadoMeta && (

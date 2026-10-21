@@ -3,7 +3,10 @@
 import { useId, useState } from 'react'
 import {
   INSIGNIAS_UTILES,
+  TITULO_INSIGNIAS_APARTADO,
+  insigniasDeApartado,
   textoTooltipMedalla,
+  type ApartadoInsignias,
   type IdInsigniaUtil,
 } from '@/lib/insignias'
 import { IconoInsignia } from './IconoInsignia'
@@ -12,32 +15,59 @@ interface Props {
   conseguidas: IdInsigniaUtil[]
   /** Título opcional del panel. */
   titulo?: string
+  /** Si se indica, solo muestra las medallas de ese apartado. */
+  apartado?: ApartadoInsignias
+  /** Variante compacta para el menú de perfil (sin card exterior). */
+  embebido?: boolean
 }
 
 /**
  * Galería de medallas: desbloqueadas a color; bloqueadas en gris.
- * Hover y focus muestran «Medalla: {nombre}. {comoConseguirla}».
+ * Con `apartado`, solo las relacionadas con la sección actual (pie de página).
  */
 export function PanelInsignias({
   conseguidas,
-  titulo = 'Insignias útiles',
+  titulo,
+  apartado,
+  embebido = false,
 }: Props) {
   const tituloId = useId()
   const ayudaId = useId()
   const tipBaseId = useId()
   const [tipActivo, setTipActivo] = useState<IdInsigniaUtil | null>(null)
 
-  return (
-    <section aria-labelledby={tituloId} className="card">
-      <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
-        {titulo}
-      </h2>
-      <p id={ayudaId} className="text-sm text-puente-700 mb-4">
-        Premian cuidarte y practicar a tu ritmo. No hay ranking ni reloj.
-      </p>
+  const lista = apartado ? insigniasDeApartado(apartado) : INSIGNIAS_UTILES
+  const tituloFinal =
+    titulo ??
+    (apartado ? TITULO_INSIGNIAS_APARTADO[apartado] : 'Insignias útiles')
+  const ayuda = apartado
+    ? 'Medallas que puedes conseguir en este apartado. El resto está en tu perfil (arriba a la derecha).'
+    : 'Premian cuidarte y practicar a tu ritmo. No hay ranking ni reloj.'
 
-      <ul className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3" aria-describedby={ayudaId}>
-        {INSIGNIAS_UTILES.map((ins) => {
+  const cuerpo = (
+    <>
+      {!embebido && (
+        <>
+          <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+            {tituloFinal}
+          </h2>
+          <p id={ayudaId} className="text-sm text-puente-700 mb-4">
+            {ayuda}
+          </p>
+        </>
+      )}
+      {embebido && <p id={ayudaId} className="sr-only">{ayuda}</p>}
+
+      <ul
+        className={`grid gap-3 ${
+          apartado
+            ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+            : 'grid-cols-3 sm:grid-cols-3 md:grid-cols-5'
+        }`}
+        aria-describedby={ayudaId}
+        {...(embebido ? {} : { 'aria-labelledby': tituloId })}
+      >
+        {lista.map((ins) => {
           const conseguida = conseguidas.includes(ins.id)
           const tipId = `${tipBaseId}-${ins.id}`
           const visible = tipActivo === ins.id
@@ -62,7 +92,7 @@ export function PanelInsignias({
                 <IconoInsignia
                   id={ins.id}
                   desbloqueada={conseguida}
-                  className="w-14 h-14 sm:w-16 sm:h-16"
+                  className={embebido ? 'w-12 h-12' : 'w-14 h-14 sm:w-16 sm:h-16'}
                 />
                 <span
                   className={`text-xs sm:text-sm font-bold text-center leading-tight ${
@@ -94,6 +124,16 @@ export function PanelInsignias({
           )
         })}
       </ul>
+    </>
+  )
+
+  if (embebido) {
+    return <div>{cuerpo}</div>
+  }
+
+  return (
+    <section aria-labelledby={tituloId} className="card">
+      {cuerpo}
     </section>
   )
 }
