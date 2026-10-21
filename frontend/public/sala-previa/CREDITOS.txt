@@ -1,15 +1,33 @@
-Sala Previa — créditos de imagen 360
+Sala Previa — créditos de imagen 360 y personas
+
+== Panorama de la sala ==
 
 Archivo: sala-vistas-panorama.jpg (original)
          sala-vistas-360.jpg (equirectangular 2:1 derivado para el viewer)
 
-Fuente: «Panorama of 2nd Floor Courtroom - Old Courthouse - St. Louis - Missouri - USA»
-Autor: Adam Jones (Flickr / Wikimedia Commons)
-Licencia: Creative Commons Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0)
-URL licencia: https://creativecommons.org/licenses/by-sa/2.0/
-URL archivo: https://commons.wikimedia.org/wiki/File:Panorama_of_2nd_Floor_Courtroom_-_Old_Courthouse_-_St._Louis_-_Missouri_-_USA_(27070022037).jpg
+Fuente: «Sala Segunda del Tribunal Supremo español»
+Autor: AlonsoMartinez (Wikimedia Commons)
+Licencia: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+URL licencia: https://creativecommons.org/licenses/by-sa/4.0/
+URL archivo: https://commons.wikimedia.org/wiki/File:Sala_Segunda_del_Tribunal_Supremo_espa%C3%B1ol..JPG
 
-El archivo sala-vistas-360.jpg adapta el panorama cilíndrico a un mapa
+El archivo sala-vistas-360.jpg adapta la fotografía de la sala de vistas
+(estrado de madera, escudo y ambiente de juzgado español) a un mapa
 equirectangular 2:1 (franja ecuatorial + cielo/suelo neutros) para la
-proyección en primera persona. Misma licencia CC BY-SA 2.0; atribución
+proyección en primera persona. Misma licencia CC BY-SA 4.0; atribución
 al autor original requerida.
+
+== Personas (estímulo «gente») ==
+
+Carpeta: gente/
+Recortes fotográficos con fondo transparente para overlay en el viewer.
+Licencias libres (Unsplash License o CC BY 2.0). Atribuciones:
+
+- abogado-hombre.png, abogada-mujer.png, profesional-hombre.png
+  Fotografías de Unsplash (licencia Unsplash:
+  https://unsplash.com/license). Recorte de fondo con rembg.
+- publico-1.png, publico-2.png
+  Derivados de «Audience at TED» (tedxgateway / Flickr),
+  CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Audience_at_TED.jpg
+- espalda-back3.png, publico-espaldas.png, grupo-sentados.png
+  Fotografías de Unsplash (licencia Unsplash), recorte con rembg.

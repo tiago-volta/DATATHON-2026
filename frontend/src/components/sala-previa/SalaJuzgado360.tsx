@@ -13,7 +13,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { BarritasEstimulo } from '@/components/sala-previa/BarritasEstimulo'
 import type { IdEscenaJuzgado, IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
-/** Panorama equirectangular 2:1 (derivado del juzgado de St. Louis). */
+/** Panorama equirectangular 2:1 (Sala Segunda del Tribunal Supremo, España). */
 const PANORAMA_SRC = '/sala-previa/sala-vistas-360.jpg'
 
 /** Ángulo inicial (yaw) por escena: 0 ≈ juez; 180 ≈ entrada. */
@@ -34,6 +34,66 @@ const MIRADAS = [
 const FOV_DEG = 78
 const PITCH_MAX = 28
 
+/** Recortes fotográficos reales (fondo transparente) según estímulo «gente». */
+const PERSONAS = [
+  {
+    src: '/sala-previa/gente/publico-espaldas.png',
+    yawRel: -52,
+    bottom: '10%',
+    height: '42%',
+    baseOpacity: 0.88,
+  },
+  {
+    src: '/sala-previa/gente/espalda-back3.png',
+    yawRel: -28,
+    bottom: '8%',
+    height: '40%',
+    baseOpacity: 0.9,
+  },
+  {
+    src: '/sala-previa/gente/grupo-sentados.png',
+    yawRel: 8,
+    bottom: '6%',
+    height: '36%',
+    baseOpacity: 0.85,
+  },
+  {
+    src: '/sala-previa/gente/abogado-hombre.png',
+    yawRel: 36,
+    bottom: '12%',
+    height: '48%',
+    baseOpacity: 0.92,
+  },
+  {
+    src: '/sala-previa/gente/abogada-mujer.png',
+    yawRel: 54,
+    bottom: '10%',
+    height: '46%',
+    baseOpacity: 0.9,
+  },
+  {
+    src: '/sala-previa/gente/publico-1.png',
+    yawRel: -68,
+    bottom: '14%',
+    height: '44%',
+    baseOpacity: 0.86,
+  },
+  {
+    src: '/sala-previa/gente/profesional-hombre.png',
+    yawRel: 72,
+    bottom: '11%',
+    height: '47%',
+    baseOpacity: 0.88,
+  },
+  {
+    src: '/sala-previa/gente/publico-2.png',
+    yawRel: -12,
+    bottom: '9%',
+    height: '45%',
+    baseOpacity: 0.84,
+  },
+] as const
+
 interface Props {
   escenaId: IdEscenaJuzgado
   titulo: string
@@ -47,25 +107,56 @@ function wrapDeg(deg: number): number {
   return ((deg % 360) + 360) % 360
 }
 
-function SiluetaPersona({
-  style,
-  tono,
-  escala = 1,
-}: {
-  style: CSSProperties
-  tono: string
-  escala?: number
-}) {
-  const w = 36 * escala
-  const h = 72 * escala
-  return (
-    <div className="absolute pointer-events-none" style={{ ...style, width: w, height: h }} aria-hidden="true">
-      <svg width={w} height={h} viewBox="0 0 36 72" fill="none" style={{ width: '100%', height: '100%' }}>
-        <circle cx="18" cy="10" r="8" fill={tono} />
-        <path d="M6 28c0-4 5-7 12-7s12 3 12 7v22H6V28Z" fill={tono} />
-        <path d="M10 50h6v20H10V50Zm10 0h6v20h-6V50Z" fill={tono} />
+function IconoPantallaCompleta({ salir }: { salir?: boolean }) {
+  if (salir) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
-    </div>
+    )
+  }
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function PersonaRealista({
+  src,
+  style,
+  opacity,
+}: {
+  src: string
+  style: CSSProperties
+  opacity: number
+}) {
+  return (
+    <img
+      src={src}
+      alt=""
+      draggable={false}
+      className="absolute pointer-events-none select-none object-contain object-bottom"
+      style={{
+        ...style,
+        opacity,
+        transition: 'opacity 1s ease-out',
+        filter: 'drop-shadow(0 2px 6px rgba(20,40,50,0.35))',
+      }}
+      aria-hidden="true"
+    />
   )
 }
 
@@ -80,6 +171,7 @@ export function SalaJuzgado360({
   const reduced = useReducedMotion()
   const labelId = useId()
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const fsRootRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement | null>(null)
   const rafRef = useRef<number | null>(null)
   const arrastre = useRef<{
@@ -95,6 +187,7 @@ export function SalaJuzgado360({
   const [arrastrando, setArrastrando] = useState(false)
   const [imgLista, setImgLista] = useState(false)
   const [imgError, setImgError] = useState(false)
+  const [enPantallaCompleta, setEnPantallaCompleta] = useState(false)
 
   useEffect(() => {
     setYaw(YAW_INICIAL[escenaId] ?? 0)
@@ -120,6 +213,28 @@ export function SalaJuzgado360({
     }
   }, [])
 
+  useEffect(() => {
+    const syncFs = () => {
+      const el = fsRootRef.current
+      const activo =
+        Boolean(document.fullscreenElement) && document.fullscreenElement === el
+      setEnPantallaCompleta(activo)
+    }
+    document.addEventListener('fullscreenchange', syncFs)
+    return () => document.removeEventListener('fullscreenchange', syncFs)
+  }, [])
+
+  useEffect(() => {
+    if (!enPantallaCompleta) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && document.fullscreenElement) {
+        void document.exitFullscreen?.()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [enPantallaCompleta])
+
   const luz = enCalma ? Math.min(valores.luz, 12) : valores.luz
   const gente = enCalma ? 0 : valores.gente
   const ruido = enCalma ? 0 : valores.ruido
@@ -128,7 +243,7 @@ export function SalaJuzgado360({
   const brillo = 0.62 + (luz / 100) * 0.48
   const veloOscuro = Math.min(0.45, (100 - luz) / 210)
   const veloRuido = Math.min(0.3, (ruido * 0.5 + eco * 0.5) / 190)
-  const numGente = Math.round((gente / 100) * 8)
+  const numGente = Math.round((gente / 100) * PERSONAS.length)
 
   const pintar = useCallback(() => {
     const canvas = canvasRef.current
@@ -191,7 +306,7 @@ export function SalaJuzgado360({
     return () => {
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
     }
-  }, [imgLista, pintar, arrastrando])
+  }, [imgLista, pintar, arrastrando, enPantallaCompleta])
 
   useEffect(() => {
     if (!imgLista) return
@@ -203,6 +318,8 @@ export function SalaJuzgado360({
   const onPointerDown = useCallback(
     (e: ReactPointerEvent) => {
       if (reduced) return
+      const target = e.target as HTMLElement
+      if (target.closest('[data-sala-ui]')) return
       ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
       arrastre.current = {
         activo: true,
@@ -239,34 +356,44 @@ export function SalaJuzgado360({
     setYaw((y) => wrapDeg(y + deltaYaw))
   }
 
-  const tonoPersonas = 'hsla(195, 28%, 22%, 0.72)'
-  const posicionesGente = [
-    { yawRel: -55, bottom: '18%', scale: 0.85 },
-    { yawRel: -32, bottom: '16%', scale: 0.95 },
-    { yawRel: -12, bottom: '17%', scale: 0.8 },
-    { yawRel: 18, bottom: '15%', scale: 1 },
-    { yawRel: 38, bottom: '18%', scale: 0.9 },
-    { yawRel: 58, bottom: '16%', scale: 0.85 },
-    { yawRel: -70, bottom: '22%', scale: 0.7 },
-    { yawRel: 75, bottom: '21%', scale: 0.75 },
-  ]
+  const alternarPantallaCompleta = async () => {
+    const el = fsRootRef.current
+    if (!el) return
+    try {
+      if (document.fullscreenElement === el) {
+        await document.exitFullscreen()
+      } else if (!document.fullscreenElement) {
+        await el.requestFullscreen()
+      }
+    } catch {
+      // El navegador puede denegar fullscreen; no rompemos la simulación.
+    }
+  }
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-start">
-        {/* Barritas FUERA del viewport, a la izquierda */}
-        <div className="shrink-0 sm:sticky sm:top-4 self-start" data-sala-controles>
+      <div
+        ref={fsRootRef}
+        className="sala-juzgado-fs-root flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-start"
+      >
+        {/* Barritas: a la izquierda en layout normal; arriba-izq en :fullscreen */}
+        <div
+          className="sala-fs-barritas shrink-0 sm:sticky sm:top-4 self-start"
+          data-sala-controles
+          data-sala-ui
+        >
           <BarritasEstimulo
             valores={{ ruido, luz, gente, eco }}
             deshabilitado={deshabilitadoEstimulos || enCalma}
             onChange={onChangeEstimulo}
             className="w-full sm:w-[12.5rem]"
+            idPrefix="barra-sala"
           />
         </div>
 
-        <div className="min-w-0 flex-1 space-y-2">
+        <div className="sala-fs-columna min-w-0 flex-1 space-y-2 flex flex-col">
           <div
-            className={`relative aspect-[16/10] sm:aspect-video rounded-tarjeta overflow-hidden border-2 border-puente-200 select-none touch-none bg-puente-100 ${
+            className={`sala-fs-viewer relative aspect-[16/10] sm:aspect-video rounded-tarjeta overflow-hidden border-2 border-puente-200 select-none touch-none bg-puente-100 ${
               reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'
             }`}
             role="img"
@@ -278,12 +405,15 @@ export function SalaJuzgado360({
             onPointerLeave={finArrastre}
           >
             <p id={labelId} className="sr-only">
-              Vista en primera persona de {titulo}, panorama de una sala de juzgado.{' '}
+              Vista en primera persona de {titulo}, panorama de una sala de juzgado española.{' '}
               {reduced
                 ? 'La rotación libre está desactivada. Usa los botones Entrada, Abogados o Juez para mirar.'
                 : 'Arrastra con el ratón o el dedo para mirar alrededor (entrada, juez, abogados).'}{' '}
               Ruido {Math.round(ruido)}, luz {Math.round(luz)}, gente {Math.round(gente)}, eco{' '}
               {Math.round(eco)}.
+              {enPantallaCompleta
+                ? ' Pantalla completa activa. Pulsa Escape o el botón para salir.'
+                : ''}
             </p>
 
             <canvas
@@ -303,29 +433,30 @@ export function SalaJuzgado360({
               </p>
             )}
 
-            {/* Siluetas según estímulo «gente» */}
+            {/* Personas fotográficas según estímulo «gente» */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-              {posicionesGente.map((p, i) => {
+              {PERSONAS.map((p, i) => {
                 const visible = i < numGente
                 if (!visible) return null
                 const rel = ((p.yawRel - (wrapDeg(yaw) - 8) + 540) % 360) - 180
-                if (Math.abs(rel) > 55) return null
-                const leftPct = 50 + (rel / 55) * 42
+                if (Math.abs(rel) > 58) return null
+                const leftPct = 50 + (rel / 58) * 44
                 const fuerza =
                   i < numGente - 1
                     ? 1
-                    : Math.max(0.3, (gente / 100) * 8 - (numGente - 1))
+                    : Math.max(0.25, (gente / 100) * PERSONAS.length - (numGente - 1))
                 return (
-                  <SiluetaPersona
-                    key={i}
-                    tono={tonoPersonas}
-                    escala={p.scale}
+                  <PersonaRealista
+                    key={p.src + i}
+                    src={p.src}
+                    opacity={(0.4 + fuerza * 0.55) * p.baseOpacity}
                     style={{
                       left: `${leftPct}%`,
                       bottom: p.bottom,
+                      height: p.height,
+                      width: 'auto',
+                      maxWidth: '28%',
                       transform: 'translateX(-50%)',
-                      opacity: 0.35 + fuerza * 0.45,
-                      transition: 'opacity 1s ease-out',
                     }}
                   />
                 )
@@ -362,7 +493,7 @@ export function SalaJuzgado360({
             />
 
             <div
-              className="absolute bottom-2 left-3 right-3 flex items-end gap-0.5 h-5 pointer-events-none z-[2]"
+              className="absolute bottom-2 left-3 right-14 flex items-end gap-0.5 h-5 pointer-events-none z-[2]"
               aria-hidden="true"
             >
               {Array.from({ length: 18 }, (_, i) => {
@@ -386,13 +517,31 @@ export function SalaJuzgado360({
               })}
             </div>
 
-            {enCalma && (
-              <div className="absolute top-3 right-3 z-[4]">
+            <div className="absolute top-2 right-2 z-[5] flex flex-col items-end gap-2" data-sala-ui>
+              {enCalma && (
                 <span className="inline-block bg-white/95 text-puente-800 font-bold px-3 py-1.5 rounded-suave text-sm border border-puente-200">
                   Modo calma activo
                 </span>
-              </div>
-            )}
+              )}
+              <button
+                type="button"
+                className="inline-flex items-center justify-center w-11 h-11 rounded-suave bg-white/92 text-puente-800 border border-puente-200 shadow-sm hover:bg-white focus-visible:ring-4 focus-visible:ring-puente-400"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  void alternarPantallaCompleta()
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                aria-label={
+                  enPantallaCompleta
+                    ? 'Salir de pantalla completa'
+                    : 'Ampliar simulación a pantalla completa'
+                }
+                aria-pressed={enPantallaCompleta}
+                title={enPantallaCompleta ? 'Salir (Esc)' : 'Pantalla completa'}
+              >
+                <IconoPantallaCompleta salir={enPantallaCompleta} />
+              </button>
+            </div>
 
             {!reduced && (
               <p
@@ -405,9 +554,10 @@ export function SalaJuzgado360({
           </div>
 
           <div
-            className="flex flex-wrap gap-2 items-center"
+            className="sala-fs-miradas flex flex-wrap gap-2 items-center"
             role="group"
             aria-label="Mirar hacia un punto de la sala"
+            data-sala-ui
           >
             {reduced && (
               <>
@@ -443,15 +593,16 @@ export function SalaJuzgado360({
           </div>
 
           {reduced && (
-            <p className="text-sm text-puente-700" role="note">
+            <p className="sala-fs-nota text-sm text-puente-700" role="note">
               Vista con menos movimiento: usa los botones para mirar la entrada, los abogados
-              o el juez. Las barritas de estímulo siguen a la izquierda.
+              o el juez. Las barritas de estímulo siguen a la izquierda
+              {enPantallaCompleta ? ' (arriba a la izquierda en pantalla completa)' : ''}.
             </p>
           )}
 
-          <p className="text-xs text-puente-600 leading-snug">
-            Foto: Adam Jones — Old Courthouse, St. Louis (CC BY-SA 2.0). Adaptada a panorama
-            360° para esta simulación.
+          <p className="sala-fs-credito text-xs text-puente-600 leading-snug">
+            Foto: AlonsoMartinez — Sala Segunda del Tribunal Supremo (España), CC BY-SA 4.0.
+            Adaptada a panorama 360° para esta simulación.
           </p>
         </div>
       </div>

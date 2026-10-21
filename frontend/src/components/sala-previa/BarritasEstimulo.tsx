@@ -17,6 +17,10 @@ interface Props {
   /** Si se pasa, las barritas también ajustan el estímulo (teclado incluido). */
   onChange?: (id: IdEstimulo, valor: number) => void
   className?: string
+  /** Prefijo único para ids de inputs (p. ej. instancia en pantalla completa). */
+  idPrefix?: string
+  /** Título corto del panel. */
+  titulo?: string
 }
 
 /**
@@ -28,6 +32,8 @@ export function BarritasEstimulo({
   deshabilitado,
   onChange,
   className = '',
+  idPrefix = 'barra-entrada',
+  titulo = 'En la entrada',
 }: Props) {
   return (
     <div
@@ -36,14 +42,14 @@ export function BarritasEstimulo({
       aria-label="Niveles de estímulo de la escena"
     >
       <p className="text-xs font-bold text-puente-800 mb-2 leading-tight">
-        En la entrada
+        {titulo}
       </p>
       <ul className="space-y-2.5 list-none p-0 m-0">
         {ORDEN.map((id) => {
           const meta = ESTIMULOS_META[id]
           const valor = Math.min(100, Math.max(0, Math.round(valores[id] || 0)))
           const palabras = nivelPalabra(valor)
-          const inputId = `barra-entrada-${id}`
+          const inputId = `${idPrefix}-${id}`
           const editable = Boolean(onChange) && !deshabilitado
 
           return (
