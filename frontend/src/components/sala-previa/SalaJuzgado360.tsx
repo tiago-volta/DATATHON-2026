@@ -292,13 +292,13 @@ export function SalaJuzgado360({
 
             <div className="absolute top-2 right-2 z-[5] flex flex-col items-end gap-2" data-sala-ui>
               {enCalma && (
-                <span className="inline-block bg-white/95 text-puente-800 font-bold px-3 py-1.5 rounded-suave text-sm border border-puente-200">
+                <span className="inline-block bg-white text-puente-800 font-bold px-3 py-1.5 rounded-suave text-sm border border-puente-200">
                   Modo calma activo
                 </span>
               )}
               <button
                 type="button"
-                className="inline-flex items-center justify-center w-11 h-11 rounded-suave bg-white/92 text-puente-800 border border-puente-200 shadow-sm hover:bg-white focus-visible:ring-4 focus-visible:ring-puente-400"
+                className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-suave bg-white text-puente-800 border border-puente-200 hover:bg-calma-mist focus-visible:ring-4 focus-visible:ring-puente-400"
                 onClick={(e) => {
                   e.stopPropagation()
                   void alternarPantallaCompleta()
@@ -318,7 +318,7 @@ export function SalaJuzgado360({
 
             {!reduced && (
               <p
-                className="absolute bottom-2 right-3 z-[3] text-[11px] sm:text-xs text-puente-800 bg-white/85 px-2 py-1 rounded-suave pointer-events-none"
+                className="absolute bottom-2 right-3 z-[3] text-sm text-puente-800 bg-white px-2 py-1 rounded-suave border border-puente-200 pointer-events-none"
                 aria-hidden="true"
               >
                 Arrastra para mirar

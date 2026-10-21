@@ -1,3 +1,5 @@
+import { Icono } from '@/components/Icono'
+
 interface Props {
   nombre: string
   descripcion: string
@@ -10,7 +12,7 @@ export function TarjetaRol({ nombre, descripcion, queHace, comoReconocerlo, icon
   return (
     <article className="card">
       <div className="flex items-start gap-4">
-        <span className="text-2xl leading-none pt-1" aria-hidden="true">{icono}</span>
+        <Icono nombre={icono} className="mt-1 h-6 w-6 text-puente-900" />
         <div className="flex-1 min-w-0">
           <h3 className="text-xl font-bold text-puente-800 mb-2">{nombre}</h3>
           <p className="text-puente-600 mb-3">{descripcion}</p>

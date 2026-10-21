@@ -74,7 +74,7 @@ export function EscenaSensorial({
         deshabilitadoEstimulos={deshabilitadoEstimulos}
       />
 
-      <div className="rounded-suave border border-puente-100 bg-white/90 px-4 py-3">
+      <div className="rounded-suave border border-puente-200 bg-white px-4 py-3">
         <p className="font-bold text-puente-800 text-lg">{nivel.nombre}</p>
         <p className="text-puente-700 mt-1">{nivel.descripcion}</p>
         <p className="sr-only" aria-live="polite" aria-atomic="true">

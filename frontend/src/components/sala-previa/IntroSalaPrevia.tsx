@@ -1,7 +1,6 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 
 const PASOS = [
@@ -28,7 +27,6 @@ interface Props {
 
 export function IntroSalaPrevia({ onEmpezar }: Props) {
   const [paso, setPaso] = useState(0)
-  const reduced = useReducedMotion()
   const tituloId = useId()
   const total = PASOS.length
   const actual = PASOS[paso]
@@ -38,7 +36,7 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
 
   return (
     <section
-      className={`card-destacada max-w-2xl ${reduced ? '' : 'animate-fade-soft'}`}
+      className="card-destacada max-w-2xl"
       aria-labelledby={tituloId}
     >
       <p className="text-sm font-medium text-puente-700 mb-2" aria-live="polite">

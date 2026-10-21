@@ -1,5 +1,6 @@
 'use client'
 
+import { Icono } from '@/components/Icono'
 import { INSIGNIAS } from '@/lib/sala-previa/niveles'
 import type { ProgresoSala } from '@/lib/sala-previa/tipos'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
@@ -47,13 +48,14 @@ export function PanelProgreso({
             return (
               <li
                 key={ins.id}
-                className={`flex items-start gap-3 p-3 rounded-lg ${
-                  conseguida ? 'bg-calma-sage' : 'bg-puente-50 opacity-60'
+                className={`flex items-start gap-3 p-3 rounded-suave ${
+                  conseguida ? 'bg-calma-sage' : 'bg-white border border-puente-200'
                 }`}
               >
-                <span className="font-bold text-puente-700" aria-hidden="true">
-                  {conseguida ? '★' : '○'}
-                </span>
+                <Icono
+                  nombre={conseguida ? '★' : '○'}
+                  className={`mt-0.5 h-5 w-5 ${conseguida ? 'text-puente-900' : 'text-puente-400'}`}
+                />
                 <span>
                   <span className="font-bold text-puente-800 block">{ins.nombre}</span>
                   <span className="text-sm text-puente-600">{ins.descripcion}</span>

@@ -22,7 +22,7 @@ export function BotonCalma({ enCalma, onPausa, onReanudar }: Props) {
       <button
         type="button"
         onClick={enCalma ? onReanudar : onPausa}
-        className="pointer-events-auto btn bg-accent-success text-puente-900 shadow-lg hover:brightness-95 min-h-[56px] min-w-[44px] text-lg px-8 max-w-full"
+        className="pointer-events-auto btn bg-accent-success text-white border-2 border-accent-success hover:bg-[#145233] min-h-[56px] min-w-[44px] text-lg px-8 max-w-full"
         aria-pressed={enCalma}
         aria-label={etiqueta}
       >

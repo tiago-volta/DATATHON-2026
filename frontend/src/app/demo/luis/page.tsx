@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Cabecera } from '@/components/Cabecera'
+import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
@@ -51,19 +51,18 @@ export default function DemoLuis() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
-        <nav className="mb-6">
-          <Link href="/" className="text-puente-600 hover:text-puente-800">
-            ← Volver al inicio
+      <main id="contenido-principal" className="page-shell">
+        <nav aria-label="Volver">
+          <Link href="/" className="link-atras">
+            <Icono nombre="←" />
+            Volver al inicio
           </Link>
         </nav>
 
         <header className="mb-8">
           <div className="mb-4">
-            <h1 className="text-3xl font-bold text-puente-800">Luis, 28 años</h1>
-            <p className="text-lg text-puente-700">Testigo en un juicio penal</p>
+            <h1 className="titulo-pagina">Luis, 28 años</h1>
+            <p className="text-xl text-puente-700">Testigo en un juicio penal</p>
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
             <p className="text-puente-700">
@@ -127,7 +126,8 @@ export default function DemoLuis() {
               onClick={() => setSeccion('citacion')}
               className="btn-primary mt-6"
             >
-              Ver su citación explicada →
+              Ver su citación explicada
+              <Icono nombre="→" />
             </button>
           </section>
         )}
@@ -189,7 +189,8 @@ export default function DemoLuis() {
 
             <div className="flex gap-4 mt-6">
               <button type="button" onClick={() => setSeccion('fases')} className="btn-primary">
-                Ver las fases del proceso →
+                Ver las fases del proceso
+                <Icono nombre="→" />
               </button>
             </div>
           </section>
@@ -203,7 +204,8 @@ export default function DemoLuis() {
             </p>
             <LineaTiempo fases={FASES_TESTIGO} faseActual={1} />
             <button type="button" onClick={() => setSeccion('roles')} className="btn-primary mt-8">
-              Ver quién estará en la sala →
+              Ver quién estará en la sala
+              <Icono nombre="→" />
             </button>
           </section>
         )}
@@ -227,7 +229,8 @@ export default function DemoLuis() {
               ))}
             </div>
             <button type="button" onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
-              Ver qué ajustes puede pedir →
+              Ver qué ajustes puede pedir
+              <Icono nombre="→" />
             </button>
           </section>
         )}
@@ -248,7 +251,7 @@ export default function DemoLuis() {
                 { nombre: 'Persona facilitadora', desc: 'Alguien que le ayude a entender y comunicarse' },
               ].map((ajuste) => (
                 <div key={ajuste.nombre} className="card flex items-start gap-4">
-                  <span className="text-accent-success text-2xl" aria-hidden="true">✓</span>
+                  <Icono nombre="✓" className="h-6 w-6 text-accent-success" />
                   <div>
                     <p className="font-bold text-puente-800">{ajuste.nombre}</p>
                     <p className="text-puente-600">{ajuste.desc}</p>

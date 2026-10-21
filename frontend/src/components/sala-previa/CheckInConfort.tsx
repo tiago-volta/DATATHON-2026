@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { Icono } from '@/components/Icono'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
   ESTIMULOS_META,
@@ -178,7 +179,7 @@ export function CheckInConfort({
         if (e.target === e.currentTarget) onCerrar()
       }}
     >
-      <div className="bg-white rounded-tarjeta shadow-lg max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto">
+      <div className="bg-white rounded-tarjeta border-2 border-puente-800 max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto">
         <div className="flex items-start justify-between gap-3 mb-2">
           <h2 id={tituloId} className="text-2xl font-bold text-puente-800">
             ¿Cómo te sientes?
@@ -318,7 +319,7 @@ export function CheckInConfort({
                 <ul className="space-y-2 mb-4">
                   {idsAjustes.map((id) => (
                     <li key={id} className="flex gap-2 text-puente-700">
-                      <span aria-hidden="true">✓</span>
+                      <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
                       <span>{nombreAjuste(id)}</span>
                     </li>
                   ))}

@@ -7,29 +7,29 @@ module.exports = {
     extend: {
       colors: {
         puente: {
-          50: '#eef7f9',
-          100: '#d5eef3',
-          200: '#aedce8',
-          300: '#78c3d4',
-          400: '#3fa3bc',
-          500: '#268399',
-          600: '#1c6a7f',
-          700: '#1a5566',
-          800: '#164652',
-          900: '#153b45',
-          950: '#0c252e',
+          50: '#f5f5f7',
+          100: '#e8e8ed',
+          200: '#d2d2d7',
+          300: '#86868b',
+          400: '#6e6e73',
+          500: '#424245',
+          600: '#1d1d1f',
+          700: '#3a3a3c',
+          800: '#1d1d1f',
+          900: '#1d1d1f',
+          950: '#000000',
         },
         calma: {
-          cream: '#f4f9fa',
-          sand: '#e8f2f4',
-          sage: '#dfece8',
-          mist: '#eef5f7',
+          cream: '#ffffff',
+          sand: '#ffffff',
+          sage: '#f5f5f7',
+          mist: '#f5f5f7',
         },
         accent: {
-          warm: '#c4896a',
-          success: '#5ea37a',
-          alert: '#c49a5c',
-          info: '#6a9eb8',
+          warm: '#9a5340',
+          success: '#1e6b45',
+          alert: '#8a4b12',
+          info: '#3e5874',
         }
       },
       fontFamily: {
@@ -45,21 +45,7 @@ module.exports = {
       },
       borderRadius: {
         'suave': '0.75rem',
-        'tarjeta': '0.75rem',
-      },
-      keyframes: {
-        'rise-in': {
-          '0%': { opacity: '0', transform: 'translateY(12px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        'fade-soft': {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-      },
-      animation: {
-        'rise-in': 'rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both',
-        'fade-soft': 'fade-soft 0.7s ease-out both',
+        'tarjeta': '1.25rem',
       },
     },
   },

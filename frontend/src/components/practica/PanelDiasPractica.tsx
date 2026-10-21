@@ -1,6 +1,7 @@
 'use client'
 
 import { useId } from 'react'
+import { Icono } from '@/components/Icono'
 import type { DiaSemana } from '@/lib/practica'
 
 interface Props {
@@ -98,9 +99,10 @@ export function PanelDiasPractica({
               >
                 {dia.etiqueta}
               </span>
-              <span className="text-lg font-bold text-puente-800" aria-hidden="true">
-                {dia.practicado ? '✓' : '·'}
-              </span>
+              <Icono
+                nombre={dia.practicado ? '✓' : '·'}
+                className={`h-5 w-5 ${dia.practicado ? 'text-accent-success' : 'text-puente-300'}`}
+              />
               <span className="sr-only">
                 {dia.nombreLargo}:{' '}
                 {dia.practicado ? 'practicaste' : 'sin práctica'}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Cabecera } from '@/components/Cabecera'
+import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { LineaTiempo } from '@/components/LineaTiempo'
 import { FASES_INVESTIGADO } from '@/lib/contenido'
@@ -53,19 +53,18 @@ export default function DemoJuan() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
-        <nav className="mb-6">
-          <Link href="/" className="text-puente-600 hover:text-puente-800">
-            ← Volver al inicio
+      <main id="contenido-principal" className="page-shell">
+        <nav aria-label="Volver">
+          <Link href="/" className="link-atras">
+            <Icono nombre="←" />
+            Volver al inicio
           </Link>
         </nav>
 
         <header className="mb-8">
           <div className="mb-4">
-            <h1 className="text-3xl font-bold text-puente-800">Juan, 32 años</h1>
-            <p className="text-lg text-puente-700">Investigado en un juicio por delito leve</p>
+            <h1 className="titulo-pagina">Juan, 32 años</h1>
+            <p className="text-xl text-puente-700">Investigado en un juicio por delito leve</p>
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
             <p className="text-puente-700">
@@ -153,7 +152,8 @@ export default function DemoJuan() {
               </ul>
             </div>
             <button type="button" onClick={() => setSeccion('citacion')} className="btn-primary mt-6">
-              Escuchar su citación →
+              Escuchar su citación
+              <Icono nombre="→" />
             </button>
           </section>
         )}
@@ -198,7 +198,8 @@ export default function DemoJuan() {
             </div>
 
             <button type="button" onClick={() => setSeccion('linea-tiempo')} className="btn-primary">
-              Ver la línea de tiempo →
+              Ver la línea de tiempo
+              <Icono nombre="→" />
             </button>
           </section>
         )}
@@ -215,31 +216,31 @@ export default function DemoJuan() {
               <h3 className="text-lg font-bold text-puente-800 mb-4">Los hechos de Juan</h3>
               <ol className="space-y-3">
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-500 font-mono shrink-0">25 sep</span>
+                  <span className="text-puente-700 numeros shrink-0">25 sep</span>
                   <span className="text-puente-700">Publiqué el anuncio del objeto en Wallapop</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-500 font-mono shrink-0">28 sep</span>
+                  <span className="text-puente-700 numeros shrink-0">28 sep</span>
                   <span className="text-puente-700">El comprador me escribió interesado</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-500 font-mono shrink-0">30 sep</span>
+                  <span className="text-puente-700 numeros shrink-0">30 sep</span>
                   <span className="text-puente-700">Acordamos el precio: trescientos cincuenta euros</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-500 font-mono shrink-0">1 oct</span>
+                  <span className="text-puente-700 numeros shrink-0">1 oct</span>
                   <span className="text-puente-700">Recibí el pago por Bizum</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-500 font-mono shrink-0">2 oct</span>
+                  <span className="text-puente-700 numeros shrink-0">2 oct</span>
                   <span className="text-puente-700">Envié el paquete por Correos</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-500 font-mono shrink-0">10 oct</span>
+                  <span className="text-puente-700 numeros shrink-0">10 oct</span>
                   <span className="text-puente-700">El comprador dice que no lo recibió</span>
                 </li>
               </ol>
-              <p className="text-sm text-puente-500 mt-4">
+              <p className="text-sm text-puente-700 mt-4">
                 Esta información se la puede dar a su abogado para preparar la defensa.
               </p>
             </div>
@@ -248,7 +249,8 @@ export default function DemoJuan() {
             <LineaTiempo fases={FASES_INVESTIGADO} faseActual={1} />
 
             <button type="button" onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
-              Ver qué ajustes puede pedir →
+              Ver qué ajustes puede pedir
+              <Icono nombre="→" />
             </button>
           </section>
         )}
@@ -264,7 +266,7 @@ export default function DemoJuan() {
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="card">
                 <h3 className="font-bold text-puente-800 mb-3 flex items-center gap-2">
-                  <span aria-hidden="true">🦯</span> Por su ceguera
+                  <Icono nombre="🦯" /> Por su ceguera
                 </h3>
                 <ul className="space-y-2">
                   {[
@@ -274,7 +276,7 @@ export default function DemoJuan() {
                     'Más tiempo con productos de apoyo',
                   ].map((ajuste) => (
                     <li key={ajuste} className="flex items-start gap-2">
-                      <span className="text-accent-success" aria-hidden="true">✓</span>
+                      <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
                       <span className="text-puente-700">{ajuste}</span>
                     </li>
                   ))}
@@ -283,7 +285,7 @@ export default function DemoJuan() {
 
               <div className="card">
                 <h3 className="font-bold text-puente-800 mb-3 flex items-center gap-2">
-                  <span aria-hidden="true">⚡</span> Por su TDAH
+                  <Icono nombre="⚡" /> Por su TDAH
                 </h3>
                 <ul className="space-y-2">
                   {[
@@ -293,7 +295,7 @@ export default function DemoJuan() {
                     'Horario sin esperas largas',
                   ].map((ajuste) => (
                     <li key={ajuste} className="flex items-start gap-2">
-                      <span className="text-accent-success" aria-hidden="true">✓</span>
+                      <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
                       <span className="text-puente-700">{ajuste}</span>
                     </li>
                   ))}

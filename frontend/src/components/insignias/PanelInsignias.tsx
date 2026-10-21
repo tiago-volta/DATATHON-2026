@@ -80,7 +80,7 @@ export function PanelInsignias({
                 <div
                   id={tipId}
                   role="tooltip"
-                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(16rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-md p-3 text-sm text-puente-800 pointer-events-none"
+                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(16rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-sm p-3 text-sm text-puente-800 pointer-events-none"
                 >
                   <p className="font-bold text-puente-800 mb-1">
                     Medalla: {ins.nombre}

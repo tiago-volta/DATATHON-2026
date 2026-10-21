@@ -2,7 +2,7 @@
 
 import { useState, type ChangeEvent } from 'react'
 import Link from 'next/link'
-import { Cabecera } from '@/components/Cabecera'
+import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { Pictograma } from '@/components/Pictograma'
 import { LineaTiempo } from '@/components/LineaTiempo'
@@ -131,13 +131,13 @@ function construirRespaldoLocal(textoEntrada: string): CitacionProcesada {
       },
       lectura_clara: `DECISIÓN DEL JUEZ (SENTENCIA): Eres declarada INOCENTE.
 
-✅ RESULTADO PRINCIPAL: El Juzgado de lo Penal número 2 de A Coruña te absuelve del delito de hurto del que te acusaban. No tendrás ningún castigo.
+RESULTADO PRINCIPAL: El Juzgado de lo Penal número 2 de A Coruña te absuelve del delito de hurto del que te acusaban. No tendrás ningún castigo.
 
-💶 GASTOS DEL JUICIO: Las costas se declaran "de oficio". Eso significa que tú NO tienes que pagar los gastos del juzgado.
+GASTOS DEL JUICIO: Las costas se declaran "de oficio". Eso significa que tú NO tienes que pagar los gastos del juzgado.
 
-🔓 MEDIDAS CAUTELARES: Se cancela cualquier obligación o medida provisional que tuvieras durante el proceso.
+MEDIDAS CAUTELARES: Se cancela cualquier obligación o medida provisional que tuvieras durante el proceso.
 
-📅 PLAZO DE DIEZ DÍAS: La otra parte tiene diez días laborables (sin contar fines de semana ni festivos) por si quiere recurrir la sentencia.`,
+PLAZO DE DIEZ DÍAS: La otra parte tiene diez días laborables (sin contar fines de semana ni festivos) por si quiere recurrir la sentencia.`,
       lectura_facil: `Esta carta es la SENTENCIA del juez.
 La sentencia es la decisión final del juicio.
 
@@ -233,13 +233,13 @@ Todas las medidas contra ti se terminan.`,
       },
       lectura_clara: `Te citan como INVESTIGADO en un juicio por delito leve.
 
-📅 CUÁNDO: Jueves 12 de noviembre de 2026, a las 9 y media de la mañana.
+CUÁNDO: Jueves 12 de noviembre de 2026, a las 9 y media de la mañana.
 
-📍 DÓNDE: Juzgado de Instrucción número 7 de A Coruña.
+DÓNDE: Juzgado de Instrucción número 7 de A Coruña.
 
-⚖️ DE QUÉ TRATA EL CASO: De una denuncia por una venta en internet por un importe menor de cuatrocientos euros (artículo 248 del Código Penal).
+DE QUÉ TRATA EL CASO: De una denuncia por una venta en internet por un importe menor de cuatrocientos euros (artículo 248 del Código Penal).
 
-🛡️ TUS DERECHOS PRINCIPALES:
+TUS DERECHOS PRINCIPALES:
 1. Puedes guardar silencio o contestar solo a las preguntas que quieras.
 2. Tienes derecho a un abogado (si no puedes pagarlo, te asignan uno gratis).
 3. Puedes llevar pruebas que demuestren tu versión hasta el mismo día del juicio.
@@ -336,15 +336,15 @@ En el Juzgado número 7 de A Coruña.`,
     },
     lectura_clara: `Te citan como TESTIGO en un proceso penal.
 
-📅 CUÁNDO: Martes 10 de noviembre de 2026, a las 10:00 de la mañana.
+CUÁNDO: Martes 10 de noviembre de 2026, a las 10:00 de la mañana.
 
-📍 DÓNDE: Juzgado de Instrucción número 3 de A Coruña.
+DÓNDE: Juzgado de Instrucción número 3 de A Coruña.
 
-🎯 QUÉ TIENES QUE HACER: Ir al juzgado y contar lo que viste o sabes sobre unos hechos. No te acusan de nada, solo quieren escuchar tu versión.
+QUÉ TIENES QUE HACER: Ir al juzgado y contar lo que viste o sabes sobre unos hechos. No te acusan de nada, solo quieren escuchar tu versión.
 
-📋 QUÉ LLEVAR: Tu DNI o carné de identidad.
+QUÉ LLEVAR: Tu DNI o carné de identidad.
 
-⚠️ SI NO PUEDES IR ESE DÍA: Tienes obligación de acudir. Si estás enfermo o tienes una causa justificada, avisa antes al juzgado con un justificante para que cambien la fecha sin multa.`,
+SI NO PUEDES IR ESE DÍA: Tienes obligación de acudir. Si estás enfermo o tienes una causa justificada, avisa antes al juzgado con un justificante para que cambien la fecha sin multa.`,
     lectura_facil: `Te llaman para ir al juzgado.
 
 Eres TESTIGO.
@@ -536,16 +536,16 @@ export default function PaginaCitacion() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
+      <main id="contenido-principal" className="page-shell">
         <nav className="mb-8" aria-label="Pasos del proceso">
           <ol className="flex items-center gap-2 text-sm">
-            <li className={paso === 'entrada' ? 'font-bold text-puente-700' : 'text-puente-500'}>
+            <li className={paso === 'entrada' ? 'font-bold text-puente-900 underline underline-offset-4' : 'text-puente-700'}>
               1. Tu documento judicial
             </li>
-            <li aria-hidden="true" className="text-puente-300">→</li>
-            <li className={paso === 'resultado' ? 'font-bold text-puente-700' : 'text-puente-500'}>
+            <li aria-hidden="true" className="text-puente-300">
+              <Icono nombre="→" className="h-4 w-4" />
+            </li>
+            <li className={paso === 'resultado' ? 'font-bold text-puente-900 underline underline-offset-4' : 'text-puente-700'}>
               2. Explicación accesible
             </li>
           </ol>
@@ -553,15 +553,15 @@ export default function PaginaCitacion() {
 
         {paso === 'entrada' && (
           <section>
-            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+            <h1 className="titulo-pagina">
               Entender tu citación o sentencia
             </h1>
-            <p className="text-lg text-puente-600 mb-6">
+            <p className="entradilla">
               Pega el texto de la carta que has recibido del juzgado o sube el documento.
               Lo transformamos a lenguaje claro, lectura fácil, cifras en palabras y voz.
             </p>
 
-            <div className="card mb-6 bg-calma-sage/50">
+            <div className="card mb-6 bg-calma-sage">
               <label
                 htmlFor="archivo-judicial"
                 className="block font-bold text-puente-800 mb-2"
@@ -606,7 +606,7 @@ export default function PaginaCitacion() {
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? 'ayuda-citacion error-citacion' : 'ayuda-citacion'}
               />
-              <p id="ayuda-citacion" className="text-sm text-puente-500">
+              <p id="ayuda-citacion" className="text-sm text-puente-700">
                 Puedes probar directamente con cualquiera de los tres documentos reales de ejemplo:
               </p>
 
@@ -678,10 +678,10 @@ export default function PaginaCitacion() {
           <section>
             <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
               <div>
-                <span className="inline-block text-xs font-bold uppercase tracking-wider bg-puente-100 text-puente-800 px-3 py-1 rounded-full mb-2">
+                <span className="etiqueta-info mb-2">
                   {esSentencia ? 'Sentencia judicial explicada' : 'Citación judicial explicada'}
                 </span>
-                <h1 className="text-3xl font-bold text-puente-800">
+                <h1 className="titulo-pagina mb-0">
                   {esSentencia ? 'La decisión del juez en palabras claras' : 'Tu citación explicada'}
                 </h1>
               </div>
@@ -696,7 +696,7 @@ export default function PaginaCitacion() {
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div className="bg-calma-sage rounded-lg p-4">
                   <dt className="text-sm text-puente-600 mb-1 flex items-center gap-2">
-                    <span aria-hidden="true">👤</span> Tu situación o rol
+                    <Icono nombre="👤" className="h-4 w-4" /> Tu situación o rol
                   </dt>
                   <dd className="text-xl font-bold text-puente-800 capitalize">
                     {resultado.datos_clave.rol}
@@ -704,7 +704,7 @@ export default function PaginaCitacion() {
                 </div>
                 <div className="bg-calma-sage rounded-lg p-4">
                   <dt className="text-sm text-puente-600 mb-1 flex items-center gap-2">
-                    <span aria-hidden="true">📅</span> Fecha y hora
+                    <Icono nombre="📅" className="h-4 w-4" /> Fecha y hora
                   </dt>
                   <dd className="text-xl font-bold text-puente-800">
                     {resultado.datos_clave.fecha}
@@ -713,7 +713,7 @@ export default function PaginaCitacion() {
                 </div>
                 <div className="bg-calma-sage rounded-lg p-4 sm:col-span-2">
                   <dt className="text-sm text-puente-600 mb-1 flex items-center gap-2">
-                    <span aria-hidden="true">📍</span> Juzgado
+                    <Icono nombre="📍" className="h-4 w-4" /> Juzgado
                   </dt>
                   <dd className="text-lg font-bold text-puente-800">
                     {resultado.datos_clave.lugar}
@@ -865,7 +865,7 @@ export default function PaginaCitacion() {
                     <Pictograma key={p.id} url={p.url} keyword={p.keyword} />
                   ))}
                 </div>
-                <p className="text-sm text-puente-500 mt-4 text-center">
+                <p className="text-sm text-puente-700 mt-4 text-center">
                   Pictogramas: ARASAAC, Sergio Palao, Gobierno de Aragón. Licencia CC BY-NC-SA.
                 </p>
               </div>
@@ -888,7 +888,7 @@ export default function PaginaCitacion() {
                       <li key={i} className="p-4 bg-calma-sage rounded-lg space-y-2">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl" aria-hidden="true">📅</span>
+                            <Icono nombre="📅" className="h-6 w-6 text-puente-900" />
                             <div>
                               <p className="font-bold text-puente-800">{plazo.descripcion}</p>
                               <p className="text-puente-700">
@@ -1071,7 +1071,8 @@ export default function PaginaCitacion() {
               }}
               className="btn-ghost"
             >
-              ← Transformar otro documento judicial
+              <Icono nombre="←" />
+              Transformar otro documento judicial
             </button>
           </section>
         )}

@@ -14,7 +14,7 @@ const MADERA_OSCURA = '#5a3d28'
 const PARED = '#efe8dc'
 const TECHO = '#f7f4ee'
 const SUELO = '#a07855'
-const TEAL_CALMA = '#2f6f6a'
+const TEAL_CALMA = '#1d1d1f'
 
 function lerpAngle(from: number, to: number, t: number): number {
   let d = ((to - from + 540) % 360) - 180

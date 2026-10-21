@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { Cabecera } from '@/components/Cabecera'
+import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { analizarPreguntaAPI, type AnalisisPregunta } from '@/lib/api'
 
@@ -433,19 +433,18 @@ export default function PaginaMediador() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
-        <nav className="mb-6">
-          <Link href="/" className="text-puente-600 hover:text-puente-800">
-            ← Volver al inicio
+      <main id="contenido-principal" className="page-shell">
+        <nav aria-label="Volver">
+          <Link href="/" className="link-atras">
+            <Icono nombre="←" />
+            Volver al inicio
           </Link>
         </nav>
 
-        <h1 className="text-3xl font-bold text-puente-800 mb-2">
+        <h1 className="titulo-pagina">
           Pregunta Clara (Mediador de Interrogatorio)
         </h1>
-        <p className="text-lg text-puente-600 mb-6">
+        <p className="entradilla">
           Detecta dobles negaciones, preguntas múltiples, jerga jurídica o metáforas,
           y reescribe la pregunta en lectura fácil para formularla de una en una.
         </p>
@@ -486,7 +485,7 @@ export default function PaginaMediador() {
                 escuchando ? 'bg-red-700 text-white' : 'btn-secondary'
               }`}
             >
-              <span aria-hidden="true">{escuchando ? '⏹' : '🎤'}</span>
+              <Icono nombre={escuchando ? '⏹' : '🎤'} />
               {escuchando ? 'Parar dictado por voz' : 'Dictar pregunta por voz'}
             </button>
           </div>
@@ -540,7 +539,16 @@ export default function PaginaMediador() {
                       : 'bg-red-100 text-red-800'
                 }`}
               >
-                {resultado.semaforo === 'verde' ? '✓' : resultado.semaforo === 'amarillo' ? '⚠' : '✗'}
+                <Icono
+                  nombre={
+                    resultado.semaforo === 'verde'
+                      ? '✓'
+                      : resultado.semaforo === 'amarillo'
+                        ? '⚠'
+                        : '✗'
+                  }
+                  className="h-6 w-6"
+                />
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-bold text-puente-800">
@@ -634,7 +642,7 @@ export default function PaginaMediador() {
                           : 'bg-red-100 text-red-800'
                       }`}
                     >
-                      {ej.semaforo === 'verde' ? '✓' : '!'}
+                      <Icono nombre={ej.semaforo === 'verde' ? '✓' : '⚠'} className="h-4 w-4" />
                     </span>
                     <p className="text-puente-800 font-medium">&ldquo;{ej.original}&rdquo;</p>
                   </div>

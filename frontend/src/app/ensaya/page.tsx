@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Cabecera } from '@/components/Cabecera'
+import { Icono } from '@/components/Icono'
 import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
@@ -285,27 +285,26 @@ export default function PaginaEnsaya() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-3xl mx-auto px-4 py-8">
-        <nav className="mb-6">
-          <Link href="/" className="text-puente-600 hover:text-puente-800">
-            ← Volver al inicio
+      <main id="contenido-principal" className="page-shell">
+        <nav aria-label="Volver">
+          <Link href="/" className="link-atras">
+            <Icono nombre="←" />
+            Volver al inicio
           </Link>
         </nav>
 
         {!iniciado ? (
           <section>
-            <h1 className="text-3xl font-bold text-puente-800 mb-4 max-w-[16ch]">
+            <h1 className="titulo-pagina max-w-[16ch]">
               Ensaya tu declaración
             </h1>
-            <p className="text-xl text-puente-700 max-w-xl mb-6">
+            <p className="entradilla max-w-xl">
               Practica responder preguntas como las que te harán en el juzgado.
               Hay tres niveles, de más fácil a más difícil.
             </p>
 
             <div
-              className="flex flex-wrap gap-4 justify-center mb-8 p-4 rounded-tarjeta bg-white/70 border border-puente-100"
+              className="flex flex-wrap gap-4 justify-center mb-8 p-4 rounded-tarjeta bg-white border border-puente-200"
               aria-label="Pictogramas: hablar, oír, preguntar, escribir"
             >
               {PICTOS_INTRO.map((p) => (
@@ -353,7 +352,7 @@ export default function PaginaEnsaya() {
               Empezar a practicar
             </button>
 
-            <p className="text-puente-500 mt-6">
+            <p className="text-puente-700 mt-6">
               Puedes parar cuando quieras. No hay respuestas buenas ni malas.
             </p>
 
@@ -368,7 +367,7 @@ export default function PaginaEnsaya() {
               <PanelInsignias conseguidas={insigniasUtiles} />
             </div>
 
-            <p className="text-xs text-puente-500 mt-8">
+            <p className="text-xs text-puente-700 mt-8">
               Pictogramas:{' '}
               <a
                 href="https://arasaac.org"
@@ -478,7 +477,7 @@ export default function PaginaEnsaya() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm text-puente-500">Nivel {nivelActual + 1} de 3</p>
+                <p className="text-sm text-puente-700">Nivel {nivelActual + 1} de 3</p>
                 <h1 className="text-2xl font-bold text-puente-800">{nivel.nombre}</h1>
               </div>
               <span className="etiqueta-info" aria-live="polite">
@@ -506,7 +505,7 @@ export default function PaginaEnsaya() {
 
             <div className="card-destacada mb-6">
               <div className="flex justify-between items-start mb-4 gap-3">
-                <p className="text-sm text-puente-500">Te preguntan:</p>
+                <p className="text-sm text-puente-700">Te preguntan:</p>
                 <BotonLeerEnVoz texto={itemPregunta.texto} etiqueta="Escuchar" />
               </div>
 
@@ -588,7 +587,7 @@ export default function PaginaEnsaya() {
                 rows={4}
                 aria-describedby="ayuda-respuesta"
               />
-              <div className="flex justify-between items-center text-sm text-puente-500 mt-2" id="ayuda-respuesta">
+              <div className="flex justify-between items-center text-sm text-puente-700 mt-2" id="ayuda-respuesta">
                 <span>Esto es solo práctica. Nadie más ve lo que escribes.</span>
                 <span aria-hidden="true">{respuesta.length}/500</span>
               </div>
@@ -601,7 +600,8 @@ export default function PaginaEnsaya() {
                   onClick={preguntaAnterior}
                   className="btn-secondary"
                 >
-                  ← Anterior
+                  <Icono nombre="←" />
+                  Anterior
                 </button>
               )}
               <button
@@ -628,7 +628,7 @@ export default function PaginaEnsaya() {
               Salir del ensayo
             </button>
 
-            <p className="text-xs text-puente-500 mt-8 text-center">
+            <p className="text-xs text-puente-700 mt-8 text-center">
               Pictogramas:{' '}
               <a
                 href="https://arasaac.org"

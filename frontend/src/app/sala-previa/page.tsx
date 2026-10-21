@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Cabecera } from '@/components/Cabecera'
+import { Icono } from '@/components/Icono'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PerfilMedallasSticky } from '@/components/insignias/PerfilMedallasSticky'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
@@ -407,15 +407,11 @@ export default function PaginaSalaPrevia() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-6xl mx-auto px-4 py-8 pb-32">
-        <nav className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center min-h-[44px] text-puente-700 hover:text-puente-900"
-          >
-            ← Volver al inicio
+      <main id="contenido-principal" className="page-shell-wide pb-32">
+        <nav aria-label="Volver">
+          <Link href="/" className="link-atras">
+            <Icono nombre="←" />
+            Volver al inicio
           </Link>
         </nav>
 
@@ -424,10 +420,10 @@ export default function PaginaSalaPrevia() {
 
           <div className="min-w-0">
             <header className="mb-8">
-              <h1 className="text-3xl font-bold text-puente-800 mb-2">
+              <h1 className="titulo-pagina mb-2">
                 Sala Previa
               </h1>
-              <p className="text-lg text-puente-700 max-w-2xl">
+              <p className="entradilla max-w-2xl mb-0">
                 Recorre las fases del día en el juzgado: entrada, control, espera y
                 sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
               </p>

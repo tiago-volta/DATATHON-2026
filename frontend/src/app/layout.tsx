@@ -1,11 +1,18 @@
-import type { Metadata } from 'next'
-import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { Cabecera } from '@/components/Cabecera'
+import { Pie } from '@/components/Pie'
+import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
 
 export const metadata: Metadata = {
   title: 'PUENTE - Accesibilidad en la Justicia',
   description: 'De la citación a la sentencia, a tu manera',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 }
 
 export default function RootLayout({
@@ -15,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="marco">
+      <body className="marco flex min-h-screen flex-col">
         <a
           href="#contenido-principal"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 btn-primary"
@@ -23,7 +30,9 @@ export default function RootLayout({
           Ir al contenido principal
         </a>
         <OnboardingVoz />
-        {children}
+        <Cabecera />
+        <div className="flex-1">{children}</div>
+        <Pie />
       </body>
     </html>
   )

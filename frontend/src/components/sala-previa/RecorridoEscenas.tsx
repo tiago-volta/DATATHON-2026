@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef } from 'react'
 import Link from 'next/link'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
 import {
   ESCENAS_JUZGADO,
@@ -27,7 +26,6 @@ export function RecorridoEscenas({
   enCalma,
   onChangeEstimulo,
 }: Props) {
-  const reduced = useReducedMotion()
   const tituloId = useId()
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const prevIndice = useRef(indice)
@@ -102,13 +100,7 @@ export function RecorridoEscenas({
         </ol>
       </div>
 
-      <div
-        key={escena.id}
-        className="space-y-4"
-        style={{
-          animation: reduced ? 'none' : 'puente-escena-entrar 420ms ease-out',
-        }}
-      >
+      <div key={escena.id} className="space-y-4">
         <div className="card border-2 border-puente-200">
           <h2
             id={tituloId}
@@ -182,7 +174,7 @@ export function RecorridoEscenas({
 
       {seguro >= TOTAL_ESCENAS - 1 && (
         <div
-          className="rounded-suave border-2 border-puente-200 bg-calma-sage/40 p-4 space-y-3"
+          className="rounded-tarjeta border-2 border-puente-200 bg-calma-sage p-4 space-y-3"
           aria-live="polite"
         >
           <p className="text-puente-800">

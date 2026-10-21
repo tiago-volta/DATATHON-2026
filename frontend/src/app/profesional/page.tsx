@@ -2,8 +2,8 @@
 
 import { FormEvent, useState } from 'react'
 import Link from 'next/link'
+import { Icono } from '@/components/Icono'
 import { useRouter } from 'next/navigation'
-import { Cabecera } from '@/components/Cabecera'
 
 const PASOS_CGPJ = [
   {
@@ -152,19 +152,18 @@ export default function PaginaProfesional() {
 
   return (
     <>
-      <Cabecera />
-
-      <main id="contenido-principal" className="max-w-4xl mx-auto px-4 py-8">
-        <nav className="mb-6">
-          <Link href="/" className="text-puente-600 hover:text-puente-800">
-            ← Volver al inicio
+      <main id="contenido-principal" className="page-shell-wide">
+        <nav aria-label="Volver">
+          <Link href="/" className="link-atras">
+            <Icono nombre="←" />
+            Volver al inicio
           </Link>
         </nav>
 
-        <h1 className="text-3xl font-bold text-puente-800 mb-2">
+        <h1 className="titulo-pagina">
           Panel profesional
         </h1>
-        <p className="text-lg text-puente-600 mb-8">
+        <p className="entradilla">
           Herramientas para generar el perfil individualizado de ajustes según la Guía del CGPJ (2025).
         </p>
 
@@ -346,7 +345,7 @@ export default function PaginaProfesional() {
               </ul>
             </div>
           </div>
-          <p className="text-xs text-puente-500 mt-4">
+          <p className="text-xs text-puente-700 mt-4">
             Base legal: Art. 7 bis LEC, Art. 109 LECrim, Ley 15/2022, Guía CGPJ 2025.
           </p>
         </section>

@@ -1,3 +1,5 @@
+import { Icono } from '@/components/Icono'
+
 interface Fase {
   numero: number
   nombre: string
@@ -35,18 +37,12 @@ export function LineaTiempo({ fases, faseActual = 1 }: Props) {
             )}
 
             <div className="paso-indicador shrink-0" aria-hidden="true">
-              {completada ? (
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                fase.numero
-              )}
+              {completada ? <Icono nombre="✓" className="h-6 w-6" /> : fase.numero}
             </div>
 
             <div className={`card flex-1 ${esActual ? 'card-destacada' : ''}`}>
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl" aria-hidden="true">{fase.icono}</span>
+                <Icono nombre={fase.icono} className="h-6 w-6 text-puente-900" />
                 <h3 className="text-lg font-bold text-puente-800">{fase.nombre}</h3>
               </div>
               <p className="text-puente-600 mb-3">{fase.descripcion}</p>
