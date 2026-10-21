@@ -81,17 +81,18 @@ Con `Sala Previa` y la gamificación calmada ya terminadas, esto es lo que falta
 
 ---
 
-### Persona 2 — IA, Backend, Citación/Sentencia y Mediador
+### Persona 2 — IA, Backend, Citación/Sentencia y Mediador (COMPLETADO)
 
-- [ ] **1. Modo Sentencia en lectura fácil y Subida de documento en `/citacion` y `backend/app/`**:
+- [x] **1. Modo Sentencia en lectura fácil y Subida de documento en `/citacion` y `backend/app/`**:
   - Añadir soporte de **Sentencia en lectura fácil** (diapositiva 35) y opción de subir archivo `.txt`/`.pdf` de citación.
   - Mostrar visualmente los pasos del pipeline *"Suma de varias IAs"* (diapositiva 34).
-- [ ] **2. Mejoras `C01`–`C07` en `/citacion`**:
+- [x] **2. Mejoras `C01`–`C07` en `/citacion`**:
   - Bloque especial para **Discalculia** (importes en palabras, plazos con cuenta atrás visual `C04`).
+  - Modo **Paso a paso (Súper simple)** (`C06`) con tarjetas numeradas.
   - Bloque claro **"¿Qué pasa si no voy o no puedo ir ese día?"** (`C07`).
   - Mostrar la sección **"¿Quién estará en la sala?"** en el resultado de la citación.
-- [ ] **3. Reformulación automática y voz en `/mediador` (`M01`, `M02`, `M03`)**:
-  - Endpoint `POST /api/analizar-pregunta` (y fallback local enriquecido) que devuelva la **pregunta ya reescrita en lectura fácil**, dividida frase por frase, con botón `BotonLeerEnVoz` para escuchar la sugerencia.
+- [x] **3. Reformulación automática y voz en `/mediador` (`M01`, `M02`, `M03`)**:
+  - Endpoint `POST /api/analizar-pregunta` (y fallback local enriquecido) que devuelve la **pregunta ya reescrita en lectura fácil**, dividida frase por frase, con dictado por voz (`SpeechRecognition`) y botón `BotonLeerEnVoz`.
 
 ---
 

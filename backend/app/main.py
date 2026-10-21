@@ -1,7 +1,7 @@
 """
 PUENTE Backend API
-Minimal FastAPI backend for the DATAthon Justicia 2026 hackathon.
-Mock-first approach with optional LLM integration.
+FastAPI backend para el DATAthon Justicia 2026 (Reto 3: Neurodiversidad).
+Enfoque determinista con soporte opcional de LLM (OpenAI / Anthropic).
 """
 
 from datetime import datetime
@@ -14,17 +14,24 @@ import os
 import re
 from dotenv import load_dotenv
 
-from .llm import procesar_citacion
+from .llm import procesar_citacion, analizar_pregunta
 from .arasaac import obtener_pictogramas
 from .calendario import generar_ics
-from .mock_data import MOCK_CITACION_LUIS, MOCK_CITACION_JUAN, MOCK_RESPONSE_LUIS, MOCK_RESPONSE_JUAN
+from .mock_data import (
+    MOCK_CITACION_LUIS,
+    MOCK_CITACION_JUAN,
+    MOCK_SENTENCIA,
+    MOCK_RESPONSE_LUIS,
+    MOCK_RESPONSE_JUAN,
+    MOCK_RESPONSE_SENTENCIA,
+)
 
 load_dotenv()
 
 app = FastAPI(
     title="PUENTE API",
     description="API para accesibilidad cognitiva en la justicia",
-    version="0.1.0"
+    version="0.2.0",
 )
 
 app.add_middleware(
@@ -38,7 +45,16 @@ app.add_middleware(
 TERMINOS_JUDICIALES_RE = re.compile(
     r"\b(juzgado|citaci[oó]n|cita|comparezca|comparecer|procedimiento|diligencias|juicio|testigo|"
     r"investigad[oa]|demandad[oa]|demandante|vista|declaraci[oó]n|tribunal|audiencia|letrad[oa]|"
-    r"fiscal|sentencia|notificaci[oó]n|c[eé]dula|autos|expediente|delito|instrucci[oó]n|penal|civil|denuncia|querella)\b",
+    r"fiscal|sentencia|fallo|absuelvo|absolver|condeno|hurto|notificaci[oó]n|c[eé]dula|autos|"
+    r"expediente|delito|instrucci[oó]n|penal|civil|denuncia|querella|recurso)\b",
+    re.IGNORECASE,
+)
+
+INICIO_PREGUNTA_RE = re.compile(
+    r"^[¿\s]*(qu[eé]|qui[eé]n|qui[eé]nes|c[oó]mo|cu[aá]ndo|d[oó]nde|cu[aá]nto|cu[aá]nta|cu[aá]ntos|cu[aá]ntas|"
+    r"por\s+qu[eé]|para\s+qu[eé]|cu[aá]l|cu[aá]les|acaso|no\s+es|es\s+cierto|puede|puedes|podr[ií]a|"
+    r"vio|viste|estaba|estabas|hab[ií]a|conoce|conoces|recuerda|recuerdas|fue|era|tiene|tienes|"
+    r"hizo|hiciste|dijo|dijiste|sabe|sabes|escuch[oó]|escuchaste|firm[oó]|firmaste)\b",
     re.IGNORECASE,
 )
 
@@ -53,9 +69,9 @@ class CitacionInput(BaseModel):
         limpio = v.strip()
         solo_letras = re.sub(r"[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜçÇ]", "", limpio)
         if len(limpio) < 30 or len(solo_letras) < 20:
-            raise ValueError("El texto de la citación es demasiado corto.")
+            raise ValueError("El texto del documento judicial es demasiado corto.")
         if not TERMINOS_JUDICIALES_RE.search(limpio):
-            raise ValueError("El texto no parece una citación ni un documento judicial.")
+            raise ValueError("El texto no parece una citación ni una sentencia judicial.")
         return limpio[:8000]
 
 
@@ -95,6 +111,36 @@ class CitacionResponse(BaseModel):
     plazos: List[PlazoItem]
     pictogram_keywords: List[str]
     pictogramas: List[dict]
+
+
+class PreguntaInput(BaseModel):
+    pregunta: str
+    perfil: Optional[str] = None
+
+    @field_validator("pregunta")
+    @classmethod
+    def validar_pregunta(cls, v: str) -> str:
+        limpia = v.strip()
+        solo_letras = re.sub(r"[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜçÇ]", "", limpia)
+        palabras = [p for p in re.split(r"\s+", limpia) if p]
+        if len(limpia) < 6 or len(solo_letras) < 4 or len(palabras) < 2:
+            raise ValueError("Escribe una pregunta completa con al menos dos palabras.")
+        tiene_interrogacion = "?" in limpia or "¿" in limpia
+        if not tiene_interrogacion and not INICIO_PREGUNTA_RE.search(limpia):
+            raise ValueError(
+                "El texto no parece una pregunta. Añade signos de interrogación «¿?» o empieza por qué, cómo, cuándo, dónde..."
+            )
+        return limpia[:500]
+
+
+class PreguntaResponse(BaseModel):
+    original: str
+    semaforo: str
+    problemas: List[str]
+    impacto_cognitivo: str
+    reformulada: Optional[str] = None
+    preguntas_divididas: List[str] = []
+    consejos: List[str] = []
 
 
 class PasaporteInput(BaseModel):
@@ -157,21 +203,19 @@ async def health():
 @app.post("/api/procesar-citacion", response_model=CitacionResponse)
 async def procesar_citacion_endpoint(input_data: CitacionInput):
     """
-    Procesa una citación judicial y devuelve versiones accesibles.
-    Con mock activado, detecta si es el caso de Luis o Juan.
+    Procesa una citación o sentencia judicial y devuelve versiones accesibles
+    (lenguaje claro, lectura fácil UNE 153101, apoyo numérico para discalculia y pictogramas).
     """
     texto = input_data.texto.lower()
 
-    if "juan" in texto or "investigado" in texto or "estafa" in texto or "delito leve" in texto:
+    if "fallo" in texto or "absuelvo" in texto or "sentencia" in texto:
+        resultado = dict(MOCK_RESPONSE_SENTENCIA)
+    elif "juan" in texto or "investigado" in texto or "estafa" in texto or "delito leve" in texto:
         resultado = dict(MOCK_RESPONSE_JUAN)
-    elif "luis" in texto or "testigo" in texto or ("tea" in input_data.perfil.lower() if input_data.perfil else False):
+    elif "luis" in texto or ("testigo" in texto and "245/2026" in texto):
         resultado = dict(MOCK_RESPONSE_LUIS)
     else:
-        provider = os.getenv("LLM_PROVIDER", "mock")
-        if provider != "mock" and (os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY")):
-            resultado = await procesar_citacion(input_data.texto, input_data.perfil)
-        else:
-            resultado = dict(MOCK_RESPONSE_LUIS)
+        resultado = await procesar_citacion(input_data.texto, input_data.perfil)
 
     pictogramas = await obtener_pictogramas(resultado["pictogram_keywords"])
     resultado["pictogramas"] = pictogramas
@@ -179,16 +223,29 @@ async def procesar_citacion_endpoint(input_data: CitacionInput):
     return CitacionResponse(**resultado)
 
 
+@app.post("/api/analizar-pregunta", response_model=PreguntaResponse)
+async def analizar_pregunta_endpoint(input_data: PreguntaInput):
+    """
+    Analiza una pregunta de interrogatorio judicial y devuelve su evaluación de claridad,
+    el impacto cognitivo y una reformulación lista para leer en lectura fácil.
+    """
+    analisis = await analizar_pregunta(input_data.pregunta, input_data.perfil)
+    return PreguntaResponse(**analisis)
+
+
 @app.post("/api/generar-ics")
 async def generar_calendario(plazos: List[PlazoItem], titulo: str = "Citación Judicial"):
     """Genera un archivo .ics con los plazos y recordatorios."""
     if not plazos:
-        raise HTTPException(status_code=400, detail="Debes incluir al menos un plazo para generar el calendario.")
+        raise HTTPException(
+            status_code=400,
+            detail="Debes incluir al menos un plazo para generar el calendario.",
+        )
     ics_content = generar_ics(plazos, titulo)
     return Response(
         content=ics_content,
         media_type="text/calendar",
-        headers={"Content-Disposition": "attachment; filename=citacion_puente.ics"}
+        headers={"Content-Disposition": "attachment; filename=citacion_puente.ics"},
     )
 
 
@@ -225,7 +282,7 @@ async def crear_pasaporte(input_data: PasaporteInput):
     return PasaporteResponse(
         id=pasaporte_id,
         qr_url=f"data:image/png;base64,{qr_base64}",
-        marca=marca
+        marca=marca,
     )
 
 
@@ -244,12 +301,13 @@ async def obtener_fases(orden: str):
 async def obtener_roles():
     """Devuelve información sobre los roles en un proceso judicial."""
     from .mock_data import ROLES_JUDICIALES
+
     return ROLES_JUDICIALES
 
 
 @app.get("/api/demo/luis")
 async def demo_luis():
-    """Devuelve los datos de demo de Luis (TEA, testigo)."""
+    """Devuelve los datos del caso de Luis (TEA, testigo)."""
     return {
         "citacion": MOCK_CITACION_LUIS,
         "respuesta": MOCK_RESPONSE_LUIS,
@@ -262,15 +320,15 @@ async def demo_luis():
                 "Lenguaje literal, sin metáforas",
                 "Anticipar cada paso",
                 "Ambiente tranquilo",
-                "Preguntas concretas"
-            ]
-        }
+                "Preguntas concretas",
+            ],
+        },
     }
 
 
 @app.get("/api/demo/juan")
 async def demo_juan():
-    """Devuelve los datos de demo de Juan (TDAH + ceguera, investigado)."""
+    """Devuelve los datos del caso de Juan (TDAH + ceguera, investigado)."""
     return {
         "citacion": MOCK_CITACION_JUAN,
         "respuesta": MOCK_RESPONSE_JUAN,
@@ -283,7 +341,16 @@ async def demo_juan():
                 "Información por voz",
                 "Textos en bloques cortos",
                 "Pausas frecuentes",
-                "Descripción de documentos visuales"
-            ]
-        }
+                "Descripción de documentos visuales",
+            ],
+        },
+    }
+
+
+@app.get("/api/demo/sentencia")
+async def demo_sentencia():
+    """Devuelve un ejemplo de sentencia penal adaptada a lectura fácil."""
+    return {
+        "sentencia": MOCK_SENTENCIA,
+        "respuesta": MOCK_RESPONSE_SENTENCIA,
     }
