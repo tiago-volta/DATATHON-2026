@@ -15,12 +15,11 @@ interface Props {
 }
 
 /**
- * Perfil de medallas tipo videojuego: columna sticky que acompaña el scroll.
- * Tooltip real (panel visible) en hover y focus: «Medalla: {nombre}. {como…}».
+ * Fila compacta de medallas (cuadraditos) arriba a la izquierda.
+ * Desbloqueadas a color; bloqueadas en gris. Tooltip en hover/focus.
  */
 export function PerfilMedallasSticky({ conseguidas, className = '' }: Props) {
   const tituloId = useId()
-  const descId = useId()
   const tipBaseId = useId()
   const [tipActivo, setTipActivo] = useState<IdInsigniaUtil | null>(null)
 
@@ -29,45 +28,41 @@ export function PerfilMedallasSticky({ conseguidas, className = '' }: Props) {
   const pct = total === 0 ? 0 : Math.round((hechas / total) * 100)
 
   return (
-    <aside
+    <section
       aria-labelledby={tituloId}
-      className={`lg:sticky lg:top-4 self-start z-10 ${className}`}
+      className={`rounded-suave border border-puente-200 bg-white/95 backdrop-blur-sm px-3 py-2.5 shadow-sm ${className}`}
     >
-      <section className="rounded-suave border-2 border-puente-200 bg-white/95 backdrop-blur-sm p-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-          <h2 id={tituloId} className="font-bold text-puente-800 text-base m-0">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <h2
+            id={tituloId}
+            className="font-bold text-puente-800 text-sm m-0 whitespace-nowrap"
+          >
             Tus medallas
           </h2>
           <p
-            id={descId}
-            className="text-sm text-puente-700 tabular-nums m-0"
+            className="text-xs text-puente-700 tabular-nums m-0 whitespace-nowrap"
             aria-live="polite"
           >
             {hechas} de {total}
           </p>
-        </div>
-
-        <div
-          className="h-2.5 rounded-full bg-puente-100 overflow-hidden mb-4"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={total}
-          aria-valuenow={hechas}
-          aria-valuetext={`${hechas} de ${total} medallas`}
-          aria-labelledby={tituloId}
-        >
           <div
-            className="h-full rounded-full bg-gradient-to-r from-puente-500 to-accent-success origin-left transition-[width] duration-500 ease-out"
-            style={{ width: `${pct}%` }}
-          />
+            className="hidden sm:block w-16 h-1.5 rounded-full bg-puente-100 overflow-hidden"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={total}
+            aria-valuenow={hechas}
+            aria-valuetext={`${hechas} de ${total} medallas`}
+            aria-labelledby={tituloId}
+          >
+            <div
+              className="h-full rounded-full bg-puente-600 origin-left transition-[width] duration-500 ease-out"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
         </div>
 
-        <p className="text-xs text-puente-700 mb-3 leading-snug">
-          Premian cuidarte y practicar a tu ritmo. Pasa el ratón o el foco para
-          ver cómo conseguir cada una.
-        </p>
-
-        <ul className="grid grid-cols-1 gap-2 list-none p-0 m-0">
+        <ul className="flex flex-wrap gap-1.5 list-none p-0 m-0">
           {INSIGNIAS_UTILES.map((ins) => {
             const ok = conseguidas.includes(ins.id)
             const tipId = `${tipBaseId}-${ins.id}`
@@ -78,10 +73,10 @@ export function PerfilMedallasSticky({ conseguidas, className = '' }: Props) {
               <li key={ins.id} className="relative">
                 <button
                   type="button"
-                  className={`group flex items-center gap-3 w-full p-2 rounded-suave border-2 text-left transition-[border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400 ${
+                  className={`flex items-center justify-center w-11 h-11 sm:w-10 sm:h-10 rounded-suave border-2 transition-[border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400 ${
                     ok
-                      ? 'bg-calma-sage/70 border-accent-success/50 hover:border-puente-500'
-                      : 'bg-puente-50/90 border-puente-100 hover:border-puente-300'
+                      ? 'bg-calma-sage/80 border-accent-success/55 hover:border-puente-500'
+                      : 'bg-puente-50 border-puente-100 hover:border-puente-300'
                   }`}
                   aria-label={tipTexto}
                   aria-describedby={visible ? tipId : undefined}
@@ -95,19 +90,10 @@ export function PerfilMedallasSticky({ conseguidas, className = '' }: Props) {
                   <IconoInsignia
                     id={ins.id}
                     desbloqueada={ok}
-                    className="w-11 h-11 shrink-0"
+                    className="w-7 h-7"
                   />
-                  <span className="min-w-0 flex-1">
-                    <span
-                      className={`block text-sm font-bold leading-tight ${
-                        ok ? 'text-puente-800' : 'text-puente-600'
-                      }`}
-                    >
-                      {ins.nombre}
-                    </span>
-                    <span className="block text-[11px] text-puente-700 mt-0.5">
-                      {ok ? 'Conseguida' : 'Por conseguir'}
-                    </span>
+                  <span className="sr-only">
+                    {ok ? 'Conseguida' : 'Por conseguir'}
                   </span>
                 </button>
 
@@ -115,7 +101,7 @@ export function PerfilMedallasSticky({ conseguidas, className = '' }: Props) {
                   <div
                     id={tipId}
                     role="tooltip"
-                    className="absolute z-30 left-0 right-0 top-full mt-1 rounded-suave border border-puente-200 bg-white shadow-md p-3 text-sm text-puente-800 pointer-events-none"
+                    className="absolute z-30 left-0 top-full mt-1.5 w-[min(16rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-md p-3 text-sm text-puente-800 pointer-events-none"
                   >
                     <p className="font-bold text-puente-800 mb-1 leading-snug">
                       Medalla: {ins.nombre}
@@ -134,7 +120,7 @@ export function PerfilMedallasSticky({ conseguidas, className = '' }: Props) {
             )
           })}
         </ul>
-      </section>
-    </aside>
+      </div>
+    </section>
   )
 }

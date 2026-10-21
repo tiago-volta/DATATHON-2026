@@ -8,6 +8,7 @@ aquí se documentan por transparencia.
 | `ambiente-sala.mp3` | [Soft Room Tone](https://freesound.org/people/callmethefoo/sounds/744447/) — callmethefoo | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `murmullos-gente.mp3` | [Busy Room Ambience / People talking #2](https://freesound.org/people/Breviceps/sounds/465699/) — Breviceps | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `murmullos-sala.mp3` | [S11-22 Courtroom pre-trial murmuring](https://freesound.org/people/craigsmith/sounds/675054/) — craigsmith | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| `recompensa-medalla.mp3` | Chime suave generado (dos tonos con envolvente) | CC0 / dominio público |
 
-Los MP3 del repo son recortes normalizados de las previews HQ de Freesound (sin re-exportar el WAV original).
+Los MP3 del repo son recortes normalizados de las previews HQ de Freesound (sin re-exportar el WAV original), salvo `recompensa-medalla.mp3` (procedural).
 El eco/reverb se genera en el navegador (impulso sintético + ConvolverNode), no es un sample externo.

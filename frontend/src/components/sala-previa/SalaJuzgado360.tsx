@@ -264,6 +264,7 @@ export function SalaJuzgado360({
               destino={destino}
               onAnimFin={onAnimFin}
               reduced={reduced}
+              arrastrando={arrastrando}
             />
 
             {/* Indicador visual discreto de ruido */}
@@ -377,8 +378,8 @@ export function SalaJuzgado360({
           )}
 
           <p className="sala-fs-credito text-xs text-puente-600 leading-snug">
-            Sala de vistas en 3D (Three.js): estrado, mesas y figuras estilizadas. Sin
-            panoramas fotográficos distorsionados.
+            Sala de vistas en 3D (Three.js): texturas PBR CC0, HDRI de interior y
+            cutouts fotográficos. Ver CREDITOS en /sala-previa/.
           </p>
         </div>
       </div>

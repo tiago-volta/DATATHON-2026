@@ -81,12 +81,18 @@ export default function PaginaSalaPrevia() {
   const deepLinkAplicado = useRef(false)
   /** Evita releer al montar; solo al cambiar escena/nivel con guía activa. */
   const audioguiaContextoInicial = useRef(true)
+  const atenuarParaMedalla = useCallback((activo: boolean) => {
+    motorRef.current?.atenuarParaVoz(activo)
+  }, [])
   const {
     conseguidas: insigniasUtiles,
     aviso: avisoInsignia,
     desbloquear,
     descartarAviso,
-  } = useInsigniasUtiles()
+  } = useInsigniasUtiles({
+    enCalma,
+    atenuarAmbiente: atenuarParaMedalla,
+  })
   const {
     score: scoreConfianza,
     etiqueta: etiquetaConfianza,
@@ -415,19 +421,20 @@ export default function PaginaSalaPrevia() {
           </Link>
         </nav>
 
-        <div className="grid lg:grid-cols-[15rem_minmax(0,1fr)] gap-6 items-start">
-          <PerfilMedallasSticky conseguidas={insigniasUtiles} />
+        <div className="min-w-0">
+          <div className="mb-4">
+            <PerfilMedallasSticky conseguidas={insigniasUtiles} />
+          </div>
 
-          <div className="min-w-0">
-            <header className="mb-8">
-              <h1 className="titulo-pagina mb-2">
-                Sala Previa
-              </h1>
-              <p className="entradilla max-w-2xl mb-0">
-                Recorre las fases del día en el juzgado: entrada, control, espera y
-                sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
-              </p>
-            </header>
+          <header className="mb-8">
+            <h1 className="titulo-pagina mb-2">
+              Sala Previa
+            </h1>
+            <p className="entradilla max-w-2xl mb-0">
+              Recorre las fases del día en el juzgado: entrada, control, espera y
+              sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
+            </p>
+          </header>
 
             {mensaje && (
               <p
@@ -599,7 +606,6 @@ export default function PaginaSalaPrevia() {
                 <p className="text-sm text-puente-700 mt-8">{CREDITO_AUDIO}</p>
               </>
             )}
-          </div>
         </div>
       </main>
 
