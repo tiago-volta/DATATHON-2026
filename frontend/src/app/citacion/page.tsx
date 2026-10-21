@@ -3,7 +3,6 @@
 import { useState, type ChangeEvent } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { Pictograma } from '@/components/Pictograma'
 import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
@@ -844,18 +843,6 @@ export default function PaginaCitacion() {
   const quePasaSiNoVoy = resultado?.datos_clave.que_pasa_si_no_voy
   const pipelineIA = resultado?.datos_clave.pipeline_ia || PIPELINE_POR_DEFECTO
 
-  const textoParaLeerEnVoz = resultado
-    ? modoLectura === 'clara'
-      ? resultado.lectura_clara
-      : modoLectura === 'facil'
-        ? resultado.lectura_facil
-        : pasosSimples.join(' ')
-    : ''
-
-  const resumenClaveParaVoz = resultado
-    ? `Resumen importante. Tu rol es ${resultado.datos_clave.rol}. Fecha y hora: ${resultado.datos_clave.fecha}, ${resultado.datos_clave.hora}. Lugar: ${resultado.datos_clave.lugar}.`
-    : ''
-
   return (
     <>
       <main id="contenido-principal" className="page-shell">
@@ -1025,7 +1012,6 @@ export default function PaginaCitacion() {
                   {esSentencia ? 'La decisión del juez en palabras claras' : 'Tu citación explicada'}
                 </h1>
               </div>
-              <BotonLeerEnVoz texto={resumenClaveParaVoz} />
             </div>
 
             {/* Privacidad verificada RGPD art. 25 */}
@@ -1274,7 +1260,6 @@ export default function PaginaCitacion() {
                         : 'Una sola acción concreta en cada tarjeta.'}
                   </p>
                 </div>
-                <BotonLeerEnVoz texto={textoParaLeerEnVoz} />
               </div>
 
               {modoLectura === 'simple' ? (
@@ -1307,11 +1292,6 @@ export default function PaginaCitacion() {
                       Traducimos las cifras y plazos a palabras para que no haya confusión con los números.
                     </p>
                   </div>
-                  <BotonLeerEnVoz
-                    texto={apoyoNumerico
-                      .map((item) => `${item.etiqueta}: ${item.en_palabras}`)
-                      .join(' ')}
-                  />
                 </div>
                 <dl className="grid gap-3 sm:grid-cols-3">
                   {apoyoNumerico.map((item, i) => (
@@ -1440,9 +1420,6 @@ export default function PaginaCitacion() {
                       ? '¿Tengo que ir al juzgado después de esta carta?'
                       : '¿Qué pasa si ese día estoy enfermo o no puedo ir?'}
                   </h2>
-                  <BotonLeerEnVoz
-                    texto={`${quePasaSiNoVoy.resumen} ${quePasaSiNoVoy.pasos_si_no_puedes.join(' ')} ${quePasaSiNoVoy.mensaje_calma}`}
-                  />
                 </div>
                 <p className="text-court-700 mb-3">{quePasaSiNoVoy.resumen}</p>
                 <ol className="list-decimal pl-5 space-y-1 text-court-700 mb-3">

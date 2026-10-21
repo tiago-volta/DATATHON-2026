@@ -101,16 +101,6 @@ def test_generar_ics():
     assert "CitacionPrueba" in res.text
 
 
-def test_voz_interpretar():
-    res = client.post(
-        "/api/voz/interpretar",
-        json={"texto": "quiero activar el modo con voz"},
-    )
-    assert res.status_code == 200
-    data = res.json()
-    assert data["accion"] == "activar_modo_voz"
-
-
 def test_ayuda_preguntar():
     res = client.post(
         "/api/ayuda/preguntar",

@@ -372,7 +372,7 @@ export default function PaginaPasaporte() {
 
                 <fieldset className="border border-court-200 rounded-suave p-4">
                   <legend className="px-1 text-lg font-medium text-court-800">
-                    Apoyos de voz y lectura
+                    Apoyos de lectura y anticipación
                   </legend>
                   <label
                     htmlFor="necesito-apoyos"
@@ -389,14 +389,13 @@ export default function PaginaPasaporte() {
                         // Solo preferencia local; no viaja en el QR ni etiqueta discapacidad.
                         guardarPreferencias({
                           necesitoApoyos: valor,
-                          accesoPorVoz: valor,
                         })
                       }}
                       aria-describedby="ayuda-necesito-apoyos"
                     />
                     <span>
                       <span className="block font-bold text-court-900">
-                        Necesito más apoyos de voz y lectura
+                        Necesito más apoyos de lectura y anticipación
                       </span>
                       <span
                         id="ayuda-necesito-apoyos"

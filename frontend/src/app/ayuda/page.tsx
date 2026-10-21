@@ -6,18 +6,6 @@ import { preguntarAyudaAPI } from '@/lib/api'
 import { cargarPerfil } from '@/lib/perfil/perfil'
 import { TarjetasFaq } from '@/components/faq/TarjetasFaq'
 import type { RolPerfil } from '@/lib/perfil/tipos'
-import {
-  crearReconocimiento,
-  MENSAJE_MIC_DENEGADO,
-  pedirPermisoMicrofono,
-  reconocimientoVozDisponible,
-  type ControlesReconocimiento,
-} from '@/lib/voz/reconocimiento'
-import {
-  hablarCola,
-  parar as pararVoz,
-  vozNaturalDisponible,
-} from '@/lib/vozNatural'
 
 interface FaqItem {
   id: string
@@ -80,7 +68,7 @@ const FAQS_RECURRENTES: FaqItem[] = [
     icono: '🏛️',
     pregunta: '¿Cómo me ayuda el simulador de la sala antes de ir al juzgado?',
     respuesta:
-      'El simulador te permite ver la sala de vistas en 3D, escuchar el sonido ambiental, graduar el aforo y ensayar las preguntas habituales de jueces y abogados, para que el día del juicio nada te resulte desconocido.',
+      'El simulador te permite ver la sala de vistas en 3D, graduar el ruido, la luz y el aforo, y ensayar las preguntas habituales de jueces y abogados, para que el día del juicio nada te resulte desconocido.',
     fundamentoLegal: 'Anticipación cognitiva y desensibilización sensorial',
   },
 ]
@@ -92,8 +80,8 @@ type Mensaje = {
 }
 
 /**
- * Pregunta a PUENTE: dudas por texto o voz.
- * Respuesta leída con vozNatural (mutex). Sin diagnóstico médico.
+ * Pregunta a PUENTE: dudas por texto.
+ * Sin diagnóstico médico.
  */
 export default function PaginaAyuda() {
   const tituloId = useId()
@@ -105,14 +93,15 @@ export default function PaginaAyuda() {
       id: 'saludo',
       rol: 'asistente',
       texto:
-        'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz. Escribe o habla. No pido datos de salud.',
+        'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte o la Sala Previa. Escribe tu duda. No pido datos de salud.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
-  const [escuchando, setEscuchando] = useState(false)
-  const [hablando, setHablando] = useState(false)
   const [faqAbierta, setFaqAbierta] = useState<string | null>(null)
   const [rolUsuario, setRolUsuario] = useState<RolPerfil | null>(null)
+  const [anuncio, setAnuncio] = useState('')
+  const listaRef = useRef<HTMLUListElement>(null)
+  const enviandoRef = useRef(false)
 
   useEffect(() => {
     const p = cargarPerfil()
@@ -120,120 +109,40 @@ export default function PaginaAyuda() {
       setRolUsuario(p.rol)
     }
   }, [])
-  const [anuncio, setAnuncio] = useState('')
-  const [ultimaRespuesta, setUltimaRespuesta] = useState(
-    'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
-  )
-  const cancelarHablaRef = useRef<(() => void) | null>(null)
-  const reconocimientoRef = useRef<ControlesReconocimiento | null>(null)
-  const listaRef = useRef<HTMLUListElement>(null)
-  const enviandoRef = useRef(false)
-  const enviarRef = useRef<(texto: string) => Promise<void>>(async () => undefined)
 
-  const pararHabla = useCallback(() => {
-    cancelarHablaRef.current?.()
-    cancelarHablaRef.current = null
-    pararVoz()
-    setHablando(false)
-  }, [])
+  const enviarPregunta = useCallback(async (textoRaw: string) => {
+    const texto = textoRaw.trim()
+    if (texto.length < 2 || enviandoRef.current) return
 
-  const leerTexto = useCallback(
-    (texto: string) => {
-      if (!vozNaturalDisponible() || !texto.trim()) {
-        setAnuncio(
-          'Tu navegador no puede leer en voz alta. El texto está en pantalla.'
-        )
-        return
-      }
-      pararHabla()
-      setHablando(true)
-      setAnuncio('Leyendo la respuesta…')
-      const { cancelar } = hablarCola([texto], {
-        onFin: () => {
-          cancelarHablaRef.current = null
-          setHablando(false)
-          setAnuncio('')
-        },
-      })
-      cancelarHablaRef.current = cancelar
-    },
-    [pararHabla]
-  )
+    const idPersona = `p-${Date.now()}`
+    setMensajes((prev) => [
+      ...prev,
+      { id: idPersona, rol: 'persona', texto },
+    ])
+    setPregunta('')
+    enviandoRef.current = true
+    setEnviando(true)
+    setAnuncio('Pensando la respuesta…')
 
-  const enviarPregunta = useCallback(
-    async (textoRaw: string) => {
-      const texto = textoRaw.trim()
-      if (texto.length < 2 || enviandoRef.current) return
-
-      pararHabla()
-      reconocimientoRef.current?.parar()
-      setEscuchando(false)
-
-      const idPersona = `p-${Date.now()}`
+    try {
+      const { respuesta } = await preguntarAyudaAPI(texto)
+      const idInclusiveCourt = `r-${Date.now()}`
       setMensajes((prev) => [
         ...prev,
-        { id: idPersona, rol: 'persona', texto },
+        { id: idInclusiveCourt, rol: 'asistente', texto: respuesta },
       ])
-      setPregunta('')
-      enviandoRef.current = true
-      setEnviando(true)
-      setAnuncio('Pensando la respuesta…')
-
-      try {
-        const { respuesta } = await preguntarAyudaAPI(texto)
-        const idInclusiveCourt = `r-${Date.now()}`
-        setMensajes((prev) => [
-          ...prev,
-          { id: idInclusiveCourt, rol: 'asistente', texto: respuesta },
-        ])
-        setUltimaRespuesta(respuesta)
-        setAnuncio('Respuesta lista.')
-        leerTexto(respuesta)
-      } catch {
-        const fallback =
-          'Ahora mismo no puedo responder. Prueba otra vez en unos segundos, o mira Citación, Pasaporte, Ensaya o Sala en el menú.'
-        setMensajes((prev) => [
-          ...prev,
-          { id: `e-${Date.now()}`, rol: 'asistente', texto: fallback },
-        ])
-        setUltimaRespuesta(fallback)
-        setAnuncio(fallback)
-      } finally {
-        enviandoRef.current = false
-        setEnviando(false)
-      }
-    },
-    [leerTexto, pararHabla]
-  )
-
-  enviarRef.current = enviarPregunta
-
-  useEffect(() => {
-    if (!reconocimientoVozDisponible()) return
-    const controles = crearReconocimiento({
-      continuous: false,
-      onHablaUsuario: () => {
-        pararVoz()
-        setHablando(false)
-      },
-      onResultado: ({ texto, final }) => {
-        if (!texto) return
-        setPregunta(texto)
-        if (final) {
-          setEscuchando(false)
-          void enviarRef.current(texto)
-        }
-      },
-      onError: (mensaje) => {
-        setAnuncio(mensaje)
-        setEscuchando(false)
-      },
-      onFin: () => setEscuchando(false),
-    })
-    reconocimientoRef.current = controles
-    return () => {
-      controles.parar()
-      reconocimientoRef.current = null
+      setAnuncio('Respuesta lista.')
+    } catch {
+      const fallback =
+        'Ahora mismo no puedo responder. Prueba otra vez en unos segundos, o mira Citación, Pasaporte o Sala en el menú.'
+      setMensajes((prev) => [
+        ...prev,
+        { id: `e-${Date.now()}`, rol: 'asistente', texto: fallback },
+      ])
+      setAnuncio(fallback)
+    } finally {
+      enviandoRef.current = false
+      setEnviando(false)
     }
   }, [])
 
@@ -244,35 +153,9 @@ export default function PaginaAyuda() {
     })
   }, [mensajes])
 
-  useEffect(() => {
-    return () => {
-      cancelarHablaRef.current?.()
-      pararVoz()
-      reconocimientoRef.current?.parar()
-    }
-  }, [])
-
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     void enviarPregunta(pregunta)
-  }
-
-  const empezarHablar = async () => {
-    if (!reconocimientoVozDisponible()) {
-      setAnuncio(
-        'Tu navegador no reconoce la voz. Puedes escribir la pregunta con el teclado.'
-      )
-      return
-    }
-    const permiso = await pedirPermisoMicrofono()
-    if (permiso === 'denegado') {
-      setAnuncio(MENSAJE_MIC_DENEGADO)
-      return
-    }
-    pararHabla()
-    setEscuchando(true)
-    setAnuncio('Te escucho. Di tu duda con calma.')
-    reconocimientoRef.current?.iniciar()
   }
 
   return (
@@ -285,8 +168,8 @@ export default function PaginaAyuda() {
           Ayuda
         </h1>
         <p className="entradilla max-w-[40ch]">
-          Escribe o habla tu duda. Te respondo con frases cortas. No hago
-          diagnósticos ni pido datos de salud.
+          Escribe tu duda. Te respondo con frases cortas. No hago diagnósticos ni
+          pido datos de salud.
         </p>
       </header>
 
@@ -343,46 +226,16 @@ export default function PaginaAyuda() {
           aria-describedby="ayuda-pregunta-hint"
         />
         <p id="ayuda-pregunta-hint" className="text-sm text-court-700 mb-4">
-          Puedes escribir o pulsar Hablar para dictar. Máximo 800 caracteres.
+          Escribe tu duda con el teclado. Máximo 800 caracteres.
         </p>
 
         <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="btn-secondary min-h-[44px]"
-            onClick={() => void empezarHablar()}
-            aria-pressed={escuchando}
-            disabled={enviando}
-          >
-            {escuchando ? 'Escuchando…' : 'Hablar'}
-          </button>
           <button
             type="submit"
             className="btn-primary min-h-[44px]"
             disabled={enviando || pregunta.trim().length < 2}
           >
             {enviando ? 'Enviando…' : 'Enviar'}
-          </button>
-          <button
-            type="button"
-            className="btn-ghost min-h-[44px]"
-            onClick={() => {
-              reconocimientoRef.current?.parar()
-              setEscuchando(false)
-              pararHabla()
-              setAnuncio('Parado.')
-            }}
-          >
-            Parar
-          </button>
-          <button
-            type="button"
-            className="btn-ghost min-h-[44px]"
-            onClick={() => leerTexto(ultimaRespuesta)}
-            disabled={!ultimaRespuesta || hablando}
-            aria-pressed={hablando}
-          >
-            {hablando ? 'Leyendo…' : 'Repetir respuesta'}
           </button>
         </div>
       </form>
@@ -393,7 +246,8 @@ export default function PaginaAyuda() {
             Preguntas frecuentes según tu papel
           </h2>
           <p className="text-court-700 text-sm">
-            Respuestas con fundamento legal (LECrim y Código Penal) y enlace directo al BOE. Selecciona tu papel para ver tus dudas clave o escucharlas en voz alta.
+            Respuestas con fundamento legal (LECrim y Código Penal) y enlace
+            directo al BOE. Selecciona tu papel para ver tus dudas clave.
           </p>
         </div>
 
@@ -449,13 +303,6 @@ export default function PaginaAyuda() {
                       </p>
                     )}
                     <div className="flex flex-wrap gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => leerTexto(faq.respuesta)}
-                        className="btn-ghost text-xs py-1 px-2.5 min-h-[36px]"
-                      >
-                        Escuchar respuesta
-                      </button>
                       <button
                         type="button"
                         onClick={() => setFaqAbierta(null)}

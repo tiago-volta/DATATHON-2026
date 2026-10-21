@@ -335,17 +335,9 @@ export class MotorAudioSala {
     }
   }
 
-  reproducirNombreEnAlto(nombre = 'Luis García') {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      try {
-        const u = new SpeechSynthesisUtterance(`${nombre}, a la sala tres`)
-        u.lang = 'es-ES'
-        u.rate = 0.95
-        window.speechSynthesis.speak(u)
-      } catch {
-        /* ignore */
-      }
-    }
+  /** Aviso sonoro breve (sin síntesis de voz): el nombre se muestra en pantalla. */
+  reproducirNombreEnAlto(_nombre = 'Luis García') {
+    this.reproducirMovil()
   }
 
   reproducirTosMurmullo() {

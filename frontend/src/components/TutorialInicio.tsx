@@ -2,8 +2,6 @@
 
 import Image from 'next/image'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import { hablarCola, parar as pararVoz, vozNaturalDisponible } from '@/lib/vozNatural'
-import { useModoVoz } from '@/hooks/useModoVoz'
 import {
   EVENTO_TUTORIAL,
   PASOS_TUTORIAL,
@@ -14,16 +12,14 @@ import {
 
 /**
  * Tutorial general al abrir la app la primera vez.
- * Va antes que OnboardingVoz. Escape / Saltar cierran sin atrapar el foco.
+ * Escape / Saltar cierran sin atrapar el foco.
  */
 export function TutorialInicio() {
   const tituloId = useId()
   const descId = useId()
-  const { activo: modoVozActivo } = useModoVoz()
   const [listo, setListo] = useState(false)
   const [abierto, setAbierto] = useState(false)
   const [indice, setIndice] = useState(0)
-  const cancelarRef = useRef<(() => void) | null>(null)
   const botonSiguienteRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -37,42 +33,10 @@ export function TutorialInicio() {
     return () => window.removeEventListener(EVENTO_TUTORIAL, sync)
   }, [])
 
-  const pararHabla = useCallback(() => {
-    cancelarRef.current?.()
-    cancelarRef.current = null
-    pararVoz()
-  }, [])
-
   const cerrar = useCallback(() => {
-    pararHabla()
     marcarTutorialVisto()
     setAbierto(false)
-  }, [pararHabla])
-
-  const leerPaso = useCallback(
-    (i: number) => {
-      if (!vozNaturalDisponible()) return
-      const paso = PASOS_TUTORIAL[i]
-      if (!paso) return
-      pararHabla()
-      const { cancelar } = hablarCola([`${paso.titulo}. ${paso.texto}`], {
-        onFin: () => {
-          cancelarRef.current = null
-        },
-      })
-      cancelarRef.current = cancelar
-    },
-    [pararHabla]
-  )
-
-  // Lee cada paso si el modo con voz ya está activo (o tras gesto «Leer paso»).
-  useEffect(() => {
-    if (!abierto || !modoVozActivo) return
-    leerPaso(indice)
-    return () => {
-      pararHabla()
-    }
-  }, [abierto, indice, modoVozActivo, leerPaso, pararHabla])
+  }, [])
 
   useEffect(() => {
     if (!abierto) return
@@ -83,17 +47,9 @@ export function TutorialInicio() {
       }
     }
     window.addEventListener('keydown', onKey)
-    // Foco inicial suave (no atrapar en bucle): solo el primer botón útil.
     botonSiguienteRef.current?.focus()
     return () => window.removeEventListener('keydown', onKey)
   }, [abierto, cerrar])
-
-  useEffect(() => {
-    return () => {
-      cancelarRef.current?.()
-      pararVoz()
-    }
-  }, [])
 
   if (!listo || !abierto) return null
 
@@ -174,15 +130,6 @@ export function TutorialInicio() {
           >
             Saltar
           </button>
-          {vozNaturalDisponible() && (
-            <button
-              type="button"
-              className="btn-secondary min-h-[44px]"
-              onClick={() => leerPaso(indice)}
-            >
-              Leer paso
-            </button>
-          )}
         </div>
 
         <p className="text-sm text-court-700" role="status" aria-live="polite">

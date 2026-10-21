@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { analizarPreguntaAPI, type AnalisisPregunta } from '@/lib/api'
 
 const PREGUNTAS_FRECUENTES = [
@@ -578,7 +577,6 @@ export default function PaginaMediador() {
                     Pregunta reescrita en Lectura Fácil (lista para leer en sala)
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    <BotonLeerEnVoz texto={resultado.reformulada} />
                     <button
                       type="button"
                       onClick={() => copiarReformulada(resultado.reformulada || '')}
@@ -598,7 +596,6 @@ export default function PaginaMediador() {
                   <h3 className="font-bold text-court-800">
                     Desglose paso a paso (hazlas de una en una y espera respuesta):
                   </h3>
-                  <BotonLeerEnVoz texto={resultado.preguntas_divididas.join(' ')} />
                 </div>
                 <ul className="space-y-2 text-court-800 font-medium">
                   {resultado.preguntas_divididas.map((sub, idx) => (
@@ -664,7 +661,6 @@ export default function PaginaMediador() {
                         </p>
                         <p className="text-court-800 font-medium">&ldquo;{ej.reformulada}&rdquo;</p>
                       </div>
-                      <BotonLeerEnVoz texto={ej.reformulada} />
                     </div>
                   </>
                 )}

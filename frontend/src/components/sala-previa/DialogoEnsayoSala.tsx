@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useId, useState } from 'react'
 import Link from 'next/link'
-import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { Icono } from '@/components/Icono'
 import { Pictograma } from '@/components/Pictograma'
 import type { MiradaSala } from '@/lib/sala-previa/salaVistasConfig'
@@ -366,7 +365,6 @@ export function DialogoEnsayoSala({
                 </span>
               </div>
 
-              <BotonLeerEnVoz texto={preguntaActual.texto} etiqueta="Escuchar pregunta" />
             </div>
 
             <div

@@ -13,17 +13,11 @@ import { MedidorConfianza } from '@/components/sala-previa/MedidorConfianza'
 import { PanelLoQueTeAyuda } from '@/components/sala-previa/PanelLoQueTeAyuda'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
-import { BotonEscucharPedido } from '@/components/voz/BotonEscucharPedido'
-import { EscuchaContinuaAudioguia } from '@/components/voz/EscuchaContinuaAudioguia'
-import { useAudioguiaSala } from '@/hooks/useAudioguiaSala'
 import { useConfianza } from '@/hooks/useConfianza'
-import { useModoVoz } from '@/hooks/useModoVoz'
-import type { ResultadoPeticionVoz } from '@/lib/voz/asistenteVoz'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
-import { escenaPorIndice } from '@/lib/sala-previa/escenas'
 import { generarAgendaEventos, type EventoSala } from '@/lib/sala-previa/eventos'
 import { NarradorAhoraDespues } from '@/components/sala-previa/NarradorAhoraDespues'
 import { HerramientasSensoriales } from '@/components/sala-previa/HerramientasSensoriales'
@@ -86,20 +80,12 @@ export default function PaginaSalaPrevia() {
   const [mensaje, setMensaje] = useState<string | null>(null)
   /** Evita reaplicar el deep-link Ensaya → Sala Previa. */
   const deepLinkAplicado = useRef(false)
-  /** Evita releer al montar; solo al cambiar escena/nivel con guía activa. */
-  const audioguiaContextoInicial = useRef(true)
-  const atenuarParaMedalla = useCallback((activo: boolean) => {
-    motorRef.current?.atenuarParaVoz(activo)
-  }, [])
   const {
     conseguidas: insigniasUtiles,
     aviso: avisoInsignia,
     desbloquear,
     descartarAviso,
-  } = useInsigniasUtiles({
-    enCalma,
-    atenuarAmbiente: atenuarParaMedalla,
-  })
+  } = useInsigniasUtiles({ enCalma })
   const {
     score: scoreConfianza,
     etiqueta: etiquetaConfianza,
@@ -155,68 +141,6 @@ export default function PaginaSalaPrevia() {
   }, [valores])
 
   const nivel = NIVELES[nivelActual]
-  const escena = escenaPorIndice(escenaIndice, rolUsuario)
-
-  const atenuarParaVoz = useCallback((activo: boolean) => {
-    motorRef.current?.atenuarParaVoz(activo)
-  }, [])
-
-  const audioguia = useAudioguiaSala({ atenuarParaVoz })
-  const modoVoz = useModoVoz()
-
-  const alPedidoVoz = useCallback(
-    (r: ResultadoPeticionVoz) => {
-      // Feedback visible (aria-live) + respuesta hablada vía audioguía / mutex.
-      setMensaje(r.respuestaHabla)
-      if (r.accion === 'activar_modo_voz') {
-        modoVoz.activar()
-        audioguia.anunciarEnVoz(r.respuestaHabla)
-        return
-      }
-      if (r.accion === 'desactivar_modo_voz') {
-        modoVoz.desactivar()
-        audioguia.pararSintesis()
-        audioguia.anunciarEnVoz(r.respuestaHabla)
-        return
-      }
-      if (r.accion === 'repetir_ultimo') {
-        audioguia.repetirUltimo()
-        return
-      }
-      if (r.accion === 'parar_voz') {
-        audioguia.pararSintesis()
-        return
-      }
-      if (r.accion === 'ralentizar') {
-        // Mock: relee el último bloque (el TTS natural no expone rate fácilmente).
-        audioguia.anunciarEnVoz(r.respuestaHabla)
-        window.setTimeout(() => audioguia.repetirUltimo(), 1200)
-        return
-      }
-      // explicar, ayuda, desconocido…
-      audioguia.anunciarEnVoz(r.respuestaHabla)
-    },
-    // Métodos estables del hook; evitamos depender del objeto entero.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intencional
-    [
-      modoVoz.activar,
-      modoVoz.desactivar,
-      audioguia.repetirUltimo,
-      audioguia.pararSintesis,
-      audioguia.anunciarEnVoz,
-    ]
-  )
-
-  const contextoAudioguia = useMemo(
-    () => ({
-      escena,
-      escenaIndice,
-      valores,
-      enCalma,
-      nivelNombre: nivel.nombre,
-    }),
-    [escena, escenaIndice, valores, enCalma, nivel.nombre]
-  )
 
   useEffect(() => {
     const cargado = cargarProgreso()
@@ -238,18 +162,6 @@ export default function PaginaSalaPrevia() {
       motorRef.current?.detener(false)
     }
   }, [])
-
-  // Si la guía está activa y cambia escena o nivel, lee el nuevo bloque.
-  useEffect(() => {
-    if (audioguiaContextoInicial.current) {
-      audioguiaContextoInicial.current = false
-      return
-    }
-    if (!audioguia.activo || fase === 'intro') return
-    audioguia.alCambiarContexto(contextoAudioguia)
-    // Solo reaccionamos a escena/nivel (no a cada tick de slider).
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intencional
-  }, [escenaIndice, nivelActual])
 
   useEffect(() => {
     if (!progresoListo) return
@@ -379,7 +291,6 @@ export default function PaginaSalaPrevia() {
   }, [])
 
   const volverAIntro = () => {
-    audioguia.desactivar()
     motorRef.current?.detener(true)
     setAudioListo(false)
     setEnCalma(false)
@@ -389,8 +300,6 @@ export default function PaginaSalaPrevia() {
   }
 
   const pausarCalma = () => {
-    // Calma corta la síntesis de inmediato (prioridad sobre la guía).
-    audioguia.alCalma()
     setEnCalma(true)
     motorRef.current?.volverACalma()
     setValores((v) => ({
@@ -509,76 +418,16 @@ export default function PaginaSalaPrevia() {
 
             {fase !== 'intro' && (
               <>
-                <EscuchaContinuaAudioguia
-                  audioguiaActiva={audioguia.activo}
-                  hablando={audioguia.hablando}
-                  onPararSintesis={audioguia.pararSintesis}
-                  onResultado={alPedidoVoz}
-                />
                 <div className="flex flex-wrap gap-3 mb-6 items-center">
-                  <button
-                    type="button"
-                    className={`btn ${audioguia.activo ? 'btn-primary' : 'btn-secondary'}`}
-                    aria-pressed={audioguia.activo}
-                    aria-describedby={
-                      audioguia.sinSoporte ? 'audioguia-sin-soporte' : undefined
-                    }
-                    onClick={() => audioguia.toggle(contextoAudioguia)}
-                  >
-                    {audioguia.etiquetaBoton}
-                  </button>
-                  {(modoVoz.activo || audioguia.activo) && (
-                    <BotonEscucharPedido
-                      onResultado={alPedidoVoz}
-                      onPararSintesis={audioguia.pararSintesis}
-                      siempreVisible
-                    />
-                  )}
                   <button type="button" className="btn-ghost" onClick={volverAIntro}>
                     Ver intro otra vez
                   </button>
-                  {audioListo && !audioguia.hablando && (
+                  {audioListo && (
                     <span className="text-sm text-court-700 self-center">
-                      Audio activo. Usa los controles o la pausa.
-                    </span>
-                  )}
-                  {audioguia.hablando && (
-                    <span className="text-sm text-court-700 self-center">
-                      Audioguía en curso. Di «repite» o pulsa Escuchar pedido.
-                    </span>
-                  )}
-                  {modoVoz.activo && (
-                    <span
-                      className="text-sm text-court-700 self-center"
-                      role="status"
-                      aria-live="polite"
-                    >
-                      Modo con voz activo. Te escucho entre frases o con Escuchar pedido.
+                      Sonido ambiental activo. Usa los controles o la pausa.
                     </span>
                   )}
                 </div>
-
-                {audioguia.sinSoporte && (
-                  <p
-                    id="audioguia-sin-soporte"
-                    className="mb-4 bg-court-50 border border-court-200 rounded-lg p-3 text-court-800 max-w-2xl"
-                    role="status"
-                  >
-                    Tu navegador no puede leer en voz alta. Puedes seguir con el
-                    lector de pantalla.
-                  </p>
-                )}
-
-                {audioguia.anuncio && !audioguia.sinSoporte && (
-                  <p
-                    className="mb-4 text-sm text-court-700 max-w-2xl"
-                    role="status"
-                    aria-live="polite"
-                    aria-atomic="true"
-                  >
-                    {audioguia.anuncio}
-                  </p>
-                )}
 
                 <div className="bg-calma-sage/70 border border-court-200 rounded-suave px-4 py-2 text-xs text-court-700 flex items-center justify-between gap-2 mb-4">
                   <span>ℹ️ <strong>Aviso legal:</strong> Esto es un ensayo preparatorio. No sustituye a tu citación oficial ni a un abogado. En el juicio decide la autoridad judicial (arts. 7 bis LEC y 709 LECrim).</span>

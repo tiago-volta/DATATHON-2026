@@ -3,7 +3,6 @@ import './globals.css'
 import { Cabecera } from '@/components/Cabecera'
 import { Pie } from '@/components/Pie'
 import { TutorialInicio } from '@/components/TutorialInicio'
-import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
 import { ProveedorAuth } from '@/lib/auth/AuthContext'
 
 export const metadata: Metadata = {
@@ -33,7 +32,6 @@ export default function RootLayout({
         </a>
         <ProveedorAuth>
           <TutorialInicio />
-          <OnboardingVoz />
           <Cabecera />
           <div className="flex-1">{children}</div>
           <Pie />

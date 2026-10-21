@@ -7,7 +7,6 @@ Enfoque determinista con soporte opcional de LLM (OpenAI / Anthropic).
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 import json
@@ -22,8 +21,6 @@ from .metricas import comparar_legibilidad
 from .arasaac import obtener_pictogramas
 from .calendario import generar_ics, calcular_resumen_plazo
 from .documentos import extraer_texto_documento
-from .tts import MAX_CARACTERES, sintetizar_mp3, sanitizar_texto
-from .voz import interpretar_peticion
 from .mock_data import (
     MOCK_CITACION_LUIS,
     MOCK_CITACION_JUAN,
@@ -259,20 +256,6 @@ class PasaporteResponse(BaseModel):
     marca: str
 
 
-class TtsInput(BaseModel):
-    texto: str
-
-    @field_validator("texto")
-    @classmethod
-    def validar_texto_tts(cls, v: str) -> str:
-        limpio = sanitizar_texto(v)
-        if not limpio:
-            raise ValueError("El texto para voz no puede estar vacío.")
-        if len(limpio) > MAX_CARACTERES:
-            raise ValueError(f"El texto supera el límite de {MAX_CARACTERES} caracteres.")
-        return limpio
-
-
 @app.get("/")
 async def root():
     return {"mensaje": "InclusiveCourt API - Accesibilidad cognitiva para la justicia"}
@@ -320,27 +303,6 @@ async def extraer_texto_endpoint(archivo: UploadFile = File(...)):
     }
 
 
-class VozInput(BaseModel):
-    texto: str
-
-    @field_validator("texto")
-    @classmethod
-    def validar_texto_voz(cls, v: str) -> str:
-        limpio = (v or "").strip()
-        if len(limpio) > 500:
-            raise ValueError("El texto de voz es demasiado largo.")
-        return limpio
-
-
-@app.post("/api/voz/interpretar")
-async def voz_interpretar(input_data: VozInput):
-    """
-    Interpreta una petición hablada (MOCK por keywords).
-    TODO(Gemini): sustituir el cuerpo por LLM manteniendo el mismo JSON.
-    """
-    return interpretar_peticion(input_data.texto)
-
-
 class AyudaInput(BaseModel):
     pregunta: str
 
@@ -349,7 +311,7 @@ class AyudaInput(BaseModel):
     def validar_pregunta_ayuda(cls, v: str) -> str:
         limpio = (v or "").strip()
         if len(limpio) < 2:
-            raise ValueError("Escribe o dicta tu duda (al menos 2 caracteres).")
+            raise ValueError("Escribe tu duda (al menos 2 caracteres).")
         if len(limpio) > 800:
             raise ValueError("La pregunta es demasiado larga. Acórtala un poco.")
         return limpio
@@ -363,65 +325,12 @@ class AyudaResponse(BaseModel):
 @app.post("/api/ayuda/preguntar", response_model=AyudaResponse)
 async def ayuda_preguntar(input_data: AyudaInput):
     """
-    Chat de dudas sobre citación, Pasaporte, Ensaya, Sala Previa, modo con voz.
+    Chat de dudas sobre citación, Pasaporte y Sala Previa.
     Gemini si hay GEMINI_API_KEY; si no, respuestas mock calmadas.
     Nunca diagnóstico médico ni datos sensibles de salud.
     """
     resultado = await responder_ayuda(input_data.pregunta)
     return AyudaResponse(**resultado)
-
-
-@app.post("/api/tts")
-async def tts_post(input_data: TtsInput):
-    """
-    Sintetiza voz natural (edge-tts, es-ES-ElviraNeural) y devuelve audio/mpeg.
-    Gratuito; no consume cuota de Gemini/OpenAI.
-    """
-    try:
-        audio = await sintetizar_mp3(input_data.texto)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except Exception as exc:
-        raise HTTPException(
-            status_code=502,
-            detail="No se pudo generar la voz. Prueba de nuevo en unos segundos.",
-        ) from exc
-    return Response(
-        content=audio,
-        media_type="audio/mpeg",
-        headers={
-            "Cache-Control": "private, max-age=3600",
-            "Content-Disposition": "inline; filename=voz.mp3",
-        },
-    )
-
-
-@app.get("/api/tts")
-async def tts_get(texto: str = ""):
-    """GET con texto corto: útil para pruebas rápidas (curl / smoke)."""
-    limpio = sanitizar_texto(texto)
-    if not limpio:
-        raise HTTPException(status_code=400, detail="El texto para voz no puede estar vacío.")
-    if len(limpio) > MAX_CARACTERES:
-        raise HTTPException(
-            status_code=400,
-            detail=f"El texto supera el límite de {MAX_CARACTERES} caracteres.",
-        )
-    try:
-        audio = await sintetizar_mp3(limpio)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=502,
-            detail="No se pudo generar la voz. Prueba de nuevo en unos segundos.",
-        ) from exc
-    return Response(
-        content=audio,
-        media_type="audio/mpeg",
-        headers={
-            "Cache-Control": "private, max-age=3600",
-            "Content-Disposition": "inline; filename=voz.mp3",
-        },
-    )
 
 
 @app.post("/api/anonimizar", response_model=AnonimizacionResponse)

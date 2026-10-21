@@ -662,7 +662,7 @@ Reglas OBLIGATORIAS:
 - NUNCA pidas DNI, número de expediente real, ni datos personales sensibles.
 - Si preguntan por salud o discapacidad clínica, di con calma que no eres médica y que pueden
   pedir apoyos en el Pasaporte sin escribir ningún diagnóstico.
-- Habla solo de InclusiveCourt y del proceso judicial accesible (citación, plazos, pasaporte, ensaya, sala previa, modo con voz).
+- Habla solo de InclusiveCourt y del proceso judicial accesible (citación, plazos, pasaporte, sala previa y ensayo).
 - Si no sabes algo concreto del caso, dilo y sugiere ir a «Mi citación» o hablar con su abogado/a.
 - Responde en texto plano (sin JSON, sin markdown denso). Máximo 8 frases cortas.
 """
@@ -673,7 +673,6 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
         re.compile(r"citaci[oó]n|carta|documento|fecha|hora|plazos?", re.I),
         "En «Mi citación» puedes pegar el texto de la carta del juzgado. "
         "Te la explicamos con frases cortas: qué día, a qué hora y dónde. "
-        "También puedes pedir que te la lean en voz alta. "
         "Si quieres, ve a Citación en el menú de arriba.",
     ),
     (
@@ -685,10 +684,10 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
     ),
     (
         re.compile(r"ensaya|declaraci[oó]n|preguntas?|testigo", re.I),
-        "En Ensaya practicas preguntas antes del día. "
+        "En la Sala Previa practicas preguntas antes del día. "
         "Puedes parar cuando quieras. "
         "Hay pictogramas y ayuda si una pregunta te confunde. "
-        "Entra en Ensaya desde el menú.",
+        "Entra en Sala desde el menú.",
     ),
     (
         re.compile(r"sala\s*previa|ruido|luz|juzgado|sala\s*3d|estimul", re.I),
@@ -698,16 +697,10 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
         "Entra en Sala desde el menú.",
     ),
     (
-        re.compile(r"voz|micr[oó]fono|hablar|escuchar|audio|leer", re.I),
-        "Puedes activar el «modo con voz» para que InclusiveCourt te lea y te escuche. "
-        "Di «quiero activar el modo con voz» o usa el botón de la cabecera. "
-        "En esta página de Ayuda también puedes dictar tu pregunta con el micrófono.",
-    ),
-    (
         re.compile(r"medic[oa]|diagn[oó]stico|enfermedad|trastorno|salud|tdah|autismo|ciego", re.I),
         "No soy médica y no hago diagnósticos. "
         "En InclusiveCourt no hace falta decir tu diagnóstico. "
-        "Puedes marcar «Necesito más apoyos de voz y lectura» en el Pasaporte "
+        "Puedes marcar «Necesito más apoyos de lectura y anticipación» en el Pasaporte "
         "y elegir los ajustes que te ayudan. "
         "Si tienes dudas de salud, habla con tu profesional de confianza.",
     ),

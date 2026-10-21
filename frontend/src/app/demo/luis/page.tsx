@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
 import { FASES_TESTIGO, ROLES } from '@/lib/contenido'
@@ -178,9 +177,6 @@ export default function DemoLuis() {
                 <h2 className="text-xl font-bold text-court-800">
                   {modoLectura === 'clara' ? 'En lenguaje claro' : 'En lectura fácil'}
                 </h2>
-                <BotonLeerEnVoz
-                  texto={modoLectura === 'clara' ? LUIS_LECTURA_CLARA : LUIS_LECTURA_FACIL}
-                />
               </div>
               <div className="lectura-facil whitespace-pre-line">
                 {modoLectura === 'clara' ? LUIS_LECTURA_CLARA : LUIS_LECTURA_FACIL}

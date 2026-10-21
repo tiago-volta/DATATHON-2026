@@ -1,6 +1,5 @@
 /**
  * Tutorial de primera visita (lectura fácil).
- * Independiente del OnboardingVoz: el tutorial general va primero.
  */
 
 export const LS_TUTORIAL_VISTO = 'court-tutorial-visto'
@@ -20,7 +19,7 @@ export const PASOS_TUTORIAL: PasoTutorial[] = [
     id: 'bienvenida',
     titulo: 'Hola, soy InclusiveCourt',
     texto:
-      'Te ayudo a entender el juzgado con frases cortas, pictogramas y voz. Sin prisas.',
+      'Te ayudo a entender el juzgado con frases cortas y pictogramas. Sin prisas.',
     pictoKeyword: 'hola',
     pictoId: 8289,
   },
@@ -34,9 +33,9 @@ export const PASOS_TUTORIAL: PasoTutorial[] = [
   },
   {
     id: 'pasaporte',
-    titulo: 'Pasaporte y Ensaya',
+    titulo: 'Pasaporte y ensayo',
     texto:
-      'En Pasaporte pides apoyos sin diagnóstico. En Ensaya practicas preguntas antes del día.',
+      'En Pasaporte pides apoyos sin diagnóstico. En la Sala practicas la declaración antes del día.',
     pictoKeyword: 'ayuda',
     pictoId: 37178,
   },
@@ -49,11 +48,11 @@ export const PASOS_TUTORIAL: PasoTutorial[] = [
     pictoId: 26885,
   },
   {
-    id: 'voz-ayuda',
-    titulo: 'Voz y Preguntar',
+    id: 'ayuda',
+    titulo: 'Si tienes dudas',
     texto:
-      'Puedes activar el modo con voz. Si tienes dudas, entra en Ayuda y escribe o habla.',
-    pictoKeyword: 'hablar',
+      'Entra en Ayuda y escribe tu pregunta. Te respondemos con frases cortas.',
+    pictoKeyword: 'pregunta',
     pictoId: 9847,
   },
 ]

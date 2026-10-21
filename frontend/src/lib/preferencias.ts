@@ -4,21 +4,18 @@
  * [PENDIENTE / stub] Integración oficial con organismos para reconocimientos
  * de discapacidad (p. ej. IMSERSO u otros): no inventamos APIs ni flags
  * estigmatizantes. Mientras tanto, la persona puede marcar un apoyo opcional
- * de voz/lectura sin ningún diagnóstico clínico.
+ * de lectura sin ningún diagnóstico clínico.
  */
 
 export const LS_PREFERENCIAS = 'court-preferencias'
 
 export type PreferenciasAcceso = {
-  /** La persona pide más apoyos de voz y lectura (opcional, local). */
+  /** La persona pide más apoyos de lectura y anticipación (opcional, local). */
   necesitoApoyos: boolean
-  /** Preferencia alineada con el modo con voz (opcional). */
-  accesoPorVoz: boolean
 }
 
 const INICIAL: PreferenciasAcceso = {
   necesitoApoyos: false,
-  accesoPorVoz: false,
 }
 
 function esBooleano(v: unknown): v is boolean {
@@ -35,9 +32,6 @@ export function leerPreferencias(): PreferenciasAcceso {
       necesitoApoyos: esBooleano(parsed.necesitoApoyos)
         ? parsed.necesitoApoyos
         : false,
-      accesoPorVoz: esBooleano(parsed.accesoPorVoz)
-        ? parsed.accesoPorVoz
-        : false,
     }
   } catch {
     return { ...INICIAL }
@@ -53,10 +47,6 @@ export function guardarPreferencias(
       parcial.necesitoApoyos !== undefined
         ? parcial.necesitoApoyos
         : actual.necesitoApoyos,
-    accesoPorVoz:
-      parcial.accesoPorVoz !== undefined
-        ? parcial.accesoPorVoz
-        : actual.accesoPorVoz,
   }
   if (typeof window === 'undefined') return next
   try {

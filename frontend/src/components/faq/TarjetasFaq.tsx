@@ -3,7 +3,6 @@
 import { useState, useId } from 'react'
 import type { RolPerfil } from '@/lib/perfil/tipos'
 import { obtenerFaqsPorRol, type FaqRol } from '@/lib/roles'
-import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 
 interface Props {
   rolInicial?: RolPerfil | null
@@ -111,10 +110,6 @@ export function TarjetasFaq({
                   </p>
 
                   <div className="flex flex-wrap items-center gap-2 pt-1">
-                    <BotonLeerEnVoz
-                      texto={`${faq.pregunta}. ${faq.respuesta}`}
-                      etiqueta="Escuchar respuesta"
-                    />
                     {onSeleccionarPregunta && (
                       <button
                         type="button"
