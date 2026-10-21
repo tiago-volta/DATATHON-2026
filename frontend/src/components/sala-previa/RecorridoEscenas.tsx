@@ -4,7 +4,8 @@ import { useEffect, useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
 import { DialogoEnsayoSala } from '@/components/sala-previa/DialogoEnsayoSala'
-import type { MiradaSala } from '@/lib/sala-previa/salaVistasConfig'
+import { papelDesdeRol, type MiradaSala } from '@/lib/sala-previa/salaVistasConfig'
+import type { TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import type { RolPerfil } from '@/lib/perfil/tipos'
 import {
   escenasPorRol,
@@ -23,6 +24,7 @@ interface Props {
   onPedirPausa?: () => void
   onNivelCompletado?: (nivelId: number) => void
   onProgresoPreguntas?: (total: number) => void
+  eventoSala?: { id: number; tipo: TipoDistraccion } | null
 }
 
 export function RecorridoEscenas({
@@ -35,6 +37,7 @@ export function RecorridoEscenas({
   onPedirPausa,
   onNivelCompletado,
   onProgresoPreguntas,
+  eventoSala,
 }: Props) {
   const tituloId = useId()
   const tituloRef = useRef<HTMLHeadingElement>(null)
@@ -50,6 +53,7 @@ export function RecorridoEscenas({
   const paso = seguro + 1
   const nivelVisual = nivelVisualDesdeEscena(escena, valores)
   const tipico = etiquetaNivelTipico(escena)
+  const papel = papelDesdeRol(rol, escena.id)
 
   useEffect(() => {
     if (prevIndice.current === seguro) return
@@ -155,6 +159,8 @@ export function RecorridoEscenas({
           valores={valores}
           enCalma={enCalma}
           personaEntrando={personaEntrando}
+          papel={papel}
+          eventoExterno={eventoSala}
           miradaExterna={miradaEnsayo}
           onChangeEstimulo={onChangeEstimulo}
         />

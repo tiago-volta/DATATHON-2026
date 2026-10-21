@@ -2,13 +2,17 @@
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ContactShadows, Environment, useGLTF, useTexture } from '@react-three/drei'
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, type Ref } from 'react'
 import * as THREE from 'three'
 import {
+  PAPELES_SALA,
   PITCH_MAX,
+  TOTAL_PUBLICO,
   type MiradaSala,
   type MiradaTarget,
+  type PapelSala,
 } from '@/lib/sala-previa/salaVistasConfig'
+import type { Distraccion, TipoDistraccion } from '@/lib/sala-previa/distracciones'
 
 const TEX = {
   suelo: '/sala-previa/texturas/suelo-madera.jpg',
@@ -66,7 +70,12 @@ const LAMPARAS: [number, number][] = [
   [0, 4.8],
 ]
 
-function MueblesCC0() {
+/** Orientación del banquillo: mira en diagonal hacia el estrado. */
+const BANQUILLO = { x: -4.45, z: -1.95, rot: -0.6435 }
+const PAPELES_PENALES: PapelSala[] = ['testigo', 'investigado', 'victima']
+
+function MueblesCC0({ papel }: { papel: PapelSala }) {
+  const civil = papel === 'parte_civil'
   return (
     <group>
       <Modelo url={MODELOS.sillaJuez} position={[0, 0.7, -6.85]} scale={1} />
@@ -75,13 +84,35 @@ function MueblesCC0() {
         <group key={lado}>
           <Modelo url={MODELOS.mesa} position={[lado * 1.85, 0, -3.2]} />
           <Modelo url={MODELOS.mesa} position={[lado * 2.98, 0, -3.2]} />
-          <Modelo
-            url={MODELOS.sillon}
-            position={[lado * 2.4, 0, -2.45]}
-            scale={0.92}
-          />
+          {civil && lado === 1 ? (
+            <>
+              <Modelo url={MODELOS.sillon} position={[1.75, 0, -2.4]} scale={0.92} />
+              <Modelo url={MODELOS.sillon} position={[2.95, 0, -2.45]} scale={0.92} />
+            </>
+          ) : (
+            <Modelo
+              url={MODELOS.sillon}
+              position={[lado * 2.4, 0, -2.45]}
+              scale={0.92}
+            />
+          )}
         </group>
       ))}
+
+      {PAPELES_PENALES.includes(papel) && (
+        <Modelo
+          url={MODELOS.banco}
+          position={[BANQUILLO.x, 0, BANQUILLO.z]}
+          rotationY={BANQUILLO.rot}
+        />
+      )}
+
+      {papel === 'victima' && (
+        <>
+          <Modelo url={MODELOS.sillon} position={[0.35, 0, -2.35]} scale={0.92} />
+          <Modelo url={MODELOS.sillon} position={[1.15, 0, -2.1]} scale={0.92} />
+        </>
+      )}
 
       {Z_FILAS.map((z) =>
         X_BANCOS.map((x) => (
@@ -122,6 +153,84 @@ function MueblesCC0() {
   )
 }
 
+/** Atril de testigos con vaso de agua (delante de la cámara del papel testigo). */
+function AtrilTestigo() {
+  return (
+    <group position={[0, 0, -3.45]}>
+      <mesh position={[0, 0.03, 0]}>
+        <boxGeometry args={[0.7, 0.06, 0.5]} />
+        <meshStandardMaterial color="#4a3324" roughness={0.6} />
+      </mesh>
+      <mesh position={[0, 0.52, 0]}>
+        <boxGeometry args={[0.16, 0.95, 0.16]} />
+        <meshStandardMaterial color="#5c3d28" roughness={0.6} />
+      </mesh>
+      <mesh position={[0, 1.04, 0.02]} rotation={[0.28, 0, 0]}>
+        <boxGeometry args={[0.72, 0.05, 0.46]} />
+        <meshStandardMaterial color="#6b4a32" roughness={0.55} />
+      </mesh>
+      <mesh position={[0.05, 1.075, 0.04]} rotation={[0.28, 0.08, 0]}>
+        <boxGeometry args={[0.24, 0.006, 0.32]} />
+        <meshStandardMaterial color="#efe9dc" roughness={0.9} />
+      </mesh>
+      <mesh position={[0.48, 1.0, 0.05]}>
+        <boxGeometry args={[0.26, 0.04, 0.26]} />
+        <meshStandardMaterial color="#5c3d28" roughness={0.6} />
+      </mesh>
+      <mesh position={[0.48, 1.08, 0.05]}>
+        <cylinderGeometry args={[0.035, 0.03, 0.12, 16, 1, true]} />
+        <meshStandardMaterial
+          color="#dfeef5"
+          transparent
+          opacity={0.35}
+          roughness={0.05}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0.48, 1.06, 0.05]}>
+        <cylinderGeometry args={[0.031, 0.029, 0.07, 16]} />
+        <meshStandardMaterial color="#9fc6d8" transparent opacity={0.45} roughness={0.1} />
+      </mesh>
+      <mesh position={[0.05, 1.17, -0.12]} rotation={[0.5, 0, 0]}>
+        <cylinderGeometry args={[0.012, 0.012, 0.22, 8]} />
+        <meshStandardMaterial color="#222228" metalness={0.5} roughness={0.4} />
+      </mesh>
+    </group>
+  )
+}
+
+/** Mampara que tapa el lado de la persona investigada (papel víctima). */
+function MamparaProteccion() {
+  const paneles: { z: number; rot: number }[] = [
+    { z: -3.35, rot: 0.12 },
+    { z: -2.45, rot: -0.08 },
+    { z: -1.55, rot: 0.1 },
+  ]
+  return (
+    <group position={[-0.8, 0, 0]}>
+      {paneles.map((p) => (
+        <group key={p.z} position={[0, 0, p.z]} rotation={[0, Math.PI / 2 + p.rot, 0]}>
+          <mesh position={[0, 1.05, 0]}>
+            <boxGeometry args={[0.88, 1.8, 0.035]} />
+            <meshStandardMaterial color="#c9d3d8" roughness={0.85} />
+          </mesh>
+          {[-0.45, 0.45].map((x) => (
+            <mesh key={x} position={[x, 1.0, 0]}>
+              <boxGeometry args={[0.03, 2.0, 0.05]} />
+              <meshStandardMaterial color="#8a949a" metalness={0.5} roughness={0.35} />
+            </mesh>
+          ))}
+          <mesh position={[0, 1.96, 0]}>
+            <boxGeometry args={[0.92, 0.03, 0.05]} />
+            <meshStandardMaterial color="#8a949a" metalness={0.5} roughness={0.35} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
 // Muñecos 3D geométricos estilizados para máxima fluidez y accesibilidad
 
 function lerpAngle(from: number, to: number, t: number): number {
@@ -141,6 +250,19 @@ function configurarMapa(
   return map
 }
 
+interface FiguraProps {
+  position: [number, number, number]
+  rotationY?: number
+  scale?: number
+  tonoPiel?: string
+  ropa?: string
+  visible?: number
+  sentada?: boolean
+  toga?: boolean
+  /** Grupo con pivote en el cuello para girar o asentir con la cabeza. */
+  cabezaRef?: Ref<THREE.Group>
+}
+
 /** Muñeco 3D estilizado (cápsulas y geometrías puras, 60+ FPS sin texturas pesadas). */
 function FiguraPersona({
   position,
@@ -151,16 +273,8 @@ function FiguraPersona({
   visible = 1,
   sentada = false,
   toga = false,
-}: {
-  position: [number, number, number]
-  rotationY?: number
-  scale?: number
-  tonoPiel?: string
-  ropa?: string
-  visible?: number
-  sentada?: boolean
-  toga?: boolean
-}) {
+  cabezaRef,
+}: FiguraProps) {
   const group = useRef<THREE.Group>(null)
   const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
 
@@ -242,24 +356,26 @@ function FiguraPersona({
         <meshStandardMaterial color={ropa} roughness={0.75} />
       </mesh>
       {/* Cuello + cabeza */}
-      <mesh position={[0, headY - 0.14, 0]}>
-        <cylinderGeometry args={[0.07, 0.08, 0.12, 10]} />
-        <meshStandardMaterial color={tonoPiel} roughness={0.7} />
-      </mesh>
-      <mesh position={[0, headY, 0]}>
-        <sphereGeometry args={[0.155, 18, 18]} />
-        <meshStandardMaterial color={tonoPiel} roughness={0.65} />
-      </mesh>
-      {/* Cabello */}
-      <mesh position={[0, headY + 0.06, -0.02]}>
-        <sphereGeometry args={[0.14, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
-        <meshStandardMaterial color="#2c241c" roughness={0.9} />
-      </mesh>
+      <group ref={cabezaRef} position={[0, headY - 0.2, 0]}>
+        <mesh position={[0, 0.06, 0]}>
+          <cylinderGeometry args={[0.07, 0.08, 0.12, 10]} />
+          <meshStandardMaterial color={tonoPiel} roughness={0.7} />
+        </mesh>
+        <mesh position={[0, 0.2, 0]}>
+          <sphereGeometry args={[0.155, 18, 18]} />
+          <meshStandardMaterial color={tonoPiel} roughness={0.65} />
+        </mesh>
+        {/* Cabello */}
+        <mesh position={[0, 0.26, -0.02]}>
+          <sphereGeometry args={[0.14, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+          <meshStandardMaterial color="#2c241c" roughness={0.9} />
+        </mesh>
+      </group>
     </group>
   )
 }
 
-function Mobiliario() {
+function Mobiliario({ distraccion }: { distraccion: Distraccion | null }) {
   const [suelo, sueloR, pared, paredR, madera, maderaR, marmol, marmolR] =
     useTexture([
       TEX.suelo,
@@ -488,13 +604,10 @@ function Mobiliario() {
         </mesh>
       ))}
 
-      <mesh position={[0, 1.5, 7.78]}>
-        <boxGeometry args={[1.6, 2.8, 0.12]} />
-        {matMaderaOsc}
-      </mesh>
-      <mesh position={[0.55, 1.45, 7.72]}>
-        <sphereGeometry args={[0.06, 12, 12]} />
-        <meshStandardMaterial color="#c9a227" metalness={0.6} roughness={0.3} />
+      <PuertaSala d={distraccion} material={matMaderaOsc} />
+      <mesh position={[0, 1.5, 7.805]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[1.6, 2.8]} />
+        <meshStandardMaterial color="#4a4038" roughness={1} />
       </mesh>
       <mesh position={[0, 1.5, 7.85]}>
         <boxGeometry args={[1.85, 3.0, 0.08]} />
@@ -540,45 +653,424 @@ function PersonaQueEntra({ activo, reduced }: { activo?: boolean; reduced?: bool
   )
 }
 
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x))
+
+function suave(x: number): number {
+  const c = clamp01(x)
+  return c * c * (3 - 2 * c)
+}
+
+/** Sube de 0 a 1 tras `a`, se mantiene y baja antes de `b` (todo en progreso 0–1). */
+function meseta(t: number, a: number, b: number, rampa = 0.12): number {
+  if (t <= a || t >= b) return 0
+  return Math.min(suave((t - a) / rampa), suave((b - t) / rampa))
+}
+
+/** Progreso 0–1 de la distracción activa medido con el reloj de la escena; -1 si no hay. */
+function useProgreso(d: Distraccion | null | undefined) {
+  const inicio = useRef<{ id: number; t: number } | null>(null)
+  return (reloj: number) => {
+    if (!d) {
+      inicio.current = null
+      return -1
+    }
+    if (inicio.current?.id !== d.id) inicio.current = { id: d.id, t: reloj }
+    return clamp01((reloj - inicio.current.t) / d.duracion)
+  }
+}
+
+function PuertaSala({ d, material }: { d: Distraccion | null; material: JSX.Element }) {
+  const bisagra = useRef<THREE.Group>(null)
+  const progreso = useProgreso(
+    d && (d.tipo === 'entra-persona' || d.tipo === 'portazo') ? d : null
+  )
+
+  useFrame((state) => {
+    if (!bisagra.current) return
+    const t = progreso(state.clock.elapsedTime)
+    let angulo = 0
+    if (t >= 0 && d?.tipo === 'entra-persona') {
+      angulo = 1.25 * meseta(t, 0, 0.97, 0.1)
+    } else if (t >= 0 && d?.tipo === 'portazo') {
+      angulo = t < 0.2 ? 0.4 * suave(t / 0.2) : 0.4 * (1 - suave((t - 0.2) / 0.035))
+    }
+    bisagra.current.rotation.y = angulo
+  })
+
+  return (
+    <group ref={bisagra} position={[-0.8, 0, 7.78]}>
+      <mesh position={[0.8, 1.5, 0]}>
+        <boxGeometry args={[1.6, 2.8, 0.12]} />
+        {material}
+      </mesh>
+      <mesh position={[1.35, 1.45, -0.06]}>
+        <sphereGeometry args={[0.06, 12, 12]} />
+        <meshStandardMaterial color="#c9a227" metalness={0.6} roughness={0.3} />
+      </mesh>
+    </group>
+  )
+}
+
+const ASIENTOS_VISITA: [number, number][] = [
+  [-0.6, 5.05],
+  [1.2, 5.05],
+]
+const PUERTA_XZ: [number, number] = [0.25, 7.45]
+
+function rumbo(dx: number, dz: number): number {
+  return Math.atan2(dx, dz)
+}
+
+/** Persona que entra por la puerta: se sienta al fondo o se da la vuelta y se va. */
+function Visitante({ d, reduced }: { d: Distraccion | null; reduced: boolean }) {
+  const andando = useRef<THREE.Group>(null)
+  const cabeza = useRef<THREE.Group>(null)
+  const sentados = useRef<(THREE.Group | null)[]>([])
+  const ocupados = useRef(0)
+  const asignado = useRef<{ id: number; asiento: number } | null>(null)
+  const ev = d?.tipo === 'entra-persona' ? d : null
+  const progreso = useProgreso(ev)
+
+  useFrame((state) => {
+    const g = andando.current
+    if (!g) return
+    const reloj = state.clock.elapsedTime
+    const t = progreso(reloj)
+    const mostrarSentados = () => {
+      sentados.current.forEach((s, i) => {
+        if (s) s.visible = i < ocupados.current
+      })
+    }
+    if (t < 0 || !ev) {
+      g.visible = false
+      mostrarSentados()
+      return
+    }
+    if (asignado.current?.id !== ev.id) {
+      const asiento =
+        ev.variante === 0 && ocupados.current < ASIENTOS_VISITA.length ? ocupados.current : -1
+      asignado.current = { id: ev.id, asiento }
+    }
+    const { asiento } = asignado.current
+    const bob = reduced ? 0 : Math.abs(Math.sin(reloj * 7)) * 0.035
+    if (cabeza.current) cabeza.current.rotation.y = 0
+    g.position.y = 0
+
+    const andar = (de: [number, number], a: [number, number], k: number) => {
+      const kk = suave(k)
+      g.position.x = de[0] + (a[0] - de[0]) * kk
+      g.position.z = de[1] + (a[1] - de[1]) * kk
+      g.rotation.y = rumbo(a[0] - de[0], a[1] - de[1])
+      g.position.y = k > 0 && k < 1 ? bob : 0
+    }
+
+    if (asiento >= 0) {
+      const [sx, sz] = ASIENTOS_VISITA[asiento]
+      if (t < 0.1) {
+        g.visible = false
+      } else if (t < 0.62) {
+        g.visible = true
+        andar(PUERTA_XZ, [sx, sz + 0.55], (t - 0.1) / 0.52)
+      } else {
+        g.visible = false
+        ocupados.current = Math.max(ocupados.current, asiento + 1)
+      }
+    } else {
+      const fondo: [number, number] = [0.3, 5.9]
+      if (t < 0.1 || t >= 0.88) {
+        g.visible = false
+      } else if (t < 0.45) {
+        g.visible = true
+        andar(PUERTA_XZ, fondo, (t - 0.1) / 0.35)
+      } else if (t < 0.68) {
+        g.visible = true
+        g.position.x = fondo[0]
+        g.position.z = fondo[1]
+        const giro = suave((t - 0.6) / 0.08)
+        g.rotation.y = Math.PI * (1 - giro)
+        if (cabeza.current) cabeza.current.rotation.y = 0.6 * meseta(t, 0.45, 0.6, 0.05)
+      } else {
+        g.visible = true
+        andar(fondo, PUERTA_XZ, (t - 0.68) / 0.2)
+      }
+    }
+    mostrarSentados()
+  })
+
+  return (
+    <group>
+      <group ref={andando} visible={false}>
+        <FiguraPersona
+          position={[0, 0, 0]}
+          tonoPiel="#b98563"
+          ropa="#6b4f3a"
+          cabezaRef={cabeza}
+        />
+      </group>
+      {ASIENTOS_VISITA.map(([x, z], i) => (
+        <group
+          key={`${x}-${z}`}
+          ref={(el) => {
+            sentados.current[i] = el
+          }}
+          visible={false}
+        >
+          <FiguraPersona
+            position={[x, 0, z]}
+            rotationY={Math.PI}
+            tonoPiel={i === 0 ? '#b98563' : '#e0b089'}
+            ropa={i === 0 ? '#6b4f3a' : '#3f5a4a'}
+            sentada
+          />
+        </group>
+      ))}
+    </group>
+  )
+}
+
+/** Funcionario que cruza por delante del estrado. */
+function FuncionarioCruza({ d, reduced }: { d: Distraccion | null; reduced: boolean }) {
+  const g = useRef<THREE.Group>(null)
+  const ev = d?.tipo === 'cruza-agente' ? d : null
+  const progreso = useProgreso(ev)
+
+  useFrame((state) => {
+    if (!g.current) return
+    const t = progreso(state.clock.elapsedTime)
+    if (t < 0 || t <= 0.04 || t >= 0.96) {
+      g.current.visible = false
+      return
+    }
+    const k = (t - 0.04) / 0.92
+    g.current.visible = true
+    g.current.position.x = -5.2 + 10.4 * k
+    g.current.position.y = reduced ? 0 : Math.abs(Math.sin(state.clock.elapsedTime * 7)) * 0.03
+  })
+
+  return (
+    <group ref={g} position={[-5.2, 0, -4.35]} rotation={[0, Math.PI / 2, 0]} visible={false}>
+      <FiguraPersona position={[0, 0, 0]} tonoPiel="#c6866a" ropa="#26324a" />
+      <mesh position={[0.22, 0.95, 0.05]}>
+        <boxGeometry args={[0.05, 0.3, 0.24]} />
+        <meshStandardMaterial color="#efe9dc" roughness={0.9} />
+      </mesh>
+    </group>
+  )
+}
+
+type Gesto = 'habla' | 'movil' | 'tos' | 'levanta' | 'susurra' | 'postura'
+
+const GESTO_PUBLICO: Partial<Record<TipoDistraccion, Gesto>> = {
+  'habla-fondo': 'habla',
+  movil: 'movil',
+  tos: 'tos',
+  'levanta-sienta': 'levanta',
+  'silla-cruje': 'postura',
+}
+
+/** Figura que puede girar la cabeza, inclinarse, mirar el móvil o levantarse un momento. */
+function FiguraAnimada({
+  d,
+  gesto,
+  giro = 0.7,
+  reduced,
+  position,
+  rotationY = 0,
+  sentada,
+  ...figura
+}: FiguraProps & {
+  d: Distraccion | null
+  gesto: Gesto | null
+  giro?: number
+  reduced: boolean
+}) {
+  const cuerpo = useRef<THREE.Group>(null)
+  const cabeza = useRef<THREE.Group>(null)
+  const pantalla = useRef<THREE.MeshStandardMaterial>(null)
+  const sentadaRef = useRef<THREE.Group>(null)
+  const dePie = useRef<THREE.Group>(null)
+  const progreso = useProgreso(gesto ? d : null)
+
+  useFrame((state) => {
+    const c = cuerpo.current
+    const h = cabeza.current
+    if (!c || !h) return
+    const reloj = state.clock.elapsedTime
+    const t = progreso(reloj)
+    c.rotation.set(0, 0, 0)
+    c.position.set(0, 0, 0)
+    h.rotation.set(0, 0, 0)
+    if (pantalla.current) pantalla.current.emissiveIntensity = 0
+    if (sentadaRef.current) sentadaRef.current.visible = true
+    if (dePie.current) dePie.current.visible = false
+    if (t < 0 || !gesto) return
+    const lado = Math.sign(giro) || 1
+    switch (gesto) {
+      case 'habla': {
+        const e = meseta(t, 0.05, 0.95, 0.15)
+        h.rotation.y = giro * e
+        if (!reduced) h.rotation.x = 0.07 * e * Math.sin(reloj * 5)
+        c.rotation.z = -0.06 * e * lado
+        break
+      }
+      case 'susurra': {
+        const e = meseta(t, 0.05, 0.95, 0.2)
+        h.rotation.y = giro * e
+        c.rotation.z = -0.12 * e * lado
+        break
+      }
+      case 'movil': {
+        const e = meseta(t, 0.05, 0.95, 0.12)
+        h.rotation.x = 0.4 * e
+        if (pantalla.current) pantalla.current.emissiveIntensity = 1.1 * e
+        break
+      }
+      case 'tos': {
+        const e = reduced
+          ? 0.5 * meseta(t, 0.1, 0.7, 0.2)
+          : Math.max(meseta(t, 0.14, 0.3, 0.06), meseta(t, 0.27, 0.42, 0.06))
+        c.rotation.x = 0.22 * e
+        h.rotation.x = 0.2 * e
+        break
+      }
+      case 'levanta': {
+        const arriba = t > 0.22 && t < 0.78
+        if (sentadaRef.current) sentadaRef.current.visible = !arriba
+        if (dePie.current) dePie.current.visible = arriba
+        if (arriba) h.rotation.y = 0.5 * meseta(t, 0.3, 0.7, 0.1) * lado
+        break
+      }
+      case 'postura': {
+        const e = meseta(t, 0.1, 0.9, 0.25)
+        c.position.x = 0.15 * e
+        h.rotation.y = giro * meseta(t, 0.3, 0.8, 0.15)
+        break
+      }
+    }
+  })
+
+  return (
+    <group position={position} rotation={[0, rotationY, 0]}>
+      <group ref={cuerpo}>
+        <group ref={sentadaRef}>
+          <FiguraPersona
+            {...figura}
+            position={[0, 0, 0]}
+            sentada={sentada}
+            cabezaRef={gesto === 'levanta' ? undefined : cabeza}
+          />
+        </group>
+        {gesto === 'levanta' && (
+          <group ref={dePie} position={[0, 0, 0.3]} visible={false}>
+            <FiguraPersona {...figura} position={[0, 0, 0]} cabezaRef={cabeza} />
+          </group>
+        )}
+        {gesto === 'movil' && (
+          <mesh position={[0.06, sentada ? 0.66 : 1.0, 0.3]} rotation={[-0.9, 0, 0]}>
+            <boxGeometry args={[0.07, 0.13, 0.008]} />
+            <meshStandardMaterial
+              ref={pantalla}
+              color="#1b1d22"
+              emissive="#d6e6ff"
+              emissiveIntensity={0}
+              roughness={0.3}
+            />
+          </mesh>
+        )}
+      </group>
+    </group>
+  )
+}
+
+/** Papeles y bolígrafo en la mesa del abogado más cercano. */
+function PapelesMesa({ d, x, reduced }: { d: Distraccion | null; x: number; reduced: boolean }) {
+  const hoja = useRef<THREE.Mesh>(null)
+  const boli = useRef<THREE.Mesh>(null)
+  const progreso = useProgreso(
+    d && (d.tipo === 'papeles' || d.tipo === 'boligrafo') ? d : null
+  )
+
+  useFrame((state) => {
+    const t = progreso(state.clock.elapsedTime)
+    if (hoja.current) {
+      const e = d?.tipo === 'papeles' && t >= 0 ? meseta(t, 0.05, 0.95, 0.2) : 0
+      hoja.current.position.set(x + 0.15 + 0.22 * e, 0.84 + 0.06 * e, -3.12)
+      hoja.current.rotation.set(0, 0.2 + 0.5 * e, -0.25 * e)
+    }
+    if (boli.current) {
+      const activo = d?.tipo === 'boligrafo' && t >= 0 && t < 0.85
+      const golpe = activo && !reduced ? Math.abs(Math.sin(state.clock.elapsedTime * 10)) * 0.02 : 0
+      boli.current.position.set(x - 0.2, 0.86 + golpe + (activo ? 0.04 : 0), -3.0)
+    }
+  })
+
+  return (
+    <>
+      <mesh ref={hoja} position={[x + 0.15, 0.84, -3.12]}>
+        <boxGeometry args={[0.24, 0.005, 0.32]} />
+        <meshStandardMaterial color="#f3eee2" roughness={0.9} />
+      </mesh>
+      <mesh ref={boli} position={[x - 0.2, 0.86, -3.0]} rotation={[0, 0.4, Math.PI / 2]}>
+        <cylinderGeometry args={[0.008, 0.008, 0.15, 8]} />
+        <meshStandardMaterial color="#1f3b73" roughness={0.4} metalness={0.2} />
+      </mesh>
+    </>
+  )
+}
+
+const PUBLICO = [
+  { x: -3.6, z: -0.2, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI * 0.15 },
+  { x: 3.6, z: -0.2, piel: '#8d5524', ropa: '#4a5560', rot: -Math.PI * 0.15 },
+  { x: -3.4, z: 0.9, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI * 0.1 },
+  { x: 3.4, z: 0.9, piel: '#e0b089', ropa: '#5c4a3a', rot: -Math.PI * 0.1 },
+  { x: -2.8, z: 1.85, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI },
+  { x: -1.4, z: 1.85, piel: '#8d5524', ropa: '#4a5560', rot: Math.PI },
+  { x: 0.2, z: 1.85, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI },
+  { x: 1.6, z: 1.85, piel: '#e0b089', ropa: '#5c4a3a', rot: Math.PI },
+  { x: -2.2, z: 3.45, piel: '#a0674b', ropa: '#34495e', rot: Math.PI },
+  { x: -0.6, z: 3.45, piel: '#c6866a', ropa: '#3a3a42', rot: Math.PI },
+  { x: 1.0, z: 3.45, piel: '#8d5524', ropa: '#4b6584', rot: Math.PI },
+  { x: 2.6, z: 3.45, piel: '#d4a574', ropa: '#2f3640', rot: Math.PI },
+  { x: -1.8, z: 5.05, piel: '#b57a50', ropa: '#57606f', rot: Math.PI },
+  { x: 0.4, z: 5.05, piel: '#c6866a', ropa: '#2c2c34', rot: Math.PI },
+  { x: 2.0, z: 5.05, piel: '#8d5524', ropa: '#485460', rot: Math.PI },
+]
+
 function PersonasEscena({
   gente,
   enfoque,
   personaEntrando,
+  papel,
+  distraccion,
+  reduced,
 }: {
   gente: number
   enfoque: MiradaSala | null
   personaEntrando?: boolean
+  papel: PapelSala
+  distraccion: Distraccion | null
+  reduced: boolean
 }) {
   const juezVis = enfoque === 'juez' || enfoque === null ? 1 : 0.55
   const aboVis = enfoque === 'abogados' || enfoque === null ? 1 : 0.5
-  const pubBase = gente / 100
-
-  const publico = useMemo(
-    () => [
-      { x: -3.6, z: -0.2, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI * 0.15 },
-      { x: 3.6, z: -0.2, piel: '#8d5524', ropa: '#4a5560', rot: -Math.PI * 0.15 },
-      { x: -3.4, z: 0.9, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI * 0.1 },
-      { x: 3.4, z: 0.9, piel: '#e0b089', ropa: '#5c4a3a', rot: -Math.PI * 0.1 },
-      { x: -2.8, z: 1.85, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI },
-      { x: -1.4, z: 1.85, piel: '#8d5524', ropa: '#4a5560', rot: Math.PI },
-      { x: 0.2, z: 1.85, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI },
-      { x: 1.6, z: 1.85, piel: '#e0b089', ropa: '#5c4a3a', rot: Math.PI },
-      { x: -2.2, z: 3.45, piel: '#a0674b', ropa: '#34495e', rot: Math.PI },
-      { x: -0.6, z: 3.45, piel: '#c6866a', ropa: '#3a3a42', rot: Math.PI },
-      { x: 1.0, z: 3.45, piel: '#8d5524', ropa: '#4b6584', rot: Math.PI },
-      { x: 2.6, z: 3.45, piel: '#d4a574', ropa: '#2f3640', rot: Math.PI },
-      { x: -1.8, z: 5.05, piel: '#b57a50', ropa: '#57606f', rot: Math.PI },
-      { x: 0.4, z: 5.05, piel: '#c6866a', ropa: '#2c2c34', rot: Math.PI },
-      { x: 2.0, z: 5.05, piel: '#8d5524', ropa: '#485460', rot: Math.PI },
-    ],
-    []
-  )
-
-  const n = Math.round(pubBase * publico.length)
+  const pubBase = (gente / 100) * PAPELES_SALA[papel].publico
+  const total = Math.min(TOTAL_PUBLICO, PUBLICO.length)
+  const n = Math.round(pubBase * total)
+  const d = distraccion
+  const gestoDe = (tipo: TipoDistraccion) => (d?.tipo === tipo ? 'susurra' : null)
+  const civil = papel === 'parte_civil'
+  const penal = PAPELES_PENALES.includes(papel)
 
   return (
     <group>
-      <PersonaQueEntra activo={personaEntrando} />
+      <PersonaQueEntra activo={personaEntrando} reduced={reduced} />
+      <Visitante d={d} reduced={reduced} />
+      <FuncionarioCruza d={d} reduced={reduced} />
+      <PapelesMesa
+        d={d}
+        x={papel === 'investigado' || papel === 'publico' ? -2.4 : 2.4}
+        reduced={reduced}
+      />
 
       {/* Juez en el estrado con toga mirando hacia la sala (+Z) */}
       <FiguraPersona
@@ -593,7 +1085,11 @@ function PersonasEscena({
       />
 
       {/* Abogados en mesas */}
-      <FiguraPersona
+      <FiguraAnimada
+        d={d}
+        gesto={papel === 'investigado' ? gestoDe('abogado-susurra') : null}
+        giro={0.8}
+        reduced={reduced}
         position={[-2.4, 0, -2.55]}
         rotationY={Math.PI}
         tonoPiel="#8d5524"
@@ -603,8 +1099,12 @@ function PersonasEscena({
         sentada
         toga
       />
-      <FiguraPersona
-        position={[2.4, 0, -2.55]}
+      <FiguraAnimada
+        d={d}
+        gesto={civil ? gestoDe('abogado-susurra') : null}
+        giro={0.8}
+        reduced={reduced}
+        position={civil ? [2.95, 0, -2.5] : [2.4, 0, -2.55]}
         rotationY={Math.PI}
         tonoPiel="#d4a574"
         ropa="#15151a"
@@ -613,23 +1113,69 @@ function PersonasEscena({
         sentada
         toga
       />
-      <FiguraPersona
-        position={[-3.5, 0, -2.8]}
-        rotationY={Math.PI * 0.85}
-        tonoPiel="#c6866a"
-        ropa="#1a1a22"
-        visible={aboVis * (enfoque === 'abogados' ? 1 : 0.9)}
-        toga
-      />
+      {papel !== 'investigado' && (
+        <FiguraPersona
+          position={[-3.5, 0, -2.8]}
+          rotationY={Math.PI * 0.85}
+          tonoPiel="#c6866a"
+          ropa="#1a1a22"
+          visible={aboVis * (enfoque === 'abogados' ? 1 : 0.9)}
+          toga
+        />
+      )}
+
+      {penal && papel !== 'investigado' && (
+        <FiguraPersona
+          position={[BANQUILLO.x, 0, BANQUILLO.z]}
+          rotationY={BANQUILLO.rot + Math.PI}
+          tonoPiel="#c9a07e"
+          ropa="#4b4b52"
+          sentada
+        />
+      )}
+      {penal && (
+        <FiguraAnimada
+          d={d}
+          gesto={papel === 'investigado' && d?.tipo === 'agente-postura' ? 'postura' : null}
+          giro={0.7}
+          reduced={reduced}
+          position={[-5.05, 0, -1.3]}
+          rotationY={Math.PI / 2}
+          tonoPiel="#a0674b"
+          ropa="#1f2b45"
+        />
+      )}
+
+      {papel === 'testigo' && <AtrilTestigo />}
+      {papel === 'victima' && (
+        <>
+          <MamparaProteccion />
+          <FiguraAnimada
+            d={d}
+            gesto={gestoDe('acompanante-susurra')}
+            giro={0.8}
+            reduced={reduced}
+            position={[1.15, 0, -2.2]}
+            rotationY={Math.PI}
+            tonoPiel="#e0b089"
+            ropa="#5a6b7a"
+            sentada
+          />
+        </>
+      )}
 
       {/* Asistentes de público en bancos */}
-      {publico.map((p, i) => {
+      {PUBLICO.map((p, i) => {
         if (i >= n) return null
-        const fuerza =
-          i < n - 1 ? 1 : Math.max(0.2, pubBase * publico.length - (n - 1))
+        const fuerza = i < n - 1 ? 1 : Math.max(0.2, pubBase * total - (n - 1))
+        const gesto = d && d.indice === i ? GESTO_PUBLICO[d.tipo] ?? null : null
         return (
-          <FiguraPersona
+          <FiguraAnimada
             key={`${p.x}-${p.z}-${i}`}
+            d={d}
+            gesto={gesto}
+            giro={i % 2 === 0 ? 0.7 : -0.7}
+            reduced={reduced}
             position={[p.x, 0, p.z]}
             rotationY={p.rot}
             tonoPiel={p.piel}
@@ -692,6 +1238,7 @@ function CamaraLook({
   destino,
   onAnimFin,
   reduced,
+  papel,
 }: {
   yaw: number
   pitch: number
@@ -699,6 +1246,7 @@ function CamaraLook({
   destino: MiradaTarget | null
   onAnimFin: (yaw: number, pitch: number) => void
   reduced: boolean
+  papel: PapelSala
 }) {
   const { camera, invalidate } = useThree()
   const estado = useRef({ yaw, pitch })
@@ -716,14 +1264,14 @@ function CamaraLook({
   }, [destino])
 
   useEffect(() => {
-    camera.position.set(0, 1.55, 0.8)
+    camera.position.set(...PAPELES_SALA[papel].camara)
     camera.rotation.order = 'YXZ'
     if (camera instanceof THREE.PerspectiveCamera) {
       camera.fov = 72
       camera.updateProjectionMatrix()
     }
     invalidate()
-  }, [camera, invalidate])
+  }, [camera, invalidate, papel])
 
   useFrame((_, dt) => {
     if (animando && destRef.current) {
@@ -761,15 +1309,22 @@ function CamaraLook({
   return null
 }
 
-function Exposicion({ luz }: { luz: number }) {
+function Exposicion({ luz, d }: { luz: number; d: Distraccion | null }) {
   const { gl, invalidate } = useThree()
+  const base = 0.88 + (luz / 100) * 0.45
+  const progreso = useProgreso(d?.tipo === 'luz-suave' ? d : null)
   useEffect(() => {
     gl.toneMapping = THREE.ACESFilmicToneMapping
     // Exposición moderada: evita oscuridad y glare
-    gl.toneMappingExposure = 0.88 + (luz / 100) * 0.45
+    gl.toneMappingExposure = base
     gl.shadowMap.enabled = false
     invalidate()
-  }, [gl, luz, invalidate])
+  }, [gl, base, invalidate])
+  useFrame((state) => {
+    const t = progreso(state.clock.elapsedTime)
+    // Una sola bajada lenta y su vuelta: nunca parpadeo (fotosensibilidad).
+    gl.toneMappingExposure = t < 0 ? base : base * (1 - 0.2 * meseta(t, 0, 1, 0.4))
+  })
   return null
 }
 
@@ -793,9 +1348,13 @@ interface EscenaProps {
   onAnimFin: (yaw: number, pitch: number) => void
   reduced: boolean
   personaEntrando?: boolean
+  papel?: PapelSala
+  distraccion?: Distraccion | null
 }
 
 function EscenaInterior(props: EscenaProps) {
+  const papel = props.papel ?? 'publico'
+  const distraccion = props.distraccion ?? null
   return (
     <>
       <color attach="background" args={['#d4cec2']} />
@@ -808,6 +1367,8 @@ function EscenaInterior(props: EscenaProps) {
           props.gente,
           props.enfoque,
           props.animando,
+          papel,
+          distraccion?.id,
         ]}
       />
       <CamaraLook
@@ -817,13 +1378,14 @@ function EscenaInterior(props: EscenaProps) {
         destino={props.destino}
         onAnimFin={props.onAnimFin}
         reduced={props.reduced}
+        papel={papel}
       />
-      <Exposicion luz={props.luz} />
+      <Exposicion luz={props.luz} d={distraccion} />
       <Luces intensidad={props.luz} />
       <Suspense fallback={null}>
         <Environment files={HDRI} environmentIntensity={0.32} />
-        <Mobiliario />
-        <MueblesCC0 />
+        <Mobiliario distraccion={distraccion} />
+        <MueblesCC0 papel={papel} />
         <ContactShadows
           position={[0, 0.02, 0]}
           scale={[12, 16]}
@@ -833,7 +1395,14 @@ function EscenaInterior(props: EscenaProps) {
           opacity={0.5}
           color="#2b2118"
         />
-        <PersonasEscena gente={props.gente} enfoque={props.enfoque} personaEntrando={props.personaEntrando} />
+        <PersonasEscena
+          gente={props.gente}
+          enfoque={props.enfoque}
+          personaEntrando={props.personaEntrando}
+          papel={papel}
+          distraccion={distraccion}
+          reduced={props.reduced}
+        />
       </Suspense>
     </>
   )
@@ -847,7 +1416,8 @@ export interface SalaVistas3DProps extends EscenaProps {
 
 export function SalaVistas3D(props: SalaVistas3DProps) {
   const { className, arrastrando = false, ...escena } = props
-  const activo = arrastrando || escena.animando
+  const activo =
+    arrastrando || escena.animando || Boolean(escena.personaEntrando) || Boolean(escena.distraccion)
 
   return (
     <div className={className ?? 'absolute inset-0'}>

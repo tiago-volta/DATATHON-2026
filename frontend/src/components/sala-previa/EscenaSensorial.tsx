@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { SalaJuzgado360 } from '@/components/sala-previa/SalaJuzgado360'
-import type { MiradaSala } from '@/lib/sala-previa/salaVistasConfig'
+import type { MiradaSala, PapelSala } from '@/lib/sala-previa/salaVistasConfig'
+import type { TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import type {
   IdEscenaJuzgado,
   IdEstimulo,
@@ -20,6 +21,8 @@ interface Props {
   deshabilitadoEstimulos?: boolean
   miradaExterna?: MiradaSala | null
   personaEntrando?: boolean
+  papel?: PapelSala
+  eventoExterno?: { id: number; tipo: TipoDistraccion } | null
 }
 
 function nivelPalabra(valor: number): 'Bajo' | 'Medio' | 'Alto' {
@@ -37,6 +40,8 @@ export function EscenaSensorial({
   deshabilitadoEstimulos,
   miradaExterna,
   personaEntrando,
+  papel,
+  eventoExterno,
 }: Props) {
   const reduced = useReducedMotion()
 
@@ -79,6 +84,8 @@ export function EscenaSensorial({
         deshabilitadoEstimulos={deshabilitadoEstimulos}
         miradaExterna={miradaExterna}
         personaEntrando={personaEntrando}
+        papel={papel}
+        eventoExterno={eventoExterno}
       />
 
       <div className="rounded-suave border border-court-200 bg-white px-4 py-3">
