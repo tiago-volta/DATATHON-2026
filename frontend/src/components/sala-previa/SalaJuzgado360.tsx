@@ -224,7 +224,9 @@ export function SalaJuzgado360({
     <div className="space-y-3">
       <div
         ref={fsRootRef}
-        className="sala-juzgado-fs-root flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-start"
+        className={`sala-juzgado-fs-root flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-start ${
+          enPantallaCompleta ? 'is-fullscreen' : ''
+        }`}
       >
         <div
           className="sala-fs-barritas shrink-0 sm:sticky sm:top-4 self-start"
@@ -348,7 +350,11 @@ export function SalaJuzgado360({
               <>
                 <button
                   type="button"
-                  className="btn-secondary text-sm min-h-[44px]"
+                  className={`btn-secondary text-sm min-h-[44px] ${
+                    enPantallaCompleta
+                      ? '!text-white !border-white/70 !bg-white/10 hover:!bg-white/20'
+                      : ''
+                  }`}
                   onClick={() => mirarPaso(-35)}
                   aria-label="Mirar hacia la izquierda"
                 >
@@ -356,7 +362,11 @@ export function SalaJuzgado360({
                 </button>
                 <button
                   type="button"
-                  className="btn-secondary text-sm min-h-[44px]"
+                  className={`btn-secondary text-sm min-h-[44px] ${
+                    enPantallaCompleta
+                      ? '!text-white !border-white/70 !bg-white/10 hover:!bg-white/20'
+                      : ''
+                  }`}
                   onClick={() => mirarPaso(35)}
                   aria-label="Mirar hacia la derecha"
                 >
@@ -368,8 +378,16 @@ export function SalaJuzgado360({
               <button
                 type="button"
                 key={m.id}
-                className={`btn-ghost text-sm min-h-[44px] border border-court-200 ${
-                  enfoque === m.id ? 'bg-court-100 font-bold' : ''
+                className={`btn-ghost text-sm min-h-[44px] border ${
+                  enPantallaCompleta
+                    ? '!text-white !border-white/70 bg-white/10 hover:bg-white/20'
+                    : 'border-court-200'
+                } ${
+                  enfoque === m.id
+                    ? enPantallaCompleta
+                      ? '!bg-white/30 font-bold !text-white'
+                      : 'bg-court-100 font-bold'
+                    : ''
                 }`}
                 onClick={() => mirarHacia(m.id)}
                 aria-label={`Mirar hacia ${m.etiqueta.toLowerCase()}`}
@@ -381,16 +399,25 @@ export function SalaJuzgado360({
           </div>
 
           {reduced && (
-            <p className="sala-fs-nota text-sm text-court-700" role="note">
+            <p
+              className={`sala-fs-nota text-sm ${
+                enPantallaCompleta ? '!text-white' : 'text-court-700'
+              }`}
+              role="note"
+            >
               Vista con menos movimiento: usa los botones para mirar la entrada, los abogados
               o el juez. Las barritas de estímulo siguen a la izquierda
               {enPantallaCompleta ? ' (arriba a la izquierda en pantalla completa)' : ''}.
             </p>
           )}
 
-          <p className="sala-fs-credito text-xs text-court-600 leading-snug">
+          <p
+            className={`sala-fs-credito text-xs leading-snug ${
+              enPantallaCompleta ? '!text-white' : 'text-court-600'
+            }`}
+          >
             Sala de vistas en 3D (Three.js): texturas PBR CC0, HDRI de interior y
-            cutouts fotográficos. Ver CREDITOS en /sala-previa/.
+            figuras 3D. Ver CREDITOS en /sala-previa/.
           </p>
         </div>
       </div>

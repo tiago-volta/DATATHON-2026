@@ -414,17 +414,42 @@
   border: 1px solid #d2d2d7;
 }
 
+.sala-juzgado-fs-root:fullscreen,
+.sala-juzgado-fs-root:-webkit-full-screen,
+.sala-juzgado-fs-root.is-fullscreen {
+  background: #000000 !important;
+}
+
 .sala-juzgado-fs-root:fullscreen .sala-fs-miradas,
-.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-miradas {
+.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-miradas,
+.sala-juzgado-fs-root.is-fullscreen .sala-fs-miradas {
   position: relative;
   z-index: 20;
 }
 
+.sala-juzgado-fs-root:fullscreen .sala-fs-miradas button,
+.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-miradas button,
+.sala-juzgado-fs-root.is-fullscreen .sala-fs-miradas button {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.75) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.sala-juzgado-fs-root:fullscreen .sala-fs-miradas button:hover,
+.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-miradas button:hover,
+.sala-juzgado-fs-root.is-fullscreen .sala-fs-miradas button:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
 .sala-juzgado-fs-root:fullscreen .sala-fs-credito,
 .sala-juzgado-fs-root:-webkit-full-screen .sala-fs-credito,
+.sala-juzgado-fs-root.is-fullscreen .sala-fs-credito,
 .sala-juzgado-fs-root:fullscreen .sala-fs-nota,
-.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-nota {
-  color: #1d1d1f;
+.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-nota,
+.sala-juzgado-fs-root.is-fullscreen .sala-fs-nota {
+  color: #ffffff !important;
+  opacity: 0.95;
 }
 
 .marco {
