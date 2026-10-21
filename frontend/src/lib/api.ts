@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+/** Vacío = misma origen (Next reescribe /api → backend). */
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
 
 export interface ApoyoNumerico {
   etiqueta: string

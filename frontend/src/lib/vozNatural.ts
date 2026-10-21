@@ -5,7 +5,8 @@
  * Solo arranca tras gesto del usuario (el llamador controla el clic).
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+/** Vacío = misma origen (Next reescribe /api → backend). Así funciona el túnel. */
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
 const PAUSA_ENTRE_FRASES_MS = 700
 const RATE_FALLBACK = 0.9
 const PITCH_FALLBACK = 1
