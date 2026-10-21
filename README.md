@@ -128,10 +128,20 @@ Abrir http://localhost:3000
 Copia `backend/.env.example` a `backend/.env`. Por defecto usa datos mock:
 
 ```env
-LLM_PROVIDER=mock  # o "openai" / "anthropic" con la API key correspondiente
+LLM_PROVIDER=mock  # o "openai" / "anthropic" / "gemini" con la API key correspondiente
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
 ```
+
+### Publicar (Vercel + Render, sin Cloudflare)
+
+Para una URL fija sin dejar el PC encendido ni usar túneles: **frontend en Vercel** y **API en Render**.  
+Pasos completos en [`docs/deploy.md`](docs/deploy.md). Resumen:
+
+1. Render → Web Service con root `backend` (o Blueprint `render.yaml`).
+2. Vercel → proyecto con **Root Directory** `frontend` y `BACKEND_URL=https://tu-api.onrender.com`.
+3. Deja `NEXT_PUBLIC_API_URL` vacío: el front llama a `/api` y Vercel hace de proxy.
 
 ## División del equipo
 
