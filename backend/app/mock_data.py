@@ -149,6 +149,29 @@ MOCK_RESPONSE_LUIS = {
             "5. Solo tienes que contar lo que viste o escuchaste con tus propias palabras.",
             "6. Puedes llevar tu Pasaporte de Ajustes para esperar en un lugar tranquilo.",
         ],
+        "privacidad_rgpd": {
+            "anonimizado_antes_de_ia": True,
+            "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
+            "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de enviar el documento al modelo de IA.",
+            "total_protegidos": 3,
+            "elementos_protegidos": [
+                {
+                    "tipo": "Nombre y apellidos de la persona",
+                    "marcador": "[PERSONA_1]",
+                    "valor_protegido": "L*** G*** F***",
+                },
+                {
+                    "tipo": "DNI / Documento de Identidad",
+                    "marcador": "[DNI_1]",
+                    "valor_protegido": "32.***-Y",
+                },
+                {
+                    "tipo": "Dirección postal / Domicilio",
+                    "marcador": "[DOMICILIO_1]",
+                    "valor_protegido": "C/ E***, 15, 15001 A Coruña",
+                },
+            ],
+        },
         "pipeline_ia": PIPELINE_SUMA_IAS,
     },
     "lectura_clara": """Te citan como TESTIGO en un proceso penal.
@@ -266,6 +289,29 @@ MOCK_RESPONSE_JUAN = {
             "5. Lleva tus pruebas: los mensajes del comprador, el Bizum y el resguardo de Correos.",
             "6. Puedes pedir pausas cada quince minutos durante la vista.",
         ],
+        "privacidad_rgpd": {
+            "anonimizado_antes_de_ia": True,
+            "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
+            "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de enviar el documento al modelo de IA.",
+            "total_protegidos": 3,
+            "elementos_protegidos": [
+                {
+                    "tipo": "Nombre y apellidos de la persona",
+                    "marcador": "[PERSONA_1]",
+                    "valor_protegido": "J*** M*** L***",
+                },
+                {
+                    "tipo": "DNI / Documento de Identidad",
+                    "marcador": "[DNI_1]",
+                    "valor_protegido": "33.***-Z",
+                },
+                {
+                    "tipo": "Dirección postal / Domicilio",
+                    "marcador": "[DOMICILIO_1]",
+                    "valor_protegido": "C/ M***, 42, 15002 A Coruña",
+                },
+            ],
+        },
         "pipeline_ia": PIPELINE_SUMA_IAS,
     },
     "lectura_clara": """Te citan como INVESTIGADO en un juicio por delito leve.
@@ -387,6 +433,19 @@ MOCK_RESPONSE_SENTENCIA = {
             "4. Tampoco tienes que pagar los gastos del juicio.",
             "5. Se quitan todas las medidas que hubiera contra ti.",
         ],
+        "privacidad_rgpd": {
+            "anonimizado_antes_de_ia": True,
+            "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
+            "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de enviar el documento al modelo de IA.",
+            "total_protegidos": 1,
+            "elementos_protegidos": [
+                {
+                    "tipo": "Nombre y apellidos de la persona",
+                    "marcador": "[PERSONA_1]",
+                    "valor_protegido": "M*** C*** R*** V***",
+                },
+            ],
+        },
         "pipeline_ia": PIPELINE_SUMA_IAS,
     },
     "lectura_clara": """DECISIÓN DEL JUEZ (SENTENCIA): Eres declarada INOCENTE.

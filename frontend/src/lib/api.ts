@@ -19,6 +19,20 @@ export interface PasoPipelineIA {
   detalle: string
 }
 
+export interface ElementoProtegido {
+  tipo: string
+  marcador: string
+  valor_protegido: string
+}
+
+export interface PrivacidadRGPD {
+  anonimizado_antes_de_ia: boolean
+  art_rgpd: string
+  garantia: string
+  total_protegidos: number
+  elementos_protegidos: ElementoProtegido[]
+}
+
 export interface DatosClave {
   tipo_documento?: 'citacion' | 'sentencia'
   rol: string
@@ -37,6 +51,7 @@ export interface DatosClave {
   que_pasa_si_no_voy?: QuePasaSiNoVoy
   pasos_super_simples?: string[]
   pipeline_ia?: PasoPipelineIA[]
+  privacidad_rgpd?: PrivacidadRGPD
 }
 
 export interface Plazo {

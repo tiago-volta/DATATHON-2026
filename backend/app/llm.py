@@ -17,9 +17,12 @@ from .mock_data import (
     MOCK_RESPONSE_SENTENCIA,
     PIPELINE_SUMA_IAS,
 )
+from .anonimizador import anonimizar_documento_judicial
 
 SYSTEM_PROMPT = """Eres un asistente especializado en accesibilidad cognitiva para la justicia española.
 Tu tarea es transformar citaciones o sentencias judiciales en versiones comprensibles según UNE-ISO 24495-1 (lenguaje claro) y UNE 153101 (lectura fácil).
+
+IMPORTANTE SOBRE PRIVACIDAD (RGPD art. 25): El documento que recibes ya ha sido anonimizado en local. Los nombres, DNI y domicilios han sido sustituidos por marcadores como [PERSONA_1], [DNI_1], [DOMICILIO_1]. Mantén estos marcadores o usa fórmulas neutras y accesibles en segunda persona («tú», «tu carné de identidad»), sin inventar datos personales reales ni solicitar información identificativa.
 
 Devuelve SIEMPRE un JSON válido con esta estructura exacta:
 {
@@ -444,16 +447,31 @@ async def analizar_pregunta(pregunta: str, perfil: Optional[str] = None) -> dict
     return analizar_pregunta_determinista(pregunta, perfil)
 
 
-def adaptar_documento_personalizado(texto: str) -> dict:
+def adaptar_documento_personalizado(
+    texto: str, elementos_protegidos: Optional[List[dict]] = None
+) -> dict:
     """Extrae fecha, hora, juzgado y rol de cualquier texto judicial pegado por el usuario."""
     limpio = texto.strip()
     minus = limpio.lower()
 
+    if elementos_protegidos is None:
+        _, elementos_protegidos = anonimizar_documento_judicial(texto)
+
+    privacidad_info = {
+        "anonimizado_antes_de_ia": True,
+        "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
+        "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de cualquier procesamiento.",
+        "total_protegidos": len(elementos_protegidos),
+        "elementos_protegidos": elementos_protegidos,
+    }
+
     if "fallo" in minus or "absuelvo" in minus or "condeno" in minus or "sentencia" in minus:
-        return dict(MOCK_RESPONSE_SENTENCIA)
+        base = json.loads(json.dumps(MOCK_RESPONSE_SENTENCIA))
+        base["datos_clave"]["privacidad_rgpd"] = privacidad_info
+        return base
 
     es_investigado = any(k in minus for k in ["investigad", "imputad", "delito leve", "estafa", "art. 118"])
-    base = dict(MOCK_RESPONSE_JUAN if es_investigado else MOCK_RESPONSE_LUIS)
+    base = json.loads(json.dumps(MOCK_RESPONSE_JUAN if es_investigado else MOCK_RESPONSE_LUIS))
     datos_clave = dict(base["datos_clave"])
 
     organo_match = re.search(
@@ -474,37 +492,65 @@ def adaptar_documento_personalizado(texto: str) -> dict:
         datos_clave["fecha"] = fecha_match.group(1)
 
     datos_clave["pipeline_ia"] = PIPELINE_SUMA_IAS
+    datos_clave["privacidad_rgpd"] = privacidad_info
     base["datos_clave"] = datos_clave
     return base
 
 
 async def procesar_citacion(texto: str, perfil: Optional[str] = None) -> dict:
+    texto_anonimizado, elementos_protegidos = anonimizar_documento_judicial(texto)
+    privacidad_info = {
+        "anonimizado_antes_de_ia": True,
+        "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
+        "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de enviar el documento al modelo de IA.",
+        "total_protegidos": len(elementos_protegidos),
+        "elementos_protegidos": elementos_protegidos,
+    }
+
     provider = os.getenv("LLM_PROVIDER", "mock").lower()
     gemini_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+
+    prompt_usuario = (
+        f"Perfil de accesibilidad: {perfil or 'general'}\n\n"
+        f"Documento (DATOS PERSONALES PREVIAMENTE ANONIMIZADOS SEGÚN RGPD):\n"
+        f"{texto_anonimizado}"
+    )
 
     if provider == "gemini" or (provider == "mock" and len(gemini_key) >= 20):
         try:
             resultado = await asyncio.to_thread(
                 _llamar_gemini_sync,
                 SYSTEM_PROMPT,
-                f"Perfil: {perfil or 'general'}\n\nDocumento:\n{texto}",
+                prompt_usuario,
             )
-            resultado.setdefault("datos_clave", {})["pipeline_ia"] = PIPELINE_SUMA_IAS
+            datos = resultado.setdefault("datos_clave", {})
+            datos["pipeline_ia"] = PIPELINE_SUMA_IAS
+            datos["privacidad_rgpd"] = privacidad_info
             return resultado
         except Exception:
-            return adaptar_documento_personalizado(texto)
+            return adaptar_documento_personalizado(texto, elementos_protegidos)
     elif provider == "openai":
-        return await _llamar_openai(texto, perfil)
+        return await _llamar_openai(texto_anonimizado, perfil, elementos_protegidos)
     elif provider == "anthropic":
-        return await _llamar_anthropic(texto, perfil)
+        return await _llamar_anthropic(texto_anonimizado, perfil, elementos_protegidos)
     else:
-        return adaptar_documento_personalizado(texto)
+        return adaptar_documento_personalizado(texto, elementos_protegidos)
 
 
-async def _llamar_openai(texto: str, perfil: Optional[str]) -> dict:
+async def _llamar_openai(
+    texto_anonimizado: str,
+    perfil: Optional[str],
+    elementos_protegidos: List[dict],
+) -> dict:
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        return adaptar_documento_personalizado(texto)
+        return adaptar_documento_personalizado(texto_anonimizado, elementos_protegidos)
+
+    prompt_usuario = (
+        f"Perfil de accesibilidad: {perfil or 'general'}\n\n"
+        f"Documento (DATOS PERSONALES PREVIAMENTE ANONIMIZADOS SEGÚN RGPD):\n"
+        f"{texto_anonimizado}"
+    )
 
     try:
         async with httpx.AsyncClient() as client:
@@ -515,7 +561,7 @@ async def _llamar_openai(texto: str, perfil: Optional[str]) -> dict:
                     "model": "gpt-4o-mini",
                     "messages": [
                         {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": f"Perfil: {perfil or 'general'}\n\nDocumento:\n{texto}"},
+                        {"role": "user", "content": prompt_usuario},
                     ],
                     "response_format": {"type": "json_object"},
                 },
@@ -523,16 +569,34 @@ async def _llamar_openai(texto: str, perfil: Optional[str]) -> dict:
             )
             data = response.json()
             resultado = json.loads(data["choices"][0]["message"]["content"])
-            resultado.setdefault("datos_clave", {})["pipeline_ia"] = PIPELINE_SUMA_IAS
+            datos = resultado.setdefault("datos_clave", {})
+            datos["pipeline_ia"] = PIPELINE_SUMA_IAS
+            datos["privacidad_rgpd"] = {
+                "anonimizado_antes_de_ia": True,
+                "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño)",
+                "garantia": "Tus datos personales identificativos se anonimizaron en local antes de enviarse al modelo.",
+                "total_protegidos": len(elementos_protegidos),
+                "elementos_protegidos": elementos_protegidos,
+            }
             return resultado
     except Exception:
-        return adaptar_documento_personalizado(texto)
+        return adaptar_documento_personalizado(texto_anonimizado, elementos_protegidos)
 
 
-async def _llamar_anthropic(texto: str, perfil: Optional[str]) -> dict:
+async def _llamar_anthropic(
+    texto_anonimizado: str,
+    perfil: Optional[str],
+    elementos_protegidos: List[dict],
+) -> dict:
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        return adaptar_documento_personalizado(texto)
+        return adaptar_documento_personalizado(texto_anonimizado, elementos_protegidos)
+
+    prompt_usuario = (
+        f"Perfil de accesibilidad: {perfil or 'general'}\n\n"
+        f"Documento (DATOS PERSONALES PREVIAMENTE ANONIMIZADOS SEGÚN RGPD):\n"
+        f"{texto_anonimizado}"
+    )
 
     try:
         async with httpx.AsyncClient() as client:
@@ -547,9 +611,7 @@ async def _llamar_anthropic(texto: str, perfil: Optional[str]) -> dict:
                     "model": "claude-3-haiku-20240307",
                     "max_tokens": 2000,
                     "system": SYSTEM_PROMPT,
-                    "messages": [
-                        {"role": "user", "content": f"Perfil: {perfil or 'general'}\n\nDocumento:\n{texto}"}
-                    ],
+                    "messages": [{"role": "user", "content": prompt_usuario}],
                 },
                 timeout=30.0,
             )
@@ -558,10 +620,18 @@ async def _llamar_anthropic(texto: str, perfil: Optional[str]) -> dict:
             start = content.find("{")
             end = content.rfind("}") + 1
             resultado = json.loads(content[start:end])
-            resultado.setdefault("datos_clave", {})["pipeline_ia"] = PIPELINE_SUMA_IAS
+            datos = resultado.setdefault("datos_clave", {})
+            datos["pipeline_ia"] = PIPELINE_SUMA_IAS
+            datos["privacidad_rgpd"] = {
+                "anonimizado_antes_de_ia": True,
+                "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño)",
+                "garantia": "Tus datos personales identificativos se anonimizaron en local antes de enviarse al modelo.",
+                "total_protegidos": len(elementos_protegidos),
+                "elementos_protegidos": elementos_protegidos,
+            }
             return resultado
     except Exception:
-        return adaptar_documento_personalizado(texto)
+        return adaptar_documento_personalizado(texto_anonimizado, elementos_protegidos)
 
 
 # ── Chat de ayuda (dudas sobre PUENTE / proceso) ─────────────────────────────
@@ -712,3 +782,4 @@ async def responder_ayuda(pregunta: str) -> dict:
             pass
 
     return {"respuesta": _respuesta_mock_ayuda(limpia), "fuente": "mock"}
+

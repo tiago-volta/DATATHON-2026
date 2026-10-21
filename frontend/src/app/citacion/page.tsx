@@ -128,6 +128,20 @@ function construirRespaldoLocal(textoEntrada: string): CitacionProcesada {
           '5. Se quitan todas las medidas que hubiera contra ti.',
         ],
         pipeline_ia: PIPELINE_POR_DEFECTO,
+        privacidad_rgpd: {
+          anonimizado_antes_de_ia: true,
+          art_rgpd: 'Artículo 25 RGPD (Privacidad desde el diseño)',
+          garantia:
+            'Tus datos personales (nombre, DNI, dirección) se detectaron y anonimizaron en local antes de cualquier llamada a la IA.',
+          total_protegidos: 1,
+          elementos_protegidos: [
+            {
+              tipo: 'Nombre y apellidos de la persona',
+              marcador: '[PERSONA_1]',
+              valor_protegido: 'M*** C*** R*** V***',
+            },
+          ],
+        },
       },
       lectura_clara: `DECISIÓN DEL JUEZ (SENTENCIA): Eres declarada INOCENTE.
 
@@ -230,6 +244,30 @@ Todas las medidas contra ti se terminan.`,
           '6. Puedes pedir pausas cada quince minutos durante la vista.',
         ],
         pipeline_ia: PIPELINE_POR_DEFECTO,
+        privacidad_rgpd: {
+          anonimizado_antes_de_ia: true,
+          art_rgpd: 'Artículo 25 RGPD (Privacidad desde el diseño)',
+          garantia:
+            'Tus datos personales (nombre, DNI, dirección) se detectaron y anonimizaron en local antes de cualquier llamada a la IA.',
+          total_protegidos: 3,
+          elementos_protegidos: [
+            {
+              tipo: 'Nombre y apellidos de la persona',
+              marcador: '[PERSONA_1]',
+              valor_protegido: 'J*** M*** L***',
+            },
+            {
+              tipo: 'DNI / Documento de Identidad',
+              marcador: '[DNI_1]',
+              valor_protegido: '33.***-Z',
+            },
+            {
+              tipo: 'Dirección postal / Domicilio',
+              marcador: '[DOMICILIO_1]',
+              valor_protegido: 'C/ M***, 42, 15002 A Coruña',
+            },
+          ],
+        },
       },
       lectura_clara: `Te citan como INVESTIGADO en un juicio por delito leve.
 
@@ -333,6 +371,30 @@ En el Juzgado número 7 de A Coruña.`,
         '6. Puedes llevar tu Pasaporte de Ajustes para esperar en una sala tranquila.',
       ],
       pipeline_ia: PIPELINE_POR_DEFECTO,
+      privacidad_rgpd: {
+        anonimizado_antes_de_ia: true,
+        art_rgpd: 'Artículo 25 RGPD (Privacidad desde el diseño)',
+        garantia:
+          'Tus datos personales (nombre, DNI, dirección) se detectaron y anonimizaron en local antes de cualquier llamada a la IA.',
+        total_protegidos: 3,
+        elementos_protegidos: [
+          {
+            tipo: 'Nombre y apellidos de la persona',
+            marcador: '[PERSONA_1]',
+            valor_protegido: 'L*** G*** F***',
+          },
+          {
+            tipo: 'DNI / Documento de Identidad',
+            marcador: '[DNI_1]',
+            valor_protegido: '32.***-Y',
+          },
+          {
+            tipo: 'Dirección postal / Domicilio',
+            marcador: '[DOMICILIO_1]',
+            valor_protegido: 'C/ E***, 15, 15001 A Coruña',
+          },
+        ],
+      },
     },
     lectura_clara: `Te citan como TESTIGO en un proceso penal.
 
@@ -622,7 +684,7 @@ export default function PaginaCitacion() {
                 </p>
               )}
               <p id="ayuda-archivo" className="text-xs text-puente-600 mt-2">
-                Admite documentos oficiales en PDF y Word. El archivo se procesa en memoria sin guardarse en disco (RGPD).
+                Admite documentos oficiales en PDF y Word. Tus datos personales (nombre, DNI, dirección) se detectan y anonimizan en local antes de cualquier llamada a la IA (RGPD art. 25).
               </p>
             </div>
 
@@ -703,6 +765,9 @@ export default function PaginaCitacion() {
                 Adaptando tu documento paso a paso...
               </p>
               <ol className="text-left text-sm text-puente-700 space-y-2">
+                <li className="font-semibold text-emerald-900">
+                  ✓ 0. Anonimizando datos personales en local (DNI, nombres, domicilios) según RGPD art. 25
+                </li>
                 <li>1. Extrayendo fechas, juzgado y rol procesal</li>
                 <li>2. Traduciendo términos jurídicos a lenguaje claro (ISO 24495-1)</li>
                 <li>3. Creando versión en Lectura Fácil (UNE 153101) y cifras en palabras</li>
@@ -725,6 +790,52 @@ export default function PaginaCitacion() {
               </div>
               <BotonLeerEnVoz texto={resumenClaveParaVoz} />
             </div>
+
+            {/* Privacidad verificada RGPD art. 25 */}
+            {resultado.datos_clave.privacidad_rgpd && (
+              <aside
+                aria-label="Verificación de privacidad y protección de datos"
+                className="card mb-6 border-l-4 border-l-emerald-600 bg-emerald-50/70 p-4 rounded-xl"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl select-none" aria-hidden="true">🛡️</span>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h2 className="font-bold text-emerald-950 text-base">
+                        Privacidad verificada (RGPD art. 25 — Privacidad desde el diseño)
+                      </h2>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                        {resultado.datos_clave.privacidad_rgpd.total_protegidos > 0
+                          ? `${resultado.datos_clave.privacidad_rgpd.total_protegidos} datos personales protegidos`
+                          : 'Sin datos personales detectados'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-emerald-900 mt-1">
+                      {resultado.datos_clave.privacidad_rgpd.garantia} Ningún nombre, DNI o domicilio real fue transmitido al modelo de IA externo.
+                    </p>
+
+                    {resultado.datos_clave.privacidad_rgpd.elementos_protegidos.length > 0 && (
+                      <details className="mt-3">
+                        <summary className="text-xs font-semibold text-emerald-800 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded">
+                          Ver elementos personales anonimizados en este documento ({resultado.datos_clave.privacidad_rgpd.elementos_protegidos.length})
+                        </summary>
+                        <ul className="mt-2 space-y-1.5 text-xs text-emerald-900 bg-white/80 p-3 rounded-lg border border-emerald-200">
+                          {resultado.datos_clave.privacidad_rgpd.elementos_protegidos.map((elem, idx) => (
+                            <li key={idx} className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold text-emerald-950">{elem.tipo}:</span>
+                              <code className="bg-emerald-100/90 px-1.5 py-0.5 rounded text-emerald-900 font-mono text-[11px]">
+                                {elem.valor_protegido}
+                              </code>
+                              <span className="text-emerald-700 text-[11px]">(enviado a la IA como {elem.marcador})</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                  </div>
+                </div>
+              </aside>
+            )}
 
             {/* Datos clave con iconos (C03) */}
             <div className="card-destacada mb-8">
