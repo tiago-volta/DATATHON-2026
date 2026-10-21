@@ -220,3 +220,10 @@ npx lighthouse http://localhost:3000 --only-categories=accessibility
 - Ley 15/2022 (igualdad de trato y no discriminación)
 - RDL 1/2013 (derechos de personas con discapacidad)
 - Ley 6/2022 (accesibilidad cognitiva)
+
+### Contexto del Reto 3 y cumplimiento
+
+- PDF oficial: [`docs/reto/20261018_DATATHON-Reto3-Brecha-Judicial.pdf`](docs/reto/20261018_DATATHON-Reto3-Brecha-Judicial.pdf)
+- Resumen del enunciado: [`docs/reto/reto3-contexto.md`](docs/reto/reto3-contexto.md)
+- Evaluación legal + RGPD: [`docs/reto/cumplimiento-legal-rgpd.md`](docs/reto/cumplimiento-legal-rgpd.md)
+- Marco legal ampliado: [`docs/investigacion/marco-legal.md`](docs/investigacion/marco-legal.md)

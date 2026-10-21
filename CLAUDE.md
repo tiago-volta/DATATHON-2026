@@ -81,3 +81,6 @@ Abrir http://localhost:3000
 - Art. 109 y 118 LECrim (proceso penal)
 - Ley 15/2022 (no discriminación)
 - Guía CGPJ 2025 (perfil de ajustes)
+
+Contexto del Reto 3 (PDF + resumen) y evaluación RGPD: `docs/reto/`.
+Marco legal ampliado: `docs/investigacion/marco-legal.md`.
