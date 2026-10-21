@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from .llm import procesar_citacion, analizar_pregunta
 from .arasaac import obtener_pictogramas
 from .calendario import generar_ics
+from .tts import MAX_CARACTERES, sintetizar_mp3, sanitizar_texto
 from .mock_data import (
     MOCK_CITACION_LUIS,
     MOCK_CITACION_JUAN,
@@ -190,6 +191,20 @@ class PasaporteResponse(BaseModel):
     marca: str
 
 
+class TtsInput(BaseModel):
+    texto: str
+
+    @field_validator("texto")
+    @classmethod
+    def validar_texto_tts(cls, v: str) -> str:
+        limpio = sanitizar_texto(v)
+        if not limpio:
+            raise ValueError("El texto para voz no puede estar vacío.")
+        if len(limpio) > MAX_CARACTERES:
+            raise ValueError(f"El texto supera el límite de {MAX_CARACTERES} caracteres.")
+        return limpio
+
+
 @app.get("/")
 async def root():
     return {"mensaje": "PUENTE API - Accesibilidad cognitiva para la justicia"}
@@ -198,6 +213,59 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.post("/api/tts")
+async def tts_post(input_data: TtsInput):
+    """
+    Sintetiza voz natural (edge-tts, es-ES-ElviraNeural) y devuelve audio/mpeg.
+    Gratuito; no consume cuota de Gemini/OpenAI.
+    """
+    try:
+        audio = await sintetizar_mp3(input_data.texto)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="No se pudo generar la voz. Prueba de nuevo en unos segundos.",
+        ) from exc
+    return Response(
+        content=audio,
+        media_type="audio/mpeg",
+        headers={
+            "Cache-Control": "private, max-age=3600",
+            "Content-Disposition": "inline; filename=voz.mp3",
+        },
+    )
+
+
+@app.get("/api/tts")
+async def tts_get(texto: str = ""):
+    """GET con texto corto: útil para pruebas rápidas (curl / smoke)."""
+    limpio = sanitizar_texto(texto)
+    if not limpio:
+        raise HTTPException(status_code=400, detail="El texto para voz no puede estar vacío.")
+    if len(limpio) > MAX_CARACTERES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"El texto supera el límite de {MAX_CARACTERES} caracteres.",
+        )
+    try:
+        audio = await sintetizar_mp3(limpio)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="No se pudo generar la voz. Prueba de nuevo en unos segundos.",
+        ) from exc
+    return Response(
+        content=audio,
+        media_type="audio/mpeg",
+        headers={
+            "Cache-Control": "private, max-age=3600",
+            "Content-Disposition": "inline; filename=voz.mp3",
+        },
+    )
 
 
 @app.post("/api/procesar-citacion", response_model=CitacionResponse)

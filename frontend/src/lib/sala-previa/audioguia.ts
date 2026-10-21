@@ -1,9 +1,11 @@
 import type { EscenaJuzgado, ValoresEstimulo } from './tipos'
 import { TOTAL_ESCENAS, etiquetaNivelTipico } from './escenas'
-
-const PAUSA_ENTRE_BLOQUES_MS = 650
-const RATE = 0.9
-const PITCH = 1
+import {
+  hablarCola,
+  parar as pararVozNatural,
+  speechSynthesisDisponible,
+  vozNaturalDisponible,
+} from '@/lib/vozNatural'
 
 export type BloqueAudioguia = string
 
@@ -65,25 +67,13 @@ export function construirBloquesAudioguia(ctx: ContextoAudioguia): BloqueAudiogu
   return bloques
 }
 
-export function speechSynthesisDisponible(): boolean {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window
-}
-
-function vozEspanol(): SpeechSynthesisVoice | null {
-  if (!speechSynthesisDisponible()) return null
-  const voces = speechSynthesis.getVoices()
-  return (
-    voces.find((v) => v.lang === 'es-ES') ||
-    voces.find((v) => v.lang.toLowerCase().startsWith('es')) ||
-    null
-  )
-}
+export { speechSynthesisDisponible, vozNaturalDisponible }
 
 export type EstadoLectura = 'idle' | 'hablando' | 'cancelado'
 
 /**
- * Lee bloques en cola con pausas entre ellos.
- * Devuelve `cancelar` para parar de inmediato (p. ej. botón Calma).
+ * Lee bloques en cola con voz natural (edge-tts) y pausas entre ellos.
+ * Fallback a speechSynthesis. `cancelar` para calma/toggle.
  */
 export function leerBloquesEnVoz(
   bloques: BloqueAudioguia[],
@@ -92,98 +82,11 @@ export function leerBloquesEnVoz(
     onFin?: (motivo: 'fin' | 'cancelado' | 'error') => void
   }
 ): { cancelar: () => void } {
-  let cancelado = false
-  let timer: ReturnType<typeof setTimeout> | null = null
-  let indice = 0
-
-  const limpiarTimer = () => {
-    if (timer != null) {
-      clearTimeout(timer)
-      timer = null
-    }
-  }
-
-  let finNotificado = false
-  const notificarFin = (motivo: 'fin' | 'cancelado' | 'error') => {
-    if (finNotificado) return
-    finNotificado = true
-    opts?.onFin?.(motivo)
-  }
-
-  const cancelar = () => {
-    if (cancelado) return
-    cancelado = true
-    limpiarTimer()
-    if (speechSynthesisDisponible()) {
-      speechSynthesis.cancel()
-    }
-    notificarFin('cancelado')
-  }
-
-  if (!speechSynthesisDisponible() || bloques.length === 0) {
-    notificarFin('error')
+  if (!vozNaturalDisponible() || bloques.length === 0) {
+    opts?.onFin?.('error')
     return { cancelar: () => undefined }
   }
 
-  // Algunos navegadores cargan voces de forma asíncrona.
-  const asegurarVoces = (siguiente: () => void) => {
-    const voces = speechSynthesis.getVoices()
-    if (voces.length > 0) {
-      siguiente()
-      return
-    }
-    const once = () => {
-      speechSynthesis.removeEventListener('voiceschanged', once)
-      siguiente()
-    }
-    speechSynthesis.addEventListener('voiceschanged', once)
-    // Fallback si el evento no llega.
-    timer = setTimeout(() => {
-      speechSynthesis.removeEventListener('voiceschanged', once)
-      siguiente()
-    }, 300)
-  }
-
-  const hablarSiguiente = () => {
-    if (cancelado) return
-    if (indice >= bloques.length) {
-      notificarFin('fin')
-      return
-    }
-
-    const texto = bloques[indice]
-    indice += 1
-
-    const utterance = new SpeechSynthesisUtterance(texto)
-    utterance.lang = 'es-ES'
-    utterance.rate = RATE
-    utterance.pitch = PITCH
-    const voz = vozEspanol()
-    if (voz) utterance.voice = voz
-
-    utterance.onend = () => {
-      if (cancelado) return
-      if (indice >= bloques.length) {
-        notificarFin('fin')
-        return
-      }
-      // Pausa calmada entre bloques (no solapa con el siguiente).
-      timer = setTimeout(hablarSiguiente, PAUSA_ENTRE_BLOQUES_MS)
-    }
-    utterance.onerror = () => {
-      if (cancelado) return
-      notificarFin('error')
-    }
-
-    speechSynthesis.speak(utterance)
-  }
-
-  opts?.onInicio?.()
-  speechSynthesis.cancel()
-  asegurarVoces(() => {
-    if (cancelado) return
-    hablarSiguiente()
-  })
-
-  return { cancelar }
+  pararVozNatural()
+  return hablarCola(bloques, opts)
 }

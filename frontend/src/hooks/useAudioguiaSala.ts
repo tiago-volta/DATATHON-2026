@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   construirBloquesAudioguia,
   leerBloquesEnVoz,
-  speechSynthesisDisponible,
+  vozNaturalDisponible,
   type ContextoAudioguia,
 } from '@/lib/sala-previa/audioguia'
 
@@ -15,6 +15,7 @@ export interface ControlesAmbientales {
 
 /**
  * Modo audioguía de Sala Previa.
+ * Voz natural vía /api/tts (edge-tts); fallback speechSynthesis.
  * Solo arranca con gesto del usuario (clic del botón). No auto-inicia.
  */
 export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
@@ -28,7 +29,7 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
   ambientalesRef.current = ambientales
 
   useEffect(() => {
-    setSinSoporte(!speechSynthesisDisponible())
+    setSinSoporte(!vozNaturalDisponible())
   }, [])
 
   const pararSintesis = useCallback(() => {
@@ -39,7 +40,7 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
   }, [])
 
   const leerContexto = useCallback((ctx: ContextoAudioguia) => {
-    if (!speechSynthesisDisponible()) {
+    if (!vozNaturalDisponible()) {
       setSinSoporte(true)
       setAnuncio(
         'Tu navegador no puede leer en voz alta. Puedes seguir con el lector de pantalla.'
@@ -67,7 +68,7 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
 
   const activar = useCallback(
     (ctx: ContextoAudioguia) => {
-      if (!speechSynthesisDisponible()) {
+      if (!vozNaturalDisponible()) {
         setSinSoporte(true)
         setActivo(false)
         setAnuncio(
@@ -139,3 +140,6 @@ export function useAudioguiaSala(ambientales?: ControlesAmbientales) {
     etiquetaBoton: activo ? 'Parar audioguía' : 'Modo audioguía',
   }
 }
+
+/** Alias listo para otros puntos de entrada (mismo hook). */
+export const usarAudioguia = useAudioguiaSala
