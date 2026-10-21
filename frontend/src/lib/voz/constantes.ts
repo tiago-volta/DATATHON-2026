@@ -36,4 +36,4 @@ export const MENSAJE_SIN_RECONOCIMIENTO =
   'Tu navegador no reconoce la voz. Puedes usar el botón Modo audioguía y tu lector de pantalla.'
 
 export const AYUDA_MODO_VOZ =
-  'Puedes decir: activar modo con voz, repite, otra vez, más despacio, para, o ayuda. También puedes pulsar Escuchar pedido.'
+  'Puedes decir: activar modo con voz, desactivar modo con voz, repite, otra vez, más despacio, para, o ayuda. También puedes pulsar Escuchar pedido.'

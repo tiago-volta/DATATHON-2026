@@ -75,6 +75,10 @@ export function IconoInsignia({
       {id === 'primera-calma' && <PictogramaCalma desbloqueada={desbloqueada} />}
       {id === 'pedi-ajustes' && <PictogramaAjustes desbloqueada={desbloqueada} />}
       {id === 'ensaye-1-nivel' && <PictogramaEnsayo desbloqueada={desbloqueada} />}
+      {id === 'casi-listo' && <PictogramaCasiListo desbloqueada={desbloqueada} />}
+      {id === 'testigo-en-forma' && (
+        <PictogramaTestigo desbloqueada={desbloqueada} />
+      )}
     </svg>
   )
 }
@@ -150,6 +154,62 @@ function PictogramaEnsayo({ desbloqueada }: { desbloqueada: boolean }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </g>
+  )
+}
+
+/** Nivel 3: camino casi completo (3 de 5 marcas). */
+function PictogramaCasiListo({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  const ok = desbloqueada ? '#5EA37A' : '#9AADB5'
+  return (
+    <g>
+      <circle cx="22" cy="38" r="3.5" fill={ok} />
+      <circle cx="32" cy="38" r="3.5" fill={ok} />
+      <circle cx="42" cy="38" r="3.5" fill={ok} />
+      <circle
+        cx="27"
+        cy="48"
+        r="2.5"
+        stroke={c}
+        strokeWidth="1.5"
+        fill="none"
+        strokeDasharray="2 2"
+      />
+      <circle
+        cx="37"
+        cy="48"
+        r="2.5"
+        stroke={c}
+        strokeWidth="1.5"
+        fill="none"
+        strokeDasharray="2 2"
+      />
+      <path
+        d="M20 30h24"
+        stroke={c}
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+    </g>
+  )
+}
+
+/** Nivel 5: estrella suave / testigo. */
+function PictogramaTestigo({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  const fill = desbloqueada ? '#C4A35A' : '#9AADB5'
+  return (
+    <g>
+      <path
+        d="M32 24l2.8 8.2H43l-6.6 5 2.5 8.2L32 40.6l-6.9 4.8 2.5-8.2-6.6-5h8.2L32 24z"
+        fill={fill}
+        stroke={c}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <circle cx="32" cy="48" r="2" fill={c} opacity="0.7" />
     </g>
   )
 }

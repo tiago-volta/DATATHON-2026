@@ -11,13 +11,17 @@ import {
   type ControlesReconocimiento,
 } from '@/lib/voz/reconocimiento'
 import { MENSAJE_SIN_RECONOCIMIENTO } from '@/lib/voz/constantes'
+import { parar as pararSintesis } from '@/lib/vozNatural'
 
 /**
  * Escucha una frase (gesto del usuario o sesión continua) y la interpreta.
+ * Al detectar voz del usuario, corta toda síntesis (barge-in).
  */
 export function useEscuchaVoz(opts?: {
   continuous?: boolean
   onInterpretacion?: (r: ResultadoPeticionVoz) => void
+  /** Si se pasa, se llama al detectar habla (antes del intent). Por defecto: parar TTS. */
+  onHablaUsuario?: () => void
 }) {
   const [escuchando, setEscuchando] = useState(false)
   const [parcial, setParcial] = useState('')
@@ -27,7 +31,10 @@ export function useEscuchaVoz(opts?: {
   const controlesRef = useRef<ControlesReconocimiento | null>(null)
   const onInterpRef = useRef(opts?.onInterpretacion)
   onInterpRef.current = opts?.onInterpretacion
+  const onHablaRef = useRef(opts?.onHablaUsuario)
+  onHablaRef.current = opts?.onHablaUsuario
   const continuous = opts?.continuous ?? false
+  const procesandoRef = useRef(false)
 
   useEffect(() => {
     setDisponible(reconocimientoVozDisponible())
@@ -38,14 +45,24 @@ export function useEscuchaVoz(opts?: {
 
     const controles = crearReconocimiento({
       continuous,
+      onHablaUsuario: () => {
+        // Barge-in: parar vozNatural + speechSynthesis al instante.
+        pararSintesis()
+        onHablaRef.current?.()
+      },
       onResultado: ({ texto, final }) => {
         setParcial(texto)
-        if (!final || !texto) return
+        if (!final || !texto || procesandoRef.current) return
+        procesandoRef.current = true
         setUltimoTexto(texto)
         setEscuchando(false)
         void (async () => {
-          const r = await procesarPeticionVoz(texto)
-          onInterpRef.current?.(r)
+          try {
+            const r = await procesarPeticionVoz(texto)
+            onInterpRef.current?.(r)
+          } finally {
+            procesandoRef.current = false
+          }
         })()
       },
       onError: (mensaje) => {

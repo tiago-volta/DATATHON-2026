@@ -8,11 +8,17 @@ import {
   TEXTO_ONBOARDING,
 } from '@/lib/voz/constantes'
 import { procesarPeticionVoz } from '@/lib/voz/asistenteVoz'
+import {
+  MENSAJE_MIC_DENEGADO,
+  pedirPermisoMicrofono,
+  type EstadoPermisoMicrofono,
+} from '@/lib/voz/reconocimiento'
 import { useEscuchaVoz } from '@/hooks/useEscuchaVoz'
 import { useModoVoz } from '@/hooks/useModoVoz'
 
 /**
  * Primera visita: explica PUENTE y la frase para activar el Modo con voz.
+ * Nada más abrir: pide permiso de micrófono de forma clara.
  * No atrapa el foco: «Ahora no» / «Ya lo activé» cierran el panel.
  */
 export function OnboardingVoz() {
@@ -22,6 +28,9 @@ export function OnboardingVoz() {
   const [abierto, setAbierto] = useState(false)
   const [hablando, setHablando] = useState(false)
   const [feedback, setFeedback] = useState('')
+  const [permisoMic, setPermisoMic] =
+    useState<EstadoPermisoMicrofono>('desconocido')
+  const permisoPedidoRef = useRef(false)
   const cancelarHablaRef = useRef<(() => void) | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -31,6 +40,32 @@ export function OnboardingVoz() {
       setAbierto(true)
     }
   }, [listo, onboardingPendiente, activo])
+
+  /** Primera carga del panel: pedir micrófono con mensaje calmado. */
+  useEffect(() => {
+    if (!abierto || permisoPedidoRef.current) return
+    permisoPedidoRef.current = true
+    setFeedback('Para oírte, el navegador pedirá permiso del micrófono…')
+    void (async () => {
+      const estado = await pedirPermisoMicrofono()
+      setPermisoMic(estado)
+      if (estado === 'concedido') {
+        setFeedback(
+          'Micrófono listo. Puedes escuchar la explicación o probar con tu voz.'
+        )
+      } else if (estado === 'denegado') {
+        setFeedback(MENSAJE_MIC_DENEGADO)
+      } else if (estado === 'no-soportado') {
+        setFeedback(
+          'Este dispositivo no tiene micrófono usable. Puedes seguir con botones y lector de pantalla.'
+        )
+      } else {
+        setFeedback(
+          'Cuando digas la frase o pulses «Probar con mi voz», el navegador puede pedir el micrófono.'
+        )
+      }
+    })()
+  }, [abierto])
 
   const pararHabla = useCallback(() => {
     cancelarHablaRef.current?.()
@@ -79,6 +114,7 @@ export function OnboardingVoz() {
   }, [activar, pararHabla])
 
   const escucha = useEscuchaVoz({
+    onHablaUsuario: pararHabla,
     onInterpretacion: (r) => {
       if (r.accion === 'activar_modo_voz') {
         activar()
@@ -95,6 +131,14 @@ export function OnboardingVoz() {
         return
       }
       setFeedback(r.respuestaHabla)
+      if (vozNaturalDisponible() && r.respuestaHabla) {
+        const { cancelar } = hablarCola([r.respuestaHabla], {
+          onFin: () => {
+            cancelarHablaRef.current = null
+          },
+        })
+        cancelarHablaRef.current = cancelar
+      }
     },
   })
 
@@ -152,6 +196,10 @@ export function OnboardingVoz() {
             type="button"
             className="btn-secondary"
             onClick={() => {
+              if (permisoMic === 'denegado') {
+                setFeedback(MENSAJE_MIC_DENEGADO)
+                return
+              }
               if (!escucha.disponible) {
                 setFeedback(escucha.mensajeSinSoporte)
                 return
@@ -160,6 +208,7 @@ export function OnboardingVoz() {
               escucha.iniciar()
             }}
             aria-pressed={escucha.escuchando}
+            disabled={permisoMic === 'denegado'}
           >
             {escucha.escuchando ? 'Escuchando tu voz…' : 'Probar con mi voz'}
           </button>

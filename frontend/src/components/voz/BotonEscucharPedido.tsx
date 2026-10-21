@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { hablarCola, parar as pararVoz, vozNaturalDisponible } from '@/lib/vozNatural'
 import type { ResultadoPeticionVoz } from '@/lib/voz/asistenteVoz'
+import { pedirPermisoMicrofono, MENSAJE_MIC_DENEGADO } from '@/lib/voz/reconocimiento'
 import { useEscuchaVoz } from '@/hooks/useEscuchaVoz'
 import { useModoVoz } from '@/hooks/useModoVoz'
 
@@ -10,35 +11,50 @@ type Props = {
   /** Si true, el botón se muestra aunque el modo no esté activo. */
   siempreVisible?: boolean
   onResultado?: (r: ResultadoPeticionVoz) => void
+  /** Corta también el estado React de audioguía (además del mutex TTS). */
+  onPararSintesis?: () => void
   className?: string
 }
 
 /**
- * Micrófono: escucha un pedido y lo interpreta (mock /api/voz).
- * Visible cuando el Modo con voz está activo, o si `siempreVisible`.
+ * Micrófono push-to-talk: escucha un pedido y lo interpreta.
+ * Al pulsar o al detectar voz: para toda síntesis antes de procesar.
  */
 export function BotonEscucharPedido({
   siempreVisible = false,
   onResultado,
+  onPararSintesis,
   className = '',
 }: Props) {
   const { activo, activar } = useModoVoz()
   const [feedback, setFeedback] = useState('')
   const cancelarRef = useRef<(() => void) | null>(null)
+  const onPararRef = useRef(onPararSintesis)
+  onPararRef.current = onPararSintesis
 
-  const hablarRespuesta = useCallback((texto: string) => {
-    if (!vozNaturalDisponible() || !texto) return
+  const cortarVoz = useCallback(() => {
     cancelarRef.current?.()
+    cancelarRef.current = null
     pararVoz()
-    const { cancelar } = hablarCola([texto], {
-      onFin: () => {
-        cancelarRef.current = null
-      },
-    })
-    cancelarRef.current = cancelar
+    onPararRef.current?.()
   }, [])
 
+  const hablarRespuesta = useCallback(
+    (texto: string) => {
+      if (!vozNaturalDisponible() || !texto) return
+      cortarVoz()
+      const { cancelar } = hablarCola([texto], {
+        onFin: () => {
+          cancelarRef.current = null
+        },
+      })
+      cancelarRef.current = cancelar
+    },
+    [cortarVoz]
+  )
+
   const escucha = useEscuchaVoz({
+    onHablaUsuario: cortarVoz,
     onInterpretacion: (r) => {
       setFeedback(r.respuestaHabla)
       if (r.accion === 'activar_modo_voz') {
@@ -73,8 +89,17 @@ export function BotonEscucharPedido({
             setFeedback(escucha.mensajeSinSoporte)
             return
           }
-          setFeedback('Te escucho…')
-          escucha.iniciar()
+          // Antes de escuchar: cortar guía / ayuda en curso.
+          cortarVoz()
+          void (async () => {
+            const perm = await pedirPermisoMicrofono()
+            if (perm === 'denegado') {
+              setFeedback(MENSAJE_MIC_DENEGADO)
+              return
+            }
+            setFeedback('Te escucho…')
+            escucha.iniciar()
+          })()
         }}
       >
         {escucha.escuchando ? 'Escuchando… (pulsa para parar)' : 'Escuchar pedido'}
@@ -90,13 +115,13 @@ export function BotonEscucharPedido({
         </p>
       )}
 
-      {(escucha.parcial || feedback) && (
+      {(escucha.parcial || feedback || escucha.anuncio) && (
         <p
           className="text-sm text-puente-700 max-w-md"
           role="status"
           aria-live="polite"
         >
-          {escucha.parcial || feedback}
+          {escucha.parcial || feedback || escucha.anuncio}
         </p>
       )}
     </div>

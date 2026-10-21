@@ -14,6 +14,7 @@ import {
 
 export type IntentVoz =
   | 'activar_modo'
+  | 'desactivar_modo'
   | 'repetir'
   | 'explicar'
   | 'ayuda'
@@ -23,6 +24,7 @@ export type IntentVoz =
 
 export type AccionVoz =
   | 'activar_modo_voz'
+  | 'desactivar_modo_voz'
   | 'repetir_ultimo'
   | 'explicar_contexto'
   | 'mostrar_ayuda'
@@ -65,6 +67,9 @@ const RE_REPETIR =
 
 const RE_PARAR = /\b(para|parar|detente|calla|silencio|basta|stop)\b/i
 
+const RE_DESACTIVAR =
+  /\b(desactivar|apagar|quitar|cerrar)\s+(el\s+)?(modo\s+)?(con\s+)?voz\b|\bdesactivar\s+modo\b|\bmodo\s+con\s+voz\s+off\b/i
+
 const RE_DESPACIO =
   /\b(mas\s+despacio|m[aá]s\s+lento|despacio|lento|mas\s+lento)\b/i
 
@@ -96,6 +101,17 @@ export function procesarPeticionVozLocal(texto: string): ResultadoPeticionVoz {
       intent: 'activar_modo',
       respuestaHabla: CONFIRMACION_ACTIVACION,
       accion: 'activar_modo_voz',
+      textoNormalizado,
+      fuente: 'local',
+    }
+  }
+
+  if (RE_DESACTIVAR.test(textoNormalizado)) {
+    return {
+      intent: 'desactivar_modo',
+      respuestaHabla:
+        'Modo con voz desactivado. Puedes seguir con los botones o activarlo otra vez cuando quieras.',
+      accion: 'desactivar_modo_voz',
       textoNormalizado,
       fuente: 'local',
     }

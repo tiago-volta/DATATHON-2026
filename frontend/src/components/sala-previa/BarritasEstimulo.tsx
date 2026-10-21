@@ -1,14 +1,57 @@
 'use client'
 
+import { useState } from 'react'
 import { ESTIMULOS_META } from '@/lib/sala-previa/niveles'
 import type { IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
 const ORDEN: IdEstimulo[] = ['ruido', 'luz', 'gente']
 
+/** IDs ARASAAC fijos (CC BY-NC-SA). Antes en ControlesEstimulo. */
+const PICTO_ID: Record<IdEstimulo, number> = {
+  ruido: 37857,
+  luz: 8619,
+  gente: 7117,
+}
+
+function urlArasaac(id: number) {
+  return `https://static.arasaac.org/pictograms/${id}/${id}_300.png`
+}
+
 function nivelPalabra(valor: number): 'Bajo' | 'Medio' | 'Alto' {
   if (valor < 34) return 'Bajo'
   if (valor < 67) return 'Medio'
   return 'Alto'
+}
+
+function PictoEstimulo({ id, etiqueta }: { id: number; etiqueta: string }) {
+  const [fallo, setFallo] = useState(false)
+  const alt = `Pictograma: ${etiqueta}`
+
+  if (fallo) {
+    return (
+      <span
+        className="flex items-center justify-center w-9 h-9 rounded-suave bg-puente-100 text-puente-700 text-sm font-bold shrink-0"
+        role="img"
+        aria-label={alt}
+      >
+        {etiqueta.slice(0, 1)}
+      </span>
+    )
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={urlArasaac(id)}
+      alt={alt}
+      width={36}
+      height={36}
+      className="w-9 h-9 rounded-suave bg-white border border-puente-100 object-contain shrink-0"
+      loading="lazy"
+      decoding="async"
+      onError={() => setFallo(true)}
+    />
+  )
 }
 
 interface Props {
@@ -24,8 +67,9 @@ interface Props {
 }
 
 /**
- * Panel compacto de los 3 estímulos, a la izquierda del viewer 360
- * (fuera del canvas). Los controles largos de ControlesEstimulo siguen abajo.
+ * Panel compacto de los 3 estímulos junto al viewer 3D / 360.
+ * Incluye pictogramas ARASAAC (ruido, luz, gente). Único control de estímulos
+ * tras eliminar el bloque grande «Ajusta cada estímulo».
  */
 export function BarritasEstimulo({
   valores,
@@ -37,7 +81,7 @@ export function BarritasEstimulo({
 }: Props) {
   return (
     <div
-      className={`rounded-suave border-2 border-puente-200 bg-white shadow-sm p-3 w-[11.5rem] sm:w-[12.5rem] ${className}`}
+      className={`rounded-suave border-2 border-puente-200 bg-white shadow-sm p-3 w-[12.5rem] sm:w-[13.5rem] ${className}`}
       role="group"
       aria-label="Niveles de estímulo de la escena"
     >
@@ -54,16 +98,21 @@ export function BarritasEstimulo({
 
           return (
             <li key={id}>
-              <div className="flex items-baseline justify-between gap-1 mb-0.5">
-                <label
-                  htmlFor={inputId}
-                  className="text-xs font-bold text-puente-800 cursor-pointer"
-                >
-                  {meta.etiqueta}
-                </label>
-                <span className="text-[11px] font-bold text-puente-700 tabular-nums">
-                  {palabras}
-                </span>
+              <div className="flex items-center gap-2 mb-0.5">
+                <PictoEstimulo id={PICTO_ID[id]} etiqueta={meta.etiqueta} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-1">
+                    <label
+                      htmlFor={inputId}
+                      className="text-xs font-bold text-puente-800 cursor-pointer"
+                    >
+                      {meta.etiqueta}
+                    </label>
+                    <span className="text-[11px] font-bold text-puente-700 tabular-nums">
+                      {palabras}
+                    </span>
+                  </div>
+                </div>
               </div>
               <div className="h-2 rounded-full bg-puente-100 overflow-hidden mb-1">
                 <div
@@ -102,6 +151,18 @@ export function BarritasEstimulo({
           )
         })}
       </ul>
+      <p className="text-[10px] text-puente-600 mt-2 leading-snug">
+        Pictogramas{' '}
+        <a
+          href="https://arasaac.org"
+          className="underline underline-offset-2 hover:text-puente-800"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ARASAAC
+        </a>
+        , CC BY-NC-SA.
+      </p>
     </div>
   )
 }

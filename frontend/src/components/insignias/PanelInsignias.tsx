@@ -1,7 +1,11 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { INSIGNIAS_UTILES, type IdInsigniaUtil } from '@/lib/insignias'
+import {
+  INSIGNIAS_UTILES,
+  textoTooltipMedalla,
+  type IdInsigniaUtil,
+} from '@/lib/insignias'
 import { IconoInsignia } from './IconoInsignia'
 
 interface Props {
@@ -12,7 +16,7 @@ interface Props {
 
 /**
  * Galería de medallas: desbloqueadas a color; bloqueadas en gris.
- * Hover y focus muestran cómo conseguirla. Sin ranking ni castigo.
+ * Hover y focus muestran «Medalla: {nombre}. {comoConseguirla}».
  */
 export function PanelInsignias({
   conseguidas,
@@ -32,14 +36,12 @@ export function PanelInsignias({
         Premian cuidarte y practicar a tu ritmo. No hay ranking ni reloj.
       </p>
 
-      <ul
-        className="grid grid-cols-3 gap-3"
-        aria-describedby={ayudaId}
-      >
+      <ul className="grid grid-cols-3 sm:grid-cols-5 gap-3" aria-describedby={ayudaId}>
         {INSIGNIAS_UTILES.map((ins) => {
           const conseguida = conseguidas.includes(ins.id)
           const tipId = `${tipBaseId}-${ins.id}`
           const visible = tipActivo === ins.id
+          const tipTexto = textoTooltipMedalla(ins)
 
           return (
             <li key={ins.id} className="relative flex flex-col items-center">
@@ -50,7 +52,7 @@ export function PanelInsignias({
                     ? 'bg-calma-sage/70 border-accent-success/50 hover:border-puente-500'
                     : 'bg-puente-50/90 border-puente-100 hover:border-puente-300'
                 }`}
-                aria-label={`${ins.nombre}. ${conseguida ? 'Conseguida' : 'Aún no conseguida'}. ${ins.comoConseguirla}`}
+                aria-label={tipTexto}
                 aria-describedby={visible ? tipId : undefined}
                 onMouseEnter={() => setTipActivo(ins.id)}
                 onMouseLeave={() => setTipActivo((v) => (v === ins.id ? null : v))}
@@ -81,10 +83,10 @@ export function PanelInsignias({
                   className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(16rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-md p-3 text-sm text-puente-800 pointer-events-none"
                 >
                   <p className="font-bold text-puente-800 mb-1">
-                    {conseguida ? 'Ya la tienes' : 'Cómo conseguirla'}
+                    Medalla: {ins.nombre}
                   </p>
                   <p className="text-puente-700 leading-snug">
-                    {conseguida ? ins.porQueImporta : ins.comoConseguirla}
+                    {ins.comoConseguirla}
                   </p>
                 </div>
               )}

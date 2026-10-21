@@ -4,11 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
-import { BarraProgresoInsignias } from '@/components/insignias/BarraProgresoInsignias'
-import { PanelInsignias } from '@/components/insignias/PanelInsignias'
+import { PerfilMedallasSticky } from '@/components/insignias/PerfilMedallasSticky'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
-import { ControlesEstimulo } from '@/components/sala-previa/ControlesEstimulo'
 import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
 import { MapaNiveles } from '@/components/sala-previa/MapaNiveles'
 import { MedidorConfianza } from '@/components/sala-previa/MedidorConfianza'
@@ -117,8 +115,16 @@ export default function PaginaSalaPrevia() {
 
   const alPedidoVoz = useCallback(
     (r: ResultadoPeticionVoz) => {
+      // Feedback visible (aria-live) + respuesta hablada vía audioguía / mutex.
+      setMensaje(r.respuestaHabla)
       if (r.accion === 'activar_modo_voz') {
         modoVoz.activar()
+        audioguia.anunciarEnVoz(r.respuestaHabla)
+        return
+      }
+      if (r.accion === 'desactivar_modo_voz') {
+        modoVoz.desactivar()
+        audioguia.pararSintesis()
         audioguia.anunciarEnVoz(r.respuestaHabla)
         return
       }
@@ -143,6 +149,7 @@ export default function PaginaSalaPrevia() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intencional
     [
       modoVoz.activar,
+      modoVoz.desactivar,
       audioguia.repetirUltimo,
       audioguia.pararSintesis,
       audioguia.anunciarEnVoz,
@@ -197,6 +204,14 @@ export default function PaginaSalaPrevia() {
     if (!progresoListo) return
     guardarProgreso(progreso)
   }, [progreso, progresoListo])
+
+  // Medallas de nivel: sincroniza si ya había progreso guardado (idempotente).
+  useEffect(() => {
+    if (!progresoListo) return
+    if (progreso.nivelMaximo >= 1) desbloquear('ensaye-1-nivel')
+    if (progreso.nivelMaximo >= 3) desbloquear('casi-listo')
+    if (progreso.nivelMaximo >= 5) desbloquear('testigo-en-forma')
+  }, [progresoListo, progreso.nivelMaximo, desbloquear])
 
   useEffect(() => {
     if (!progresoListo) return
@@ -255,9 +270,17 @@ export default function PaginaSalaPrevia() {
       aplicarValores(destino.preset)
       setProgreso((p) => {
         const next = marcarNivel(p, id)
+        const subio = next.nivelMaximo > p.nivelMaximo
         // Nuevo máximo ≥ 1 = completaste al menos un nivel (más allá de la sala vacía).
-        if (next.nivelMaximo > p.nivelMaximo && next.nivelMaximo >= 1) {
+        if (subio && next.nivelMaximo >= 1) {
           queueMicrotask(() => desbloquear('ensaye-1-nivel'))
+        }
+        // Refuerzo positivo por hitos de nivel (localStorage compatible).
+        if (subio && next.nivelMaximo >= 3 && p.nivelMaximo < 3) {
+          queueMicrotask(() => desbloquear('casi-listo'))
+        }
+        if (subio && next.nivelMaximo >= 5 && p.nivelMaximo < 5) {
+          queueMicrotask(() => desbloquear('testigo-en-forma'))
         }
         return next
       })
@@ -386,7 +409,7 @@ export default function PaginaSalaPrevia() {
     <>
       <Cabecera />
 
-      <main id="contenido-principal" className="max-w-5xl mx-auto px-4 py-8 pb-32">
+      <main id="contenido-principal" className="max-w-6xl mx-auto px-4 py-8 pb-32">
         <nav className="mb-6">
           <Link
             href="/"
@@ -396,179 +419,192 @@ export default function PaginaSalaPrevia() {
           </Link>
         </nav>
 
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-puente-800 mb-2">
-            Sala Previa
-          </h1>
-          <p className="text-lg text-puente-700 max-w-2xl">
-            Recorre las fases del día en el juzgado: entrada, control, espera y
-            sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
-          </p>
-        </header>
+        <div className="grid lg:grid-cols-[15rem_minmax(0,1fr)] gap-6 items-start">
+          <PerfilMedallasSticky conseguidas={insigniasUtiles} />
 
-        <BarraProgresoInsignias
-          conseguidas={insigniasUtiles}
-          className="mb-8 max-w-2xl"
-        />
-
-        {mensaje && fase === 'intro' && (
-          <p
-            className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-900 max-w-2xl"
-            role="status"
-            aria-live="polite"
-          >
-            {mensaje}
-          </p>
-        )}
-
-        {fase === 'intro' && (
-          <div className="space-y-6 max-w-2xl">
-            <IntroSalaPrevia onEmpezar={empezarNivel0} />
-            <PanelDiasPractica
-              semana={semanaPractica}
-              total={totalDiasPractica}
-              estaSemana={diasPracticaSemana}
-              bienvenida={bienvenidaPractica}
-              onDescartarBienvenida={descartarBienvenidaPractica}
-            />
-            {progresoListo && <PanelLoQueTeAyuda dato={loQueTeAyuda} />}
-          </div>
-        )}
-
-        {fase !== 'intro' && (
-          <>
-            <EscuchaContinuaAudioguia
-              audioguiaActiva={audioguia.activo}
-              hablando={audioguia.hablando}
-              onResultado={alPedidoVoz}
-            />
-            <div className="flex flex-wrap gap-3 mb-6 items-center">
-              <button
-                type="button"
-                className={`btn ${audioguia.activo ? 'btn-primary' : 'btn-secondary'}`}
-                aria-pressed={audioguia.activo}
-                aria-describedby={
-                  audioguia.sinSoporte ? 'audioguia-sin-soporte' : undefined
-                }
-                onClick={() => audioguia.toggle(contextoAudioguia)}
-              >
-                {audioguia.etiquetaBoton}
-              </button>
-              {(modoVoz.activo || audioguia.activo) && (
-                <BotonEscucharPedido onResultado={alPedidoVoz} siempreVisible />
-              )}
-              <button type="button" className="btn-ghost" onClick={volverAIntro}>
-                Ver intro otra vez
-              </button>
-              {audioListo && !audioguia.hablando && (
-                <span className="text-sm text-puente-700 self-center">
-                  Audio activo. Usa los controles o la pausa.
-                </span>
-              )}
-              {audioguia.hablando && (
-                <span className="text-sm text-puente-700 self-center">
-                  Audioguía en curso. Di «repite» o pulsa Escuchar pedido.
-                </span>
-              )}
-            </div>
-
-            {audioguia.sinSoporte && (
-              <p
-                id="audioguia-sin-soporte"
-                className="mb-4 bg-puente-50 border border-puente-200 rounded-lg p-3 text-puente-800 max-w-2xl"
-                role="status"
-              >
-                Tu navegador no puede leer en voz alta. Puedes seguir con el
-                lector de pantalla.
+          <div className="min-w-0">
+            <header className="mb-8">
+              <h1 className="text-3xl font-bold text-puente-800 mb-2">
+                Sala Previa
+              </h1>
+              <p className="text-lg text-puente-700 max-w-2xl">
+                Recorre las fases del día en el juzgado: entrada, control, espera y
+                sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
               </p>
-            )}
+            </header>
 
-            {audioguia.anuncio && !audioguia.sinSoporte && (
+            {mensaje && (
               <p
-                className="mb-4 text-sm text-puente-700 max-w-2xl"
+                className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-900 max-w-2xl"
                 role="status"
                 aria-live="polite"
-                aria-atomic="true"
               >
-                {audioguia.anuncio}
+                {mensaje}
               </p>
             )}
 
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-4">
-                <RecorridoEscenas
-                  indice={escenaIndice}
-                  onCambiar={cambiarEscena}
-                  valores={valores}
-                  enCalma={enCalma}
-                  onChangeEstimulo={onSlider}
-                />
-
-                <ControlesEstimulo
-                  valores={valores}
-                  onChange={onSlider}
-                  deshabilitado={enCalma}
-                />
-
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setFase('checkin')}
-                  >
-                    ¿Cómo me siento?
-                  </button>
-                  {nivelActual < NIVELES.length - 1 && (
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      onClick={() => setFase('checkin')}
-                    >
-                      Quiero subir de nivel
-                    </button>
-                  )}
-                  {nivelActual > 0 && (
-                    <button
-                      type="button"
-                      className="btn-ghost"
-                      onClick={() => irANivel(nivelActual - 1)}
-                    >
-                      Bajar un nivel
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <MapaNiveles
-                  nivelActual={nivelActual}
-                  nivelMaximo={progreso.nivelMaximo}
-                  onSeleccionar={(id) => irANivel(id)}
-                />
-                <MedidorConfianza
-                  score={scoreConfianza}
-                  etiqueta={etiquetaConfianza}
-                  mensaje={mensajeConfianza}
-                  onDescartarMensaje={descartarMensajeConfianza}
-                />
-                <PanelInsignias conseguidas={insigniasUtiles} />
-                <PanelProgreso
-                  progreso={progreso}
-                  mensaje={mensaje}
+            {fase === 'intro' && (
+              <div className="space-y-6 max-w-2xl">
+                <IntroSalaPrevia onEmpezar={empezarNivel0} />
+                <PanelDiasPractica
                   semana={semanaPractica}
-                  totalDias={totalDiasPractica}
-                  diasEstaSemana={diasPracticaSemana}
+                  total={totalDiasPractica}
+                  estaSemana={diasPracticaSemana}
                   bienvenida={bienvenidaPractica}
                   onDescartarBienvenida={descartarBienvenidaPractica}
                 />
-
-                <PanelLoQueTeAyuda dato={loQueTeAyuda} />
+                {progresoListo && <PanelLoQueTeAyuda dato={loQueTeAyuda} />}
               </div>
-            </div>
+            )}
 
-            <p className="text-sm text-puente-700 mt-8">{CREDITO_AUDIO}</p>
-          </>
-        )}
+            {fase !== 'intro' && (
+              <>
+                <EscuchaContinuaAudioguia
+                  audioguiaActiva={audioguia.activo}
+                  hablando={audioguia.hablando}
+                  onPararSintesis={audioguia.pararSintesis}
+                  onResultado={alPedidoVoz}
+                />
+                <div className="flex flex-wrap gap-3 mb-6 items-center">
+                  <button
+                    type="button"
+                    className={`btn ${audioguia.activo ? 'btn-primary' : 'btn-secondary'}`}
+                    aria-pressed={audioguia.activo}
+                    aria-describedby={
+                      audioguia.sinSoporte ? 'audioguia-sin-soporte' : undefined
+                    }
+                    onClick={() => audioguia.toggle(contextoAudioguia)}
+                  >
+                    {audioguia.etiquetaBoton}
+                  </button>
+                  {(modoVoz.activo || audioguia.activo) && (
+                    <BotonEscucharPedido
+                      onResultado={alPedidoVoz}
+                      onPararSintesis={audioguia.pararSintesis}
+                      siempreVisible
+                    />
+                  )}
+                  <button type="button" className="btn-ghost" onClick={volverAIntro}>
+                    Ver intro otra vez
+                  </button>
+                  {audioListo && !audioguia.hablando && (
+                    <span className="text-sm text-puente-700 self-center">
+                      Audio activo. Usa los controles o la pausa.
+                    </span>
+                  )}
+                  {audioguia.hablando && (
+                    <span className="text-sm text-puente-700 self-center">
+                      Audioguía en curso. Di «repite» o pulsa Escuchar pedido.
+                    </span>
+                  )}
+                  {modoVoz.activo && (
+                    <span
+                      className="text-sm text-puente-700 self-center"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      Modo con voz activo. Te escucho entre frases o con Escuchar pedido.
+                    </span>
+                  )}
+                </div>
+
+                {audioguia.sinSoporte && (
+                  <p
+                    id="audioguia-sin-soporte"
+                    className="mb-4 bg-puente-50 border border-puente-200 rounded-lg p-3 text-puente-800 max-w-2xl"
+                    role="status"
+                  >
+                    Tu navegador no puede leer en voz alta. Puedes seguir con el
+                    lector de pantalla.
+                  </p>
+                )}
+
+                {audioguia.anuncio && !audioguia.sinSoporte && (
+                  <p
+                    className="mb-4 text-sm text-puente-700 max-w-2xl"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    {audioguia.anuncio}
+                  </p>
+                )}
+
+                <div className="grid lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 space-y-4">
+                    <RecorridoEscenas
+                      indice={escenaIndice}
+                      onCambiar={cambiarEscena}
+                      valores={valores}
+                      enCalma={enCalma}
+                      onChangeEstimulo={onSlider}
+                    />
+
+                    <p className="text-sm text-puente-700">
+                      Ajusta ruido, luz y gente en el panel «En la entrada», junto
+                      a la sala 3D. Los pictogramas te ayudan a reconocer cada estímulo.
+                    </p>
+
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => setFase('checkin')}
+                      >
+                        ¿Cómo me siento?
+                      </button>
+                      {nivelActual < NIVELES.length - 1 && (
+                        <button
+                          type="button"
+                          className="btn-primary"
+                          onClick={() => setFase('checkin')}
+                        >
+                          Quiero subir de nivel
+                        </button>
+                      )}
+                      {nivelActual > 0 && (
+                        <button
+                          type="button"
+                          className="btn-ghost"
+                          onClick={() => irANivel(nivelActual - 1)}
+                        >
+                          Bajar un nivel
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <MapaNiveles
+                      nivelActual={nivelActual}
+                      nivelMaximo={progreso.nivelMaximo}
+                      onSeleccionar={(id) => irANivel(id)}
+                    />
+                    <MedidorConfianza
+                      score={scoreConfianza}
+                      etiqueta={etiquetaConfianza}
+                      mensaje={mensajeConfianza}
+                      onDescartarMensaje={descartarMensajeConfianza}
+                    />
+                    <PanelProgreso
+                      progreso={progreso}
+                      mensaje={mensaje}
+                      semana={semanaPractica}
+                      totalDias={totalDiasPractica}
+                      diasEstaSemana={diasPracticaSemana}
+                      bienvenida={bienvenidaPractica}
+                      onDescartarBienvenida={descartarBienvenidaPractica}
+                    />
+
+                    <PanelLoQueTeAyuda dato={loQueTeAyuda} />
+                  </div>
+                </div>
+
+                <p className="text-sm text-puente-700 mt-8">{CREDITO_AUDIO}</p>
+              </>
+            )}
+          </div>
+        </div>
       </main>
 
       <BotonCalma enCalma={enCalma} onPausa={pausarCalma} onReanudar={reanudar} />

@@ -1,12 +1,15 @@
 /**
  * Insignias útiles (Fase 3.2): premian conductas de cuidado, no la velocidad.
  * Persistencia propia en localStorage, compartida entre Sala Previa, Pasaporte y Ensaya.
+ * Las 3 originales se mantienen; se añaden refuerzos por nivel (3 y 5).
  */
 
 export type IdInsigniaUtil =
   | 'primera-calma'
   | 'pedi-ajustes'
   | 'ensaye-1-nivel'
+  | 'casi-listo'
+  | 'testigo-en-forma'
 
 export interface InsigniaUtil {
   id: IdInsigniaUtil
@@ -48,6 +51,22 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
     comoConseguirla:
       'Practica un nivel en Sala Previa o en Ensaya, a tu ritmo.',
     pictograma: 'ensayo',
+  },
+  {
+    id: 'casi-listo',
+    nombre: 'Casi listo',
+    porQueImporta: 'Muy bien, ya casi estás.',
+    comoConseguirla:
+      'En Sala Previa, llega al nivel 3 (o más) a tu ritmo.',
+    pictograma: 'casi',
+  },
+  {
+    id: 'testigo-en-forma',
+    nombre: 'Testigo en forma',
+    porQueImporta: 'Eres un testigo de diez. Has practicado con calma.',
+    comoConseguirla:
+      'En Sala Previa, llega al nivel 5 (vista real) cuando te sientas listo.',
+    pictograma: 'testigo',
   },
 ]
 
@@ -102,4 +121,11 @@ export function desbloquearInsigniaUtil(id: IdInsigniaUtil): ResultadoDesbloqueo
   const insignias = [...actuales, id]
   guardarInsigniasUtiles(insignias)
   return { nueva: true, insignias }
+}
+
+/**
+ * Texto de tooltip unificado: «Medalla: {nombre}. {comoConseguirla}».
+ */
+export function textoTooltipMedalla(ins: InsigniaUtil): string {
+  return `Medalla: ${ins.nombre}. ${ins.comoConseguirla}`
 }

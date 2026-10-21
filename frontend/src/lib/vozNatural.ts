@@ -3,6 +3,8 @@
  * 1) Intenta POST /api/tts (edge-tts, es-ES-ElviraNeural).
  * 2) Si falla, speechSynthesis con ranking de voces es-ES.
  * Solo arranca tras gesto del usuario (el llamador controla el clic).
+ *
+ * Mutex global: una sola cola/voz a la vez. Hablar cancela lo anterior.
  */
 
 /** Vacío = misma origen (Next reescribe /api → backend). Así funciona el túnel. */
@@ -15,6 +17,9 @@ let audioActual: HTMLAudioElement | null = null
 let urlActual: string | null = null
 let canceladoGlobal = false
 let timerCola: ReturnType<typeof setTimeout> | null = null
+/** Generación de sesión: evita que colas viejas sigan tras un nuevo `hablarCola`. */
+let sesionHabla = 0
+let ocupado = false
 
 export function vozNaturalDisponible(): boolean {
   if (typeof window === 'undefined') return false
@@ -25,9 +30,17 @@ export function speechSynthesisDisponible(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
 }
 
-/** Para calma / toggle: corta TTS de red y speechSynthesis. */
-export function parar(): void {
-  canceladoGlobal = true
+/** True si hay TTS de red o speechSynthesis activo (o cola en curso). */
+export function estaHablando(): boolean {
+  if (ocupado) return true
+  if (audioActual && !audioActual.paused) return true
+  if (speechSynthesisDisponible() && (speechSynthesis.speaking || speechSynthesis.pending)) {
+    return true
+  }
+  return false
+}
+
+function detenerReproduccion(): void {
   if (timerCola != null) {
     clearTimeout(timerCola)
     timerCola = null
@@ -48,6 +61,14 @@ export function parar(): void {
   if (speechSynthesisDisponible()) {
     speechSynthesis.cancel()
   }
+}
+
+/** Para calma / toggle / barge-in: corta TTS de red y speechSynthesis. */
+export function parar(): void {
+  canceladoGlobal = true
+  sesionHabla += 1
+  ocupado = false
+  detenerReproduccion()
 }
 
 function limpiarAudio(): void {
@@ -189,6 +210,7 @@ export type MotivoFinVoz = 'fin' | 'cancelado' | 'error'
 
 /**
  * Cola de frases con pausas accesibles entre ellas.
+ * Mutex: cancela cualquier cola/TTS anterior antes de empezar.
  * Devuelve `cancelar` (alias de parar acotado a esta cola).
  */
 export function hablarCola(
@@ -198,6 +220,10 @@ export function hablarCola(
     onFin?: (motivo: MotivoFinVoz) => void
   }
 ): { cancelar: () => void } {
+  // Una sola voz: corta lo que hubiera (ayuda no solapa con audioguía).
+  parar()
+
+  const miSesion = ++sesionHabla
   let cancelado = false
   let finNotificado = false
   let indice = 0
@@ -205,13 +231,16 @@ export function hablarCola(
   const notificarFin = (motivo: MotivoFinVoz) => {
     if (finNotificado) return
     finNotificado = true
+    if (sesionHabla === miSesion) ocupado = false
     opts?.onFin?.(motivo)
   }
 
   const cancelar = () => {
     if (cancelado) return
     cancelado = true
-    parar()
+    if (sesionHabla === miSesion) {
+      parar()
+    }
     notificarFin('cancelado')
   }
 
@@ -222,10 +251,11 @@ export function hablarCola(
   }
 
   canceladoGlobal = false
+  ocupado = true
   opts?.onInicio?.()
 
   const siguiente = async () => {
-    if (cancelado || canceladoGlobal) {
+    if (cancelado || canceladoGlobal || sesionHabla !== miSesion) {
       notificarFin('cancelado')
       return
     }
@@ -240,13 +270,13 @@ export function hablarCola(
     try {
       await hablarUnaFrase(texto)
     } catch {
-      if (!cancelado && !canceladoGlobal) {
+      if (!cancelado && !canceladoGlobal && sesionHabla === miSesion) {
         notificarFin('error')
         return
       }
     }
 
-    if (cancelado || canceladoGlobal) {
+    if (cancelado || canceladoGlobal || sesionHabla !== miSesion) {
       notificarFin('cancelado')
       return
     }

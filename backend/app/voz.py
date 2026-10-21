@@ -13,6 +13,7 @@ from typing import Literal
 
 Intent = Literal[
     "activar_modo",
+    "desactivar_modo",
     "repetir",
     "explicar",
     "ayuda",
@@ -23,6 +24,7 @@ Intent = Literal[
 
 Accion = Literal[
     "activar_modo_voz",
+    "desactivar_modo_voz",
     "repetir_ultimo",
     "explicar_contexto",
     "mostrar_ayuda",

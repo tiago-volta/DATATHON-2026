@@ -1,25 +1,51 @@
 'use client'
 
+import { useState } from 'react'
 import { useModoVoz } from '@/hooks/useModoVoz'
+import {
+  MENSAJE_MIC_DENEGADO,
+  pedirPermisoMicrofono,
+} from '@/lib/voz/reconocimiento'
 
 /**
  * Indicador discreto en cabecera: «Modo con voz activo» + desactivar.
+ * Al activar, pide permiso de micrófono de forma clara.
  */
 export function IndicadorModoVoz() {
   const { listo, activo, desactivar, activar } = useModoVoz()
+  const [aviso, setAviso] = useState('')
 
   if (!listo) return null
 
   if (!activo) {
     return (
-      <button
-        type="button"
-        onClick={activar}
-        className="text-sm font-bold text-puente-700 underline underline-offset-4 hover:text-puente-600 shrink-0"
-        title="Activa el Modo con voz para pedir cosas en voz alta"
-      >
-        Modo con voz
-      </button>
+      <span className="inline-flex flex-col items-end gap-1 shrink-0">
+        <button
+          type="button"
+          onClick={() => {
+            void (async () => {
+              const perm = await pedirPermisoMicrofono()
+              if (perm === 'denegado') {
+                setAviso(MENSAJE_MIC_DENEGADO)
+                // Sigue usable con botones / teclado / lector.
+                activar()
+                return
+              }
+              setAviso('')
+              activar()
+            })()
+          }}
+          className="text-sm font-bold text-puente-700 underline underline-offset-4 hover:text-puente-600"
+          title="Activa el Modo con voz para pedir cosas en voz alta"
+        >
+          Modo con voz
+        </button>
+        {aviso && (
+          <span className="text-xs text-puente-700 max-w-[14rem] text-right" role="status">
+            {aviso}
+          </span>
+        )}
+      </span>
     )
   }
 
