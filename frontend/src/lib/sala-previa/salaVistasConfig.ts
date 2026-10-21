@@ -19,6 +19,16 @@ export const MIRADAS_3D: Record<MiradaSala, MiradaTarget> = {
   entrada: { yaw: 180, pitch: -2 },
 }
 
+/**
+ * Ángulos para el panorama fotográfico equirectangular (captura local del equipo).
+ * yaw 0 ≈ centro de la imagen (estrado); negativos miran a la izquierda de la foto.
+ */
+export const MIRADAS_FOTO_360: Record<MiradaSala, MiradaTarget> = {
+  juez: { yaw: 8, pitch: -5 },
+  abogados: { yaw: -52, pitch: -3 },
+  entrada: { yaw: 178, pitch: -2 },
+}
+
 export const YAW_INICIAL_ESCENA: Record<string, number> = {
   entrada: 180,
   'control-seguridad': 150,

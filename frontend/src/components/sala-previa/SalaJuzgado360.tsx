@@ -17,6 +17,7 @@ import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
 import type { IdEscenaJuzgado, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import type { NivelDistracciones, TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import {
+  MIRADAS_FOTO_360,
   PAPELES_SALA,
   PITCH_MAX,
   YAW_INICIAL_ESCENA,
@@ -28,16 +29,34 @@ import {
   type PapelSala,
 } from '@/lib/sala-previa/salaVistasConfig'
 
+export type ModoVistaSala = 'foto360' | 'sala3d'
+
+const CLAVE_MODO_VISTA = 'sala-previa-vista-modo'
+
+function leerModoVista(): ModoVistaSala {
+  if (typeof window === 'undefined') return 'foto360'
+  try {
+    const v = window.localStorage.getItem(CLAVE_MODO_VISTA)
+    return v === 'sala3d' ? 'sala3d' : 'foto360'
+  } catch {
+    return 'foto360'
+  }
+}
+
+const loadingSala = (
+  <p className="absolute inset-0 flex items-center justify-center text-court-700 text-sm bg-court-50/90">
+    Cargando la sala…
+  </p>
+)
+
 const SalaVistas3D = dynamic(
   () => import('@/components/sala-previa/SalaVistas3D').then((m) => m.SalaVistas3D),
-  {
-    ssr: false,
-    loading: () => (
-      <p className="absolute inset-0 flex items-center justify-center text-court-700 text-sm bg-court-50/90">
-        Cargando la sala…
-      </p>
-    ),
-  }
+  { ssr: false, loading: () => loadingSala }
+)
+
+const SalaFoto360 = dynamic(
+  () => import('@/components/sala-previa/SalaFoto360').then((m) => m.SalaFoto360),
+  { ssr: false, loading: () => loadingSala }
 )
 
 const MIRADAS_UI: { id: MiradaSala; etiqueta: string }[] = [
@@ -129,9 +148,27 @@ export function SalaJuzgado360({
     pitch: number
   } | null>(null)
 
-  const miradas = useMemo(() => miradasPapel(papel), [papel])
-  const yawInicial = papel === 'publico' ? YAW_INICIAL_ESCENA[escenaId] ?? 0 : miradas.juez.yaw
-  const pitchInicial = papel === 'publico' ? 0 : miradas.juez.pitch
+  const [modoVista, setModoVista] = useState<ModoVistaSala>('foto360')
+  useEffect(() => {
+    setModoVista(leerModoVista())
+  }, [])
+
+  const miradas = useMemo(
+    () => (modoVista === 'foto360' ? MIRADAS_FOTO_360 : miradasPapel(papel)),
+    [modoVista, papel]
+  )
+  const yawInicial =
+    modoVista === 'foto360'
+      ? MIRADAS_FOTO_360.juez.yaw
+      : papel === 'publico'
+        ? YAW_INICIAL_ESCENA[escenaId] ?? 0
+        : miradas.juez.yaw
+  const pitchInicial =
+    modoVista === 'foto360'
+      ? MIRADAS_FOTO_360.juez.pitch
+      : papel === 'publico'
+        ? 0
+        : miradas.juez.pitch
   const [yaw, setYaw] = useState(yawInicial)
   const [pitch, setPitch] = useState(pitchInicial)
   const [arrastrando, setArrastrando] = useState(false)
@@ -146,8 +183,17 @@ export function SalaJuzgado360({
     setEnfoque(null)
     setAnimando(false)
     setDestino(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al cambiar de escena o papel
-  }, [escenaId, papel])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al cambiar de escena, papel o modo
+  }, [escenaId, papel, modoVista])
+
+  const cambiarModoVista = (modo: ModoVistaSala) => {
+    setModoVista(modo)
+    try {
+      window.localStorage.setItem(CLAVE_MODO_VISTA, modo)
+    } catch {
+      // Sin almacenamiento: el modo dura solo esta visita.
+    }
+  }
 
   useEffect(() => {
     const syncFs = () => {
@@ -305,7 +351,10 @@ export function SalaJuzgado360({
             onPointerLeave={finArrastre}
           >
             <p id={labelId} className="sr-only">
-              Vista en primera persona de {titulo}, sala de vistas en 3D.{' '}
+              Vista en primera persona de {titulo}.{' '}
+              {modoVista === 'foto360'
+                ? 'Foto real de una sala de vistas en 360 grados.'
+                : 'Sala de vistas en 3D.'}{' '}
               {PAPELES_SALA[papel].descripcion}{' '}
               {reduced
                 ? 'La rotación libre está desactivada. Usa los botones Entrada, Abogados o Juez para mirar.'
@@ -316,22 +365,37 @@ export function SalaJuzgado360({
                 : ''}
             </p>
 
-            <SalaVistas3D
-              yaw={yaw}
-              pitch={pitch}
-              luz={luz}
-              gente={gente}
-              enfoque={enfoque}
-              animando={animando}
-              destino={destino}
-              onAnimFin={onAnimFin}
-              reduced={reduced}
-              arrastrando={arrastrando}
-              personaEntrando={personaEntrando}
-              papel={papel}
-              distraccion={activa}
-              enCalma={enCalma}
-            />
+            {modoVista === 'foto360' ? (
+              <SalaFoto360
+                yaw={yaw}
+                pitch={pitch}
+                luz={luz}
+                animando={animando}
+                destino={destino}
+                onAnimFin={onAnimFin}
+                reduced={reduced}
+                arrastrando={arrastrando}
+                distraccion={activa}
+                enCalma={enCalma}
+              />
+            ) : (
+              <SalaVistas3D
+                yaw={yaw}
+                pitch={pitch}
+                luz={luz}
+                gente={gente}
+                enfoque={enfoque}
+                animando={animando}
+                destino={destino}
+                onAnimFin={onAnimFin}
+                reduced={reduced}
+                arrastrando={arrastrando}
+                personaEntrando={personaEntrando}
+                papel={papel}
+                distraccion={activa}
+                enCalma={enCalma}
+              />
+            )}
 
             {aviso && (
               <p
@@ -400,6 +464,59 @@ export function SalaJuzgado360({
                 Arrastra para mirar
               </p>
             )}
+          </div>
+
+          <div
+            className="sala-fs-miradas flex flex-wrap gap-2 items-center"
+            role="group"
+            aria-label="Tipo de vista de la sala"
+            data-sala-ui
+          >
+            <span
+              className={`text-sm font-medium ${
+                enPantallaCompleta ? 'text-white' : 'text-court-700'
+              }`}
+            >
+              Vista:
+            </span>
+            <button
+              type="button"
+              className={`btn-ghost text-sm min-h-[44px] border ${
+                enPantallaCompleta
+                  ? '!text-white !border-white/70 bg-white/10 hover:bg-white/20'
+                  : 'border-court-200'
+              } ${
+                modoVista === 'foto360'
+                  ? enPantallaCompleta
+                    ? '!bg-white/30 font-bold !text-white'
+                    : 'bg-court-100 font-bold'
+                  : ''
+              }`}
+              onClick={() => cambiarModoVista('foto360')}
+              aria-pressed={modoVista === 'foto360'}
+              aria-label="Vista sala real 360"
+            >
+              Sala real 360
+            </button>
+            <button
+              type="button"
+              className={`btn-ghost text-sm min-h-[44px] border ${
+                enPantallaCompleta
+                  ? '!text-white !border-white/70 bg-white/10 hover:bg-white/20'
+                  : 'border-court-200'
+              } ${
+                modoVista === 'sala3d'
+                  ? enPantallaCompleta
+                    ? '!bg-white/30 font-bold !text-white'
+                    : 'bg-court-100 font-bold'
+                  : ''
+              }`}
+              onClick={() => cambiarModoVista('sala3d')}
+              aria-pressed={modoVista === 'sala3d'}
+              aria-label="Vista sala 3D"
+            >
+              Sala 3D
+            </button>
           </div>
 
           <div
@@ -488,8 +605,9 @@ export function SalaJuzgado360({
               enPantallaCompleta ? '!text-white' : 'text-court-600'
             }`}
           >
-            Sala de vistas en 3D (Three.js): muebles CC0 de Poly Haven, texturas
-            PBR CC0, HDRI de interior y figuras 3D. Ver CREDITOS en /sala-previa/.
+            {modoVista === 'foto360'
+              ? 'Foto 360 de sala real (material cedido por el equipo). Arrastra o usa Juez / Abogados / Entrada. Ver CREDITOS en /sala-previa/.'
+              : 'Sala de vistas en 3D (Three.js): muebles CC0 de Poly Haven, texturas PBR CC0, HDRI de interior y figuras 3D. Ver CREDITOS en /sala-previa/.'}
           </p>
         </div>
       </div>

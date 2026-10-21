@@ -1,12 +1,25 @@
-Sala Previa — créditos de la simulación 3D
+Sala Previa — créditos de la simulación 3D y foto 360
 
-== Escena visual ==
+== Vista: Sala real 360 ==
+
+Carpeta: panorama/
+Foto equirectangular de una sala de vistas real (captura / material
+cedido por el equipo). Se muestra por defecto; puedes cambiar a la
+sala 3D con el interruptor «Vista».
+
+- sala-real-4096.webp / .jpg  (~4096×2048, uso principal)
+- sala-real-2048.webp / .jpg  (~2048×1024, pantallas pequeñas)
+
+Origen: material cedido por el equipo / captura local.
+No redistribuir fuera del proyecto sin permiso del equipo.
+
+== Escena visual 3D ==
 
 Sala de vistas en Three.js (@react-three/fiber + drei):
 habitación con estrado, mesas de abogados, bancos de público, puerta de
 entrada, iluminación de sala y figuras estilizadas (cápsulas, sin fotos).
 
-No se usan panoramas 360 fotográficos: distorsionaban al rotar.
+La vista 3D es opcional (interruptor «Sala 3D»).
 
 == Texturas PBR (CC0) ==
 
