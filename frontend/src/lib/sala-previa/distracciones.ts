@@ -28,6 +28,10 @@ export type TipoDistraccion =
   | 'shh'
   | 'pasos-lejanos'
   | 'nombre-llamado'
+  | 'nube-tapa-sol'
+  | 'sale-sol'
+  | 'fluorescente-zumba'
+  | 'persiana-baja'
 
 export interface Distraccion {
   id: number
@@ -267,6 +271,38 @@ export const DISTRACCIONES: Record<TipoDistraccion, DefDistraccion> = {
     explicacion:
       'Han llamado un nombre en el pasillo. No es el tuyo en este ensayo. Puedes seguir.',
     registro: 'Llamaron un nombre en el pasillo',
+  },
+  'nube-tapa-sol': {
+    duracion: 10,
+    peso: 1.5,
+    aviso: 'Una nube va a tapar el sol. La sala se verá un poco más oscura.',
+    explicacion:
+      'Una nube ha tapado el sol y la sala se ha oscurecido un momento. Es la luz de fuera. Puedes seguir.',
+    registro: 'Una nube tapó el sol',
+  },
+  'sale-sol': {
+    duracion: 9,
+    peso: 1.2,
+    aviso: 'Va a salir el sol. Entrará más luz por las ventanas.',
+    explicacion:
+      'Ha salido el sol y ha entrado más luz por las ventanas. Luego vuelve a ser como antes. Puedes seguir.',
+    registro: 'Salió el sol',
+  },
+  'fluorescente-zumba': {
+    duracion: 6,
+    peso: 1.2,
+    aviso: 'Un fluorescente del techo va a zumbar y bajar un poco.',
+    explicacion:
+      'Un fluorescente del techo ha zumbado y ha bajado un poco. Pasa en muchos edificios. Puedes seguir.',
+    registro: 'Zumbó un fluorescente',
+  },
+  'persiana-baja': {
+    duracion: 4.5,
+    peso: 1,
+    aviso: 'Alguien va a bajar una persiana.',
+    explicacion:
+      'Alguien ha bajado una persiana porque entraba mucho sol. Ahora entra menos luz. Puedes seguir.',
+    registro: 'Bajaron una persiana',
   },
 }
 

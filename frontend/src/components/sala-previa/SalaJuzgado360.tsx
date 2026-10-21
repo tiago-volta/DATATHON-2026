@@ -330,6 +330,7 @@ export function SalaJuzgado360({
               personaEntrando={personaEntrando}
               papel={papel}
               distraccion={activa}
+              enCalma={enCalma}
             />
 
             {aviso && (

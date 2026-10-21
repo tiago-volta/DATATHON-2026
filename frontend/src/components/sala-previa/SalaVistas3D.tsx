@@ -13,6 +13,7 @@ import {
   type PapelSala,
 } from '@/lib/sala-previa/salaVistasConfig'
 import type { Distraccion, TipoDistraccion } from '@/lib/sala-previa/distracciones'
+import { LuzSala3D } from './LuzSala3D'
 
 const TEX = {
   suelo: '/sala-previa/texturas/suelo-madera.jpg',
@@ -1213,48 +1214,6 @@ function PersonasEscena({
   )
 }
 
-function Luces({ intensidad }: { intensidad: number }) {
-  const t = intensidad / 100
-  // Iluminación de sala: base clara; el estímulo solo sube un poco (sin glare).
-  const amb = 0.42 + t * 0.38
-  const dir = 0.55 + t * 0.7
-  const fluo = 0.35 + t * 0.55
-
-  return (
-    <>
-      <ambientLight intensity={amb} color="#fff8ef" />
-      <hemisphereLight args={['#f2f5f8', '#8a6d55', 0.4 + t * 0.25]} />
-      <directionalLight position={[3.5, 6.5, 1.5]} intensity={dir} color="#fff4e4" />
-      <directionalLight
-        position={[-2.5, 4.5, -1.5]}
-        intensity={0.22 + t * 0.2}
-        color="#e8eef4"
-      />
-      <pointLight
-        position={[-2, 3.7, -2]}
-        intensity={fluo}
-        color="#f5f0e0"
-        distance={16}
-        decay={2}
-      />
-      <pointLight
-        position={[2, 3.7, -2]}
-        intensity={fluo}
-        color="#f5f0e0"
-        distance={16}
-        decay={2}
-      />
-      <pointLight
-        position={[0, 3.7, 3]}
-        intensity={fluo * 0.75}
-        color="#eef4f6"
-        distance={14}
-        decay={2}
-      />
-    </>
-  )
-}
-
 function CamaraLook({
   yaw,
   pitch,
@@ -1374,6 +1333,8 @@ interface EscenaProps {
   personaEntrando?: boolean
   papel?: PapelSala
   distraccion?: Distraccion | null
+  /** En calma la luz de fuera se queda estable y sin eventos. */
+  enCalma?: boolean
 }
 
 function EscenaInterior(props: EscenaProps) {
@@ -1393,6 +1354,7 @@ function EscenaInterior(props: EscenaProps) {
           props.animando,
           papel,
           distraccion?.id,
+          props.enCalma,
         ]}
       />
       <CamaraLook
@@ -1405,7 +1367,12 @@ function EscenaInterior(props: EscenaProps) {
         papel={papel}
       />
       <Exposicion luz={props.luz} d={distraccion} />
-      <Luces intensidad={props.luz} />
+      <LuzSala3D
+        intensidad={props.luz}
+        d={distraccion}
+        enCalma={Boolean(props.enCalma)}
+        reduced={props.reduced}
+      />
       <Suspense fallback={null}>
         <Environment files={HDRI} environmentIntensity={0.32} />
         <Mobiliario distraccion={distraccion} />

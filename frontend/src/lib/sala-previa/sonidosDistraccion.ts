@@ -119,6 +119,12 @@ export class SonidosDistraccion {
       case 'nombre-llamado':
         this.voz(0.35, d.frase ?? 'García López, a la sala tres.', v, 0.85)
         break
+      case 'fluorescente-zumba':
+        bancoSonidos().zumbido({ en: 0.2, duracion: dur - 0.6, volumen: v })
+        break
+      case 'persiana-baja':
+        bancoSonidos().persiana({ en: 0.3, duracion: 2.8, volumen: v })
+        break
       default:
         break
     }
