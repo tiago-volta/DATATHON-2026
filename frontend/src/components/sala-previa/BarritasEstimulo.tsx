@@ -20,8 +20,8 @@ interface Props {
 }
 
 /**
- * Panel compacto de los 4 estímulos, pensado para ir junto a la entrada
- * en la escena 360. Los controles largos de ControlesEstimulo siguen abajo.
+ * Panel compacto de los 4 estímulos, a la izquierda del viewer 360
+ * (fuera del canvas). Los controles largos de ControlesEstimulo siguen abajo.
  */
 export function BarritasEstimulo({
   valores,
@@ -31,9 +31,9 @@ export function BarritasEstimulo({
 }: Props) {
   return (
     <div
-      className={`rounded-suave border-2 border-puente-200 bg-white/95 backdrop-blur-sm shadow-sm p-3 w-[11.5rem] sm:w-[12.5rem] ${className}`}
+      className={`rounded-suave border-2 border-puente-200 bg-white shadow-sm p-3 w-[11.5rem] sm:w-[12.5rem] ${className}`}
       role="group"
-      aria-label="Niveles de estímulo junto a la entrada"
+      aria-label="Niveles de estímulo de la escena"
     >
       <p className="text-xs font-bold text-puente-800 mb-2 leading-tight">
         En la entrada
