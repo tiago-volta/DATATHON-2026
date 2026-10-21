@@ -1,9 +1,11 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useCallback, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
+import { EscanerFicha } from '@/components/profesional/EscanerFicha'
 import { useRouter } from 'next/navigation'
+import { rutaPasaporteDesdeTexto } from '@/lib/pasaporte'
 
 const PASOS_CGPJ = [
   {
@@ -76,11 +78,18 @@ const AJUSTES_POR_PERFIL = {
 
 export default function PaginaProfesional() {
   const router = useRouter()
+  const abrirFicha = useCallback((ruta: string) => {
+    router.push(ruta)
+  }, [router])
   const [perfilSeleccionado, setPerfilSeleccionado] = useState<keyof typeof AJUSTES_POR_PERFIL | null>(null)
   const [ajustesMarcados, setAjustesMarcados] = useState<string[]>([])
   const [informeGenerado, setInformeGenerado] = useState<string[] | null>(null)
   const [codigoEntrada, setCodigoEntrada] = useState('')
   const [errorCodigo, setErrorCodigo] = useState('')
+  const [camaraDisponible, setCamaraDisponible] = useState<boolean | null>(null)
+  const anotarCamara = useCallback((soportada: boolean) => {
+    setCamaraDisponible(soportada)
+  }, [])
 
   const perfil = perfilSeleccionado ? AJUSTES_POR_PERFIL[perfilSeleccionado] : null
 
@@ -114,13 +123,13 @@ export default function PaginaProfesional() {
     e.preventDefault()
     const valor = codigoEntrada.trim()
     if (!valor) {
-      setErrorCodigo('Escribe el código de 8 caracteres o pega el enlace del Pasaporte.')
+      setErrorCodigo('Escribe el código o pega el enlace de la ficha.')
       return
     }
 
-    if (valor.includes('/pasaporte/ver?')) {
-      const idx = valor.indexOf('/pasaporte/ver?')
-      router.push(valor.slice(idx))
+    const ruta = rutaPasaporteDesdeTexto(valor)
+    if (ruta) {
+      router.push(ruta)
       return
     }
 
@@ -134,9 +143,9 @@ export default function PaginaProfesional() {
       if (guardado) {
         const datos = JSON.parse(guardado)
         if (datos?.id?.toUpperCase() === valor && typeof datos.url === 'string') {
-          const idx = datos.url.indexOf('/pasaporte/ver?')
-          if (idx !== -1) {
-            router.push(datos.url.slice(idx))
+          const rutaGuardada = rutaPasaporteDesdeTexto(datos.url)
+          if (rutaGuardada) {
+            router.push(rutaGuardada)
             return
           }
         }
@@ -146,7 +155,7 @@ export default function PaginaProfesional() {
     }
 
     setErrorCodigo(
-      `No encontramos el Pasaporte con código ${valor} en este dispositivo. Escanea el código QR de la persona o pega el enlace completo.`
+      `No encontramos la ficha con código ${valor} en este dispositivo. Escanea el código o pega el enlace.`
     )
   }
 
@@ -273,15 +282,18 @@ export default function PaginaProfesional() {
           <h2 className="text-2xl font-bold text-court-800 mb-4">
             Leer Pasaporte de Ajustes
           </h2>
+          <EscanerFicha onRuta={abrirFicha} onSoporte={anotarCamara} />
           <form className="card" onSubmit={consultarPasaporte} noValidate>
             <label
               htmlFor="codigo-pasaporte"
               className="block font-medium text-court-700 mb-2"
             >
-              Código o enlace del Pasaporte
+              Código o enlace de la ficha
             </label>
-            <p id="ayuda-codigo" className="text-court-600 text-sm mb-4">
-              Introduce el código alfanumérico (ej: A1B2C3D4) o pega el enlace completo del código QR.
+            <p id="ayuda-codigo" className="text-court-700 text-sm mb-4">
+              {camaraDisponible === false
+                ? 'Pega el enlace o escribe el código corto. En este navegador no se puede usar la cámara.'
+                : 'Escanea el código con la cámara o pega el enlace. En este mismo móvil también puedes escribir el código corto.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <input

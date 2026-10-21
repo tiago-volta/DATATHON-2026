@@ -7,7 +7,7 @@ import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
 
 export const metadata: Metadata = {
   title: 'InclusiveCourt - Accesibilidad en la Justicia',
-  description: 'De la citación a la sentencia, a tu manera',
+  description: 'Prueba el juzgado y ensaya tu declaración antes del día.',
 }
 
 export const viewport: Viewport = {

@@ -1,12 +1,10 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
-import Link from 'next/link'
-import { QRCodeSVG } from 'qrcode.react'
 import { Icono } from '@/components/Icono'
-import { Marca } from '@/components/Marca'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
+import { FichaAjustes } from '@/components/pasaporte/FichaAjustes'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
@@ -18,6 +16,7 @@ import {
   validarNombre,
   validarTelefono,
 } from '@/lib/pasaporte'
+import { leerAyudasSala } from '@/lib/perfil/perfil'
 import {
   guardarPreferencias,
   leerPreferencias,
@@ -42,7 +41,7 @@ export default function PaginaPasaporte() {
   }>({})
   const [pasaporteId, setPasaporteId] = useState('')
   const [qrUrl, setQrUrl] = useState('')
-  const [copiado, setCopiado] = useState(false)
+  const [avisoCopia, setAvisoCopia] = useState('')
   /** Apoyo local opcional (no va al QR). Ver preferencias.ts — integración organismos [PENDIENTE]. */
   const [necesitoApoyos, setNecesitoApoyos] = useState(false)
   const {
@@ -90,8 +89,11 @@ export default function PaginaPasaporte() {
     const idsUrl = raw
       ? normalizarAjustes(raw.split(',').map((id) => id.trim()))
       : []
+    const ayudasSala = idsUrl.length === 0 ? leerAyudasSala() : []
 
-    const ajustesCombinados = Array.from(new Set([...ajustesGuardados, ...idsUrl]))
+    const ajustesCombinados = Array.from(
+      new Set([...ajustesGuardados, ...idsUrl, ...ayudasSala])
+    )
 
     if (nombreGuardado || contactoGuardado || ajustesCombinados.length > 0) {
       setDatos({
@@ -207,10 +209,10 @@ export default function PaginaPasaporte() {
     if (!qrUrl) return
     try {
       await navigator.clipboard.writeText(qrUrl)
-      setCopiado(true)
-      setTimeout(() => setCopiado(false), 2000)
+      setAvisoCopia('Enlace copiado.')
+      window.setTimeout(() => setAvisoCopia(''), 2000)
     } catch {
-      /* ignore */
+      setAvisoCopia('No se ha podido copiar el enlace.')
     }
   }
 
@@ -221,12 +223,12 @@ export default function PaginaPasaporte() {
   return (
     <>
       <main id="contenido-principal" className="page-shell">
-        <nav className="mb-8" aria-label="Pasos del proceso">
+        <nav className="no-imprimir mb-8" aria-label="Pasos del proceso">
           <ol className="flex items-center gap-2 text-sm flex-wrap">
             {[
               { key: 'datos', label: '1. Tus datos' },
               { key: 'ajustes', label: '2. Qué necesitas' },
-              { key: 'resultado', label: '3. Tu Pasaporte' },
+              { key: 'resultado', label: '3. Tu ficha' },
             ].map((item, i) => (
               <li key={item.key} className="flex items-center gap-2">
                 {i > 0 && (
@@ -502,125 +504,31 @@ export default function PaginaPasaporte() {
         )}
 
         {paso === 'resultado' && (
-          <section>
-            <h1 className="titulo-pagina text-center">
-              Tu Pasaporte de Ajustes
-            </h1>
-            <p className="entradilla text-center max-w-md mx-auto">
-              Enseña este QR en el juzgado. Al escanearlo se abre tu Pasaporte
-              con los ajustes que pediste.
-            </p>
-
-            <article className="hoja max-w-md mx-auto">
-              <header className="border-b-2 border-court-800 pb-6 mb-6">
-                <div className="flex items-center gap-3 mb-4 text-court-800">
-                  <Marca className="w-8 h-8" />
-                  <span className="text-xl font-bold" translate="no">InclusiveCourt</span>
-                </div>
-                <p className="text-3xl font-bold text-court-900 mb-1">{datos.nombre}</p>
-                <p className="text-court-700">Pasaporte de Ajustes</p>
-              </header>
-
-              <div className="flex justify-center mb-4">
-                <div className="bg-white p-4 rounded-suave border border-court-200">
-                  {qrUrl && (
-                    <QRCodeSVG
-                      value={qrUrl}
-                      size={200}
-                      level="M"
-                      fgColor="#1d1d1f"
-                      bgColor="#ffffff"
-                      aria-label={`Código QR del Pasaporte de ${datos.nombre}`}
-                    />
-                  )}
-                </div>
-              </div>
-
-              <p className="text-center text-court-800 mb-2 numeros">
-                Código: {pasaporteId}
-              </p>
-              <p className="text-center text-sm text-court-700 mb-6 break-all px-2">
-                {qrUrl}
-              </p>
-
-              <div className="border-t border-court-200 pt-6">
-                <h2 className="font-bold text-court-800 mb-3">
-                  Esta persona necesita:
-                </h2>
-                <ul className="space-y-2">
-                  {ajustesSeleccionados.map((ajuste) => (
-                    <li key={ajuste.id} className="flex items-start gap-2">
-                      <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
-                      <span className="text-court-700">{ajuste.nombre}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {datos.contacto && (
-                <div className="border-t border-court-200 pt-4 mt-4">
-                  <p className="text-sm text-court-700">
-                    <strong>Contacto de emergencia:</strong> {datos.contacto}
-                  </p>
-                </div>
-              )}
-            </article>
-
-            <div className="flex flex-col gap-3 mt-8 max-w-md mx-auto">
-              <Link
-                href={qrUrl || '#'}
-                className="btn-primary w-full text-center"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Abrir vista escaneable
-              </Link>
-              <button
-                type="button"
-                onClick={copiarEnlace}
-                className="btn-secondary w-full"
-                aria-live="polite"
-              >
-                {copiado ? 'Enlace copiado' : 'Copiar enlace del Pasaporte'}
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="btn-ghost w-full"
-              >
-                Imprimir o guardar
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setPaso('datos')
-                  setDatos({ nombre: '', ajustes: [], contacto: '' })
-                  setErrores({})
-                  setPasaporteId('')
-                  setQrUrl('')
-                  setCopiado(false)
-                  try {
-                    localStorage.removeItem('court-pasaporte')
-                  } catch {
-                    /* ignore */
-                  }
-                }}
-                className="btn-ghost"
-              >
-                Crear otro Pasaporte
-              </button>
-            </div>
-
-            <div className="mt-8 p-4 bg-calma-sage rounded-tarjeta text-center text-court-800">
-              Este Pasaporte no muestra ningún diagnóstico. Solo indica qué
-              adaptaciones necesitas.
-              <br />
-              Base legal: Art. 7 bis LEC, Art. 109 LECrim, Ley 15/2022.
-            </div>
-          </section>
+          <FichaAjustes
+            nombre={datos.nombre}
+            ajustes={ajustesSeleccionados}
+            contacto={datos.contacto}
+            codigo={pasaporteId}
+            url={qrUrl}
+            avisoCopia={avisoCopia}
+            onCopiar={() => void copiarEnlace()}
+            onNueva={() => {
+              setPaso('datos')
+              setDatos({ nombre: '', ajustes: [], contacto: '' })
+              setErrores({})
+              setPasaporteId('')
+              setQrUrl('')
+              setAvisoCopia('')
+              try {
+                localStorage.removeItem('court-pasaporte')
+              } catch {
+                /* ignore */
+              }
+            }}
+          />
         )}
 
-        <div className="mt-12 max-w-lg mx-auto">
+        <div className="no-imprimir mt-12 max-w-lg mx-auto">
           <PanelInsignias conseguidas={insigniasUtiles} apartado="pasaporte" />
         </div>
       </main>

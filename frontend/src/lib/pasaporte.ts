@@ -134,3 +134,22 @@ export function parsePasaporteSearchParams(
 export function etiquetasAjustes(ids: string[]) {
   return AJUSTES_DISPONIBLES.filter((a) => ids.includes(a.id))
 }
+
+const MARCA_RUTA_FICHA = '/pasaporte/ver?'
+
+/** Path interno de la ficha, o null si el texto no es esa ruta. */
+export function rutaPasaporteDesdeTexto(texto: string): string | null {
+  const recortado = texto.trim()
+  const idx = recortado.indexOf(MARCA_RUTA_FICHA)
+  if (idx === -1) return null
+  const candidato = recortado.slice(idx).split(/\s/)[0]
+  if (!candidato.startsWith(MARCA_RUTA_FICHA) || candidato.length > 2000) return null
+  try {
+    const url = new URL(candidato, 'https://inclusivecourt.local')
+    if (url.pathname !== '/pasaporte/ver') return null
+    if (url.search.length < 2) return null
+    return `${url.pathname}${url.search}`
+  } catch {
+    return null
+  }
+}

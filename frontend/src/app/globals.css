@@ -545,6 +545,20 @@ button.hoja:active {
   }
 }
 
+@media print {
+  .cabecera-capa,
+  footer,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  .hoja-imprimible {
+    box-shadow: none !important;
+    border-color: #1d1d1f !important;
+    max-width: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

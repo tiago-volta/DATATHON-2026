@@ -19,15 +19,6 @@ Se cita a D. LUIS GARCÍA FERNÁNDEZ, con DNI 32.XXX.XXX-Y, domiciliado en C/ Ej
 
 Se le apercibe de que, si no comparece sin causa justificada, podrá ser sancionado con multa de 200 a 5.000 euros. Deberá acudir provisto de su documento nacional de identidad.`
 
-const EJEMPLO_JUAN = `JUZGADO DE INSTRUCCIÓN Nº 7 DE A CORUÑA
-Juicio por Delito Leve 892/2026
-
-CÉDULA DE CITACIÓN
-
-Se cita a D. JUAN MARTÍNEZ LÓPEZ para que comparezca ante este Juzgado el día 12 de noviembre de 2026, a las 09:30 horas, en calidad de INVESTIGADO, para la celebración del juicio por delito leve de estafa (art. 248 CP, cuantía inferior a 400 euros) por los hechos ocurridos el 3 de octubre de 2026 relativos a una compraventa en línea.
-
-Se le informa de sus derechos conforme al artículo 118 de la Ley de Enjuiciamiento Criminal: derecho a guardar silencio, a designar abogado o solicitar uno de oficio y a presentar pruebas de descargo hasta el día del juicio.`
-
 const EJEMPLO_SENTENCIA = `JUZGADO DE LO PENAL Nº 2 DE A CORUÑA
 Procedimiento Abreviado 114/2026 — Sentencia nº 318/2026
 
@@ -795,18 +786,6 @@ export default function PaginaCitacion() {
                 <button
                   type="button"
                   onClick={() => {
-                    setTexto(EJEMPLO_JUAN)
-                    setNombreArchivo('')
-                    setError('')
-                    setMensajeExitoArchivo('')
-                  }}
-                  className="btn-ghost"
-                >
-                  Ejemplo Juan (citación investigado)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
                     setTexto(EJEMPLO_SENTENCIA)
                     setNombreArchivo('')
                     setError('')
@@ -1317,18 +1296,18 @@ export default function PaginaCitacion() {
 
             <div className="bg-accent-success/10 border-2 border-accent-success rounded-tarjeta p-6 mb-8">
               <h2 className="text-xl font-bold text-court-800 mb-2">
-                Puedes pedir apoyos con tu Pasaporte de Ajustes
+                El siguiente paso es la sala
               </h2>
-              <p className="text-court-600 mb-4">
-                Tienes derecho a pedir adaptaciones sin tener que explicar tu diagnóstico:
-                sala de espera tranquila, preguntas de una en una, lectura en voz alta o persona facilitadora.
+              <p className="text-court-700 mb-4">
+                Entra en la sala y ensaya tu declaración antes del día.
+                Puedes parar cuando quieras.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/pasaporte" className="btn-primary">
-                  Crear mi Pasaporte de Ajustes
+                <Link href="/sala-previa" className="btn-primary">
+                  Entrar en la sala
                 </Link>
-                <Link href="/ensaya" className="btn-secondary">
-                  Ensayar mi declaración
+                <Link href="/pasaporte" className="btn-secondary">
+                  Preparar mi ficha
                 </Link>
               </div>
             </div>

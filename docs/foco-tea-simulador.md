@@ -13,7 +13,7 @@ Feedback del sector + notas del compañero, compactado. El pitch manda: **una so
 | Problema | Anticipar el juzgado y ensayar la declaración antes del día. |
 | Flujo | Citación → simulador → ficha de ajustes, **continuo**, no pantallas sueltas. |
 | Perfil | Un perfil por persona: tolerancia, estímulos, progreso. |
-| QR | **No.** Se percibe discriminatorio. Sustituir por ficha imprimible + código corto. |
+| QR | **Se queda.** La ficha se lee sola. El QR abre esa misma ficha en el móvil del profesional. El código corto vale si no puede escanear. |
 | Modo bot / voz protagonista | **Fuera** del relato (ya no encaja con foco TEA). |
 | FAQ | Tarjetas FAQ en las preguntas del ensayo. |
 | Roles | Distinguir juez / abogado / testigo (hacen cosas distintas). |
@@ -29,7 +29,7 @@ Feedback del sector + notas del compañero, compactado. El pitch manda: **una so
 3. En la **sala**: gente que entra y se mueve; a veces la atención se desvía a otro sitio; subes estímulos cuando aguantes.
 4. El **ensayo** ocurre en la escena: diálogos, preguntas, FAQ en tarjetas.
 5. Si te sientes cómodo (ej. ~20 personas) y superas los diálogos → **subes de nivel** y puedes añadir más estímulos.
-6. Al salir: se actualiza el perfil y sale la **ficha de ajustes** (sin diagnóstico, sin QR).
+6. Al salir: se actualiza el perfil y sale la **ficha de ajustes** (sin diagnóstico). El QR va grande en la ficha. El código corto queda debajo, para dictarlo.
 
 ```
 Perfil → Citación (en flujo) → Sala + Ensayo → Ficha de ajustes → (vuelve al perfil)
@@ -53,13 +53,21 @@ Perfil → Citación (en flujo) → Sala + Ensayo → Ficha de ajustes → (vuel
 
 ---
 
-## Persona B — Perfil, flujo continuo y cierre (sin QR)
+## Persona B — Perfil, flujo continuo y QR fácil
 
-**Objetivo:** un recorrido continuo y un cierre legal que no señale a la persona.
+**Objetivo:** un recorrido continuo y una ficha que el profesional abre escaneando el QR.
+
+Hoy el QR está, pero cuesta usarlo: la pantalla pide «enséñalo», mezcla el enlace largo con el código, y en el panel el código corto solo funciona en el mismo dispositivo.
 
 - [ ] Perfil de usuario (local primero): rol, tolerancia, estímulos, historial de práctica.
 - [ ] Flujo continuo citación → entrada al simulador → ficha de ajustes (sin menú de 4 módulos).
-- [ ] Sustituir QR por **ficha imprimible + código corto** (el profesional consulta el código, no un QR en la frente).
+- [ ] QR más fácil en la ficha de cierre:
+  - La lista de ajustes se lee en la hoja, sin escanear.
+  - El QR es grande y es la acción principal (en pantalla y al imprimir).
+  - El código corto se lee de un vistazo, para dictarlo.
+  - Copiar el enlace es un solo botón. El enlace largo no compite con el QR.
+  - El texto pide mostrar la ficha. El QR es la forma de abrirla en el otro móvil.
+- [ ] En el panel profesional: escanear con la cámara, o pegar el enlace. El código corto sigue como apoyo.
 - [ ] Pasaporte fusionado con la simulación: la ficha sale del perfil / check-in de la sala.
 - [ ] Textos de home y pitch alineados al problema único.
 - [ ] Recortar narrativa Juan y entradas que dispersen.
@@ -71,7 +79,7 @@ Perfil → Citación (en flujo) → Sala + Ensayo → Ficha de ajustes → (vuel
 ## Qué no hacer ahora
 
 - No ampliar el pitch a Juan, mediador, panel profesional largo ni “suite de módulos”.
-- No vender el QR.
+- No quitar el QR. El pitch sigue siendo el simulador. El QR abre la ficha.
 - No implementar este briefing en código hasta repartir tareas del checklist.
 
 ---
