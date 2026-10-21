@@ -44,9 +44,9 @@ export class SonidosDistraccion {
     const dur = d.duracion
     switch (d.tipo) {
       case 'entra-persona':
-        this.puerta(0, v * 0.7)
+        this.puerta(0, v * 0.75)
         this.pasos(0.9, 6, 0.5, v * 0.6)
-        this.puerta(dur - 1.4, v * 0.5)
+        this.puerta(dur - 1.4, v * 0.55)
         if (d.variante === 0) this.crujido(dur - 2.6, v * 0.5)
         break
       case 'habla-fondo':
@@ -55,9 +55,14 @@ export class SonidosDistraccion {
       case 'movil':
         this.vibracion(0.3, v)
         this.vibracion(1.5, v)
+        this.vibracion(2.7, v * 0.85)
+        break
+      case 'timbre-movil':
+        this.timbre(0.2, v)
         break
       case 'tos':
-        this.tos(0.4, v)
+        this.tos(0.35, v)
+        if (d.variante === 1) this.tos(1.1, v * 0.75)
         break
       case 'boligrafo':
         for (let i = 0; i < 5; i++) this.clic(0.3 + i * 0.32 + Math.random() * 0.08, v)
@@ -77,7 +82,8 @@ export class SonidosDistraccion {
         this.crujido(0.2, v)
         break
       case 'portazo':
-        this.golpe(0.7, v)
+        this.puerta(0.15, v * 0.55)
+        this.golpe(0.85, v)
         break
       case 'agente-postura':
         this.pasos(0.6, 2, 0.5, v * 0.45)
@@ -87,6 +93,18 @@ export class SonidosDistraccion {
         break
       case 'abogado-susurra':
         this.voz(0.4, d.frase ?? 'Vamos bien.', v * 0.3, 0.95)
+        break
+      case 'martillo':
+        this.martillo(0.25, v)
+        break
+      case 'shh':
+        this.shh(0.3, v)
+        break
+      case 'pasos-lejanos':
+        this.pasos(0.2, 8, 0.42, v * 0.4)
+        break
+      case 'nombre-llamado':
+        this.voz(0.35, d.frase ?? 'García López, a la sala tres.', v * 0.45, 0.85)
         break
       default:
         break
@@ -205,9 +223,53 @@ export class SonidosDistraccion {
     }
   }
 
+  /** Timbre de móvil (dos tonos), distinto de la vibración corta. */
+  private timbre(seg: number, v: number) {
+    if (!this.ctx || !this.salida) return
+    for (let i = 0; i < 4; i++) {
+      const t0 = this.ctx.currentTime + seg + i * 0.58
+      for (const freq of [880, 988]) {
+        const osc = this.ctx.createOscillator()
+        osc.type = 'sine'
+        osc.frequency.value = freq
+        const g = this.envolvente(t0, 0.045 * v, 0.02, 0.28)
+        if (!g) return
+        osc.connect(g)
+        osc.start(t0)
+        osc.stop(t0 + 0.32)
+      }
+    }
+  }
+
+  /** Golpes del martillo del juez (madera). */
+  private martillo(seg: number, v: number) {
+    const golpes = [0, 0.38]
+    for (const off of golpes) {
+      this.ruidoFiltrado(seg + off, 'lowpass', 220, 0.9, 0.38 * v, 0.004, 0.28)
+      this.ruidoFiltrado(seg + off + 0.01, 'bandpass', 1100, 3, 0.12 * v, 0.003, 0.12)
+      if (!this.ctx) continue
+      const t0 = this.ctx.currentTime + seg + off
+      const osc = this.ctx.createOscillator()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(180, t0)
+      osc.frequency.exponentialRampToValueAtTime(55, t0 + 0.22)
+      const g = this.envolvente(t0, 0.1 * v, 0.005, 0.25)
+      if (!g) continue
+      osc.connect(g)
+      osc.start(t0)
+      osc.stop(t0 + 0.28)
+    }
+  }
+
+  private shh(seg: number, v: number) {
+    this.ruidoFiltrado(seg, 'highpass', 2800, 0.6, 0.09 * v, 0.08, 0.55)
+    this.ruidoFiltrado(seg + 0.35, 'highpass', 3200, 0.7, 0.06 * v, 0.05, 0.4)
+  }
+
   private tos(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'bandpass', 700, 1.2, 0.22 * v, 0.02, 0.22)
-    this.ruidoFiltrado(seg + 0.32, 'bandpass', 620, 1.2, 0.16 * v, 0.02, 0.2)
+    this.ruidoFiltrado(seg, 'bandpass', 700, 1.2, 0.26 * v, 0.015, 0.2)
+    this.ruidoFiltrado(seg + 0.28, 'bandpass', 580, 1.4, 0.2 * v, 0.015, 0.22)
+    this.ruidoFiltrado(seg + 0.08, 'lowpass', 400, 1, 0.08 * v, 0.01, 0.15)
   }
 
   private clic(seg: number, v: number) {

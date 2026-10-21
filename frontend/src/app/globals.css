@@ -368,7 +368,7 @@
   cursor: not-allowed;
 }
 
-/* Sala Previa 360: pantalla completa del viewer + barritas */
+/* Sala Previa 360: pantalla completa del viewer */
 .sala-juzgado-fs-root:fullscreen,
 .sala-juzgado-fs-root:-webkit-full-screen {
   position: relative;
@@ -403,23 +403,6 @@
   min-height: min(70vh, 100%);
   height: calc(100vh - 7.5rem);
   border-radius: 0.75rem;
-}
-
-.sala-juzgado-fs-root:fullscreen .sala-fs-barritas,
-.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-barritas {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  z-index: 30;
-  max-width: min(14rem, 42vw);
-  pointer-events: auto;
-}
-
-.sala-juzgado-fs-root:fullscreen .sala-fs-barritas > div,
-.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-barritas > div {
-  width: 100% !important;
-  background: #ffffff;
-  border: 1px solid #d2d2d7;
 }
 
 .sala-juzgado-fs-root:fullscreen,

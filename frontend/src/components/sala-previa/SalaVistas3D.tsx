@@ -863,9 +863,11 @@ type Gesto = 'habla' | 'movil' | 'tos' | 'levanta' | 'susurra' | 'postura'
 const GESTO_PUBLICO: Partial<Record<TipoDistraccion, Gesto>> = {
   'habla-fondo': 'habla',
   movil: 'movil',
+  'timbre-movil': 'movil',
   tos: 'tos',
   'levanta-sienta': 'levanta',
   'silla-cruje': 'postura',
+  shh: 'susurra',
 }
 
 /** Figura que puede girar la cabeza, inclinarse, mirar el móvil o levantarse un momento. */

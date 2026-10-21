@@ -27,6 +27,7 @@ import { cargarPerfil, guardarPerfil, ROLES_DISPONIBLES, type RolPerfil } from '
 import {
   ESTIMULOS_VACIOS,
   NIVELES,
+  VALORES_AMBIENTE_SALA,
   bajarEstimulosAComodo,
 } from '@/lib/sala-previa/niveles'
 import {
@@ -124,7 +125,7 @@ export default function PaginaSalaPrevia() {
     } else if (ev.tipo === 'puerta') {
       motorRef.current?.reproducirPuerta()
     } else if (ev.tipo === 'movil') {
-      motorRef.current?.reproducirMovil()
+      motorRef.current?.reproducirTimbreMovil()
     } else if (ev.tipo === 'nombre-en-alto') {
       const nom = cargarPerfil()?.nombre || 'Luis García'
       motorRef.current?.reproducirNombreEnAlto(nom)
@@ -224,14 +225,14 @@ export default function PaginaSalaPrevia() {
     setNivelActual(destino)
     setEscenaIndice(0)
     setEnCalma(false)
-    aplicarValores(NIVELES[destino]?.preset ?? ESTIMULOS_VACIOS)
+    aplicarValores(VALORES_AMBIENTE_SALA)
 
     if (introYaVista()) {
       setFase('simulacion')
       setMensaje(
         destino === 0
-          ? 'Sigues en nivel 0. La sala no sube el estímulo por ti.'
-          : `Sigues en el nivel ${destino}. La sala no sube el estímulo por ti.`
+          ? 'Sigues en nivel 0. El ambiente es estable; tú eliges las distracciones.'
+          : `Sigues en el nivel ${destino}. El ambiente es estable; tú eliges las distracciones.`
       )
     }
     // Si la intro no se ha visto, se queda en fase intro (2.1).
@@ -243,7 +244,7 @@ export default function PaginaSalaPrevia() {
       if (!destino) return
       setNivelActual(id)
       setEnCalma(false)
-      aplicarValores(destino.preset)
+      aplicarValores(VALORES_AMBIENTE_SALA)
       setProgreso((p) => {
         const next = marcarNivel(p, id)
         const subio = next.nivelMaximo > p.nivelMaximo
@@ -281,14 +282,14 @@ export default function PaginaSalaPrevia() {
     )
     setNivelActual(destino)
     setEscenaIndice(0)
-    aplicarValores(NIVELES[destino].preset)
+    aplicarValores(VALORES_AMBIENTE_SALA)
     setProgreso((p) => registrarPractica(marcarNivel(p, destino)))
     registrarDiaPractica()
     registrarConfianza('nivel-probado', destino)
     setMensaje(
       destino === 0
-        ? 'Nivel 0. Sala casi vacía. Subes solo si quieres.'
-        : `Nivel ${destino}. Sigues donde lo dejaste. Subes solo si quieres.`
+        ? 'Nivel 0. Ambiente estable. Activa Pocas o Muchas distracciones si quieres practicar interrupciones.'
+        : `Nivel ${destino}. Ambiente estable. Activa Pocas o Muchas distracciones si quieres practicar interrupciones.`
     )
   }
 
@@ -326,7 +327,7 @@ export default function PaginaSalaPrevia() {
   const reanudar = () => {
     setEnCalma(false)
     if (fase !== 'intro') {
-      aplicarValores(NIVELES[nivelActual].preset)
+      aplicarValores(VALORES_AMBIENTE_SALA)
     }
     setMensaje(null)
   }
@@ -334,13 +335,6 @@ export default function PaginaSalaPrevia() {
   const cerrarCheckIn = useCallback(() => {
     setFase('simulacion')
   }, [])
-
-  const onSlider = (id: IdEstimulo, valor: number) => {
-    if (enCalma) setEnCalma(false)
-    const limpio = Math.min(100, Math.max(0, Math.round(valor)))
-    const siguientes = { ...valores, [id]: limpio }
-    aplicarValores(siguientes)
-  }
 
   const procesarMolestias = (molestias: IdEstimulo[]) => {
     setProgreso((p) => {
@@ -395,7 +389,8 @@ export default function PaginaSalaPrevia() {
             </h1>
             <p className="entradilla max-w-2xl mb-0">
               Recorre las fases del día en el juzgado: entrada, control, espera y
-              sala de vistas. Empiezas en silencio. Subes estímulos solo cuando tú digas.
+              sala de vistas. El ambiente es estable; practicas interrupciones reales
+              (móvil, tos, puerta, martillo…) cuando tú quieras.
             </p>
           </header>
 
@@ -493,7 +488,6 @@ export default function PaginaSalaPrevia() {
                       eventoSala={eventoSala}
                       valores={valores}
                       enCalma={enCalma}
-                      onChangeEstimulo={onSlider}
                       onPedirPausa={pausarCalma}
                       onNivelCompletado={(id) => {
                         desbloquear('ensaye-1-nivel')
@@ -507,8 +501,8 @@ export default function PaginaSalaPrevia() {
                     />
 
                     <p className="text-sm text-court-700">
-                      Ajusta ruido, luz y gente en el panel «En la entrada», junto
-                      a la sala 3D. Los pictogramas te ayudan a reconocer cada estímulo.
+                      Debajo de la sala 3D elige Distracciones: Apagadas, Pocas o Muchas.
+                      En modo calma se silencian las interrupciones.
                     </p>
 
                     <div className="flex flex-wrap gap-3">

@@ -7,12 +7,12 @@ const PASOS = [
   {
     titulo: 'Qué vas a ver y oír',
     cuerpo:
-      'Vas a practicar el ambiente de un juzgado por capas: ruido, luz y gente. Empiezas en una sala casi vacía y en silencio.',
+      'Vas a practicar el ambiente de un juzgado. La sala tiene un ambiente estable; el realismo viene de interrupciones aleatorias (móvil, tos, puerta, martillo…).',
   },
   {
     titulo: 'Tú mandas el ritmo',
     cuerpo:
-      'Puedes pausar o pulsar «Volver a la calma» cuando quieras. Nada te obliga a subir de nivel. Los cambios llegan despacio.',
+      'Puedes pausar o pulsar «Volver a la calma» cuando quieras. También eliges si quieres pocas o muchas distracciones, o ninguna.',
   },
   {
     titulo: 'Antes del audio',

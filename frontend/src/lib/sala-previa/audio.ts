@@ -314,34 +314,151 @@ export class MotorAudioSala {
   }
 
   reproducirPuerta() {
+    if (!this.ctx || !this.impulsosGain) return
+    const now = this.ctx.currentTime
+    // Apertura (creak) + cierre suave
+    const osc = this.ctx.createOscillator()
+    const gain = this.ctx.createGain()
+    const filtro = this.ctx.createBiquadFilter()
+    osc.type = 'sawtooth'
+    osc.frequency.setValueAtTime(150, now)
+    osc.frequency.linearRampToValueAtTime(90, now + 0.55)
+    filtro.type = 'bandpass'
+    filtro.frequency.value = 500
+    filtro.Q.value = 5
+    gain.gain.setValueAtTime(0.0001, now)
+    gain.gain.linearRampToValueAtTime(0.07, now + 0.12)
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.7)
+    osc.connect(filtro)
+    filtro.connect(gain)
+    gain.connect(this.impulsosGain)
+    osc.start(now)
+    osc.stop(now + 0.75)
     this.dispararPuerta()
   }
 
+  /** Vibración corta de móvil (buzz). */
   reproducirMovil() {
     if (!this.ctx || !this.impulsosGain) return
     const now = this.ctx.currentTime
-    for (const offset of [0, 0.25]) {
+    for (const offset of [0, 0.28, 1.4, 1.68]) {
       const osc = this.ctx.createOscillator()
       const gain = this.ctx.createGain()
-      osc.type = 'sine'
-      osc.frequency.value = 180
+      const filtro = this.ctx.createBiquadFilter()
+      osc.type = 'square'
+      osc.frequency.value = 155
+      filtro.type = 'lowpass'
+      filtro.frequency.value = 420
       gain.gain.setValueAtTime(0.0001, now + offset)
-      gain.gain.linearRampToValueAtTime(0.08, now + offset + 0.04)
-      gain.gain.linearRampToValueAtTime(0.0001, now + offset + 0.16)
-      osc.connect(gain)
+      gain.gain.linearRampToValueAtTime(0.07, now + offset + 0.03)
+      gain.gain.linearRampToValueAtTime(0.0001, now + offset + 0.2)
+      osc.connect(filtro)
+      filtro.connect(gain)
       gain.connect(this.impulsosGain)
       osc.start(now + offset)
-      osc.stop(now + offset + 0.18)
+      osc.stop(now + offset + 0.22)
+    }
+  }
+
+  /** Timbre de móvil (dos tonos), distinto de la vibración. */
+  reproducirTimbreMovil() {
+    if (!this.ctx || !this.impulsosGain) return
+    const now = this.ctx.currentTime
+    for (let i = 0; i < 4; i++) {
+      const t0 = now + i * 0.55
+      for (const freq of [880, 988]) {
+        const osc = this.ctx.createOscillator()
+        const gain = this.ctx.createGain()
+        osc.type = 'sine'
+        osc.frequency.value = freq
+        gain.gain.setValueAtTime(0.0001, t0)
+        gain.gain.linearRampToValueAtTime(0.06, t0 + 0.02)
+        gain.gain.linearRampToValueAtTime(0.0001, t0 + 0.3)
+        osc.connect(gain)
+        gain.connect(this.impulsosGain)
+        osc.start(t0)
+        osc.stop(t0 + 0.32)
+      }
+    }
+  }
+
+  /** Dos golpes de martillo del juez. */
+  reproducirMartillo() {
+    if (!this.ctx || !this.impulsosGain) return
+    const now = this.ctx.currentTime
+    for (const offset of [0, 0.36]) {
+      const t0 = now + offset
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.12)
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
+      }
+      const source = this.ctx.createBufferSource()
+      source.buffer = buffer
+      const filtro = this.ctx.createBiquadFilter()
+      filtro.type = 'lowpass'
+      filtro.frequency.value = 280
+      const gain = this.ctx.createGain()
+      gain.gain.setValueAtTime(0.0001, t0)
+      gain.gain.linearRampToValueAtTime(0.14, t0 + 0.008)
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.28)
+      source.connect(filtro)
+      filtro.connect(gain)
+      gain.connect(this.impulsosGain)
+      source.start(t0)
+      source.stop(t0 + 0.3)
+
+      const osc = this.ctx.createOscillator()
+      const og = this.ctx.createGain()
+      osc.type = 'triangle'
+      osc.frequency.setValueAtTime(170, t0)
+      osc.frequency.exponentialRampToValueAtTime(50, t0 + 0.2)
+      og.gain.setValueAtTime(0.0001, t0)
+      og.gain.linearRampToValueAtTime(0.09, t0 + 0.005)
+      og.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22)
+      osc.connect(og)
+      og.connect(this.impulsosGain)
+      osc.start(t0)
+      osc.stop(t0 + 0.25)
     }
   }
 
   /** Aviso sonoro breve (sin síntesis de voz): el nombre se muestra en pantalla. */
   reproducirNombreEnAlto(_nombre = 'Luis García') {
-    this.reproducirMovil()
+    this.reproducirMartillo()
   }
 
   reproducirTosMurmullo() {
-    this.dispararPaso()
+    if (!this.ctx || !this.impulsosGain) return
+    const now = this.ctx.currentTime
+    for (const [off, freq, pico] of [
+      [0, 720, 0.11],
+      [0.3, 600, 0.09],
+    ] as const) {
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.22)
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
+      const data = buffer.getChannelData(0)
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
+      }
+      const source = this.ctx.createBufferSource()
+      source.buffer = buffer
+      const filtro = this.ctx.createBiquadFilter()
+      filtro.type = 'bandpass'
+      filtro.frequency.value = freq
+      filtro.Q.value = 1.3
+      const gain = this.ctx.createGain()
+      const t0 = now + off
+      gain.gain.setValueAtTime(0.0001, t0)
+      gain.gain.linearRampToValueAtTime(pico, t0 + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2)
+      source.connect(filtro)
+      filtro.connect(gain)
+      gain.connect(this.impulsosGain)
+      source.start(t0)
+      source.stop(t0 + 0.22)
+    }
   }
 }
 

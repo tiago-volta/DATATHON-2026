@@ -12,7 +12,7 @@ import {
   etiquetaNivelTipico,
   nivelVisualDesdeEscena,
 } from '@/lib/sala-previa/escenas'
-import type { IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
 interface Props {
   indice: number
@@ -20,7 +20,6 @@ interface Props {
   valores: ValoresEstimulo
   enCalma: boolean
   rol?: RolPerfil
-  onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
   onPedirPausa?: () => void
   onNivelCompletado?: (nivelId: number) => void
   onProgresoPreguntas?: (total: number) => void
@@ -33,7 +32,6 @@ export function RecorridoEscenas({
   valores,
   enCalma,
   rol = 'testigo',
-  onChangeEstimulo,
   onPedirPausa,
   onNivelCompletado,
   onProgresoPreguntas,
@@ -148,7 +146,8 @@ export function RecorridoEscenas({
               role="note"
             >
               En un día real, esta zona suele parecerse al nivel «{tipico}».
-              Aquí ves y oyes solo lo que tú eliges. No subimos nada por ti.
+              Aquí el ambiente es estable; el realismo viene de interrupciones
+              (móvil, tos, puerta, martillo…). Puedes apagarlas o poner pocas o muchas.
             </p>
           )}
         </div>
@@ -162,7 +161,6 @@ export function RecorridoEscenas({
           papel={papel}
           eventoExterno={eventoSala}
           miradaExterna={miradaEnsayo}
-          onChangeEstimulo={onChangeEstimulo}
         />
 
         {/* Solo en la sala de vistas abrimos el diálogo de ensayo interactivo */}

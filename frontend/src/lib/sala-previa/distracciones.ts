@@ -6,6 +6,7 @@ export type TipoDistraccion =
   | 'entra-persona'
   | 'habla-fondo'
   | 'movil'
+  | 'timbre-movil'
   | 'tos'
   | 'boligrafo'
   | 'papeles'
@@ -17,6 +18,10 @@ export type TipoDistraccion =
   | 'agente-postura'
   | 'acompanante-susurra'
   | 'abogado-susurra'
+  | 'martillo'
+  | 'shh'
+  | 'pasos-lejanos'
+  | 'nombre-llamado'
 
 export interface Distraccion {
   id: number
@@ -68,9 +73,18 @@ export const DISTRACCIONES: Record<TipoDistraccion, DefDistraccion> = {
     explicacion: 'Ha vibrado un móvil y se ha encendido su pantalla. Es de otra persona. Puedes seguir.',
     registro: 'Vibró un móvil',
   },
+  'timbre-movil': {
+    duracion: 5,
+    peso: 2,
+    necesitaPublico: true,
+    aviso: 'Va a sonar el timbre de un móvil.',
+    explicacion:
+      'Ha sonado el timbre de un móvil. Alguien lo apagará. No tiene que ver contigo. Puedes seguir.',
+    registro: 'Sonó el timbre de un móvil',
+  },
   tos: {
     duracion: 2.5,
-    peso: 2,
+    peso: 2.5,
     necesitaPublico: true,
     aviso: 'Alguien va a toser.',
     explicacion: 'Una persona ha tosido. Es normal. Puedes seguir.',
@@ -155,6 +169,38 @@ export const DISTRACCIONES: Record<TipoDistraccion, DefDistraccion> = {
       'Tu abogado o abogada te ha dicho algo bajito. Si no lo entiendes, puedes pedir que te lo repita.',
     registro: 'Tu abogado te habló bajito',
   },
+  martillo: {
+    duracion: 2.5,
+    peso: 1.8,
+    aviso: 'El juez va a golpear el martillo.',
+    explicacion:
+      'El juez ha golpeado el martillo. Es para llamar la atención o marcar un momento. Puedes seguir.',
+    registro: 'El juez golpeó el martillo',
+  },
+  shh: {
+    duracion: 2.2,
+    peso: 1.5,
+    necesitaPublico: true,
+    aviso: 'Alguien va a pedir silencio bajito.',
+    explicacion: 'Alguien ha hecho «shh». Quiere que la sala esté más tranquila. Puedes seguir.',
+    registro: 'Alguien pidió silencio',
+  },
+  'pasos-lejanos': {
+    duracion: 3.5,
+    peso: 2,
+    aviso: 'Vas a oír pasos al fondo del pasillo.',
+    explicacion: 'Se han oído pasos lejos, en el pasillo. No entran aquí. Puedes seguir.',
+    registro: 'Se oyeron pasos lejanos',
+  },
+  'nombre-llamado': {
+    duracion: 4,
+    peso: 0.7,
+    soloMuchas: true,
+    aviso: 'Van a llamar un nombre en alto en el pasillo.',
+    explicacion:
+      'Han llamado un nombre en el pasillo. No es el tuyo en este ensayo. Puedes seguir.',
+    registro: 'Llamaron un nombre en el pasillo',
+  },
 }
 
 const FRASES: Partial<Record<TipoDistraccion, string[]>> = {
@@ -167,6 +213,11 @@ const FRASES: Partial<Record<TipoDistraccion, string[]>> = {
   ],
   'acompanante-susurra': ['Estoy aquí contigo.', 'Lo estás haciendo bien.', 'Respira despacio.'],
   'abogado-susurra': ['Vamos bien.', 'Ahora toca escuchar.', 'Luego te lo explico.'],
+  'nombre-llamado': [
+    'García López, a la sala tres.',
+    'Martínez Ruiz, por favor.',
+    'Siguiente: Fernández.',
+  ],
 }
 
 function azar<T>(lista: T[]): T {
@@ -220,16 +271,17 @@ export function crearDistraccion(
   }
 }
 
-/** Milisegundos hasta la siguiente distracción; más gente o ruido = más seguidas. */
-export function intervaloDistraccion(nivel: NivelDistracciones, estimulo: number): number {
-  const [min, max] = nivel === 'muchas' ? [9000, 18000] : [26000, 44000]
-  const factor = 0.7 + 0.6 * Math.max(0, Math.min(1, estimulo))
-  return (min + Math.random() * (max - min)) / factor
+/** Milisegundos hasta la siguiente distracción. Muchas ≈ más seguidas que Pocas. */
+export function intervaloDistraccion(nivel: NivelDistracciones, _estimulo = 0.4): number {
+  const [min, max] = nivel === 'muchas' ? [7000, 15000] : [22000, 40000]
+  return min + Math.random() * (max - min)
 }
 
 export function volumenDistraccion(nivel: NivelDistracciones, ruido: number): number {
-  const base = nivel === 'muchas' ? 1 : 0.75
-  return base * (0.35 + 0.65 * Math.max(0, Math.min(1, ruido / 100)))
+  const base = nivel === 'muchas' ? 1 : 0.78
+  // Ambiente fijo ~40: el volumen no depende de sliders; solo del nivel de distracciones.
+  const suelo = Math.max(0.4, Math.min(1, ruido / 100 || 0.4))
+  return base * (0.45 + 0.55 * suelo)
 }
 
 export const AVISO_PREVIO_MS = 3000
@@ -238,6 +290,8 @@ export const AVISO_PREVIO_MS = 3000
 export function distraccionDeAgenda(idEvento: string, tipo: string): TipoDistraccion | null {
   if (idEvento === 'ev-persona-entra') return 'entra-persona'
   if (tipo === 'puerta') return 'portazo'
-  if (tipo === 'movil') return 'movil'
+  if (tipo === 'movil') return 'timbre-movil'
+  if (tipo === 'gente') return 'tos'
+  if (tipo === 'nombre-en-alto') return 'nombre-llamado'
   return null
 }

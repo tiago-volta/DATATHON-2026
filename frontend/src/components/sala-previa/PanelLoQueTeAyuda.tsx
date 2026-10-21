@@ -13,7 +13,7 @@ import {
 } from '@/lib/sala-previa/loQueTeAyuda'
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
 
-/** IDs ARASAAC fijos (CC BY-NC-SA), alineados con BarritasEstimulo. */
+/** IDs ARASAAC fijos (CC BY-NC-SA) para estímulos del check-in. */
 const PICTO_ESTIMULO: Partial<Record<IdEstimulo, number>> = {
   ruido: 37857,
   luz: 8619,

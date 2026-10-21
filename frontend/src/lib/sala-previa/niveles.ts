@@ -6,6 +6,16 @@ export const ESTIMULOS_VACIOS: ValoresEstimulo = {
   gente: 0,
 }
 
+/**
+ * Ambiente fijo de la sala 3D: sin sliders de ruido/luz/gente.
+ * El realismo viene de las distracciones aleatorias (Pocas / Muchas).
+ */
+export const VALORES_AMBIENTE_SALA: ValoresEstimulo = {
+  ruido: 40,
+  luz: 50,
+  gente: 45,
+}
+
 export const ESTIMULOS_META: Record<
   IdEstimulo,
   {

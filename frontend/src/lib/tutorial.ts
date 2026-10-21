@@ -43,7 +43,7 @@ export const PASOS_TUTORIAL: PasoTutorial[] = [
     id: 'sala',
     titulo: 'Sala Previa',
     texto:
-      'Prueba el ruido, la luz y la gente a tu ritmo. Puedes bajar estímulos cuando quieras.',
+      'Practica la sala 3D con un ambiente estable. Activa pocas o muchas distracciones cuando quieras.',
     pictoKeyword: 'juzgado',
     pictoId: 26885,
   },

@@ -34,10 +34,12 @@ export function ControlDistracciones({
   const tituloId = useId()
   const avisarId = useId()
   const ayuda = enCalma
-    ? 'Con el modo calma no hay distracciones.'
+    ? 'Con el modo calma no hay distracciones ni sonidos de interrupción.'
     : nivel === 'apagadas'
-      ? 'Puedes practicar con pequeñas distracciones: alguien que entra, un móvil que vibra, una tos…'
-      : 'De vez en cuando pasará algo pequeño en la sala. Nada de eso tiene que ver contigo.'
+      ? 'Elige Pocas o Muchas para oír interrupciones de una sala real: móvil, tos, puerta, martillo del juez…'
+      : nivel === 'pocas'
+        ? 'De vez en cuando pasará algo pequeño: un timbre, una tos, pasos, el martillo… Nada de eso tiene que ver contigo.'
+        : 'Habrá más interrupciones, como en una sala ajetreada. Nada de eso tiene que ver contigo.'
   const mensaje = aviso ? `Aviso: ${aviso}` : explicacion
 
   return (

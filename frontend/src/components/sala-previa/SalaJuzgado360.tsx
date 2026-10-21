@@ -12,9 +12,8 @@ import {
 } from 'react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useDistracciones } from '@/hooks/useDistracciones'
-import { BarritasEstimulo } from '@/components/sala-previa/BarritasEstimulo'
 import { ControlDistracciones } from '@/components/sala-previa/ControlDistracciones'
-import type { IdEscenaJuzgado, IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import type { IdEscenaJuzgado, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import type { NivelDistracciones, TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import {
   PAPELES_SALA,
@@ -51,8 +50,6 @@ interface Props {
   titulo: string
   valores: ValoresEstimulo
   enCalma: boolean
-  onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
-  deshabilitadoEstimulos?: boolean
   miradaExterna?: MiradaSala | null
   personaEntrando?: boolean
   papel?: PapelSala
@@ -115,8 +112,6 @@ export function SalaJuzgado360({
   titulo,
   valores,
   enCalma,
-  onChangeEstimulo,
-  deshabilitadoEstimulos,
   miradaExterna,
   personaEntrando,
   papel = 'publico',
@@ -294,24 +289,8 @@ export function SalaJuzgado360({
     <div className="space-y-3">
       <div
         ref={fsRootRef}
-        className={`sala-juzgado-fs-root flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-start ${
-          enPantallaCompleta ? 'is-fullscreen' : ''
-        }`}
+        className={`sala-juzgado-fs-root ${enPantallaCompleta ? 'is-fullscreen' : ''}`}
       >
-        <div
-          className="sala-fs-barritas shrink-0 sm:sticky sm:top-4 self-start"
-          data-sala-controles
-          data-sala-ui
-        >
-          <BarritasEstimulo
-            valores={{ ruido, luz, gente }}
-            deshabilitado={deshabilitadoEstimulos || enCalma}
-            onChange={onChangeEstimulo}
-            className="w-full sm:w-[12.5rem]"
-            idPrefix="barra-sala"
-          />
-        </div>
-
         <div className="sala-fs-columna min-w-0 flex-1 space-y-2 flex flex-col">
           <div
             className={`sala-fs-viewer relative aspect-[16/10] sm:aspect-video rounded-tarjeta overflow-hidden border-2 border-court-200 select-none touch-none bg-court-100 ${
@@ -331,7 +310,7 @@ export function SalaJuzgado360({
               {reduced
                 ? 'La rotación libre está desactivada. Usa los botones Entrada, Abogados o Juez para mirar.'
                 : 'Arrastra para mirar en todas direcciones: izquierda, derecha, arriba, abajo y detrás.'}{' '}
-              Ruido {Math.round(ruido)}, luz {Math.round(luz)}, gente {Math.round(gente)}.
+              Ambiente fijo de sala. Las distracciones son interrupciones aleatorias.
               {enPantallaCompleta
                 ? ' Pantalla completa activa. Pulsa Escape o el botón para salir.'
                 : ''}
@@ -362,7 +341,7 @@ export function SalaJuzgado360({
               </p>
             )}
 
-            {/* Indicador visual discreto de ruido */}
+            {/* Indicador visual discreto de ruido ambiental */}
             <div
               className="absolute bottom-2 left-3 right-14 flex items-end gap-0.5 h-5 pointer-events-none z-[2]"
               aria-hidden="true"
@@ -499,8 +478,7 @@ export function SalaJuzgado360({
               role="note"
             >
               Vista con menos movimiento: usa los botones para mirar la entrada, los abogados
-              o el juez. Las barritas de estímulo siguen a la izquierda
-              {enPantallaCompleta ? ' (arriba a la izquierda en pantalla completa)' : ''}.
+              o el juez. El ambiente es fijo; las distracciones suenan igual.
             </p>
           )}
 
