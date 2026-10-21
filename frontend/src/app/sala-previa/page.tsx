@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Cabecera } from '@/components/Cabecera'
-import { BotonLeerEnVoz } from '@/components/BotonLeerEnVoz'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
 import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
@@ -15,6 +14,7 @@ import { MedidorConfianza } from '@/components/sala-previa/MedidorConfianza'
 import { PanelLoQueTeAyuda } from '@/components/sala-previa/PanelLoQueTeAyuda'
 import { PanelProgreso } from '@/components/sala-previa/PanelProgreso'
 import { RecorridoEscenas } from '@/components/sala-previa/RecorridoEscenas'
+import { useAudioguiaSala } from '@/hooks/useAudioguiaSala'
 import { useConfianza } from '@/hooks/useConfianza'
 import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
@@ -74,9 +74,10 @@ export default function PaginaSalaPrevia() {
     checkIns: 0,
   })
   const [mensaje, setMensaje] = useState<string | null>(null)
-  const [modoAudioguia, setModoAudioguia] = useState(false)
   /** Evita reaplicar el deep-link Ensaya → Sala Previa. */
   const deepLinkAplicado = useRef(false)
+  /** Evita releer al montar; solo al cambiar escena/nivel con guía activa. */
+  const audioguiaContextoInicial = useRef(true)
   const {
     conseguidas: insigniasUtiles,
     aviso: avisoInsignia,
@@ -102,6 +103,23 @@ export default function PaginaSalaPrevia() {
   const nivel = NIVELES[nivelActual]
   const escena = escenaPorIndice(escenaIndice)
 
+  const atenuarParaVoz = useCallback((activo: boolean) => {
+    motorRef.current?.atenuarParaVoz(activo)
+  }, [])
+
+  const audioguia = useAudioguiaSala({ atenuarParaVoz })
+
+  const contextoAudioguia = useMemo(
+    () => ({
+      escena,
+      escenaIndice,
+      valores,
+      enCalma,
+      nivelNombre: nivel.nombre,
+    }),
+    [escena, escenaIndice, valores, enCalma, nivel.nombre]
+  )
+
   useEffect(() => {
     const cargado = cargarProgreso()
     setProgreso(cargado)
@@ -122,6 +140,18 @@ export default function PaginaSalaPrevia() {
       motorRef.current?.detener(false)
     }
   }, [])
+
+  // Si la guía está activa y cambia escena o nivel, lee el nuevo bloque.
+  useEffect(() => {
+    if (audioguiaContextoInicial.current) {
+      audioguiaContextoInicial.current = false
+      return
+    }
+    if (!audioguia.activo || fase === 'intro') return
+    audioguia.alCambiarContexto(contextoAudioguia)
+    // Solo reaccionamos a escena/nivel (no a cada tick de slider).
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intencional
+  }, [escenaIndice, nivelActual])
 
   useEffect(() => {
     if (!progresoListo) return
@@ -229,6 +259,7 @@ export default function PaginaSalaPrevia() {
   }, [])
 
   const volverAIntro = () => {
+    audioguia.desactivar()
     motorRef.current?.detener(true)
     setAudioListo(false)
     setEnCalma(false)
@@ -238,6 +269,8 @@ export default function PaginaSalaPrevia() {
   }
 
   const pausarCalma = () => {
+    // Calma corta la síntesis de inmediato (prioridad sobre la guía).
+    audioguia.alCalma()
     setEnCalma(true)
     motorRef.current?.volverACalma()
     setValores((v) => ({
@@ -309,15 +342,6 @@ export default function PaginaSalaPrevia() {
     [valores, aplicarValores]
   )
 
-  const descripcionAudioguia = useMemo(() => {
-    const partes = [
-      escena.audioguia,
-      `Ruido: ${Math.round(valores.ruido)}. Luz: ${Math.round(valores.luz)}. Gente: ${Math.round(valores.gente)}.`,
-      enCalma ? 'Modo calma activo. Los estímulos están bajos.' : '',
-    ]
-    return partes.filter(Boolean).join(' ')
-  }, [escena, valores, enCalma])
-
   return (
     <>
       <Cabecera />
@@ -368,24 +392,54 @@ export default function PaginaSalaPrevia() {
 
         {fase !== 'intro' && (
           <>
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div className="flex flex-wrap gap-3 mb-6 items-center">
               <button
                 type="button"
-                className={`btn ${modoAudioguia ? 'btn-primary' : 'btn-secondary'}`}
-                aria-pressed={modoAudioguia}
-                onClick={() => setModoAudioguia((v) => !v)}
+                className={`btn ${audioguia.activo ? 'btn-primary' : 'btn-secondary'}`}
+                aria-pressed={audioguia.activo}
+                aria-describedby={
+                  audioguia.sinSoporte ? 'audioguia-sin-soporte' : undefined
+                }
+                onClick={() => audioguia.toggle(contextoAudioguia)}
               >
-                Modo audioguía
+                {audioguia.etiquetaBoton}
               </button>
               <button type="button" className="btn-ghost" onClick={volverAIntro}>
                 Ver intro otra vez
               </button>
-              {audioListo && (
+              {audioListo && !audioguia.hablando && (
                 <span className="text-sm text-puente-700 self-center">
                   Audio activo. Usa los controles o la pausa.
                 </span>
               )}
+              {audioguia.hablando && (
+                <span className="text-sm text-puente-700 self-center">
+                  Audioguía en curso. Puedes pausar o pararla.
+                </span>
+              )}
             </div>
+
+            {audioguia.sinSoporte && (
+              <p
+                id="audioguia-sin-soporte"
+                className="mb-4 bg-puente-50 border border-puente-200 rounded-lg p-3 text-puente-800 max-w-2xl"
+                role="status"
+              >
+                Tu navegador no puede leer en voz alta. Puedes seguir con el
+                lector de pantalla.
+              </p>
+            )}
+
+            {audioguia.anuncio && !audioguia.sinSoporte && (
+              <p
+                className="mb-4 text-sm text-puente-700 max-w-2xl"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {audioguia.anuncio}
+              </p>
+            )}
 
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
@@ -396,20 +450,6 @@ export default function PaginaSalaPrevia() {
                   enCalma={enCalma}
                   onChangeEstimulo={onSlider}
                 />
-
-                <div className="card">
-                  <div className="flex justify-between items-start gap-4 mb-3">
-                    <h2 className="font-bold text-puente-800">Audioguía</h2>
-                    <BotonLeerEnVoz texto={descripcionAudioguia} etiqueta="Escuchar sala" />
-                  </div>
-                  <p className="text-puente-700">{escena.audioguia}</p>
-                  {modoAudioguia && (
-                    <p className="text-puente-700 mt-3 text-sm" aria-live="polite">
-                      Ahora: ruido {Math.round(valores.ruido)}, luz {Math.round(valores.luz)},
-                      gente {Math.round(valores.gente)}.
-                    </p>
-                  )}
-                </div>
 
                 <ControlesEstimulo
                   valores={valores}

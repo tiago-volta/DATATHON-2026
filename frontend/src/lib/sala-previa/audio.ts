@@ -97,6 +97,10 @@ async function cargarBuffer(ctx: AudioContext, url: string): Promise<AudioBuffer
  * El estímulo «ruido» incluye murmullos y voces lejanas (antes repartidos con eco).
  * API pública estable para page.tsx (iniciar / actualizar / volverACalma / detener).
  */
+/** Gain master normal vs atenuado mientras habla la audioguía (ducking suave). */
+const MASTER_NORMAL = 0.62
+const MASTER_CON_VOZ = 0.22
+
 export class MotorAudioSala {
   private ctx: AudioContext | null = null
   private master: GainNode | null = null
@@ -109,6 +113,8 @@ export class MotorAudioSala {
   private activo = false
   private cargando: Promise<void> | null = null
   private valores: ValoresEstimulo = { ruido: 0, luz: 0, gente: 0 }
+  /** True mientras speechSynthesis habla: ambiente más bajo, sin cortarlo. */
+  private atenuadoPorVoz = false
 
   async iniciar() {
     if (typeof window === 'undefined') return
@@ -124,9 +130,25 @@ export class MotorAudioSala {
 
     for (const capa of this.capas) capa.start()
     this.activo = true
-    rampGain(this.master.gain, 0.62, FADE_NORMAL, this.ctx)
+    const masterTarget = this.atenuadoPorVoz ? MASTER_CON_VOZ : MASTER_NORMAL
+    rampGain(this.master.gain, masterTarget, FADE_NORMAL, this.ctx)
     this.programarImpulsos()
     this.aplicarValores(this.valores, FADE_NORMAL)
+  }
+
+  /**
+   * Ducking para audioguía: baja el master un poco mientras habla la guía.
+   * Menos invasivo que pausar el ambiente (sigue el contexto sonoro, sin solaparse).
+   */
+  atenuarParaVoz(activo: boolean) {
+    this.atenuadoPorVoz = activo
+    if (!this.ctx || !this.master || !this.activo) return
+    rampGain(
+      this.master.gain,
+      activo ? MASTER_CON_VOZ : MASTER_NORMAL,
+      FADE_CALMA,
+      this.ctx
+    )
   }
 
   private async montarGrafo() {
