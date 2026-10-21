@@ -29,7 +29,7 @@ export default function PaginaRegistro() {
     }
     setEnviando(true)
     try {
-      await registro(email.trim(), password, nombre.trim() || undefined)
+      await registro(email.trim(), password.trim(), nombre.trim() || undefined)
       router.push('/perfil')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se ha podido crear la cuenta.')

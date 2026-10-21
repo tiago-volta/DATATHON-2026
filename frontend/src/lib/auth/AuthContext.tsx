@@ -64,14 +64,23 @@ export function ProveedorAuth({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const actual = await apiLogin({ email, password })
     setSesion(actual)
-    await sincronizarTrasLogin(actual.email)
+    // La sesión ya es válida; un fallo de sync no debe abortar el login.
+    try {
+      await sincronizarTrasLogin(actual.email)
+    } catch {
+      marcarSesionActiva(true, actual.email)
+    }
   }, [])
 
   const registro = useCallback(
     async (email: string, password: string, nombre?: string) => {
       const actual = await apiRegistro({ email, password, nombre })
       setSesion(actual)
-      await sincronizarTrasLogin(actual.email)
+      try {
+        await sincronizarTrasLogin(actual.email)
+      } catch {
+        marcarSesionActiva(true, actual.email)
+      }
     },
     []
   )

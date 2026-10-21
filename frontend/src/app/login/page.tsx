@@ -19,7 +19,7 @@ export default function PaginaLogin() {
     setError('')
     setEnviando(true)
     try {
-      await login(email.trim(), password)
+      await login(email.trim(), password.trim())
       router.push('/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se ha podido entrar.')

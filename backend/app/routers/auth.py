@@ -39,9 +39,10 @@ class RegistroInput(BaseModel):
     @field_validator("password")
     @classmethod
     def password_fuerte(cls, v: str) -> str:
-        if len(v.strip()) < 8:
+        limpia = v.strip()
+        if len(limpia) < 8:
             raise ValueError("La contraseña debe tener al menos 8 caracteres.")
-        return v
+        return limpia
 
     @field_validator("nombre")
     @classmethod
@@ -60,6 +61,14 @@ class LoginInput(BaseModel):
     @classmethod
     def email_minusculas(cls, v: EmailStr) -> str:
         return str(v).strip().lower()
+
+    @field_validator("password")
+    @classmethod
+    def password_limpia(cls, v: str) -> str:
+        limpia = v.strip()
+        if not limpia:
+            raise ValueError("La contraseña no puede estar vacía.")
+        return limpia
 
 
 def _set_cookie(response: Response, token: str) -> None:

@@ -156,14 +156,19 @@ export async function sincronizarTrasLogin(email: string) {
     limpiarEstadoLocal()
   }
 
-  const remoto = (await obtenerEstadoUsuario()) as unknown as Record<string, unknown>
-  if (estadoServidorVacio(remoto) && puedeMigrarLocal(email)) {
-    await guardarEstadoUsuario(leerEstadoLocal())
+  try {
+    const remoto = (await obtenerEstadoUsuario()) as unknown as Record<string, unknown>
+    if (estadoServidorVacio(remoto) && puedeMigrarLocal(email)) {
+      await guardarEstadoUsuario(leerEstadoLocal())
+      marcarOwner(email)
+      return
+    }
+    aplicarEstadoServidor(remoto)
     marcarOwner(email)
-    return
+  } catch {
+    // Red o cookie: la sesión HTTP ya está; el progreso local sigue usable.
+    marcarOwner(email)
   }
-  aplicarEstadoServidor(remoto)
-  marcarOwner(email)
 }
 
 /** Encola un PUT del estado completo (debounce). Solo bloques presentes en local. */

@@ -1,6 +1,13 @@
 /** Cliente de autenticación y estado de usuario (cookies httpOnly). */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
+/**
+ * Auth y estado van siempre al mismo origen (`/api/...`).
+ * Next.js reescribe a FastAPI (`BACKEND_URL`). Así la cookie `court_token`
+ * se guarda en el host de la página (localhost vs 127.0.0.1, Vercel, etc.).
+ * Si apuntáramos a otro host con NEXT_PUBLIC_API_URL, SameSite=Lax
+ * a menudo no envía la cookie y el login «falla» al sincronizar.
+ */
+const API_URL = ''
 
 export interface PerfilCuenta {
   nombre: string
@@ -33,18 +40,32 @@ async function leerError(res: Response): Promise<string> {
   if (Array.isArray(data?.detail) && data.detail[0]?.msg) {
     return String(data.detail[0].msg)
   }
+  if (res.status === 429) {
+    return 'Demasiados intentos. Espera un minuto e inténtalo de nuevo.'
+  }
+  if (res.status >= 500) {
+    return 'El servidor no responde. Prueba de nuevo en unos segundos.'
+  }
   return 'No se ha podido completar la petición.'
 }
 
 async function pedir<T>(ruta: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${ruta}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    ...init,
-  })
+  const { headers: cabecerasExtra, ...resto } = init ?? {}
+  let res: Response
+  try {
+    res = await fetch(`${API_URL}${ruta}`, {
+      credentials: 'include',
+      ...resto,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(cabecerasExtra ?? {}),
+      },
+    })
+  } catch {
+    throw new Error(
+      'No hay conexión con el servidor. Comprueba que el backend está en marcha.'
+    )
+  }
   if (!res.ok) {
     throw new Error(await leerError(res))
   }
@@ -78,7 +99,12 @@ export async function cerrarSesion(): Promise<void> {
 }
 
 export async function obtenerSesion(): Promise<SesionUsuario | null> {
-  const res = await fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
+  let res: Response
+  try {
+    res = await fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
+  } catch {
+    return null
+  }
   if (res.status === 401) return null
   if (!res.ok) throw new Error(await leerError(res))
   return res.json()
