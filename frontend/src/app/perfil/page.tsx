@@ -19,7 +19,9 @@ import { MedallasPerfil } from '@/components/perfil/MedallasPerfil'
 
 export default function PaginaPerfil() {
   const router = useRouter()
-  const { sesion, cargando: cargandoSesion } = useAuth()
+  const { sesion, cargando: cargandoSesion, eliminarCuenta } = useAuth()
+  const [eliminando, setEliminando] = useState(false)
+  const [mensajeBorrado, setMensajeBorrado] = useState('')
   const [nombre, setNombre] = useState('')
   const [tolerancia, setTolerancia] = useState<NivelTolerancia>(1)
   const [estimulos, setEstimulos] = useState<IdEstimulo[]>([])
@@ -244,6 +246,60 @@ export default function PaginaPerfil() {
       </form>
 
       <MedallasPerfil />
+
+      <section className="card max-w-lg mt-8 border-t-2 border-court-200 pt-6">
+        <h2 className="text-lg font-bold text-court-800 mb-2">
+          Privacidad y control de tus datos (Art. 17 RGPD)
+        </h2>
+        <p className="text-sm text-court-700 mb-4">
+          Puedes eliminar tu cuenta y todos los datos asociados (perfil, pasaporte, ajustes y progreso) en cualquier momento. El borrado es completo e irreversible.
+        </p>
+        {sesion ? (
+          <button
+            type="button"
+            disabled={eliminando}
+            onClick={async () => {
+              if (window.confirm('¿Seguro que quieres eliminar tu cuenta y todos tus datos definitivamente?')) {
+                setEliminando(true)
+                try {
+                  await eliminarCuenta()
+                  router.push('/')
+                } catch {
+                  setEliminando(false)
+                  setErrorGuardar('No se ha podido eliminar la cuenta en este momento.')
+                }
+              }
+            }}
+            className="btn text-sm text-red-700 border border-red-300 hover:bg-red-50"
+          >
+            {eliminando ? 'Eliminando cuenta…' : 'Eliminar mi cuenta y todos mis datos'}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm('¿Seguro que quieres borrar todos los datos guardados en este navegador?')) {
+                try {
+                  localStorage.clear()
+                  setNombre('')
+                  setEstimulos([])
+                  setYaExiste(false)
+                  setMensajeBorrado('Datos borrados de este dispositivo.')
+                  window.setTimeout(() => setMensajeBorrado(''), 3000)
+                } catch {}
+              }
+            }}
+            className="btn text-sm text-court-700 border border-court-300 hover:bg-court-100"
+          >
+            Borrar datos de este dispositivo
+          </button>
+        )}
+        {mensajeBorrado && (
+          <p className="text-sm text-emerald-800 font-medium mt-2" role="status">
+            {mensajeBorrado}
+          </p>
+        )}
+      </section>
     </main>
   )
 }

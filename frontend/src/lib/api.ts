@@ -52,7 +52,7 @@ export interface MetricasLegibilidad {
 }
 
 export interface DatosClave {
-  tipo_documento?: 'citacion' | 'sentencia'
+  tipo_documento?: 'citacion' | 'sentencia' | 'documento_judicial' | 'resolucion'
   rol: string
   tipo_procedimiento: string
   organo: string

@@ -14,12 +14,17 @@ export default function PaginaRegistro() {
   const [nombre, setNombre] = useState('')
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [consentimiento, setConsentimiento] = useState(true)
 
   const enviar = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
     if (password.length < 8) {
       setError('La contraseña debe tener al menos 8 caracteres.')
+      return
+    }
+    if (!consentimiento) {
+      setError('Debes aceptar el consentimiento de privacidad para crear tu cuenta.')
       return
     }
     setEnviando(true)
@@ -97,12 +102,28 @@ export default function PaginaRegistro() {
               Mínimo 8 caracteres.
             </p>
           </div>
+          <div className="pt-2 border-t border-court-200">
+            <label htmlFor="reg-consentimiento" className="flex items-start gap-3 cursor-pointer text-sm text-court-800">
+              <input
+                id="reg-consentimiento"
+                type="checkbox"
+                required
+                checked={consentimiento}
+                onChange={(e) => setConsentimiento(e.target.checked)}
+                className="mt-1 h-5 w-5 shrink-0 accent-court-700"
+              />
+              <span>
+                Acepto el tratamiento de mis preferencias y datos de apoyo conforme al RGPD (arts. 6.1.a y 9.2.a). Puedo solicitar la supresión completa de mi cuenta y mis datos en cualquier momento.
+              </span>
+            </label>
+          </div>
+
           {error && (
             <p className="text-red-700 font-medium" role="alert">
               {error}
             </p>
           )}
-          <button type="submit" className="btn-primary w-full" disabled={enviando || !email.trim()}>
+          <button type="submit" className="btn-primary w-full" disabled={enviando || !email.trim() || !consentimiento}>
             {enviando ? 'Creando cuenta…' : 'Crear cuenta'}
           </button>
         </div>

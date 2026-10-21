@@ -6,11 +6,11 @@ import json
 from datetime import datetime, timezone
 from typing import Annotated, Any, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, Field, field_validator, model_validator
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_user
+from ..auth import COOKIE_NAME, cookie_segura, get_current_user
 from ..db import get_db
 from ..models import User, UserState
 
@@ -165,3 +165,23 @@ def guardar_estado(
     db.commit()
     db.refresh(state)
     return _estado_desde_state(state)
+
+
+@router.delete("")
+@router.delete("/")
+def borrar_usuario_y_estado(
+    user: Annotated[User, Depends(get_current_user)],
+    response: Response,
+    db: Annotated[Session, Depends(get_db)],
+):
+    """Borrado completo de la cuenta y de todos los datos asociados (Art. 17 RGPD Derecho al Olvido)."""
+    db.delete(user)
+    db.commit()
+    response.delete_cookie(
+        key=COOKIE_NAME,
+        path="/",
+        secure=cookie_segura(),
+        httponly=True,
+        samesite="lax",
+    )
+    return {"ok": True, "mensaje": "Cuenta y datos eliminados correctamente conforme al Art. 17 RGPD."}

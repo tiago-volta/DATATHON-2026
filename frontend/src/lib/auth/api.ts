@@ -96,3 +96,7 @@ export async function guardarEstadoUsuario(
     body: JSON.stringify(estado),
   })
 }
+
+export async function eliminarCuenta(): Promise<void> {
+  await pedir<{ ok: boolean }>('/api/me', { method: 'DELETE' })
+}

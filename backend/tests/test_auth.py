@@ -133,3 +133,34 @@ def test_estado_null_no_borra_y_sin_diagnostico():
     assert body["perfil"]["tolerancia"] == 3
     assert "diagnostico" not in (body["perfil"] or {})
     assert body["practica"]["dias"] == ["2026-10-21"]
+
+
+def test_delete_me_art_17_rgpd():
+    email = _email()
+    reg = client.post(
+        "/api/auth/registro",
+        json={"email": email, "password": "secreto12", "nombre": "Marta"},
+    )
+    assert reg.status_code == 200
+
+    # Guardar estado
+    client.put(
+        "/api/me/estado",
+        json={"pasaporte": {"nombre": "Marta", "ajustes": ["sala-espera-tranquila"]}},
+    )
+
+    # Borrar cuenta
+    del_res = client.delete("/api/auth/me")
+    assert del_res.status_code == 200
+    assert del_res.json()["ok"] is True
+
+    # Comprobar que ya no existe sesión ni usuario
+    me = client.get("/api/auth/me")
+    assert me.status_code == 401
+
+    # Login ya no debe funcionar
+    login = client.post(
+        "/api/auth/login",
+        json={"email": email, "password": "secreto12"},
+    )
+    assert login.status_code == 401

@@ -35,6 +35,7 @@ export default function PaginaPasaporte() {
     ajustes: [],
     contacto: '',
   })
+  const [consentimientoSalud, setConsentimientoSalud] = useState(true)
   const [errores, setErrores] = useState<{
     nombre?: string
     contacto?: string
@@ -147,7 +148,7 @@ export default function PaginaPasaporte() {
     const errorNombre = validarNombre(datos.nombre)
     const errorContacto = validarTelefono(datos.contacto)
 
-    if (errorNombre || errorContacto) {
+    if (errorNombre || errorContacto || !consentimientoSalud) {
       setErrores({
         nombre: errorNombre ?? undefined,
         contacto: errorContacto ?? undefined,
@@ -408,9 +409,39 @@ export default function PaginaPasaporte() {
                   </label>
                 </fieldset>
 
+                <fieldset className="border border-court-200 rounded-suave p-4 bg-amber-50/50">
+                  <legend className="px-1 text-base font-semibold text-court-800">
+                    Consentimiento de privacidad (Art. 9.2.a RGPD)
+                  </legend>
+                  <label
+                    htmlFor="consentimiento-salud"
+                    className="flex items-start gap-3 min-h-[44px] cursor-pointer mt-1"
+                  >
+                    <input
+                      type="checkbox"
+                      id="consentimiento-salud"
+                      className="mt-1 h-5 w-5 shrink-0 accent-court-700"
+                      checked={consentimientoSalud}
+                      onChange={(e) => setConsentimientoSalud(e.target.checked)}
+                      aria-describedby="ayuda-consentimiento"
+                      required
+                    />
+                    <span className="text-sm text-court-800">
+                      Acepto que PUENTE procese y guarde los ajustes de apoyo que seleccione.
+                      Entiendo que pueden reflejar necesidades de salud o accesibilidad sensorial,
+                      y que puedo modificarlos o borrarlos cuando lo desee.
+                    </span>
+                  </label>
+                  {!consentimientoSalud && (
+                    <p id="ayuda-consentimiento" className="text-xs text-red-700 font-medium mt-1">
+                      Debes marcar la casilla para poder generar tu Pasaporte conforme a la normativa de protección de datos.
+                    </p>
+                  )}
+                </fieldset>
+
                 <button
                   type="submit"
-                  disabled={!datos.nombre.trim()}
+                  disabled={!datos.nombre.trim() || !consentimientoSalud}
                   className="btn-primary w-full"
                 >
                   Continuar

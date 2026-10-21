@@ -38,7 +38,7 @@ Derechos específicos (art. 7 bis.2):
 - Adaptación según edad, madurez, discapacidad u otra circunstancia
 - Defensa, abogado, silencio, no autoincriminación
 
-**Artículo 143.2**: Si la persona es sorda, se nombrará **siempre** intérprete de lengua de signos.
+**Artículo 143.2 LEC** (y en penal arts. 123 y 520.2.h LECrim, RD 674/2023): Si la persona tiene discapacidad auditiva o del habla, se nombrará intérprete de lengua de signos o medios de apoyo a la comunicación.
 
 *Fuente: BOE-A-1882-6036, consolidado 2025*
 
@@ -79,7 +79,7 @@ Define conceptos clave:
 
 Incorpora explícitamente la accesibilidad cognitiva a la accesibilidad universal.
 
-Desarrollo reglamentario: **Real Decreto 707/2026** (3 de septiembre 2026):
+Desarrollo reglamentario: **Real Decreto 707/2026**, de 2 de septiembre (publicado el 3 de septiembre de 2026):
 - Define lectura fácil, lenguaje claro, pictogramas, SAAC
 - Establece condiciones básicas de accesibilidad cognitiva
 - Entrada en vigor: 2 de enero de 2027

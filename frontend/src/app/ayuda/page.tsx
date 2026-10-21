@@ -32,7 +32,7 @@ const FAQS_RECURRENTES: FaqItem[] = [
     icono: '⏸️',
     pregunta: '¿Qué pasa si me bloqueo o me pongo muy nervioso durante el juicio?',
     respuesta:
-      'Tienes derecho a pedir una pausa de tranquilidad en cualquier momento. El tribunal detendrá la sesión unos minutos para que puedas respirar, beber agua o serenarte.',
+      'Tienes derecho a solicitar una pausa para serenarte conforme al artículo 7 bis de la LEC. El juez o tribunal valorará tu solicitud y acordará la suspensión momentánea para que puedas beber agua, descansar o regularte sensorialmente.',
     fundamentoLegal: 'Artículo 7 bis de la Ley de Enjuiciamiento Civil',
   },
   {

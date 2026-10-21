@@ -78,7 +78,7 @@ Este documento verifica que cada funcionalidad de la aplicación InclusiveCourt 
 
 > "El perfil debe contener las **necesidades funcionales** de la persona, no su diagnóstico. Describe qué apoyos necesita, no qué condición tiene."
 
-**Ley 15/2022, Art. 6** (no discriminación por condición de salud):
+**Ley 15/2022, Art. 2.1** (ámbito de aplicación y no discriminación por condición de salud):
 
 > "Nadie podrá ser discriminado por razón de [...] enfermedad o **condición de salud**, estado serológico y/o predisposición genética a sufrir patologías y trastornos [...]"
 
@@ -134,28 +134,31 @@ Este documento verifica que cada funcionalidad de la aplicación InclusiveCourt 
 | Funcionalidad | Norma | Artículo | Enlace BOE |
 |---------------|-------|----------|------------|
 | Visita previa a la sala | Guía CGPJ 2025 | Cap. 3.2 | [poderjudicial.es](https://www.poderjudicial.es/cgpj/es/Temas/Foro-Justicia-y-Discapacidad/) |
-| Adaptación del entorno físico | LEC | Art. 7 bis.2.c | [BOE-A-2000-323](https://www.boe.es/buscar/act.php?id=BOE-A-2000-323) |
+| Adaptación del entorno físico | LEC | Art. 7 bis.1 | [BOE-A-2000-323](https://www.boe.es/buscar/act.php?id=BOE-A-2000-323) |
 | Accesibilidad cognitiva | Ley 6/2022 | Art. único | [BOE-A-2022-5140](https://www.boe.es/buscar/act.php?id=BOE-A-2022-5140) |
 | Desarrollo reglamentario | RD 707/2026 | Arts. 3-7 | [BOE-A-2026-18509](https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-18509) |
 
 ### Texto legal literal
 
-**Art. 7 bis.2.c LEC** (interacción con el entorno):
+**Art. 7 bis.1 LEC y Art. 109 párr. 3 LECrim** (interacción con el entorno):
 
-> "Las adaptaciones y ajustes que sean necesarios para garantizar su participación [...] en lo relativo a la **comunicación, comprensión e interacción con el entorno**."
+> "Las adaptaciones y ajustes que sean necesarios para garantizar su participación [...] podrán venir referidas a la **comunicación, la comprensión y la interacción con el entorno**."
 
 **Guía CGPJ 2025** (anticipación espacial):
 
 > "Se facilitará, cuando sea posible, una **visita previa al lugar** donde se celebrará la actuación judicial, o bien fotografías o vídeos que permitan a la persona familiarizarse con el entorno."
 
-**RD 707/2026, art. 3** (accesibilidad cognitiva, entrada en vigor 2 enero 2027):
+**RD 707/2026** (aprobado el 2 de septiembre de 2026; entrada en vigor el 2 de enero de 2027):
 
-> "Las condiciones básicas de accesibilidad cognitiva comprenden [...] la **reducción de la complejidad del entorno** mediante sistemas de orientación, señalización comprensible y anticipación de la información."
+> **Art. 4.2.a.7.º (control sensorial):** La accesibilidad comprende la solución que "permite la personalización de la incidencia de los estímulos sensoriales, como la luz, el sonido o el movimiento o informa sobre las condiciones ambientales".
+> **Art. 11 (Administración de Justicia):** 11.3 garantiza resoluciones en formato comprensible; 11.4 consagra el facilitador procesal y "una persona de elección"; 11.5 asistencia letrada accesible.
+> **Art. 5.1 (formatos comprensibles):** Información en formato pictográfico y sonoro sin coste adicional.
+> **Art. 3.e y 3.i:** Dificultades cognitivas derivadas de situaciones de salud y lectura fácil orientada a UNE 153101 con validación.
 
 ### Verificación ✓
 
 - El recorrido virtual sustituye la visita presencial: **avalado por Guía CGPJ 2025, cap. 3.2**
-- La simulación sensorial permite anticipar el entorno: **avalado por art. 7 bis.2.c LEC**
+- La simulación sensorial permite anticipar el entorno: **avalado por art. 7 bis.1 LEC y art. 4.2.a.7º RD 707/2026**
 - El diseño sigue las pautas de accesibilidad cognitiva: **avalado por Ley 6/2022 y RD 707/2026**
 
 ---
@@ -246,17 +249,17 @@ Cada ajuste incluido en `data/ajustes-disponibles.json` tiene base legal verific
 
 | ID | Ajuste | Base legal |
 |----|--------|------------|
-| `sala-tranquila` | Esperar en una sala tranquila | Art. 7 bis.2.c LEC |
-| `luz-tenue` | Luz tenue en la sala | Art. 7 bis.2.c LEC |
-| `preguntas-claras` | Preguntas claras, de una en una | Guía CGPJ 2025 |
-| `pausas` | Pausas cuando las necesite | Art. 7 bis.2.c LEC |
-| `mas-tiempo` | Más tiempo para responder | Art. 7 bis.2.c LEC |
-| `facilitador` | Persona facilitadora | Art. 7 bis.2.c LEC |
-| `documentos-voz` | Documentos leídos en voz alta | Art. 7 bis.2.a LEC |
-| `descripcion-pruebas` | Descripción de pruebas visuales | Convenio MJ-ONCE 2025 |
-| `acompanante` | Poder ir con un acompañante | Art. 7 bis.2.d LEC |
-| `lenguaje-literal` | Lenguaje literal, sin dobles sentidos | Guía Autismo España 2025 |
-| `anticipacion` | Anticipar cada paso | Guía CGPJ 2025 |
+| `sala-tranquila` | Esperar en una sala tranquila | Art. 7 bis.1 LEC y Art. 109 LECrim |
+| `luz-tenue` | Luz tenue en la sala | Art. 7 bis.1 LEC y Art. 4.2.a.7º RD 707/2026 |
+| `preguntas-claras` | Preguntas claras, de una en una | Art. 7 bis.1 LEC, Art. 9 LO 5/2024 y Guía CGPJ 2025 |
+| `pausas` | Pausas cuando las necesite | Art. 7 bis.1 LEC y Art. 109 LECrim |
+| `mas-tiempo` | Más tiempo para responder | Art. 7 bis.1 LEC y Art. 109 LECrim |
+| `facilitador` | Persona facilitadora | Art. 7 bis.2.c LEC y Art. 11.4 RD 707/2026 |
+| `documentos-voz` | Documentos leídos en voz alta | Art. 7 bis.2.a LEC y Art. 5.1.b RD 707/2026 |
+| `descripcion-pruebas` | Descripción de pruebas visuales | Art. 7 bis.1 y 2.b LEC, Art. 109 párr. 3 y 118.1 LECrim |
+| `acompanante` | Poder ir con un acompañante | Art. 7 bis.2.a y d LEC, Art. 11.4 RD 707/2026 |
+| `lenguaje-literal` | Lenguaje literal, sin dobles sentidos | Art. 7 bis.1 LEC, Art. 9 LO 5/2024 y Guía Autismo España |
+| `anticipacion` | Anticipar cada paso | Art. 7 bis.1 LEC y Guía CGPJ 2025 |
 
 ### Texto legal de cada ajuste
 
@@ -268,9 +271,8 @@ Cada ajuste incluido en `data/ajustes-disponibles.json` tiene base legal verific
 > c) **Facilitador** experto que adapte la comunicación
 > d) **Acompañante de su elección** desde el primer contacto"
 
-**Convenio Ministerio de Justicia - Fundación ONCE (octubre 2025)**:
-
-> "Los profesionales de la Administración de Justicia describirán verbalmente las pruebas visuales (fotografías, vídeos) para que la persona con discapacidad visual pueda acceder a su contenido."
+**Convenio Ministerio de Justicia - Fundación ONCE (BOE-A-2025-22174)**:
+Convenio marco de colaboración para accesibilidad y tecnologías inclusivas. La base jurídica procesal para la descripción verbal de pruebas visuales dimana directamente del **art. 7 bis.1 y 2.b LEC**, del **art. 109 párr. 3 LECrim** y del **art. 118.1 LECrim** (acceso a los elementos de las actuaciones en formato accesible).
 
 ---
 

@@ -71,14 +71,14 @@ El PDF no enumera LEC/LECrim, pero el producto sí se fundamenta en ellas (corre
 |------|--------|---------|
 | **Base jurídica documentada** | **Pendiente producción** | No hay texto de política de privacidad ni registro de actividades de tratamiento |
 | **Información al interesado (arts. 13–14)** | **Pendiente** | Falta aviso claro de qué se envía al backend / LLM |
-| **Consentimiento / interés legítimo** | **Parcial** | Prototipo sin flujo de consentimiento estructurado |
+| **Consentimiento / interés legítimo** | **Implementado** | Consentimiento explícito (art. 9.2.a RGPD) en Pasaporte de Ajustes y en formulario de registro para necesidades de apoyo y datos de salud deducibles |
 | **Encargados del tratamiento** | **Pendiente** | Si `LLM_PROVIDER` ≠ `mock`, el texto de la citación puede ir a Gemini / OpenAI / Anthropic (encargados externos; hace falta DPA y transparencia) |
-| **Conservación** | **Parcial** | Backend en modo mock no guarda; con LLM externo la retención depende del proveedor |
-| **Derechos ARCO+ (acceso, borrado, etc.)** | **Parcial** | El usuario puede borrar `localStorage`; no hay UI de “mis datos” ni procedimiento formal |
-| **Transferencias internacionales** | **Pendiente** | APIs de IA pueden implicar EE. UU. / cláusulas contractuales |
-| **Seguridad (art. 32)** | **Parcial** | Prototipo local; sin cifrado de backups, auth ni auditoría |
-| **DPIA / evaluación de impacto** | **Pendiente** | Recomendable si se tratan datos de salud o vulnerables a escala |
-| **Cookies / tracking** | **Cumple (por ausencia)** | No hay analytics de terceros detectados en el alcance actual |
+| **Conservación** | **Implementado** | El usuario decide cuándo eliminar su estado o pasaporte; borrado inmediato en servidor y local |
+| **Derechos ARCO+ (acceso, borrado, etc.)** | **Implementado** | Endpoint `DELETE /api/me` (art. 17 RGPD) con borrado en cascada en base de datos (`users` + `user_state`) y botón de supresión directa en `/perfil` |
+| **Transferencias internacionales** | **Pendiente** | APIs de IA pueden implicar EE. UU. / cláusulas contractuales tipo |
+| **Seguridad (art. 32)** | **Parcial** | Cookies httpOnly seguras, hashing bcrypt, anonimización regex en local antes de procesamiento |
+| **DPIA / evaluación de impacto** | **Pendiente** | Recomendable antes de despliegue general para tratamientos de colectivos vulnerables |
+| **Cookies / tracking** | **Cumple (por ausencia)** | No hay analytics de terceros ni cookies de seguimiento publicitario |
 | **Menores** | **Fuera / pendiente** | El PDF cita sentencia a niño; InclusiveCourt está orientado a adultos de referencia (Luis/Juan) |
 
 ### 3.3 Veredicto RGPD

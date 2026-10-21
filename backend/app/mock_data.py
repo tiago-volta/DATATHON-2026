@@ -14,9 +14,11 @@ C/ Ejemplo, 15, 15001 A Coruña, para que comparezca ante este Juzgado el día
 10 de noviembre de 2026, a las 10:00 horas, en calidad de TESTIGO, a fin de 
 prestar declaración en las Diligencias Previas arriba referenciadas.
 
-Se le apercibe de que, si no comparece sin causa justificada, podrá ser sancionado 
-con multa de 200 a 5.000 euros y, si persiste en su negativa, podrá incurrir en 
-un delito de desobediencia grave a la autoridad.
+Se le apercibe de que, si no comparece al primer llamamiento sin causa justificada, 
+podrá ser sancionado con multa de 200 a 5.000 euros (art. 420 LECrim). Si persiste 
+en no comparecer, podrá ser conducido por los agentes de la autoridad ante el juzgado 
+y perseguido por obstrucción a la justicia (arts. 420 LECrim y 463 CP). Si comparece 
+y se niega a declarar sin causa legal, podrá incurrir en delito de desobediencia grave.
 
 Deberá acudir provisto de su documento nacional de identidad.
 
@@ -38,25 +40,24 @@ CÉDULA DE CITACIÓN
 Se cita a D. JUAN MARTÍNEZ LÓPEZ, con DNI 33.XXX.XXX-Z, domiciliado en 
 C/ Marina, 42, 15002 A Coruña, para que comparezca ante este Juzgado el día 
 12 de noviembre de 2026, a las 09:30 horas, en calidad de INVESTIGADO, para 
-la celebración del juicio por delito leve de estafa (art. 248 CP, cuantía inferior 
-a 400 euros) por los hechos ocurridos el 3 de octubre de 2026 relativos a una 
+la celebración del juicio por delito leve de estafa (art. 248.3 CP, cuantía que no 
+excede de 400 euros) por los hechos ocurridos el 3 de octubre de 2026 relativos a una 
 compraventa en línea.
 
 Se le informa de sus derechos conforme al artículo 118 de la Ley de Enjuiciamiento 
 Criminal:
-- Derecho a guardar silencio no declarando si no desea hacerlo.
-- Derecho a no declarar contra sí mismo y a no confesarse culpable.
-- Derecho a designar abogado o a solicitar uno de oficio.
-- Derecho a acceder a los elementos de las actuaciones que sean esenciales para 
-  impugnar la legalidad de la detención o privación de libertad.
-- Derecho a que se ponga en conocimiento de un familiar o persona que desee 
-  el hecho de la citación.
-- Derecho a ser asistido gratuitamente por un intérprete si no comprende el 
-  castellano.
-- Derecho a que la información se le facilite en un lenguaje comprensible y que 
-  resulte accesible, adaptada a su discapacidad y cualquier otra circunstancia personal.
+- Derecho a guardar silencio no declarando si no desea hacerlo (art. 118.1.h).
+- Derecho a no declarar contra sí mismo y a no confesarse culpable (art. 118.1.g).
+- Derecho a designar abogado de su elección o a solicitar asistencia jurídica gratuita 
+  (art. 118.1.e y Ley 1/1996, art. 6.3.b; la asistencia letrada es optativa en delito leve, art. 967.1).
+- Derecho a ser informado de los hechos y a examinar las actuaciones (art. 118.1.a y b). 
+  Se adjunta copia de la denuncia conforme al art. 967.1 LECrim.
+- Derecho a traducción e interpretación gratuitas si fuera necesario (art. 118.1.f).
+- Derecho a adaptaciones y apoyos en la comunicación (art. 7 bis LEC y art. 109 LECrim).
 
 Podrá presentar pruebas de descargo hasta el día del juicio.
+Se le apercibe de que, si no comparece ni alega causa justa, el juicio podrá celebrarse 
+en su ausencia (art. 971 LECrim) y podrá imponérsele una multa de 200 a 2.000 euros (art. 967.2 LECrim).
 
 En A Coruña, a 22 de octubre de 2026.
 
@@ -133,20 +134,20 @@ MOCK_RESPONSE_LUIS = {
             },
         ],
         "que_pasa_si_no_voy": {
-            "resumen": "Como testigo tienes obligación de acudir, pero si ese día estás enfermo o tienes un motivo importante, puedes avisar antes al juzgado.",
+            "resumen": "Como testigo tienes la obligación legal de acudir (art. 410 LECrim). Si tienes un impedimento médico o de fuerza mayor justificado, debes avisar al juzgado de inmediato aportando justificante.",
             "pasos_si_no_puedes": [
                 "Llama o escribe al Juzgado de Instrucción nº 3 de A Coruña en cuanto sepas que no puedes ir.",
                 "Presenta un justificante (por ejemplo, un parte médico o certificado de trabajo).",
-                "El juzgado te dará una nueva fecha sin ponerte ninguna multa.",
+                "El juez valorará la causa justificada para acordar una nueva fecha de citación sin sanción (art. 420 LECrim).",
             ],
-            "mensaje_calma": "La multa solo se aplica si una persona no va y tampoco avisa ni justifica el motivo.",
+            "mensaje_calma": "La ley prevé multa de 200 a 5.000 € y conducción policial si faltas sin causa justificada (art. 420 LECrim). Justificar a tiempo protege tus derechos.",
         },
         "pasos_super_simples": [
             "1. Te llaman como testigo: NO te acusan de nada.",
             "2. Día: martes 10 de noviembre a las 10 de la mañana.",
             "3. Lugar: Juzgado de Instrucción número 3 de A Coruña.",
             "4. Lleva tu carné de identidad (DNI).",
-            "5. Solo tienes que contar lo que viste o escuchaste con tus propias palabras.",
+            "5. Tienes la obligación legal de decir la verdad (art. 433 LECrim). Si no recuerdas algo, responder 'no me acuerdo' es válido. Si eres pariente directo del investigado, puedes no declarar contra él (art. 416 LECrim).",
             "6. Puedes llevar tu Pasaporte de Ajustes para esperar en un lugar tranquilo.",
         ],
         "privacidad_rgpd": {
@@ -174,44 +175,46 @@ MOCK_RESPONSE_LUIS = {
         },
         "pipeline_ia": PIPELINE_SUMA_IAS,
     },
-    "lectura_clara": """Te citan como TESTIGO en un proceso penal.
+    "lectura_clara": """Te citan como TESTIGO en un proceso penal (Diligencias Previas).
 
-📅 CUÁNDO: Martes 10 de noviembre de 2026, a las 10:00 de la mañana.
+📅 CUÁNDO: Martes 10 de noviembre de 2026, a las 10:00 horas.
 
 📍 DÓNDE: Juzgado de Instrucción número 3 de A Coruña.
 
-🎯 QUÉ TIENES QUE HACER: Ir al juzgado y contar lo que viste o sabes sobre unos hechos. No te acusan de nada, solo quieren escuchar tu versión.
+🎯 QUÉ TIENES QUE HACER: Ir al juzgado y declarar sobre los hechos. No estás acusado de ningún delito.
 
-📋 QUÉ LLEVAR: Tu DNI o carné de identidad.
+⚖️ DEBER DE DECIR LA VERDAD: Prestarás juramento o promesa de decir la verdad. Mentir conscientemente es delito de falso testimonio (art. 433 LECrim). Si dudas o no recuerdas algo con exactitud, responder "no lo recuerdo" o "no lo sé" es plenamente legítimo.
 
-⚠️ SI NO PUEDES IR ESE DÍA: Tienes obligación de acudir. Si estás enfermo o tienes una causa justificada, avisa antes al juzgado con un justificante para que cambien la fecha sin multa.
+🛡️ DISPENSA POR PARENTESCO: Si la persona investigada es tu cónyuge o familiar directo, la ley te dispensa de declarar contra ella (art. 416 LECrim).
 
-✅ PUEDES PEDIR APOYOS: Tienes derecho a pedir una sala de espera tranquila, preguntas de una en una y más tiempo para responder (artículo 7 bis LEC).""",
+⚠️ OBLIGACIÓN DE ACUDIR: Comparecer es obligatorio por ley. Si no vas ni justiprecisas tu ausencia, el juez puede imponer multa de 200 a 5.000 € y ordenar conducción policial (art. 420 LECrim). Si estás enfermo o impedido, avisa de inmediato aportando justificante.
+
+✅ DERECHO A APOYOS: Puedes pedir sala de espera tranquila, pausas y preguntas comprensibles de una en una (artículo 7 bis LEC y art. 109 LECrim).""",
     "lectura_facil": """Te llaman para ir al juzgado.
 
 Eres TESTIGO.
 Eso significa que no te acusan de nada.
-Solo quieren que cuentes lo que sabes.
+Solo quieren que cuentes con la verdad lo que sabes.
 
 TIENES QUE IR el martes 10 de noviembre.
 A las diez de la mañana.
 Al Juzgado número 3 de A Coruña.
 
-LLEVA tu DNI.
+OBLIGACIÓN DE DECIR LA VERDAD:
+1. Tienes la obligación legal de decir la verdad.
+2. Mentir en el juicio es delito de falso testimonio (artículo 433 de la ley penal).
+3. Si no te acuerdas de algo, puedes decir tranquilamente "no me acuerdo".
+4. Si el investigado es tu familiar cercano, la ley te permite no declarar contra él (artículo 416).
 
-Si no vas y no avisas,
-te pueden poner una multa.
-La multa es dinero que tienes que pagar:
-entre doscientos y cinco mil euros.
-Si estás enfermo, avisa antes al juzgado.
+SI NO PUEDES IR:
+- Avisa con urgencia al juzgado y entrega un justificante médico.
+- El juez valorará el justificante para fijar otro día sin multa.
+- Si no vas y no avisas, la multa es de 200 a 5.000 euros y la policía puede ir a buscarte (artículo 420).
 
-PUEDES PEDIR AYUDA.
-Por ejemplo:
+PUEDES PEDIR AYUDA (artículo 7 bis):
 - Esperar en una sala tranquila.
 - Más tiempo para contestar.
-- Que te hagan preguntas claras y de una en una.
-
-Es tu derecho. La ley lo dice.""",
+- Preguntas claras, una a una.""",
     "plazos": [
         {
             "descripcion": "Día de la declaración como testigo",
@@ -236,7 +239,7 @@ MOCK_RESPONSE_JUAN = {
         "tipo_documento": "citacion",
         "rol": "investigado",
         "tipo_procedimiento": "Juicio por delito leve",
-        "delito": "Estafa leve (art. 248 CP, menos de 400 euros)",
+        "delito": "Estafa leve (art. 248.3 CP, cuantía no superior a 400 euros)",
         "organo": "Juzgado de Instrucción nº 7 de A Coruña",
         "fecha": "12 de noviembre de 2026",
         "hora": "09:30",
@@ -247,11 +250,12 @@ MOCK_RESPONSE_JUAN = {
             "Pruebas de la venta (capturas de mensajes, Bizum y resguardo de envío)",
         ],
         "derechos": [
-            "Puedes no decir nada (guardar silencio)",
-            "No tienes que declarar contra ti mismo",
-            "Tienes derecho a un abogado (gratis si no puedes pagarlo)",
-            "Puedes presentar pruebas hasta el mismo día del juicio",
-            "Tienen que explicarte los documentos en un formato accesible y por voz",
+            "Derecho a guardar silencio y no declarar si no deseas hacerlo (art. 118.1.h LECrim)",
+            "Derecho a no declarar contra ti mismo y a no confesarte culpable (art. 118.1.g LECrim)",
+            "Derecho a ser asistido por abogado si lo deseas (art. 967.1 LECrim). La asistencia letrada no es obligatoria en delito leve. Si careces de recursos, puedes solicitar justicia gratuita y el juzgado resolverá si procede (art. 6.3.b Ley 1/1996)",
+            "Derecho a ser informado de los hechos y a examinar la denuncia adjunta (art. 118.1.a y b LECrim)",
+            "Derecho a aportar pruebas y comprobantes hasta el mismo día del juicio (art. 967.1 LECrim)",
+            "Derecho a adaptaciones de accesibilidad y apoyos en la comunicación (art. 7 bis LEC y art. 109 LECrim)",
         ],
         "puedo_pedir_ajustes": True,
         "base_legal_ajustes": "Artículo 118 de la Ley de Enjuiciamiento Criminal y Art. 7 bis LEC",
@@ -273,21 +277,21 @@ MOCK_RESPONSE_JUAN = {
             },
         ],
         "que_pasa_si_no_voy": {
-            "resumen": "Si no acudes al juicio sin avisar, el juicio puede celebrarse sin escuchar tu versión o pueden ponerte una sanción.",
+            "resumen": "Si no compareces ni justificas causa justa, el juicio puede celebrarse en tu ausencia (art. 971 LECrim) y el juzgado puede imponerte una multa de 200 a 2.000 € (art. 967.2 LECrim).",
             "pasos_si_no_puedes": [
-                "Pide un abogado de oficio cuanto antes para que te asesore.",
+                "Puedes pedir justicia gratuita cuanto antes; el juzgado valorará tu solicitud según tus recursos y circunstancias (art. 6.3.b Ley 1/1996).",
                 "Si tienes una urgencia médica ese día, avisa de inmediato al Juzgado de Instrucción nº 7.",
                 "Lleva preparadas tus pruebas para que el juez escuche tu explicación.",
             ],
             "mensaje_calma": "Ir al juicio te permite explicar qué pasó con el envío y mostrar tus comprobantes.",
         },
         "pasos_super_simples": [
-            "1. Te citan para aclarar una venta por internet de menos de cuatrocientos euros.",
-            "2. Día: jueves 12 de noviembre a las nueve y media de la mañana.",
-            "3. Lugar: Juzgado de Instrucción número 7 de A Coruña.",
-            "4. Tienes derecho a un abogado gratis y a que te lean todos los documentos en voz alta.",
-            "5. Lleva tus pruebas: los mensajes del comprador, el Bizum y el resguardo de Correos.",
-            "6. Puedes pedir pausas cada quince minutos durante la vista.",
+            "1. Te citan como investigado por una presunta estafa leve de menos de 400 euros (art. 248.3 CP).",
+            "2. Día: jueves 12 de noviembre a las 9:30 h en el Juzgado de Instrucción número 7 de A Coruña.",
+            "3. Puedes ir con abogado si quieres. Si no puedes pagarlo, puedes solicitar justicia gratuita y el juzgado decidirá si te lo asigna.",
+            "4. Si no vas ni justiprecisas, el juicio se hace sin ti (art. 971) y la multa es de 200 a 2.000 euros (art. 967.2).",
+            "5. Lleva tus pruebas: mensajes del comprador, Bizum y justificante de envío.",
+            "6. Puedes pedir lectura en voz alta de documentos y pausas en sala.",
         ],
         "privacidad_rgpd": {
             "anonimizado_antes_de_ia": True,
@@ -316,45 +320,43 @@ MOCK_RESPONSE_JUAN = {
     },
     "lectura_clara": """Te citan como INVESTIGADO en un juicio por delito leve.
 
-📅 CUÁNDO: Jueves 12 de noviembre de 2026, a las 9 y media de la mañana.
+📅 CUÁNDO: Jueves 12 de noviembre de 2026, a las 09:30 horas.
 
 📍 DÓNDE: Juzgado de Instrucción número 7 de A Coruña.
 
-⚖️ DE QUÉ TRATA EL CASO: De una denuncia por una venta en internet por un importe menor de cuatrocientos euros (artículo 248 del Código Penal).
+⚖️ DE QUÉ TRATA EL CASO: Denuncia por una venta en internet por un importe que no excede de 400 euros (artículo 248.3 del Código Penal).
 
-🛡️ TUS DERECHOS PRINCIPALES:
-1. Puedes guardar silencio o contestar solo a las preguntas que quieras.
-2. Tienes derecho a un abogado (si no puedes pagarlo, puedes pedir uno de oficio gratis).
-3. Puedes llevar pruebas que demuestren tu versión hasta el mismo día del juicio.
-4. Tienes derecho a que te describan por voz todas las pruebas visuales y documentos.
+🛡️ TUS DERECHOS Y GARANTÍAS:
+1. Derecho a guardar silencio y a no confesarte culpable (art. 118.1 LECrim).
+2. Derecho a acudir con abogado de tu confianza si lo deseas (art. 967.1 LECrim). La asistencia letrada no es preceptiva en delitos leves; si no tienes ingresos, puedes solicitar justicia gratuita y el tribunal decidirá sobre su asignación (art. 6.3.b Ley 1/1996).
+3. Puedes aportar pruebas de descargo (mensajes, resguardos, transferencias) hasta el día del juicio.
+4. Si no acudes ni justificas impedimento legal, el juicio puede celebrarse en tu ausencia (art. 971 LECrim) y pueden imponerte multa de 200 a 2.000 € (art. 967.2 LECrim).
 
-✅ APOYOS QUE PUEDES PEDIR: Lectura en voz alta de documentos, descripción verbal de pantallas o fotos, y pausas cada 15 minutos.""",
+✅ APOYOS QUE PUEDES PEDIR: Lectura en voz alta de documentos, descripción verbal de pantallas y pausas durante la vista (art. 7 bis LEC y art. 109 LECrim).""",
     "lectura_facil": """Te llaman para ir a un juicio.
 
 Eres INVESTIGADO.
-Eso significa que otra persona
-puso una denuncia contra ti.
-
-Es por una venta en internet.
-La cantidad es menor de cuatrocientos euros.
+Otra persona puso una denuncia contra ti
+por una venta por internet de menos de 400 euros.
 
 TIENES DERECHOS:
 
 1. Puedes NO hablar si no quieres.
-2. Tienes derecho a un ABOGADO.
-   Si no tienes dinero, te dan uno gratis.
-3. Puedes llevar PRUEBAS.
-   Las pruebas demuestran que dices la verdad.
+2. Puedes ir con un ABOGADO.
+   En este tipo de juicio el abogado no es obligatorio.
+   Si no tienes dinero, puedes pedir abogado gratis
+   y el juez decidirá si te lo concede.
+3. Puedes llevar PRUEBAS hasta el día del juicio.
+4. Si no vas y no avisas con justificante,
+   el juicio se hará sin ti y la multa es de 200 a 2.000 euros.
 
-EL JUICIO es el jueves 12 de noviembre.
-A las nueve y media de la mañana.
-En el Juzgado número 7 de A Coruña.
+EL JUICIO es el jueves 12 de noviembre a las 9:30 h
+en el Juzgado número 7 de A Coruña.
 
-PUEDES PEDIR AYUDA.
-Por ejemplo:
-- Que te lean los papeles en voz alta.
-- Que te describan las fotos y pantallas.
-- Descansos cortos durante el juicio.""",
+PUEDES PEDIR AYUDA (artículo 7 bis):
+- Lectura de documentos en voz alta.
+- Descripción de imágenes y pantallas.
+- Descansos cortos durante la vista.""",
     "plazos": [
         {
             "descripcion": "Último día para aportar pruebas de la venta",
@@ -457,23 +459,20 @@ MOCK_RESPONSE_SENTENCIA = {
 🔓 MEDIDAS CAUTELARES: Se cancela cualquier obligación o medida provisional que tuvieras durante el proceso.
 
 📅 PLAZO DE DIEZ DÍAS: La otra parte tiene diez días laborables (sin contar fines de semana ni festivos) por si quiere recurrir la sentencia ante la Audiencia Provincial.""",
-    "lectura_facil": """Esta carta es la SENTENCIA del juez.
+    "lectura_facil": """Esta carta es la SENTENCIA del tribunal.
 La sentencia es la decisión final del juicio.
 
-La mujer acusada del robo
-finalmente NO será castigada.
-
-El juez la declara INOCENTE
-porque no hay pruebas contra ella.
+El tribunal te declara ABSUELTA (inocente).
+No recibirás ningún castigo ni sanción.
 
 No tienes que pagar ninguna multa.
-Tampoco tienes que pagar los gastos del juicio.
+Tampoco tienes que pagar los gastos del juicio (costas de oficio).
 
-Todas las medidas contra ti se terminan.
+Todas las medidas que hubiera contra ti se terminan.
 
-Durante diez días laborables,
-la otra parte puede pedir que otro tribunal revise el caso.
-Tu abogado te avisará cuando el caso quede cerrado del todo.""",
+Durante diez días laborables (artículo 790 de la ley penal),
+la otra parte puede pedir que la Audiencia Provincial revise el caso.
+Tu abogado te avisará cuando la sentencia sea firme del todo.""",
     "plazos": [
         {
             "descripcion": "Fin del plazo de 10 días hábiles para que la sentencia sea firme",
@@ -488,6 +487,169 @@ Tu abogado te avisará cuando el caso quede cerrado del todo.""",
         "documento",
         "derechos",
         "tranquilo",
+    ],
+}
+
+
+MOCK_RESPONSE_CONDENA = {
+    "datos_clave": {
+        "tipo_documento": "sentencia",
+        "rol": "persona condenada",
+        "tipo_procedimiento": "Sentencia Penal Condenatoria",
+        "organo": "Juzgado de lo Penal",
+        "fecha": "Notificada recientemente",
+        "hora": "Sin comparecencia presencial pendiente",
+        "lugar": "Juzgado de lo Penal",
+        "fallo": "condena",
+        "que_llevar": [
+            "Ponte en contacto con tu abogado de inmediato",
+            "Conserva la sentencia íntegra notificada",
+        ],
+        "derechos": [
+            "Derecho a interponer recurso de apelación en el plazo de 10 días hábiles (art. 790.1 LECrim)",
+            "Derecho a ser asistido por abogado para la redacción del recurso",
+            "Derecho a solicitar aclaración de sentencia si contiene errores manifiestos",
+        ],
+        "puedo_pedir_ajustes": True,
+        "base_legal_ajustes": "Artículo 7 bis de la Ley de Enjuiciamiento Civil y Art. 9 LO 5/2024",
+        "apoyo_numerico": [
+            {
+                "etiqueta": "Plazo para recurrir",
+                "cifra": "10 días hábiles",
+                "en_palabras": "Diez días laborables desde la notificación (art. 790.1 LECrim).",
+            },
+        ],
+        "que_pasa_si_no_voy": {
+            "resumen": "Es una sentencia condenatoria. Si no estás conforme con la resolución, es fundamental contactar con tu abogado de inmediato para presentar recurso dentro del plazo legal.",
+            "pasos_si_no_puedes": [
+                "Llama urgentemente al abogado que llevó tu defensa.",
+                "Discute si existen motivos legales para apelar ante la Audiencia Provincial.",
+                "Recuerda que pasados los diez días hábiles la sentencia deviene firme.",
+            ],
+            "mensaje_calma": "La condena no es firme mientras esté abierto el plazo legal de recurso de apelación.",
+        },
+        "pasos_super_simples": [
+            "1. Esta carta es una SENTENCIA CONDENATORIA que impone una pena o sanción.",
+            "2. IMPORTANTE: Contacta con tu abogado hoy mismo.",
+            "3. Tienes 10 días laborables para presentar recurso de apelación (art. 790.1 LECrim).",
+            "4. No dejes pasar el plazo: tu abogado debe presentar el escrito ante el juzgado.",
+        ],
+        "privacidad_rgpd": {
+            "anonimizado_antes_de_ia": True,
+            "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño)",
+            "garantia": "Tus datos personales identificativos se anonimizaron en local.",
+            "total_protegidos": 1,
+            "elementos_protegidos": [
+                {
+                    "tipo": "Nombre y apellidos de la persona",
+                    "marcador": "[PERSONA_1]",
+                    "valor_protegido": "Persona interesada",
+                },
+            ],
+        },
+        "pipeline_ia": PIPELINE_SUMA_IAS,
+    },
+    "lectura_clara": """DECISIÓN DEL JUEZ (SENTENCIA CONDENATORIA): El juzgado ha dictado sentencia imponiendo una condena o sanción.
+
+⚠️ AVISO IMPORTANTE: No dejes pasar los plazos. Contacta hoy mismo con tu abogado para analizar la sentencia.
+
+📅 PLAZO DE APELACIÓN: Tienes DIEZ DÍAS HÁBILES (sin contar fines de semana ni festivos) desde el día siguiente a la notificación para interponer recurso de apelación (artículo 790 de la Ley de Enjuiciamiento Criminal) si no estás conforme.
+
+⚖️ ASISTENCIA LETRADA: Tu abogado de oficio o de confianza es quien debe redactar y presentar el recurso ante el juzgado.""",
+    "lectura_facil": """Esta carta es la SENTENCIA del juez.
+
+Es una sentencia de CONDENA.
+El juez impone una sanción o castigo.
+
+LO MÁS IMPORTANTE:
+1. Habla con tu abogado hoy mismo.
+2. Si no estás de acuerdo con la decisión, se puede pedir que otro tribunal la revise (recurso de apelación).
+3. Tienes un plazo de diez días laborables para presentar el recurso (artículo 790 de la Ley de Enjuiciamiento Criminal).
+4. No dejes pasar los días sin hablar con tu abogado.""",
+    "plazos": [
+        {
+            "descripcion": "Plazo de 10 días hábiles para interponer recurso de apelación (art. 790 LECrim)",
+            "fecha": "2026-11-05",
+            "dias_restantes": 10,
+        }
+    ],
+    "pictogram_keywords": [
+        "sentencia",
+        "juez",
+        "abogado",
+        "documento",
+        "calendario",
+        "atencion",
+    ],
+}
+
+MOCK_RESPONSE_DESCONOCIDO = {
+    "datos_clave": {
+        "tipo_documento": "documento_judicial",
+        "rol": "desconocido",
+        "tipo_procedimiento": "Procedimiento pendiente de determinar",
+        "organo": "Órgano judicial",
+        "fecha": "Pendiente de comprobar en el documento original",
+        "hora": "Pendiente de comprobar",
+        "lugar": "Sede judicial",
+        "que_llevar": ["DNI o documento de identidad", "Carta original recibida del juzgado"],
+        "derechos": [
+            "Derecho a ser informado de tu papel en el procedimiento",
+            "Derecho a solicitar ajustes de accesibilidad (artículo 7 bis de la LEC)",
+            "Derecho a consultar tus dudas en la secretaría del juzgado",
+        ],
+        "puedo_pedir_ajustes": True,
+        "base_legal_ajustes": "Artículo 7 bis de la Ley de Enjuiciamiento Civil y Art. 9 LO 5/2024",
+        "apoyo_numerico": [],
+        "que_pasa_si_no_voy": {
+            "resumen": "No hemos podido determinar tu papel exacto en el texto recibido. Por rigor jurídico, no inventamos tus consecuencias ni tus plazos. Revisa la carta original.",
+            "pasos_si_no_puedes": [
+                "Localiza en la carta original si acudes como testigo, investigado, demandante o demandado.",
+                "Si tienes dudas sobre tus obligaciones, acude con la citación al juzgado o al Colegio de Abogados.",
+                "Puedes llamar al número de teléfono del juzgado que aparece en el encabezado de la carta.",
+            ],
+            "mensaje_calma": "La notificación física original contiene el órgano y el número de autos para resolver tus dudas.",
+        },
+        "pasos_super_simples": [
+            "1. Hemos leído el texto pero no podemos identificar tu papel con total certeza.",
+            "2. No te damos información inventada: comprueba tu papel en la carta original.",
+            "3. Lleva tu DNI y el documento original al juzgado o a un abogado si tienes dudas.",
+            "4. Tienes derecho a pedir adaptaciones de accesibilidad (artículo 7 bis LEC).",
+        ],
+        "privacidad_rgpd": {
+            "anonimizado_antes_de_ia": True,
+            "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño)",
+            "garantia": "Tus datos personales identificativos se anonimizaron en local.",
+            "total_protegidos": 0,
+            "elementos_protegidos": [],
+        },
+        "pipeline_ia": PIPELINE_SUMA_IAS,
+    },
+    "lectura_clara": """DOCUMENTO JUDICIAL: No hemos podido determinar con certeza tu rol o el tipo de procedimiento en este texto.
+
+Por rigor jurídico y para proteger tus derechos, la aplicación no inventa consecuencias penales ni obligaciones que no consten claramente en el texto recibido.
+
+RECOMENDACIONES:
+1. Revisa la carta original para identificar si se te cita como testigo, investigado, demandante o demandado.
+2. Si tienes dudas sobre plazos o comparecencias, contacta con la oficina judicial del juzgado firmante o consulta con un letrado.
+3. Tienes derecho a solicitar ajustes de accesibilidad conforme al artículo 7 bis de la LEC.""",
+    "lectura_facil": """Hemos leído tu carta judicial,
+pero NO podemos asegurar qué papel tienes en el juicio.
+
+No queremos darte información equivocada.
+
+QUÉ DEBES HACER:
+1. Mira la carta original que te llegó.
+2. Busca si pone 'testigo', 'investigado', 'demandante' o 'demandado'.
+3. Si tienes dudas sobre si debes ir o qué llevar, pregunta en el juzgado o a un abogado.
+4. Puedes pedir ayuda y adaptaciones claras en el juzgado (artículo 7 bis).""",
+    "plazos": [],
+    "pictogram_keywords": [
+        "documento",
+        "juzgado",
+        "pregunta",
+        "ayuda",
+        "abogado",
     ],
 }
 

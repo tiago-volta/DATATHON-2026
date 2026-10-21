@@ -3,77 +3,115 @@
     "id": "sala-tranquila",
     "nombre": "Esperar en una sala tranquila",
     "descripcion": "Un espacio con menos ruido y gente mientras esperas.",
-    "perfiles": ["tea", "tdah", "ansiedad"],
-    "base_legal": "Art. 7 bis.2.c LEC"
+    "perfiles": [
+      "tea",
+      "tdah",
+      "ansiedad"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC y Art. 109 LECrim"
   },
   {
     "id": "luz-tenue",
     "nombre": "Luz tenue en la sala",
     "descripcion": "Evitar fluorescentes fuertes o luz muy intensa.",
-    "perfiles": ["tea", "ansiedad"],
-    "base_legal": "Art. 7 bis.2.c LEC"
+    "perfiles": [
+      "tea",
+      "ansiedad"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC y Art. 4.2.a.7º RD 707/2026"
   },
   {
     "id": "preguntas-claras",
     "nombre": "Preguntas claras, de una en una",
     "descripcion": "Que te hagan preguntas sencillas y esperen tu respuesta.",
-    "perfiles": ["tea", "tdah", "dislexia", "discapacidad-intelectual"],
-    "base_legal": "Guía CGPJ 2025"
+    "perfiles": [
+      "tea",
+      "tdah",
+      "dislexia",
+      "discapacidad-intelectual"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC, Art. 9 LO 5/2024 y Guía CGPJ 2025"
   },
   {
     "id": "pausas",
     "nombre": "Pausas cuando las necesite",
     "descripcion": "Poder descansar un momento si te sientes agobiado.",
-    "perfiles": ["tea", "tdah", "ansiedad"],
-    "base_legal": "Art. 7 bis.2.c LEC"
+    "perfiles": [
+      "tea",
+      "tdah",
+      "ansiedad"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC y Art. 109 LECrim"
   },
   {
     "id": "mas-tiempo",
     "nombre": "Más tiempo para responder",
     "descripcion": "No tener prisa para pensar las respuestas.",
-    "perfiles": ["tea", "tdah", "dislexia", "discapacidad-intelectual"],
-    "base_legal": "Art. 7 bis.2.c LEC"
+    "perfiles": [
+      "tea",
+      "tdah",
+      "dislexia",
+      "discapacidad-intelectual"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC y Art. 109 LECrim"
   },
   {
     "id": "facilitador",
     "nombre": "Persona facilitadora",
     "descripcion": "Alguien que me ayude a entender y comunicarme.",
-    "perfiles": ["tea", "discapacidad-intelectual"],
-    "base_legal": "Art. 7 bis.2.c LEC, Protocolo Plena inclusión"
+    "perfiles": [
+      "tea",
+      "discapacidad-intelectual"
+    ],
+    "base_legal": "Art. 7 bis.2.c LEC y Art. 11.4 RD 707/2026"
   },
   {
     "id": "documentos-voz",
     "nombre": "Documentos leídos en voz alta",
     "descripcion": "Que me lean los papeles importantes.",
-    "perfiles": ["ceguera", "dislexia"],
-    "base_legal": "Art. 7 bis.2.a LEC"
+    "perfiles": [
+      "ceguera",
+      "dislexia"
+    ],
+    "base_legal": "Art. 7 bis.2.a LEC y Art. 5.1.b RD 707/2026"
   },
   {
     "id": "descripcion-pruebas",
     "nombre": "Descripción de pruebas visuales",
     "descripcion": "Que me expliquen qué hay en las fotos o vídeos.",
-    "perfiles": ["ceguera"],
-    "base_legal": "Convenio MJ-ONCE 2025"
+    "perfiles": [
+      "ceguera"
+    ],
+    "base_legal": "Art. 7 bis.1 y 2.b LEC, Art. 109 párr. 3 y 118.1 LECrim"
   },
   {
     "id": "acompanante",
     "nombre": "Poder ir con un acompañante",
     "descripcion": "Una persona de confianza que esté conmigo.",
-    "perfiles": ["tea", "tdah", "ansiedad", "ceguera"],
-    "base_legal": "Art. 7 bis.2.d LEC"
+    "perfiles": [
+      "tea",
+      "tdah",
+      "ansiedad",
+      "ceguera"
+    ],
+    "base_legal": "Art. 7 bis.2.a y d LEC, Art. 11.4 RD 707/2026"
   },
   {
     "id": "lenguaje-literal",
     "nombre": "Lenguaje literal, sin dobles sentidos",
     "descripcion": "Que me hablen de forma directa, sin ironías ni metáforas.",
-    "perfiles": ["tea"],
-    "base_legal": "Guía Autismo España 2025"
+    "perfiles": [
+      "tea"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC, Art. 9 LO 5/2024 y Guía Autismo España 2025"
   },
   {
     "id": "anticipacion",
     "nombre": "Anticipar cada paso",
     "descripcion": "Que me expliquen qué va a pasar antes de que pase.",
-    "perfiles": ["tea"],
-    "base_legal": "Guía CGPJ 2025"
+    "perfiles": [
+      "tea"
+    ],
+    "base_legal": "Art. 7 bis.1 LEC y Guía CGPJ 2025"
   }
 ]

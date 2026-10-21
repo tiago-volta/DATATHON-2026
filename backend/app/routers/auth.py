@@ -161,3 +161,22 @@ def logout(response: Response):
 @router.get("/me")
 def me(user: Annotated[User, Depends(get_current_user)]):
     return _user_payload(user)
+
+
+@router.delete("/me")
+def delete_me(
+    user: Annotated[User, Depends(get_current_user)],
+    response: Response,
+    db: Annotated[Session, Depends(get_db)],
+):
+    """Borrado completo de la cuenta y de todos los datos asociados (Art. 17 RGPD Derecho al Olvido)."""
+    db.delete(user)
+    db.commit()
+    response.delete_cookie(
+        key=COOKIE_NAME,
+        path="/",
+        secure=cookie_segura(),
+        httponly=True,
+        samesite="lax",
+    )
+    return {"ok": True, "mensaje": "Cuenta y datos eliminados correctamente conforme al Art. 17 RGPD."}

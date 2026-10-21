@@ -11,6 +11,7 @@ import {
 } from 'react'
 import {
   cerrarSesion as apiLogout,
+  eliminarCuenta as apiEliminarCuenta,
   iniciarSesion as apiLogin,
   obtenerSesion,
   registrarCuenta as apiRegistro,
@@ -30,6 +31,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>
   registro: (email: string, password: string, nombre?: string) => Promise<void>
   logout: () => Promise<void>
+  eliminarCuenta: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -81,9 +83,16 @@ export function ProveedorAuth({ children }: { children: ReactNode }) {
     setSesion(null)
   }, [])
 
+  const eliminarCuenta = useCallback(async () => {
+    vaciarColaSync()
+    limpiarEstadoLocal()
+    await apiEliminarCuenta()
+    setSesion(null)
+  }, [])
+
   const valor = useMemo(
-    () => ({ sesion, cargando, refrescar, login, registro, logout }),
-    [sesion, cargando, refrescar, login, registro, logout]
+    () => ({ sesion, cargando, refrescar, login, registro, logout, eliminarCuenta }),
+    [sesion, cargando, refrescar, login, registro, logout, eliminarCuenta]
   )
 
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>

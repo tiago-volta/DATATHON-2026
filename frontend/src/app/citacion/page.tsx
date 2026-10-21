@@ -81,12 +81,105 @@ const PIPELINE_POR_DEFECTO = [
 function construirRespaldoLocal(textoEntrada: string): CitacionProcesada {
   const minus = textoEntrada.toLowerCase()
   const esSentencia =
-    minus.includes('fallo') || minus.includes('absuelvo') || minus.includes('sentencia')
+    minus.includes('fallo') || minus.includes('absuelvo') || minus.includes('sentencia') || minus.includes('condeno')
+  const esCondena =
+    minus.includes('condeno') || minus.includes('condena') || minus.includes('culpable') || minus.includes('pena de')
+  const esCivil =
+    minus.includes('demandad') ||
+    minus.includes('demandant') ||
+    minus.includes('civil') ||
+    minus.includes('juicio verbal') ||
+    minus.includes('juicio ordinario') ||
+    minus.includes('emplazamiento')
+  const esTestigo =
+    minus.includes('testigo') || minus.includes('testifical') || minus.includes('luis')
   const esJuan =
-    minus.includes('juan') ||
-    minus.includes('investigado') ||
+    minus.includes('investigad') ||
+    minus.includes('imputad') ||
     minus.includes('estafa') ||
-    minus.includes('delito leve')
+    minus.includes('delito leve') ||
+    minus.includes('juan')
+
+  if (esSentencia && esCondena) {
+    return {
+      datos_clave: {
+        tipo_documento: 'sentencia',
+        rol: 'persona condenada',
+        tipo_procedimiento: 'Sentencia Penal Condenatoria',
+        organo: 'Juzgado de lo Penal',
+        fecha: 'Notificada recientemente',
+        hora: 'Sin comparecencia presencial pendiente',
+        lugar: 'Juzgado de lo Penal',
+        numero_procedimiento: 'Autos principales',
+        que_llevar: [
+          'Contacta urgentemente con tu abogado',
+          'Guarda el documento completo de la sentencia',
+        ],
+        derechos: [
+          'Derecho a interponer recurso de apelación en el plazo de diez días hábiles (art. 790.1 LECrim)',
+          'Derecho a asistencia letrada para fundamentar el recurso',
+        ],
+        puedo_pedir_ajustes: true,
+        base_legal_ajustes: 'Art. 7 bis LEC y Art. 9 LO 5/2024 del Derecho de Defensa',
+        apoyo_numerico: [
+          {
+            etiqueta: 'Plazo para recurrir',
+            cifra: '10 días hábiles',
+            en_palabras: 'Diez días laborables contados desde el día siguiente a la notificación (art. 790.1 LECrim).',
+          },
+        ],
+        que_pasa_si_no_voy: {
+          resumen: 'Es una sentencia condenatoria. Si no estás conforme, habla de inmediato con tu abogado para apelar.',
+          pasos_si_no_puedes: [
+            'Llama con urgencia al abogado que llevó tu caso.',
+            'El recurso de apelación debe interponerse dentro de los diez días hábiles siguientes.',
+            'Pasado el plazo sin recurrir, la sentencia adquirirá firmeza.',
+          ],
+          mensaje_calma: 'La sentencia no es firme mientras esté en plazo de recurso.',
+        },
+        pasos_super_simples: [
+          '1. Es una SENTENCIA CONDENATORIA que fija una pena o sanción.',
+          '2. IMPORTANTE: Contacta con tu abogado hoy mismo.',
+          '3. Tienes un plazo de diez días laborables para recurrir ante la Audiencia Provincial.',
+          '4. No dejes pasar el plazo legal de recurso.',
+        ],
+        pipeline_ia: PIPELINE_POR_DEFECTO,
+        privacidad_rgpd: {
+          anonimizado_antes_de_ia: true,
+          art_rgpd: 'Artículo 25 RGPD (Privacidad desde el diseño)',
+          garantia: 'Tus datos personales se anonimizaron en local.',
+          total_protegidos: 1,
+          elementos_protegidos: [],
+        },
+      },
+      lectura_clara: `DECISIÓN DEL JUEZ (SENTENCIA CONDENATORIA): El juzgado ha dictado sentencia con condena o sanción.
+
+AVISO URGENTE: Contacta hoy mismo con tu abogado de oficio o de confianza.
+
+PLAZO DE APELACIÓN: Tienes DIEZ DÍAS HÁBILES (sin fines de semana ni festivos) desde el día siguiente a la notificación para apelar (artículo 790.1 LECrim).`,
+      lectura_facil: `Esta carta es la SENTENCIA del juez.
+
+Es una sentencia de CONDENA.
+El juez impone una sanción o castigo.
+
+IMPORTANTE:
+1. Habla con tu abogado hoy mismo.
+2. Si no estás de acuerdo, se puede recurrir en 10 días laborables (artículo 790 de la ley penal).
+3. No dejes pasar los días.`,
+      plazos: [
+        {
+          descripcion: 'Plazo de 10 días hábiles para recurso de apelación',
+          fecha: '2026-11-05',
+          dias_restantes: 10,
+        },
+      ],
+      pictogram_keywords: ['sentencia', 'juez', 'abogado', 'documento', 'atencion'],
+      pictogramas: [
+        { keyword: 'sentencia', id: 2458, url: 'https://static.arasaac.org/pictograms/2458/2458_500.png' },
+        { keyword: 'juez', id: 11523, url: 'https://static.arasaac.org/pictograms/11523/11523_500.png' },
+      ],
+    }
+  }
 
   if (esSentencia) {
     return {
@@ -167,19 +260,17 @@ GASTOS DEL JUICIO: Las costas se declaran "de oficio". Eso significa que tú NO 
 MEDIDAS CAUTELARES: Se cancela cualquier obligación o medida provisional que tuvieras durante el proceso.
 
 PLAZO DE DIEZ DÍAS: La otra parte tiene diez días laborables (sin contar fines de semana ni festivos) por si quiere recurrir la sentencia.`,
-      lectura_facil: `Esta carta es la SENTENCIA del juez.
+      lectura_facil: `Esta carta es la SENTENCIA del tribunal.
 La sentencia es la decisión final del juicio.
 
-La mujer acusada del robo
-finalmente NO será castigada.
-
-El juez la declara INOCENTE
-porque no hay pruebas contra ella.
+El tribunal te declara ABSUELTA (inocente).
+No recibirás ningún castigo ni sanción.
 
 No tienes que pagar ninguna multa.
-Tampoco tienes que pagar los gastos del juicio.
+Tampoco tienes que pagar los gastos del juicio (costas de oficio).
 
-Todas las medidas contra ti se terminan.`,
+Todas las medidas que hubiera contra ti se terminan.
+Durante diez días hábiles, la acusación puede recurrir la decisión.`,
       plazos: [
         {
           descripcion: 'Fin del plazo de 10 días hábiles para que la sentencia sea firme',
@@ -216,7 +307,7 @@ Todas las medidas contra ti se terminan.`,
         derechos: [
           'Puedes no decir nada (guardar silencio)',
           'No tienes que declarar contra ti mismo',
-          'Tienes derecho a un abogado (gratis si no puedes pagarlo)',
+          'Puedes ir con abogado de tu confianza si lo deseas (art. 967.1 LECrim). Si no tienes recursos, puedes solicitar justicia gratuita y el juzgado decidirá si procede (art. 6.3.b Ley 1/1996)',
           'Puedes presentar pruebas hasta el mismo día del juicio',
           'Tienen que explicarte los documentos en un formato accesible y por voz',
         ],
@@ -241,7 +332,7 @@ Todas las medidas contra ti se terminan.`,
         ],
         que_pasa_si_no_voy: {
           resumen:
-            'Si no acudes al juicio sin avisar, el juicio puede celebrarse sin escuchar tu versión o pueden ponerte una sanción.',
+            'Si no compareces ni justificas causa justa, el juicio puede celebrarse en tu ausencia (art. 971 LECrim) y el juez puede ponerte una multa de 200 a 2.000 € (art. 967.2 LECrim).',
           pasos_si_no_puedes: [
             'Pide un abogado de oficio cuanto antes para que te asesore.',
             'Si tienes una urgencia médica ese día, avisa de inmediato al Juzgado de Instrucción nº 7.',
@@ -294,7 +385,7 @@ DE QUÉ TRATA EL CASO: De una denuncia por una venta en internet por un importe 
 
 TUS DERECHOS PRINCIPALES:
 1. Puedes guardar silencio o contestar solo a las preguntas que quieras.
-2. Tienes derecho a un abogado (si no puedes pagarlo, te asignan uno gratis).
+2. Tienes derecho a acudir con abogado (art. 967.1). Si careces de recursos, puedes solicitar justicia gratuita y el juzgado valorará si procede concederla (art. 6.3.b Ley 1/1996).
 3. Puedes llevar pruebas que demuestren tu versión hasta el mismo día del juicio.
 4. Tienes derecho a que te describan por voz todas las pruebas visuales y documentos.`,
       lectura_facil: `Te llaman para ir a un juicio.
@@ -308,8 +399,11 @@ La cantidad es menor de cuatrocientos euros.
 
 TIENES DERECHOS:
 1. Puedes NO hablar si no quieres.
-2. Tienes derecho a un ABOGADO gratis.
-3. Puedes llevar PRUEBAS.
+2. Puedes ir con un ABOGADO.
+   En este juicio el abogado no es obligatorio.
+   Si no tienes dinero, puedes pedir abogado gratis y el juzgado decidirá.
+3. Puedes llevar PRUEBAS hasta el día del juicio.
+4. Si no vas y no avisas con causa justa, el juicio se hace sin ti y la multa es de 200 a 2.000 euros.
 
 EL JUICIO es el jueves 12 de noviembre.
 A las nueve y media de la mañana.
@@ -332,6 +426,74 @@ En el Juzgado número 7 de A Coruña.`,
         { keyword: 'abogado', id: 11177, url: 'https://static.arasaac.org/pictograms/11177/11177_500.png' },
         { keyword: 'derechos', id: 36685, url: 'https://static.arasaac.org/pictograms/36685/36685_500.png' },
         { keyword: 'escuchar', id: 6572, url: 'https://static.arasaac.org/pictograms/6572/6572_500.png' },
+      ],
+    }
+  }
+
+  if (!esTestigo && (esCivil || (!esJuan && !esTestigo))) {
+    return {
+      datos_clave: {
+        tipo_documento: 'documento_judicial',
+        rol: esCivil ? (minus.includes('demandad') ? 'demandada' : (minus.includes('demandant') ? 'demandante' : 'parte_civil')) : 'desconocido',
+        tipo_procedimiento: esCivil ? 'Procedimiento Civil' : 'Procedimiento pendiente de determinar',
+        organo: 'Órgano judicial',
+        fecha: 'Comprobar en el documento original',
+        hora: 'Comprobar en el documento original',
+        lugar: 'Sede judicial indicada en la carta',
+        que_llevar: ['DNI o documento de identidad', 'Carta judicial original recibida'],
+        derechos: [
+          'Derecho a solicitar información sobre tu situación en el procedimiento',
+          'Derecho a solicitar ajustes de accesibilidad (artículo 7 bis de la LEC)',
+        ],
+        puedo_pedir_ajustes: true,
+        base_legal_ajustes: 'Artículo 7 bis de la Ley de Enjuiciamiento Civil y Art. 9 LO 5/2024',
+        apoyo_numerico: [],
+        que_pasa_si_no_voy: {
+          resumen: 'No hemos podido determinar tu papel exacto en este texto. Por seguridad jurídica, no inventamos tus obligaciones. Consulta la carta original.',
+          pasos_si_no_puedes: [
+            'Revisa en el encabezado de la carta en qué calidad se te llama.',
+            'Acude a la secretaría del juzgado que firma la notificación con la carta original.',
+            'Puedes consultar con un abogado o en el Colegio de Abogados.',
+          ],
+          mensaje_calma: 'El documento original contiene el número de procedimiento y el teléfono del juzgado.',
+        },
+        pasos_super_simples: [
+          '1. No podemos identificar con total seguridad tu papel en este documento.',
+          '2. No te damos información inventada: comprueba tu papel en la carta original.',
+          '3. Lleva tu DNI y el documento original al juzgado o a un abogado si tienes dudas.',
+          '4. Tienes derecho a pedir adaptaciones de accesibilidad (artículo 7 bis LEC).',
+        ],
+        pipeline_ia: PIPELINE_POR_DEFECTO,
+        privacidad_rgpd: {
+          anonimizado_antes_de_ia: true,
+          art_rgpd: 'Artículo 25 RGPD (Privacidad desde el diseño)',
+          garantia: 'Tus datos se anonimizaron en local.',
+          total_protegidos: 0,
+          elementos_protegidos: [],
+        },
+      },
+      lectura_clara: `DOCUMENTO JUDICIAL: No hemos podido determinar con certeza tu rol o el tipo de procedimiento en este texto.
+
+Por rigor jurídico y para proteger tus derechos, la aplicación no inventa consecuencias penales ni obligaciones que no consten claramente en el texto recibido.
+
+RECOMENDACIONES:
+1. Revisa la carta original para identificar si se te cita como testigo, investigado, demandante o demandado.
+2. Si tienes dudas sobre plazos o comparecencias, contacta con la oficina judicial del juzgado firmante o consulta con un letrado.
+3. Tienes derecho a solicitar ajustes de accesibilidad conforme al artículo 7 bis de la LEC.`,
+      lectura_facil: `Hemos leído tu carta judicial,
+pero NO podemos asegurar qué papel tienes en el juicio.
+
+No queremos darte información equivocada.
+
+QUÉ DEBES HACER:
+1. Mira la carta original que te llegó.
+2. Busca si pone 'testigo', 'investigado', 'demandante' o 'demandado'.
+3. Si tienes dudas sobre si debes ir o qué llevar, pregunta en el juzgado o a un abogado.
+4. Puedes pedir ayuda y adaptaciones claras en el juzgado (artículo 7 bis).`,
+      plazos: [],
+      pictogram_keywords: ['documento', 'juzgado', 'pregunta', 'ayuda'],
+      pictogramas: [
+        { keyword: 'documento', id: 2458, url: 'https://static.arasaac.org/pictograms/2458/2458_500.png' },
       ],
     }
   }
@@ -368,14 +530,15 @@ En el Juzgado número 7 de A Coruña.`,
       ],
       que_pasa_si_no_voy: {
         resumen:
-          'Como testigo tienes obligación de acudir, pero si ese día estás enfermo o tienes un motivo importante, puedes avisar antes al juzgado.',
+          'Como testigo tienes la obligación legal de acudir (art. 410 LECrim). Si ese día estás enfermo o tienes causa grave justificada, debes avisar al juzgado de inmediato aportando justificante.',
         pasos_si_no_puedes: [
-          'Llama o escribe al Juzgado de Instrucción nº 3 de A Coruña en cuanto sepas que no puedes ir.',
-          'Presenta un justificante (por ejemplo, un parte médico o certificado laboral).',
-          'El juzgado te dará una nueva fecha sin ponerte ninguna multa.',
+          'Avisa de inmediato al Juzgado de Instrucción nº 3 de A Coruña en cuanto conozcas el impedimento.',
+          'Presenta un justificante oficial (por ejemplo, un parte médico).',
+          'El juez valorará la justificación para acordar una nueva fecha de citación sin sanción.',
+          'Si faltas sin justificar, la ley prevé multa de 200 a 5.000 € y conducción policial (art. 420 LECrim).',
         ],
         mensaje_calma:
-          'La multa solo se aplica si una persona no va y tampoco avisa ni justifica el motivo.',
+          'Justificar a tiempo permite al juzgado reprogramar la declaración sin ninguna sanción.',
       },
       pasos_super_simples: [
         '1. Te llaman como testigo: NO te acusan de nada.',
@@ -501,6 +664,7 @@ export default function PaginaCitacion() {
   const [texto, setTexto] = useState('')
   const [nombreArchivo, setNombreArchivo] = useState('')
   const [modoLectura, setModoLectura] = useState<'clara' | 'facil' | 'simple'>('clara')
+  const [mostrarOriginal, setMostrarOriginal] = useState(false)
   const [mostrarRoles, setMostrarRoles] = useState(false)
   const [resultado, setResultado] = useState<CitacionProcesada | null>(null)
   const [error, setError] = useState('')
@@ -879,6 +1043,35 @@ export default function PaginaCitacion() {
               </aside>
             )}
 
+            {/* Aviso legal informativo */}
+            <div className="card mb-6 border-l-4 border-l-amber-600 bg-amber-50/80 p-4 rounded-xl text-court-800" role="note">
+              <div className="flex items-start gap-3">
+                <span className="text-xl select-none" aria-hidden="true">⚖️</span>
+                <div className="flex-1 text-sm space-y-1">
+                  <p className="font-bold text-amber-950">Aviso informativo sobre este documento</p>
+                  <p>
+                    Esta adaptación en lenguaje claro y lectura fácil te ayuda a comprender la citación o resolución. <strong>No sustituye a la notificación oficial ni al asesoramiento de un abogado.</strong> Si observas discrepancias o dudas, prevalece siempre el documento oficial emitido por el juzgado.
+                  </p>
+                  {texto && (
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setMostrarOriginal(!mostrarOriginal)}
+                        className="text-xs font-semibold text-amber-900 underline hover:text-amber-950 inline-flex items-center gap-1"
+                      >
+                        {mostrarOriginal ? 'Ocultar documento original' : 'Ver texto del documento original'}
+                      </button>
+                      {mostrarOriginal && (
+                        <pre className="mt-2 p-3 bg-white/90 border border-amber-200 rounded-lg text-xs font-mono text-court-800 whitespace-pre-wrap max-h-60 overflow-y-auto">
+                          {texto}
+                        </pre>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Métrica científica de legibilidad objetiva (Fernández-Huerta) */}
             {resultado.metricas_legibilidad && (
               <aside
@@ -928,7 +1121,7 @@ export default function PaginaCitacion() {
                           </span>
                         </div>
                         <span className="text-[11px] text-emerald-600 block mt-1">
-                          Media: {resultado.metricas_legibilidad.adaptado.palabras_por_frase} palabras por frase (Cumple UNE 153101 / W3C COGA)
+                          Media: {resultado.metricas_legibilidad.adaptado.palabras_por_frase} palabras por frase (Orientada a pautas UNE 153101 - no validada por personas lectoras)
                         </span>
                       </div>
                     </div>
@@ -987,7 +1180,7 @@ export default function PaginaCitacion() {
 
               {resultado.datos_clave.derechos && resultado.datos_clave.derechos.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-court-200">
-                  <h3 className="font-bold text-court-800 mb-2">Tus derechos garantizados</h3>
+                  <h3 className="font-bold text-court-800 mb-2">Tus derechos</h3>
                   <ul className="list-disc pl-5 text-court-700 space-y-1">
                     {resultado.datos_clave.derechos.map((derecho) => (
                       <li key={derecho}>{derecho}</li>

@@ -15,6 +15,8 @@ from .mock_data import (
     MOCK_RESPONSE_LUIS,
     MOCK_RESPONSE_JUAN,
     MOCK_RESPONSE_SENTENCIA,
+    MOCK_RESPONSE_CONDENA,
+    MOCK_RESPONSE_DESCONOCIDO,
     PIPELINE_SUMA_IAS,
 )
 from .anonimizador import anonimizar_documento_judicial
@@ -27,8 +29,8 @@ IMPORTANTE SOBRE PRIVACIDAD (RGPD art. 25): El documento que recibes ya ha sido 
 Devuelve SIEMPRE un JSON válido con esta estructura exacta:
 {
   "datos_clave": {
-    "tipo_documento": "citacion|sentencia",
-    "rol": "testigo|investigado|demandante|demandado|persona absuelta",
+    "tipo_documento": "citacion|sentencia|documento_judicial",
+    "rol": "testigo|investigado|demandante|demandado|persona absuelta|persona condenada|desconocido",
     "tipo_procedimiento": "string",
     "organo": "string",
     "fecha": "string",
@@ -460,16 +462,32 @@ def adaptar_documento_personalizado(
     privacidad_info = {
         "anonimizado_antes_de_ia": True,
         "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
-        "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de cualquier procesamiento.",
+        "garantia": "Hemos detectado y enmascarado en local los identificadores encontrados (DNI, nombres, domicilios o teléfonos) antes de cualquier procesamiento.",
         "total_protegidos": len(elementos_protegidos),
         "elementos_protegidos": elementos_protegidos,
     }
 
-    if "fallo" in minus or "absuelvo" in minus or "condeno" in minus or "sentencia" in minus:
-        base = json.loads(json.dumps(MOCK_RESPONSE_SENTENCIA))
+    es_sentencia = any(k in minus for k in ["sentencia", "fallo", "absuelvo", "absolucion", "condeno", "condena"])
+    if es_sentencia:
+        es_condena = any(k in minus for k in ["condeno", "condena", "culpable", "pena de", "prision", "multa de"])
+        base = json.loads(json.dumps(MOCK_RESPONSE_CONDENA if es_condena else MOCK_RESPONSE_SENTENCIA))
     else:
-        es_investigado = any(k in minus for k in ["investigad", "imputad", "delito leve", "estafa", "art. 118"])
-        base = json.loads(json.dumps(MOCK_RESPONSE_JUAN if es_investigado else MOCK_RESPONSE_LUIS))
+        es_civil = any(k in minus for k in ["demandad", "demandant", "juicio verbal", "juicio ordinario", "cedula de emplazamiento", "decreto de admision", "audiencia previa"])
+        es_investigado = any(k in minus for k in ["investigad", "imputad", "delito leve", "estafa", "art. 118", "en calidad de investigad"])
+        es_testigo = any(k in minus for k in ["testigo", "declaracion testifical", "en calidad de testigo", "art. 433"])
+
+        if es_testigo:
+            base = json.loads(json.dumps(MOCK_RESPONSE_LUIS))
+            if es_civil:
+                base["datos_clave"]["tipo_procedimiento"] = "Procedimiento Civil (Testifical)"
+        elif es_investigado:
+            base = json.loads(json.dumps(MOCK_RESPONSE_JUAN))
+        elif es_civil:
+            base = json.loads(json.dumps(MOCK_RESPONSE_DESCONOCIDO))
+            base["datos_clave"]["tipo_procedimiento"] = "Procedimiento Civil"
+            base["datos_clave"]["rol"] = "demandada" if "demandad" in minus else ("demandante" if "demandant" in minus else "parte_civil")
+        else:
+            base = json.loads(json.dumps(MOCK_RESPONSE_DESCONOCIDO))
     datos_clave = dict(base["datos_clave"])
 
     organo_match = re.search(
@@ -500,7 +518,7 @@ async def procesar_citacion(texto: str, perfil: Optional[str] = None) -> dict:
     privacidad_info = {
         "anonimizado_antes_de_ia": True,
         "art_rgpd": "Artículo 25 RGPD (Privacidad desde el diseño) y Minimización de Datos",
-        "garantia": "Tus datos personales identificativos (DNI/NIE, nombres, domicilio, teléfonos o emails) se detectaron y enmascararon en local antes de enviar el documento al modelo de IA.",
+        "garantia": "Hemos detectado y enmascarado en local los identificadores encontrados (DNI, nombres, domicilios o teléfonos) antes de cualquier procesamiento.",
         "total_protegidos": len(elementos_protegidos),
         "elementos_protegidos": elementos_protegidos,
     }
