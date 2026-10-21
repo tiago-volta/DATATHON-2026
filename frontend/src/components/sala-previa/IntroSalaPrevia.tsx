@@ -8,7 +8,7 @@ const PASOS = [
   {
     titulo: 'Qué vas a ver y oír',
     cuerpo:
-      'Vas a practicar el ambiente de un juzgado por capas: ruido, luz, gente y voces. Empiezas en una sala casi vacía y en silencio.',
+      'Vas a practicar el ambiente de un juzgado por capas: ruido, luz y gente. Empiezas en una sala casi vacía y en silencio.',
   },
   {
     titulo: 'Tú mandas el ritmo',
