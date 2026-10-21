@@ -1,7 +1,6 @@
 Sala Previa — créditos de imagen 360
 
 Archivo: sala-vistas-panorama.jpg (original)
-         sala-vistas-panorama-web.jpg (redimensionado para web)
          sala-vistas-360.jpg (equirectangular 2:1 derivado para el viewer)
 
 Fuente: «Panorama of 2nd Floor Courtroom - Old Courthouse - St. Louis - Missouri - USA»
