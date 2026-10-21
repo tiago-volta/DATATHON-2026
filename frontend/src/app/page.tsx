@@ -1,12 +1,20 @@
 import Link from 'next/link'
-import { CircleHelp, Compass, FileText, UserCheck, type LucideIcon } from 'lucide-react'
+import {
+  CircleHelp,
+  Compass,
+  FileText,
+  UserCheck,
+  ShieldCheck,
+  MessageSquareQuote,
+  type LucideIcon,
+} from 'lucide-react'
 import { ResumenPerfil } from '@/components/perfil/ResumenPerfil'
 
 function IconoInicio({ icono: Dibujo }: { icono: LucideIcon }) {
   return (
     <Dibujo
       aria-hidden="true"
-      className="h-7 w-7 shrink-0 text-court-900"
+      className="h-6 w-6 shrink-0 text-court-900"
       strokeWidth={1.75}
     />
   )
@@ -15,7 +23,7 @@ function IconoInicio({ icono: Dibujo }: { icono: LucideIcon }) {
 export default function Inicio() {
   return (
     <main id="contenido-principal" className="page-shell">
-      <section className="mb-8">
+      <section className="mb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-court-100 text-court-800 text-xs font-bold uppercase tracking-wider mb-3">
           <span>🏛️</span>
           <span>Anticipación cognitiva y sensorial</span>
@@ -24,72 +32,130 @@ export default function Inicio() {
           Prueba el juzgado antes del día
         </h1>
         <p className="entradilla max-w-[46ch]">
-          Primero creas tu perfil. Después entiendes tu citación en Lectura Fácil, entras en la sala 3D y ensayas tu declaración.
+          Comprende tu papel legal, ajusta el entorno sensorial de la sala en 3D y ensaya tus respuestas con tranquilidad.
         </p>
       </section>
 
+      {/* Hilo conductor principal: perfil o paso inicial */}
       <ResumenPerfil />
 
-      {/* Tarjeta principal: Simulador y Ensayo en sala (El Wow) */}
-      <Link
-        href="/sala-previa?ensayo=1"
-        className="hoja mb-8 border-2 border-court-400 bg-gradient-to-br from-white to-court-50/80 shadow-sm block hover:border-court-600 transition-colors"
-      >
-        <div className="flex items-start gap-4 mb-4">
-          <div className="p-3 bg-court-100 rounded-suave text-court-800 shrink-0">
-            <IconoInicio icono={Compass} />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs uppercase font-bold tracking-wider text-court-700 bg-court-200/70 px-2 py-0.5 rounded">
-                Simulador interactivo en sala
-              </span>
-            </div>
-            <h2 className="text-2xl font-bold text-court-900 mb-2">
-              Entrar en la sala del juicio y ensayar
-            </h2>
-            <p className="text-court-700 leading-relaxed text-base">
-              Vista 3D en primera persona, modulación de ruido, luz y aforo de público. Diálogos reales con el juez y los abogados con tarjetas FAQ y tus derechos del artículo 7 bis de la LEC.
-            </p>
-          </div>
-        </div>
-        <span className="btn-primary w-full sm:w-auto text-base">
-          Abrir simulador de sala y ensayo
-        </span>
-      </Link>
+      {/* 4 accesos directos a las herramientas principales */}
+      <section aria-labelledby="titulo-herramientas" className="mb-8">
+        <h2 id="titulo-herramientas" className="text-xl font-bold text-court-900 mb-4">
+          Herramientas de preparación
+        </h2>
 
-      {/* Tarjeta de citación */}
-      <Link href="/citacion" className="hoja mb-8 block hover:border-court-400 transition-colors">
-        <div className="flex items-start gap-4 mb-4">
-          <IconoInicio icono={FileText} />
-          <div className="min-w-0">
-            <h2 className="text-2xl text-court-900 mb-2">
-              Tengo una citación
-            </h2>
-            <p className="text-court-700">
-              Sube tu citación judicial para verla en Lectura Fácil (UNE 153101): fecha, juzgado, rol de testigo y pasos explicados.
-            </p>
-          </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* 1. Citación */}
+          <Link
+            href="/citacion"
+            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-court-100 rounded text-court-800">
+                  <IconoInicio icono={FileText} />
+                </div>
+                <h3 className="text-lg font-bold text-court-900">
+                  Comprender citación
+                </h3>
+              </div>
+              <p className="text-sm text-court-700 leading-relaxed">
+                Pasa tu citación judicial a Lectura Fácil (UNE 153101): fecha, tribunal, papel de testigo o investigado y consecuencias si no puedes acudir.
+              </p>
+            </div>
+            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+              Abrir citación →
+            </span>
+          </Link>
+
+          {/* 2. Pasaporte de ajustes */}
+          <Link
+            href="/pasaporte"
+            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-court-100 rounded text-court-800">
+                  <IconoInicio icono={ShieldCheck} />
+                </div>
+                <h3 className="text-lg font-bold text-court-900">
+                  Pasaporte de ajustes
+                </h3>
+              </div>
+              <p className="text-sm text-court-700 leading-relaxed">
+                Solicita pausas, luz tenue o preguntas directas amparado en el art. 7 bis de la LEC y CGPJ 2025, sin divulgar tu informe clínico.
+              </p>
+            </div>
+            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+              Ver o crear Pasaporte →
+            </span>
+          </Link>
+
+          {/* 3. Sala Previa 3D */}
+          <Link
+            href="/sala-previa"
+            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-court-100 rounded text-court-800">
+                  <IconoInicio icono={Compass} />
+                </div>
+                <h3 className="text-lg font-bold text-court-900">
+                  Sala de vistas 3D
+                </h3>
+              </div>
+              <p className="text-sm text-court-700 leading-relaxed">
+                Recorre la sala de vistas en 5 niveles: gradúa el volumen de toses, la luz, el aforo y prueba cascos antirruido o pausas de calma.
+              </p>
+            </div>
+            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+              Entrar en la sala 3D →
+            </span>
+          </Link>
+
+          {/* 4. Ensayo de declaración */}
+          <Link
+            href="/ensaya"
+            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="p-2 bg-court-100 rounded text-court-800">
+                  <IconoInicio icono={MessageSquareQuote} />
+                </div>
+                <h3 className="text-lg font-bold text-court-900">
+                  Banco de preguntas
+                </h3>
+              </div>
+              <p className="text-sm text-court-700 leading-relaxed">
+                Entrena preguntas con trampas habituales: preguntas compuestas, dobles negaciones y practica decir "No lo recuerdo" con serenidad.
+              </p>
+            </div>
+            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+              Practicar respuestas →
+            </span>
+          </Link>
         </div>
-        <span className="btn-secondary w-full sm:w-auto">Comprender mi citación</span>
-      </Link>
+      </section>
 
       {/* Caso de referencia de demostración: Luis (Testigo con TEA) */}
       <div className="card mb-8 bg-calma-cream/60 border border-court-200 p-5">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <span className="text-xs font-bold uppercase tracking-wider text-court-600 flex items-center gap-1.5">
             <IconoInicio icono={UserCheck} />
-            Caso de referencia • Testigo
+            Caso de referencia • Testigo penal
           </span>
           <span className="text-xs bg-court-200/80 text-court-800 font-semibold px-2.5 py-0.5 rounded-full">
             Luis, 28 años (TEA)
           </span>
         </div>
         <h3 className="font-bold text-court-900 text-lg mb-1">
-          Preparación de Luis: testigo en proceso penal
+          Preparación guiada de Luis
         </h3>
-        <p className="text-sm text-court-700 mb-4 max-w-2xl">
-          Anticipación del entorno judicial, aclimatación sensorial progresiva y práctica de respuestas serenas sin sobrecarga cognitiva ni presiones.
+        <p className="text-sm text-court-700 mb-4 max-w-2xl leading-relaxed">
+          Recorrido de aclimatación sensorial progresiva, herramientas de regulación en sala y práctica de respuestas sin sobrecarga cognitiva.
         </p>
         <Link href="/demo/luis" className="btn-secondary text-sm inline-flex items-center gap-2">
           Ver caso guiado de Luis
