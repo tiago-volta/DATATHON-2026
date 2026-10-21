@@ -52,8 +52,23 @@ def get_db():
         db.close()
 
 
+def _anadir_columna_citaciones() -> None:
+    """create_all no altera tablas ya creadas. Añade la columna si falta."""
+    from sqlalchemy import inspect, text
+
+    insp = inspect(engine)
+    if not insp.has_table("user_state"):
+        return
+    nombres = {col["name"] for col in insp.get_columns("user_state")}
+    if "citaciones" in nombres:
+        return
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE user_state ADD COLUMN citaciones TEXT"))
+
+
 def init_db() -> None:
     # Importa modelos para registrar metadata
     from . import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    _anadir_columna_citaciones()

@@ -35,9 +35,9 @@ export function TarjetasFaq({
   return (
     <div className="space-y-4">
       {mostrarSelectorRol && (
-        <div className="flex flex-wrap gap-2 items-center" role="group" aria-label="Filtrar preguntas por tu papel">
+        <div className="flex flex-wrap gap-2 items-center" role="group" aria-label="Filtrar preguntas por papel">
           <span className="text-xs font-bold text-court-700 uppercase tracking-wide mr-1">
-            Tu papel:
+            Ver preguntas de:
           </span>
           {ROLES_ETIQUETAS.map((r) => {
             const activo = rolActivo === r.id

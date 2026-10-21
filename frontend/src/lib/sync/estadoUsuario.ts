@@ -12,6 +12,7 @@ const CLAVE_PASAPORTE = 'court-pasaporte'
 const CLAVE_CONFIANZA = 'court-confianza'
 const CLAVE_INSIGNIAS = 'court-insignias-utiles'
 const CLAVE_PREFERENCIAS = 'court-preferencias'
+const CLAVE_CITACIONES = 'court-citaciones'
 const CLAVE_OWNER = 'court-sync-email'
 
 type Bloque =
@@ -23,6 +24,7 @@ type Bloque =
   | 'confianza'
   | 'insignias'
   | 'preferencias'
+  | 'citaciones'
 
 const MAPA: { clave: string; bloque: Bloque }[] = [
   { clave: CLAVE_PERFIL, bloque: 'perfil' },
@@ -33,6 +35,7 @@ const MAPA: { clave: string; bloque: Bloque }[] = [
   { clave: CLAVE_CONFIANZA, bloque: 'confianza' },
   { clave: CLAVE_INSIGNIAS, bloque: 'insignias' },
   { clave: CLAVE_PREFERENCIAS, bloque: 'preferencias' },
+  { clave: CLAVE_CITACIONES, bloque: 'citaciones' },
 ]
 
 let timer: ReturnType<typeof setTimeout> | null = null
@@ -88,6 +91,7 @@ function aplicarEstadoServidor(estado: Record<string, unknown>) {
   window.dispatchEvent(new Event('court-perfil-cambio'))
   window.dispatchEvent(new Event('InclusiveCourt:insignias-cambiadas'))
   window.dispatchEvent(new Event('court-preferencias-cambio'))
+  window.dispatchEvent(new Event('court-citaciones-cambio'))
 }
 
 /** Borra el cache local del recorrido (logout / cambio de cuenta). */
@@ -108,6 +112,7 @@ export function limpiarEstadoLocal() {
   window.dispatchEvent(new Event('court-perfil-cambio'))
   window.dispatchEvent(new Event('InclusiveCourt:insignias-cambiadas'))
   window.dispatchEvent(new Event('court-preferencias-cambio'))
+  window.dispatchEvent(new Event('court-citaciones-cambio'))
 }
 
 function puedeMigrarLocal(email: string): boolean {

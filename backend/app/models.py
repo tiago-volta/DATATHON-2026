@@ -41,6 +41,7 @@ class UserState(Base):
     confianza: Mapped[str | None] = mapped_column(Text, nullable=True)
     insignias: Mapped[str | None] = mapped_column(Text, nullable=True)
     preferencias: Mapped[str | None] = mapped_column(Text, nullable=True)
+    citaciones: Mapped[str | None] = mapped_column(Text, nullable=True)
     actualizado: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_ahora, onupdate=_ahora
     )

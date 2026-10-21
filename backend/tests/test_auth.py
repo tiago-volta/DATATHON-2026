@@ -92,6 +92,35 @@ def test_estado_put_get():
     assert get.json()["perfil"]["nombre"] == "Ana"
 
 
+def test_estado_varias_citaciones():
+    email = _email()
+    client.post(
+        "/api/auth/registro",
+        json={"email": email, "password": "secreto12", "nombre": "Luis"},
+    )
+    citaciones = [
+        {
+            "id": "cerca",
+            "guardadaEn": 2,
+            "texto": "Citación de noviembre",
+            "resultado": {"datos_clave": {"fecha": "2026-11-10", "rol": "testigo"}},
+        },
+        {
+            "id": "lejos",
+            "guardadaEn": 1,
+            "texto": "Citación de diciembre",
+            "resultado": {"datos_clave": {"fecha": "2026-12-02", "rol": "testigo"}},
+        },
+    ]
+    put = client.put("/api/me/estado", json={"citaciones": citaciones})
+    assert put.status_code == 200
+    assert [c["id"] for c in put.json()["citaciones"]] == ["cerca", "lejos"]
+
+    get = client.get("/api/me/estado")
+    assert get.status_code == 200
+    assert len(get.json()["citaciones"]) == 2
+
+
 def test_logout():
     email = _email()
     client.post("/api/auth/registro", json={"email": email, "password": "secreto12"})

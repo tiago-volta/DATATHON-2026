@@ -32,6 +32,7 @@ export interface EstadoUsuarioAPI {
   confianza: unknown | null
   insignias: unknown | null
   preferencias: unknown | null
+  citaciones: unknown | null
 }
 
 async function leerError(res: Response): Promise<string> {

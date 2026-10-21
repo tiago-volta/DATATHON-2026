@@ -243,11 +243,11 @@ export default function PaginaAyuda() {
       <section className="mb-8 space-y-6" aria-labelledby="seccion-faqs">
         <div className="border-t border-court-200 pt-6">
           <h2 id="seccion-faqs" className="text-2xl font-bold text-court-800 mb-1">
-            Preguntas frecuentes según tu papel
+            Preguntas frecuentes según el papel
           </h2>
           <p className="text-court-700 text-sm">
-            Respuestas con fundamento legal (LECrim y Código Penal) y enlace
-            directo al BOE. Selecciona tu papel para ver tus dudas clave.
+            Respuestas con fundamento legal y enlace al BOE.
+            Elige un papel para ver las dudas de ese caso.
           </p>
         </div>
 

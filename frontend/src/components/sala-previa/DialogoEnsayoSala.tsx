@@ -633,7 +633,7 @@ export function DialogoEnsayoSala({
 
       <div className="pt-2 border-t border-court-200 text-center">
         <Link href="/ayuda" className="text-xs text-court-700 underline font-medium hover:text-court-900">
-          ¿Dudas sobre tus derechos? Consulta las preguntas frecuentes de tu papel en el juicio →
+          ¿Dudas sobre tus derechos? Consulta las preguntas frecuentes según el papel →
         </Link>
       </div>
 

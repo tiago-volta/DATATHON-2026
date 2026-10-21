@@ -8,6 +8,8 @@ import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
 import { FASES_TESTIGO, FASES_INVESTIGADO, ROLES } from '@/lib/contenido'
 import { extraerTextoDocumentoAPI, type CitacionProcesada, type Plazo } from '@/lib/api'
+import { fusionarResultado, guardarCitacion, obtenerCitacion } from '@/lib/citaciones/almacen'
+import { diasNaturalesHasta, etiquetaDias, formatearFechaLarga, parsearFecha } from '@/lib/citaciones/fechas'
 import { calcularDiasHabilesRestantes } from '@/lib/plazos'
 
 const EJEMPLO_LUIS = `JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA
@@ -693,7 +695,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string, hora?: string) {
 }
 
 export default function PaginaCitacion() {
-  const [paso, setPaso] = useState<'entrada' | 'procesando' | 'resultado'>('entrada')
+  const [paso, setPaso] = useState<'pendiente' | 'entrada' | 'procesando' | 'resultado'>('pendiente')
   const [texto, setTexto] = useState('')
   const [nombreArchivo, setNombreArchivo] = useState('')
   const [modoLectura, setModoLectura] = useState<'clara' | 'facil' | 'simple'>('clara')
@@ -708,6 +710,43 @@ export default function PaginaCitacion() {
   const [cargandoPrueba, setCargandoPrueba] = useState<string | null>(null)
   const [progresoProcesamiento, setProgresoProcesamiento] = useState(0)
   const [arrastrandoArchivo, setArrastrandoArchivo] = useState(false)
+
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('id')
+    if (!id) {
+      setPaso('entrada')
+      return
+    }
+    const guardada = obtenerCitacion(id)
+    if (!guardada) {
+      setError('No encontramos esa citación. Puedes pegar el documento otra vez.')
+      setPaso('entrada')
+      return
+    }
+    setTexto(guardada.texto)
+    setResultado(guardada.resultado)
+    setPasoExplicacion(0)
+    setError('')
+    setPaso('resultado')
+  }, [])
+
+  const empezarOtra = () => {
+    setPaso('entrada')
+    setResultado(null)
+    setTexto('')
+    setNombreArchivo('')
+    setError('')
+    setMensajeExitoArchivo('')
+    setPasoExplicacion(0)
+    window.history.replaceState(null, '', '/citacion')
+  }
+
+  const publicarResultado = (procesada: CitacionProcesada, textoOriginal: string) => {
+    const guardada = guardarCitacion({ texto: textoOriginal, resultado: procesada })
+    setResultado(guardada.resultado)
+    setPaso('resultado')
+    window.history.replaceState(null, '', `/citacion?id=${encodeURIComponent(guardada.id)}`)
+  }
 
   useEffect(() => {
     if (paso !== 'resultado') return
@@ -838,20 +877,12 @@ export default function PaginaCitacion() {
 
       const data: CitacionProcesada = await response.json()
       const respaldo = construirRespaldoLocal(texto)
-      setResultado({
-        ...data,
-        datos_clave: {
-          ...respaldo.datos_clave,
-          ...data.datos_clave,
-        },
-      })
       await mantenerLectura()
-      setPaso('resultado')
+      publicarResultado(fusionarResultado(data, respaldo), texto.trim())
     } catch {
       const respaldo = construirRespaldoLocal(texto)
-      setResultado(respaldo)
       await mantenerLectura()
-      setPaso('resultado')
+      publicarResultado(respaldo, texto.trim())
     }
   }
 
@@ -887,6 +918,11 @@ export default function PaginaCitacion() {
     }
   }
 
+  const fechaPrincipal = resultado ? parsearFecha(resultado.datos_clave.fecha) : null
+  const diasPrincipal = fechaPrincipal ? diasNaturalesHasta(fechaPrincipal) : null
+  const textoFechaPrincipal = fechaPrincipal
+    ? formatearFechaLarga(fechaPrincipal)
+    : resultado?.datos_clave.fecha?.trim() || 'Fecha por confirmar'
   const esSentencia = resultado?.datos_clave.tipo_documento === 'sentencia'
   const pasosSimples = resultado?.datos_clave.pasos_super_simples || []
   const apoyoNumerico = resultado?.datos_clave.apoyo_numerico || []
@@ -902,6 +938,13 @@ export default function PaginaCitacion() {
   return (
     <>
       <main id="contenido-principal" className="page-shell">
+        {paso === 'pendiente' && (
+          <p className="text-lg text-court-700" aria-live="polite">
+            Cargando tu citación…
+          </p>
+        )}
+
+        {paso !== 'pendiente' && (
         <nav className="mb-8" aria-label="Pasos del proceso">
           <ol className="flex items-center gap-2 text-sm">
             <li className={paso === 'entrada' ? 'font-bold text-court-900 underline underline-offset-4' : 'text-court-700'}>
@@ -915,6 +958,7 @@ export default function PaginaCitacion() {
             </li>
           </ol>
         </nav>
+        )}
 
         {paso === 'entrada' && (
           <section>
@@ -1091,6 +1135,9 @@ export default function PaginaCitacion() {
         {paso === 'resultado' && resultado && (
           <section>
             <header id="inicio-explicacion" className="mb-6 scroll-mt-8">
+              <button type="button" onClick={empezarOtra} className="link-atras">
+                Añadir otra citación
+              </button>
               {esSentencia && <p className="text-sm font-bold text-accent-navy mb-2">Sentencia judicial explicada</p>}
               <h1 className="titulo-pagina mb-3">
                 {esSentencia ? 'La decisión del juez, explicada' : 'Primero, esto es lo que importa'}
@@ -1181,8 +1228,11 @@ export default function PaginaCitacion() {
                     <Icono nombre="📅" className="h-5 w-5 text-accent-navy" /> Fecha y hora
                   </dt>
                   <dd className="mt-2 text-xl font-bold text-court-900">
-                    {resultado.datos_clave.fecha}{resultado.datos_clave.hora ? ` · ${resultado.datos_clave.hora}` : ''}
+                    {textoFechaPrincipal}{resultado.datos_clave.hora ? ` · ${resultado.datos_clave.hora}` : ''}
                   </dd>
+                  {diasPrincipal !== null && (
+                    <p className="mt-2 text-base font-bold text-accent-navy numeros">{etiquetaDias(diasPrincipal)}</p>
+                  )}
                 </div>
                 <div className="rounded-suave bg-calma-sage p-4 sm:col-span-2">
                   <dt className="text-sm font-bold text-court-700 flex items-center gap-2">
@@ -1349,11 +1399,16 @@ export default function PaginaCitacion() {
                 </h2>
                 <ul className="space-y-3">
                   {resultado.plazos.map((plazo, i) => {
-                    const diasHabiles = calcularDiasHabilesRestantes(plazo.fecha)
-                    const porcentajeTiempo = Math.min(
-                      100,
-                      Math.max(15, 100 - plazo.dias_restantes * 3)
-                    )
+                    const fechaPlazo = parsearFecha(plazo.fecha)
+                    const diasNaturales = fechaPlazo ? diasNaturalesHasta(fechaPlazo) : null
+                    const diasHabiles = fechaPlazo
+                      ? calcularDiasHabilesRestantes(new Date(fechaPlazo.getTime()))
+                      : 0
+                    const porcentajeTiempo =
+                      diasNaturales !== null && diasNaturales > 0
+                        ? Math.min(100, Math.max(15, 100 - diasNaturales * 3))
+                        : 0
+                    const fechaVisible = fechaPlazo ? formatearFechaLarga(fechaPlazo) : plazo.fecha
                     return (
                       <li key={i} className="p-4 bg-calma-sage rounded-lg space-y-2">
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1361,28 +1416,24 @@ export default function PaginaCitacion() {
                             <Icono nombre="📅" className="h-6 w-6 text-court-900" />
                             <div>
                               <p className="font-bold text-court-800">{plazo.descripcion}</p>
-                              <p className="text-court-700">
-                                {new Date(plazo.fecha).toLocaleDateString('es-ES', {
-                                  weekday: 'long',
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                })}
-                              </p>
+                              <p className="text-court-700">{fechaVisible}</p>
                             </div>
                           </div>
-                          {plazo.dias_restantes > 0 && (
+                          {diasNaturales !== null && (
                             <div className="flex flex-col items-end gap-1">
                               <span className="inline-block bg-white text-court-800 font-bold text-sm px-3 py-1.5 rounded-lg border border-court-200">
-                                Faltan {plazo.dias_restantes} días naturales ({diasHabiles} días hábiles)
+                                {etiquetaDias(diasNaturales)}
+                                {diasNaturales > 0 && diasHabiles > 0 ? ` (${diasHabiles} días hábiles)` : ''}
                               </span>
-                              <span className="text-[11px] text-court-600 font-medium">
-                                Excluye sábados, domingos y festivos (Art. 130 LEC / 182 LOPJ)
-                              </span>
+                              {diasNaturales > 0 && (
+                                <span className="text-[11px] text-court-600 font-medium">
+                                  Los días hábiles excluyen sábados, domingos y festivos
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
-                        {plazo.dias_restantes > 0 && (
+                        {diasNaturales !== null && diasNaturales > 0 && (
                           <div aria-hidden="true" className="w-full bg-white rounded-full h-2.5 overflow-hidden">
                             <div
                               className="bg-court-600 h-2.5 rounded-full"

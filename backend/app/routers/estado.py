@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import Annotated, Any, Optional
 
 from fastapi import APIRouter, Depends, Response
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator, model_validator
 from sqlalchemy.orm import Session
 
 from ..auth import COOKIE_NAME, cookie_segura, get_current_user
@@ -25,9 +25,11 @@ CAMPOS = (
     "confianza",
     "insignias",
     "preferencias",
+    "citaciones",
 )
 
 MAX_JSON_BYTES = 50_000
+MAX_CITACIONES_BYTES = 200_000
 CLAVES_PROHIBIDAS = frozenset(
     {
         "diagnostico",
@@ -52,6 +54,7 @@ class EstadoUsuario(BaseModel):
     confianza: Optional[Any] = None
     insignias: Optional[Any] = None
     preferencias: Optional[Any] = None
+    citaciones: Optional[Any] = None
 
 
 def _sin_claves_prohibidas(valor: Any) -> Any:
@@ -66,13 +69,13 @@ def _sin_claves_prohibidas(valor: Any) -> Any:
     return valor
 
 
-def _validar_bloque(valor: Any) -> Any:
+def _validar_bloque(valor: Any, max_bytes: int = MAX_JSON_BYTES) -> Any:
     if valor is None:
         return None
     limpio = _sin_claves_prohibidas(valor)
     encoded = json.dumps(limpio, ensure_ascii=False)
-    if len(encoded.encode("utf-8")) > MAX_JSON_BYTES:
-        raise ValueError(f"Un bloque supera el máximo de {MAX_JSON_BYTES} bytes.")
+    if len(encoded.encode("utf-8")) > max_bytes:
+        raise ValueError(f"Un bloque supera el máximo de {max_bytes} bytes.")
     return limpio
 
 
@@ -85,11 +88,13 @@ class EstadoPut(BaseModel):
     confianza: Optional[Any] = Field(default=None)
     insignias: Optional[Any] = Field(default=None)
     preferencias: Optional[Any] = Field(default=None)
+    citaciones: Optional[Any] = Field(default=None)
 
     @field_validator(*CAMPOS, mode="before")
     @classmethod
-    def sanitizar_bloque(cls, v: Any) -> Any:
-        return _validar_bloque(v)
+    def sanitizar_bloque(cls, v: Any, info: ValidationInfo) -> Any:
+        limite = MAX_CITACIONES_BYTES if info.field_name == "citaciones" else MAX_JSON_BYTES
+        return _validar_bloque(v, limite)
 
     @model_validator(mode="after")
     def al_menos_un_campo(self) -> "EstadoPut":
@@ -132,6 +137,7 @@ def _estado_desde_state(state: UserState) -> EstadoUsuario:
         confianza=_decode(state.confianza),
         insignias=_decode(state.insignias),
         preferencias=_decode(state.preferencias),
+        citaciones=_decode(state.citaciones),
     )
 
 

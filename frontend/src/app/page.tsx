@@ -8,6 +8,7 @@ import {
   MessageSquareQuote,
   type LucideIcon,
 } from 'lucide-react'
+import { ListaCitaciones } from '@/components/inicio/ListaCitaciones'
 import { ResumenPerfil } from '@/components/perfil/ResumenPerfil'
 
 function IconoInicio({
@@ -38,12 +39,14 @@ export default function Inicio() {
           Prueba el juzgado antes del día
         </h1>
         <p className="entradilla max-w-[46ch]">
-          Comprende tu papel legal, ajusta el entorno sensorial de la sala en 3D y ensaya tus respuestas con tranquilidad.
+          Añade tu citación, recorre la sala en 3D y ensaya lo que vas a decir.
+          Puedes parar cuando quieras.
         </p>
       </section>
 
       {/* Hilo conductor principal: perfil o paso inicial */}
       <ResumenPerfil />
+      <ListaCitaciones />
 
       {/* 4 accesos directos a las herramientas principales */}
       <section aria-labelledby="titulo-herramientas" className="mb-8">
@@ -67,7 +70,8 @@ export default function Inicio() {
                 </h3>
               </div>
               <p className="text-sm text-court-700 leading-relaxed">
-                Pasa tu citación judicial a Lectura Fácil (UNE 153101): fecha, tribunal, papel de testigo o investigado y consecuencias si no puedes acudir.
+                Pasa tu citación a lectura fácil.
+                Verás la fecha, el juzgado, tu papel y qué pasa si no puedes ir.
               </p>
             </div>
             <span className="text-xs text-accent-navy font-bold underline decoration-accent-info/50 mt-3 inline-block">

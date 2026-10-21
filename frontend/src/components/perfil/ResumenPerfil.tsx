@@ -3,37 +3,26 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth/AuthContext'
+import { leerCitaciones, EVENTO_CITACIONES } from '@/lib/citaciones/almacen'
+import { resumirCitaciones } from '@/lib/citaciones/resumen'
 import {
   EVENTO_PERFIL,
   leerVistaPerfil,
   type PerfilVista,
 } from '@/lib/perfil/perfil'
 import { cargarProgreso } from '@/lib/sala-previa/progreso'
-import type { RolPerfil } from '@/lib/perfil/tipos'
-
-function etiquetaRol(rol?: RolPerfil): string {
-  switch (rol) {
-    case 'testigo':
-      return 'Testigo'
-    case 'investigado':
-      return 'Investigado o acusado'
-    case 'victima':
-      return 'Víctima'
-    case 'parte_civil':
-      return 'Parte civil'
-    default:
-      return 'Testigo'
-  }
-}
 
 export function ResumenPerfil() {
   const { sesion, cargando } = useAuth()
   const [vista, setVista] = useState<PerfilVista | null>(null)
   const [nivelesHechos, setNivelesHechos] = useState<number>(0)
+  const [idCitacionProxima, setIdCitacionProxima] = useState<string | null>(null)
 
   useEffect(() => {
     const refrescar = () => {
       setVista(leerVistaPerfil())
+      const proxima = resumirCitaciones(leerCitaciones())[0]
+      setIdCitacionProxima(proxima?.id ?? null)
       try {
         const prog = cargarProgreso()
         const n = prog.nivelMaximo === 0 && prog.sesionesCompletadas === 0 ? 0 : Math.min(5, prog.nivelMaximo + 1)
@@ -45,9 +34,11 @@ export function ResumenPerfil() {
 
     refrescar()
     window.addEventListener(EVENTO_PERFIL, refrescar)
+    window.addEventListener(EVENTO_CITACIONES, refrescar)
     window.addEventListener('storage', refrescar)
     return () => {
       window.removeEventListener(EVENTO_PERFIL, refrescar)
+      window.removeEventListener(EVENTO_CITACIONES, refrescar)
       window.removeEventListener('storage', refrescar)
     }
   }, [sesion])
@@ -60,36 +51,38 @@ export function ResumenPerfil() {
     )
   }
 
-  // 1. Caso SIN perfil guardado: Hilo conductor para empezar
   if (!vista?.tienePerfil) {
     return (
       <section
         className="card mb-8 border-2 border-accent-info/40 bg-white p-6"
         aria-labelledby="titulo-empieza"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-suave bg-accent-info/15 text-accent-navy text-xs font-bold uppercase tracking-wider mb-3 border border-accent-info/25">
-          <span aria-hidden="true">🧭</span>
-          <span>Primer paso de preparación</span>
-        </div>
         <h2 id="titulo-empieza" className="text-2xl font-bold text-court-900 mb-2">
-          ¿Para qué vas al juzgado?
+          Empieza por tu perfil
         </h2>
         <p className="text-court-700 max-w-[48ch] mb-5 leading-relaxed">
-          Cada papel en un juicio tiene derechos y obligaciones distintos. Descubre qué implica acudir como testigo, investigado o víctima y prepara tus ajustes con calma.
+          Guarda cómo quieres que sea la sala.
+          Tu papel sale de la citación.
         </p>
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-3">
           <Link
-            href="/sala-previa?rol=elegir"
+            href={sesion ? '/perfil' : '/registro'}
             className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
           >
-            Empieza: ¿para qué vas al juzgado?
+            Crear tu perfil
           </Link>
           <Link
             href="/citacion"
             className="btn-secondary text-base min-h-[44px] inline-flex items-center justify-center"
           >
-            Tengo una citación judicial
+            Tengo una citación
+          </Link>
+          <Link
+            href="/sala-previa"
+            className="btn-ghost text-base min-h-[44px] inline-flex items-center justify-center text-court-800"
+          >
+            Entrar en la sala
           </Link>
         </div>
 
@@ -102,34 +95,22 @@ export function ResumenPerfil() {
     )
   }
 
-  // 2. Caso CON perfil guardado: Bienvenida personalizada y seguimiento
-  const rolTexto = etiquetaRol(vista.rol)
-
   return (
     <section
       className="card mb-8 border-2 border-accent-info/40 bg-white p-6"
       aria-labelledby="titulo-bienvenida"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-accent-navy bg-accent-info/15 px-2.5 py-1 rounded-suave border border-accent-info/25">
-          Tu plan de juicio
-        </span>
-        {sesion?.email && (
-          <span className="text-xs text-court-600 font-medium">
-            {sesion.email}
-          </span>
-        )}
-      </div>
+      <span className="inline-flex text-xs font-bold uppercase tracking-wider text-accent-navy bg-accent-info/15 px-2.5 py-1 rounded-suave border border-accent-info/25 mb-2">
+        Tu preparación
+      </span>
 
       <h2 id="titulo-bienvenida" className="text-2xl font-bold text-court-900 mb-1">
         Hola{vista.nombre ? `, ${vista.nombre}` : ''}
       </h2>
-      <p className="text-court-800 text-base mb-4">
-        Tu papel en el juicio:{' '}
-        <span className="font-bold text-accent-navy underline decoration-accent-info/50">
-          {rolTexto}
-        </span>
-        .
+      <p className="text-court-800 text-base mb-4 max-w-[48ch]">
+        {idCitacionProxima
+          ? 'Puedes ensayar la sala, ver tu pasaporte o abrir la citación.'
+          : 'Aún no tienes una citación. Créala para ver la fecha, el lugar y tu papel.'}
       </p>
 
       {/* Progreso del simulador */}
@@ -163,10 +144,18 @@ export function ResumenPerfil() {
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+        {!idCitacionProxima && (
+          <Link
+            href="/citacion"
+            className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
+          >
+            Crear tu primera citación
+          </Link>
+        )}
         <Link
           href="/sala-previa?ensayo=1"
-          className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
+          className={!idCitacionProxima ? 'btn-secondary text-base min-h-[44px] inline-flex items-center justify-center' : 'btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold'}
         >
           Sigue tu ensayo de sala
         </Link>
@@ -176,21 +165,14 @@ export function ResumenPerfil() {
         >
           Ver mi Pasaporte de ajustes
         </Link>
-        <Link
-          href="/citacion"
-          className="btn-ghost text-base min-h-[44px] inline-flex items-center justify-center text-court-800"
-        >
-          Consultar citación
-        </Link>
-      </div>
-
-      <div className="pt-3 border-t border-court-200 flex items-center justify-between">
-        <Link
-          href="/perfil"
-          className="text-xs text-accent-navy hover:text-accent-info underline font-medium min-h-[36px] inline-flex items-center transition-colors duration-200"
-        >
-          Cambiar perfil o empezar de nuevo
-        </Link>
+        {idCitacionProxima && (
+          <Link
+            href={`/citacion?id=${encodeURIComponent(idCitacionProxima)}`}
+            className="btn-ghost text-base min-h-[44px] inline-flex items-center justify-center text-court-800"
+          >
+            Consultar la citación más próxima
+          </Link>
+        )}
       </div>
     </section>
   )

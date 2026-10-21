@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Icono } from '@/components/Icono'
 import { useAuth } from '@/lib/auth/AuthContext'
+import { leerCitaciones } from '@/lib/citaciones/almacen'
 import {
   ESTIMULOS_PERFIL,
   NIVELES_TOLERANCIA,
@@ -12,8 +13,6 @@ import {
   etiquetaEstimulo,
   guardarPerfil,
   type NivelTolerancia,
-  type RolPerfil,
-  ROLES_DISPONIBLES,
 } from '@/lib/perfil/perfil'
 import { sanitizarNombre, validarNombre } from '@/lib/pasaporte'
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
@@ -25,12 +24,13 @@ export default function PaginaPerfil() {
   const [eliminando, setEliminando] = useState(false)
   const [mensajeBorrado, setMensajeBorrado] = useState('')
   const [nombre, setNombre] = useState('')
-  const [rol, setRol] = useState<RolPerfil>('testigo')
   const [tolerancia, setTolerancia] = useState<NivelTolerancia>(1)
   const [estimulos, setEstimulos] = useState<IdEstimulo[]>([])
   const [errorNombre, setErrorNombre] = useState<string | undefined>()
   const [errorGuardar, setErrorGuardar] = useState<string | undefined>()
   const [yaExiste, setYaExiste] = useState(false)
+  const [tieneCitacion, setTieneCitacion] = useState(false)
+  const [guardado, setGuardado] = useState(false)
   const [listo, setListo] = useState(false)
 
   useEffect(() => {
@@ -39,16 +39,16 @@ export default function PaginaPerfil() {
       setListo(true)
       return
     }
-    const guardado = cargarPerfil()
-    if (guardado) {
-      setNombre(guardado.nombre)
-      setRol(guardado.rol ?? 'testigo')
-      setTolerancia(guardado.tolerancia ?? 1)
-      setEstimulos(guardado.estimulosSensibles ?? [])
+    const perfilCargado = cargarPerfil()
+    if (perfilCargado) {
+      setNombre(perfilCargado.nombre)
+      setTolerancia(perfilCargado.tolerancia ?? 1)
+      setEstimulos(perfilCargado.estimulosSensibles ?? [])
       setYaExiste(true)
     } else if (sesion.perfil?.nombre) {
       setNombre(sesion.perfil.nombre)
     }
+    setTieneCitacion(leerCitaciones().length > 0)
     setListo(true)
   }, [sesion, cargandoSesion])
 
@@ -68,7 +68,6 @@ export default function PaginaPerfil() {
     setErrorNombre(undefined)
     const resultado = guardarPerfil({
       nombre,
-      rol,
       tolerancia,
       estimulosSensibles: estimulos,
     })
@@ -77,7 +76,11 @@ export default function PaginaPerfil() {
       return
     }
     setErrorGuardar(undefined)
-    router.push('/citacion')
+    if (!yaExiste && !tieneCitacion) {
+      router.push('/citacion')
+      return
+    }
+    setGuardado(true)
   }
 
   if (cargandoSesion || !listo) {
@@ -122,8 +125,8 @@ export default function PaginaPerfil() {
         {yaExiste ? 'Tu perfil' : 'Crea tu perfil'}
       </h1>
       <p className="entradilla max-w-[42ch]">
-        Guardamos tu nombre, tu tolerancia y lo que te molesta en tu cuenta.
-        No muestra ningún diagnóstico.
+        Aquí guardas cómo quieres que sea la sala.
+        Tu papel en el proceso sale de la citación.
       </p>
       <p className="text-court-700 mb-6 text-sm">{sesion.email}</p>
 
@@ -159,40 +162,6 @@ export default function PaginaPerfil() {
               </p>
             )}
           </div>
-
-          <fieldset>
-            <legend className="block text-lg font-medium text-court-800 mb-1">
-              ¿Para qué vas al juzgado? (tu papel en el juicio)
-            </legend>
-            <p className="text-sm text-court-700 mb-3">
-              Selecciona tu rol. Cada papel tiene derechos, rutas y consecuencias procesales distintas.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Rol en el juzgado">
-              {ROLES_DISPONIBLES.map((r) => {
-                const activo = rol === r.id
-                return (
-                  <button
-                    key={r.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={activo}
-                    onClick={() => setRol(r.id)}
-                    className={`p-4 rounded-suave border-2 text-left transition-[border-color,background-color] duration-200 ${
-                      activo
-                        ? 'border-court-500 bg-court-50 ring-2 ring-court-400/30'
-                        : 'border-court-200 bg-white hover:border-court-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xl" aria-hidden="true">{r.icono}</span>
-                      <span className="font-bold text-court-900">{r.nombre}</span>
-                    </div>
-                    <p className="text-xs text-court-700">{r.subtitulo}</p>
-                  </button>
-                )
-              })}
-            </div>
-          </fieldset>
 
           <fieldset>
             <legend className="text-lg font-medium text-court-800 mb-2">
@@ -276,8 +245,24 @@ export default function PaginaPerfil() {
           )}
 
           <button type="submit" className="btn-primary w-full" disabled={!nombre.trim()}>
-            {yaExiste ? 'Guardar y seguir con la citación' : 'Guardar perfil y seguir'}
+            {!yaExiste && !tieneCitacion ? 'Guardar y crear mi primera citación' : 'Guardar perfil'}
           </button>
+          {guardado && (
+            <p className="text-sm font-medium text-court-800" role="status">
+              Perfil guardado.
+            </p>
+          )}
+          {(yaExiste || guardado) && !tieneCitacion && (
+            <div className="rounded-suave bg-calma-sage p-4">
+              <p className="font-bold text-court-900">Crea tu primera citación</p>
+              <p className="mt-1 text-court-700">
+                La carta te dice la fecha, el lugar y tu papel.
+              </p>
+              <Link href="/citacion" className="btn-secondary mt-4">
+                Crear citación
+              </Link>
+            </div>
+          )}
         </div>
       </form>
 

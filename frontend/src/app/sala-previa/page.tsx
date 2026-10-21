@@ -24,7 +24,9 @@ import { distraccionDeAgenda, type TipoDistraccion } from '@/lib/sala-previa/dis
 import { NarradorAhoraDespues } from '@/components/sala-previa/NarradorAhoraDespues'
 import { HerramientasSensoriales } from '@/components/sala-previa/HerramientasSensoriales'
 import type { IdHerramienta } from '@/lib/perfil/tipos'
-import { cargarPerfil, guardarPerfil, ROLES_DISPONIBLES, type RolPerfil } from '@/lib/perfil/perfil'
+import { leerCitaciones } from '@/lib/citaciones/almacen'
+import { resumirCitaciones } from '@/lib/citaciones/resumen'
+import { cargarPerfil, type RolPerfil } from '@/lib/perfil/perfil'
 import {
   ESTIMULOS_VACIOS,
   NIVELES,
@@ -51,6 +53,28 @@ import {
 import type { ConfortCheckIn, IdEstimulo, ProgresoSala, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
 type Fase = 'intro' | 'simulacion' | 'checkin'
+
+function rolParaLaSala(): RolPerfil {
+  const lista = leerCitaciones()
+  const id = resumirCitaciones(lista)[0]?.id
+  const cita = lista.find((item) => item.id === id)
+  const bruto = cita?.resultado.datos_clave.rol?.trim().toLowerCase() ?? ''
+  if (
+    bruto === 'testigo' ||
+    bruto === 'investigado' ||
+    bruto === 'victima' ||
+    bruto === 'parte_civil'
+  ) {
+    return bruto
+  }
+  if (bruto === 'víctima') return 'victima'
+  if (bruto === 'demandante' || bruto === 'demandado' || bruto === 'demandada') {
+    return 'parte_civil'
+  }
+  const perfil = cargarPerfil()
+  if (perfil?.rol && perfil.rol !== 'desconocido') return perfil.rol
+  return 'testigo'
+}
 
 const PROGRESO_INICIAL: ProgresoSala = {
   nivelMaximo: 0,
@@ -108,10 +132,7 @@ export default function PaginaSalaPrevia() {
   } = usePractica()
 
   useEffect(() => {
-    const p = cargarPerfil()
-    if (p?.rol) {
-      setRolUsuario(p.rol)
-    }
+    setRolUsuario(rolParaLaSala())
   }, [])
 
   const agenda = useMemo(() => generarAgendaEventos(cargarPerfil()), [])
@@ -447,38 +468,6 @@ export default function PaginaSalaPrevia() {
 
                 <div className="grid lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 space-y-4">
-                    {rolUsuario === 'desconocido' && (
-                      <div className="card border-2 border-court-400 bg-court-50 p-5 mb-6" aria-live="polite">
-                        <h3 className="text-xl font-bold text-court-800 mb-2">¿Para qué vas al juzgado?</h3>
-                        <p className="text-court-700 text-sm mb-4">
-                          Elige tu papel para que el recorrido y las explicaciones se adapten a tu situación:
-                        </p>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                          {ROLES_DISPONIBLES.map((r) => (
-                            <button
-                              key={r.id}
-                              type="button"
-                              onClick={() => {
-                                const p = cargarPerfil()
-                                guardarPerfil({
-                                  nombre: p?.nombre || 'Visitante',
-                                  rol: r.id,
-                                  tolerancia: p?.tolerancia ?? 1,
-                                  estimulosSensibles: p?.estimulosSensibles ?? [],
-                                })
-                                setRolUsuario(r.id)
-                                setEscenaIndice(0)
-                              }}
-                              className="p-3 text-left rounded-suave border-2 border-court-300 hover:border-court-600 bg-white transition-colors min-h-[44px]"
-                            >
-                              <span className="text-lg mr-2" aria-hidden="true">{r.icono}</span>
-                              <strong className="text-court-800">{r.nombre}</strong>
-                              <span className="text-xs text-court-700 block mt-1">{r.subtitulo}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                     <NarradorAhoraDespues
                       agenda={agenda}
                       enCalma={enCalma}
