@@ -118,7 +118,7 @@ def anonimizar_documento_judicial(texto: str) -> Tuple[str, List[Dict[str, str]]
         # D./Dña./Don/Doña seguido de nombres e iniciales (ej. "Dña. MARÍA CARMEN R. V.")
         re.compile(
             r"\b(?:D\.|Dña\.|Don|Doña)\s+([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ\.]*(?:\s+[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ\.]*){1,4})",
-            re.IGNORECASE,
+
         ),
         # Fórmulas de citación directa: "Se cita a Pedro Gómez", "comparezca Juan Pérez"
         re.compile(

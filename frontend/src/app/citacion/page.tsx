@@ -837,6 +837,68 @@ export default function PaginaCitacion() {
               </aside>
             )}
 
+            {/* Métrica científica de legibilidad objetiva (Fernández-Huerta) */}
+            {resultado.metricas_legibilidad && (
+              <aside
+                aria-label="Medición científica de legibilidad y accesibilidad cognitiva"
+                className="card mb-6 border-l-4 border-l-blue-600 bg-blue-50/70 p-4 rounded-xl"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl select-none" aria-hidden="true">📊</span>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h2 className="font-bold text-blue-950 text-base">
+                        Métricas de legibilidad objetiva (Fórmula Fernández-Huerta)
+                      </h2>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-300">
+                        +{resultado.metricas_legibilidad.incremento_puntos} pts de legibilidad
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200">
+                        <span className="text-xs font-semibold text-puente-700 block mb-0.5">
+                          Documento original del juzgado:
+                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg font-bold text-puente-900 font-mono">
+                            {resultado.metricas_legibilidad.original.score}/100
+                          </span>
+                          <span className="text-xs text-puente-600">
+                            ({resultado.metricas_legibilidad.original.nivel})
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-puente-500 block mt-1">
+                          Media: {resultado.metricas_legibilidad.original.palabras_por_frase} palabras por frase
+                        </span>
+                      </div>
+
+                      <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200">
+                        <span className="text-xs font-semibold text-emerald-800 block mb-0.5">
+                          Versión adaptada por PUENTE:
+                        </span>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg font-bold text-emerald-900 font-mono">
+                            {resultado.metricas_legibilidad.adaptado.score}/100
+                          </span>
+                          <span className="text-xs text-emerald-700">
+                            ({resultado.metricas_legibilidad.adaptado.nivel})
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-emerald-600 block mt-1">
+                          Media: {resultado.metricas_legibilidad.adaptado.palabras_por_frase} palabras por frase (Cumple UNE 153101 / W3C COGA)
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-blue-900 mt-2 font-medium">
+                      ✓ {resultado.metricas_legibilidad.resumen_impacto}
+                    </p>
+                  </div>
+                </div>
+              </aside>
+            )}
+
             {/* Datos clave con iconos (C03) */}
             <div className="card-destacada mb-8">
               <h2 className="text-xl font-bold text-puente-800 mb-4">

@@ -33,6 +33,24 @@ export interface PrivacidadRGPD {
   elementos_protegidos: ElementoProtegido[]
 }
 
+export interface DetalleLegibilidad {
+  score: number
+  nivel: string
+  palabras: number
+  frases: number
+  palabras_por_frase: number
+  silabas_por_palabra: number
+}
+
+export interface MetricasLegibilidad {
+  original: DetalleLegibilidad
+  adaptado: DetalleLegibilidad
+  incremento_puntos: number
+  porcentaje_mejora: number
+  cumple_coga_longitud_frase: boolean
+  resumen_impacto: string
+}
+
 export interface DatosClave {
   tipo_documento?: 'citacion' | 'sentencia'
   rol: string
@@ -73,6 +91,7 @@ export interface CitacionProcesada {
   plazos: Plazo[]
   pictogram_keywords: string[]
   pictogramas: Pictograma[]
+  metricas_legibilidad?: MetricasLegibilidad
 }
 
 export interface Fase {

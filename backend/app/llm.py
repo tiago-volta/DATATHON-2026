@@ -467,11 +467,9 @@ def adaptar_documento_personalizado(
 
     if "fallo" in minus or "absuelvo" in minus or "condeno" in minus or "sentencia" in minus:
         base = json.loads(json.dumps(MOCK_RESPONSE_SENTENCIA))
-        base["datos_clave"]["privacidad_rgpd"] = privacidad_info
-        return base
-
-    es_investigado = any(k in minus for k in ["investigad", "imputad", "delito leve", "estafa", "art. 118"])
-    base = json.loads(json.dumps(MOCK_RESPONSE_JUAN if es_investigado else MOCK_RESPONSE_LUIS))
+    else:
+        es_investigado = any(k in minus for k in ["investigad", "imputad", "delito leve", "estafa", "art. 118"])
+        base = json.loads(json.dumps(MOCK_RESPONSE_JUAN if es_investigado else MOCK_RESPONSE_LUIS))
     datos_clave = dict(base["datos_clave"])
 
     organo_match = re.search(

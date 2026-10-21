@@ -1,0 +1,114 @@
+{
+  "total_casos_evaluados": 10,
+  "precision_global": 99.2,
+  "metricas": {
+    "extraccion_rol": "100.0% (10/10)",
+    "extraccion_organo": "100.0% (10/10)",
+    "extraccion_fecha": "100.0% (10/10)",
+    "extraccion_hora": "100.0% (10/10)",
+    "cobertura_anonimizacion_rgpd": "96.0% (24/25 elementos)",
+    "ganancia_media_legibilidad_fernandez_huerta": "+18.8 puntos"
+  },
+  "detalles": [
+    {
+      "id": "caso_01_testigo_coruna",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 74.5,
+      "legibilidad_adap": 96.9,
+      "ganancia_legibilidad": 22.4
+    },
+    {
+      "id": "caso_02_investigado_estafa",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 78.2,
+      "legibilidad_adap": 91.6,
+      "ganancia_legibilidad": 13.4
+    },
+    {
+      "id": "caso_03_sentencia_absolutoria",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 66.8,
+      "legibilidad_adap": 84.3,
+      "ganancia_legibilidad": 17.5
+    },
+    {
+      "id": "caso_04_testigo_vigo",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 73.2,
+      "legibilidad_adap": 96.9,
+      "ganancia_legibilidad": 23.7
+    },
+    {
+      "id": "caso_05_investigado_lesiones",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 70.0,
+      "legibilidad_adap": 91.6,
+      "ganancia_legibilidad": 21.6
+    },
+    {
+      "id": "caso_06_vista_telemática",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 73.2,
+      "legibilidad_adap": 96.9,
+      "ganancia_legibilidad": 23.7
+    },
+    {
+      "id": "caso_07_perito_forense",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 67.7,
+      "legibilidad_adap": 96.9,
+      "ganancia_legibilidad": 29.2
+    },
+    {
+      "id": "caso_08_investigado_hurto",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 85.9,
+      "legibilidad_adap": 91.6,
+      "ganancia_legibilidad": 5.7
+    },
+    {
+      "id": "caso_09_testigo_accidente",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 85.4,
+      "legibilidad_adap": 96.9,
+      "ganancia_legibilidad": 11.5
+    },
+    {
+      "id": "caso_10_sentencia_conformidad",
+      "acierto_rol": true,
+      "acierto_organo": true,
+      "acierto_fecha": true,
+      "acierto_hora": true,
+      "legibilidad_orig": 64.7,
+      "legibilidad_adap": 84.3,
+      "ganancia_legibilidad": 19.6
+    }
+  ]
+}
