@@ -10,16 +10,23 @@ import {
   etiquetaNivelTipico,
   nivelVisualDesdeEscena,
 } from '@/lib/sala-previa/escenas'
-import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import type { IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
 interface Props {
   indice: number
   onCambiar: (indice: number) => void
   valores: ValoresEstimulo
   enCalma: boolean
+  onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
 }
 
-export function RecorridoEscenas({ indice, onCambiar, valores, enCalma }: Props) {
+export function RecorridoEscenas({
+  indice,
+  onCambiar,
+  valores,
+  enCalma,
+  onChangeEstimulo,
+}: Props) {
   const reduced = useReducedMotion()
   const tituloId = useId()
   const tituloRef = useRef<HTMLHeadingElement>(null)
@@ -136,7 +143,14 @@ export function RecorridoEscenas({ indice, onCambiar, valores, enCalma }: Props)
           )}
         </div>
 
-        <EscenaSensorial nivel={nivelVisual} valores={valores} enCalma={enCalma} />
+        <EscenaSensorial
+          nivel={nivelVisual}
+          escenaId={escena.id}
+          valores={valores}
+          enCalma={enCalma}
+          onChangeEstimulo={onChangeEstimulo}
+          deshabilitadoEstimulos={enCalma}
+        />
       </div>
 
       <nav

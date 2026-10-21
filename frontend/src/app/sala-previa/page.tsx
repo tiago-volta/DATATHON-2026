@@ -395,6 +395,7 @@ export default function PaginaSalaPrevia() {
                   onCambiar={cambiarEscena}
                   valores={valores}
                   enCalma={enCalma}
+                  onChangeEstimulo={onSlider}
                 />
 
                 <div className="card">

@@ -45,7 +45,8 @@ if [[ ! -f .env && -f .env.example ]]; then
   cp .env.example .env
   echo "    Creado backend/.env desde .env.example"
 fi
-./venv/bin/uvicorn app.main:app --reload --host 127.0.0.1 --port "$BACKEND_PORT" &
+# 0.0.0.0 para que el preview/túnel de Cursor pueda conectar
+./venv/bin/uvicorn app.main:app --reload --host 0.0.0.0 --port "$BACKEND_PORT" &
 PID_BACKEND=$!
 
 echo "==> Frontend"
@@ -53,7 +54,7 @@ cd "$ROOT/frontend"
 if [[ ! -d node_modules ]]; then
   npm install
 fi
-npm run dev -- --hostname 127.0.0.1 --port "$FRONTEND_PORT" &
+npm run dev -- --hostname 0.0.0.0 --port "$FRONTEND_PORT" &
 PID_FRONTEND=$!
 
 echo ""
