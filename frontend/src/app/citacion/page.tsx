@@ -9,6 +9,7 @@ import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
 import { FASES_TESTIGO, FASES_INVESTIGADO, ROLES } from '@/lib/contenido'
 import { extraerTextoDocumentoAPI, type CitacionProcesada, type Plazo } from '@/lib/api'
+import { calcularDiasHabilesRestantes } from '@/lib/plazos'
 
 const EJEMPLO_LUIS = `JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA
 Procedimiento: Diligencias Previas 245/2026
@@ -1356,6 +1357,7 @@ export default function PaginaCitacion() {
                 <ul className="space-y-3">
                   {resultado.plazos.map((plazo, i) => {
                     const semanas = Math.max(1, Math.round(plazo.dias_restantes / 7))
+                    const diasHabiles = calcularDiasHabilesRestantes(plazo.fecha)
                     const porcentajeTiempo = Math.min(
                       100,
                       Math.max(15, 100 - plazo.dias_restantes * 3)
@@ -1378,9 +1380,14 @@ export default function PaginaCitacion() {
                             </div>
                           </div>
                           {plazo.dias_restantes > 0 && (
-                            <span className="inline-block bg-white text-court-800 font-bold text-sm px-3 py-1.5 rounded-lg border border-court-200">
-                              Faltan {plazo.dias_restantes} días (unas {semanas} semanas)
-                            </span>
+                            <div className="flex flex-col items-end gap-1">
+                              <span className="inline-block bg-white text-court-800 font-bold text-sm px-3 py-1.5 rounded-lg border border-court-200">
+                                Faltan {plazo.dias_restantes} días naturales ({diasHabiles} días hábiles)
+                              </span>
+                              <span className="text-[11px] text-court-600 font-medium">
+                                Excluye sábados, domingos y festivos (Art. 130 LEC / 182 LOPJ)
+                              </span>
+                            </div>
                           )}
                         </div>
                         {plazo.dias_restantes > 0 && (

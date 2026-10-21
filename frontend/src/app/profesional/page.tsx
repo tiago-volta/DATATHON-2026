@@ -251,26 +251,46 @@ export default function PaginaProfesional() {
 
               {informeGenerado && (
                 <div
-                  className="mt-6 p-5 bg-calma-sage rounded-suave border border-court-200"
+                  className="mt-6 p-6 bg-calma-sage rounded-suave border-2 border-court-300"
                   aria-live="polite"
                 >
-                  <h4 className="font-bold text-court-800 mb-2">
-                    Informe individualizado de ajustes (Guía CGPJ 2025)
-                  </h4>
-                  <p className="text-sm text-court-600 mb-3">
-                    Medidas propuestas para incorporar al expediente (Art. 7 bis LEC / Art. 109 LECrim):
+                  <div className="border-b border-court-300 pb-3 mb-4">
+                    <span className="text-xs uppercase font-bold tracking-wider text-court-700">
+                      Documento procesal técnico · Propuesta
+                    </span>
+                    <h4 className="font-bold text-court-900 text-lg mt-1">
+                      Propuesta técnica de medidas de ajuste razonable (Art. 7 bis LEC / RD 707/2026)
+                    </h4>
+                    <p className="text-xs text-court-700 mt-1">
+                      Conforme a la Guía de Buenas Prácticas del CGPJ (2025) y LO 5/2024 del derecho de defensa.
+                    </p>
+                  </div>
+
+                  <div className="bg-white p-3 rounded border border-court-200 text-xs text-court-700 space-y-1 mb-4 font-mono">
+                    <p><span className="font-bold">A:</span> Oficina Judicial / Letrado de la Administración de Justicia / Magistrado-Juez</p>
+                    <p><span className="font-bold">Autos / Causa:</span> __________________________________________________</p>
+                    <p><span className="font-bold">Persona interesada:</span> {perfil.nombre}</p>
+                  </div>
+
+                  <p className="text-sm font-semibold text-court-800 mb-2">
+                    Medidas técnicas solicitadas para la comparecencia / vista:
                   </p>
-                  <ul className="list-disc pl-5 space-y-1 text-court-800 mb-4">
+                  <ul className="list-disc pl-5 space-y-1 text-court-800 text-sm mb-4">
                     {informeGenerado.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
+
+                  <p className="text-xs text-court-700 bg-white/70 p-3 rounded border border-court-200 mb-4">
+                    <strong>Nota procesal:</strong> Este documento constituye una propuesta técnica de ajustes para facilitar la accesibilidad cognitiva y sensorial en el procedimiento. Su admisión y puesta en práctica corresponde acordarla formalmente al Letrado de la Administración de Justicia o a la autoridad judicial competente mediante la oportuna providencia o diligencia.
+                  </p>
+
                   <button
                     type="button"
                     onClick={() => window.print()}
                     className="btn-secondary text-sm"
                   >
-                    Imprimir informe
+                    Imprimir propuesta técnica
                   </button>
                 </div>
               )}

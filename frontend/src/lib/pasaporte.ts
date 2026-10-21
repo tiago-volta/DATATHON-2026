@@ -94,7 +94,11 @@ export function buildPasaporteUrl(payload: PasaportePayload, origin?: string): s
     params.set('c', contactoLimpio)
   }
   const base = origin ?? (typeof window !== 'undefined' ? window.location.origin : '')
-  return `${base}/pasaporte/ver?${params.toString()}`
+  // Privacy by Design (Art. 25 RGPD / RFC 3986):
+  // Los parámetros viajan en el fragmento (#). Los navegadores nunca envían el fragmento
+  // en la cabecera HTTP de la petición, impidiendo que el nombre, teléfono o ajustes
+  // queden almacenados en logs de acceso de servidores, proxies o balanceadores de carga.
+  return `${base}/pasaporte/ver#${params.toString()}`
 }
 
 export function parsePasaporteSearchParams(
@@ -135,7 +139,7 @@ export function etiquetasAjustes(ids: string[]) {
   return AJUSTES_DISPONIBLES.filter((a) => ids.includes(a.id))
 }
 
-const MARCA_RUTA_FICHA = '/pasaporte/ver?'
+const MARCA_RUTA_FICHA = '/pasaporte/ver'
 
 /** Path interno de la ficha, o null si el texto no es esa ruta. */
 export function rutaPasaporteDesdeTexto(texto: string): string | null {

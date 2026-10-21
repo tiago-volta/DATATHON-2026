@@ -8,7 +8,7 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 import json
 import os
@@ -19,7 +19,7 @@ from .llm import procesar_citacion, analizar_pregunta, responder_ayuda
 from .anonimizador import anonimizar_documento_judicial
 from .metricas import comparar_legibilidad
 from .arasaac import obtener_pictogramas
-from .calendario import generar_ics
+from .calendario import generar_ics, calcular_resumen_plazo
 from .documentos import extraer_texto_documento
 from .tts import MAX_CARACTERES, sintetizar_mp3, sanitizar_texto
 from .voz import interpretar_peticion
@@ -105,6 +105,22 @@ class CitacionInput(BaseModel):
         if not TERMINOS_JUDICIALES_RE.search(limpio):
             raise ValueError("El texto no parece una citación ni una sentencia judicial.")
         return limpio[:8000]
+
+
+class CalculoPlazoRequest(BaseModel):
+    fecha_inicio: str = Field(..., description="Fecha inicial o de notificación (YYYY-MM-DD)")
+    dias_habiles: int = Field(10, ge=1, le=100, description="Días hábiles a computar")
+    orden: str = Field("penal", description="Orden jurisdiccional (penal, civil, general)")
+
+
+class CalculoPlazoResponse(BaseModel):
+    fecha_inicio: str
+    dias_habiles_totales: int
+    fecha_limite: str
+    dias_habiles_restantes: int
+    dias_naturales_restantes: int
+    orden_jurisdiccional: str
+    fundamento_legal: str
 
 
 class PlazoItem(BaseModel):
@@ -547,6 +563,17 @@ async def analizar_pregunta_endpoint(input_data: PreguntaInput):
     return PreguntaResponse(**analisis)
 
 
+@app.post("/api/calcular-plazo", response_model=CalculoPlazoResponse)
+async def calcular_plazo(request: CalculoPlazoRequest):
+    """Calcula la fecha de vencimiento y días hábiles según la LEC/LOPJ."""
+    try:
+        inicio = datetime.strptime(request.fecha_inicio.strip(), "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de fecha inválido. Usa YYYY-MM-DD.")
+    resumen = calcular_resumen_plazo(inicio, request.dias_habiles, request.orden)
+    return CalculoPlazoResponse(**resumen)
+
+
 @app.post("/api/generar-ics")
 async def generar_calendario(plazos: List[PlazoItem], titulo: str = "Citación Judicial"):
     """Genera un archivo .ics con los plazos y recordatorios."""
@@ -583,7 +610,8 @@ async def crear_pasaporte(input_data: PasaporteInput):
     }
     if input_data.contacto_emergencia:
         query["c"] = input_data.contacto_emergencia
-    qr_data = f"{frontend_base}/pasaporte/ver?{urlencode(query)}"
+    # Privacy by Design (Art. 25 RGPD / RFC 3986): los datos viajan en el fragmento # sin registrarse en logs web
+    qr_data = f"{frontend_base}/pasaporte/ver#{urlencode(query)}"
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
     qr.add_data(qr_data)
     qr.make(fit=True)
