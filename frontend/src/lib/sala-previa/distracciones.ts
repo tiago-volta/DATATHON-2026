@@ -84,7 +84,8 @@ export const DISTRACCIONES: Record<TipoDistraccion, DefDistraccion> = {
   },
   tos: {
     duracion: 2.5,
-    peso: 2.5,
+    // Más frecuente que el resto: la tos debe oírse a menudo en Pocas y Muchas.
+    peso: 7.5,
     necesitaPublico: true,
     aviso: 'Alguien va a toser.',
     explicacion: 'Una persona ha tosido. Es normal. Puedes seguir.',

@@ -350,7 +350,7 @@ export class MotorAudioSala {
       filtro.type = 'lowpass'
       filtro.frequency.value = 420
       gain.gain.setValueAtTime(0.0001, now + offset)
-      gain.gain.linearRampToValueAtTime(0.07, now + offset + 0.03)
+      gain.gain.linearRampToValueAtTime(0.18, now + offset + 0.03)
       gain.gain.linearRampToValueAtTime(0.0001, now + offset + 0.2)
       osc.connect(filtro)
       filtro.connect(gain)
@@ -372,7 +372,7 @@ export class MotorAudioSala {
         osc.type = 'sine'
         osc.frequency.value = freq
         gain.gain.setValueAtTime(0.0001, t0)
-        gain.gain.linearRampToValueAtTime(0.06, t0 + 0.02)
+        gain.gain.linearRampToValueAtTime(0.16, t0 + 0.02)
         gain.gain.linearRampToValueAtTime(0.0001, t0 + 0.3)
         osc.connect(gain)
         gain.connect(this.impulsosGain)
@@ -433,8 +433,9 @@ export class MotorAudioSala {
     if (!this.ctx || !this.impulsosGain) return
     const now = this.ctx.currentTime
     for (const [off, freq, pico] of [
-      [0, 720, 0.11],
-      [0.3, 600, 0.09],
+      [0, 720, 0.28],
+      [0.3, 600, 0.24],
+      [0.55, 680, 0.18],
     ] as const) {
       const bufferSize = Math.floor(this.ctx.sampleRate * 0.22)
       const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)

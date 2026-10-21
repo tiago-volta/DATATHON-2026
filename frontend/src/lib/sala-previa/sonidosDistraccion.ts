@@ -214,7 +214,7 @@ export class SonidosDistraccion {
       const f = this.ctx.createBiquadFilter()
       f.type = 'lowpass'
       f.frequency.value = 400
-      const g = this.envolvente(t0, 0.035 * v, 0.03, 0.2)
+      const g = this.envolvente(t0, 0.12 * v, 0.03, 0.2)
       if (!g) return
       osc.connect(f)
       f.connect(g)
@@ -232,7 +232,7 @@ export class SonidosDistraccion {
         const osc = this.ctx.createOscillator()
         osc.type = 'sine'
         osc.frequency.value = freq
-        const g = this.envolvente(t0, 0.045 * v, 0.02, 0.28)
+        const g = this.envolvente(t0, 0.14 * v, 0.02, 0.28)
         if (!g) return
         osc.connect(g)
         osc.start(t0)
@@ -267,9 +267,10 @@ export class SonidosDistraccion {
   }
 
   private tos(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'bandpass', 700, 1.2, 0.26 * v, 0.015, 0.2)
-    this.ruidoFiltrado(seg + 0.28, 'bandpass', 580, 1.4, 0.2 * v, 0.015, 0.22)
-    this.ruidoFiltrado(seg + 0.08, 'lowpass', 400, 1, 0.08 * v, 0.01, 0.15)
+    this.ruidoFiltrado(seg, 'bandpass', 700, 1.2, 0.58 * v, 0.012, 0.22)
+    this.ruidoFiltrado(seg + 0.28, 'bandpass', 580, 1.4, 0.48 * v, 0.012, 0.24)
+    this.ruidoFiltrado(seg + 0.08, 'lowpass', 400, 1, 0.22 * v, 0.01, 0.16)
+    this.ruidoFiltrado(seg + 0.05, 'bandpass', 1400, 2, 0.18 * v, 0.008, 0.12)
   }
 
   private clic(seg: number, v: number) {
@@ -277,7 +278,9 @@ export class SonidosDistraccion {
   }
 
   private papeles(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'highpass', 2400, 0.7, 0.05 * v, 0.12, 0.5)
+    this.ruidoFiltrado(seg, 'highpass', 2400, 0.7, 0.2 * v, 0.1, 0.55)
+    this.ruidoFiltrado(seg + 0.15, 'bandpass', 1800, 1.1, 0.14 * v, 0.08, 0.4)
+    this.ruidoFiltrado(seg + 0.4, 'highpass', 3200, 0.8, 0.1 * v, 0.06, 0.35)
   }
 
   private crujido(seg: number, v: number) {
