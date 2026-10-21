@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import { FormEvent, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { preguntarAyudaAPI } from '@/lib/api'
+import { cargarPerfil } from '@/lib/perfil/perfil'
+import { TarjetasFaq } from '@/components/faq/TarjetasFaq'
+import type { RolPerfil } from '@/lib/perfil/tipos'
 import {
   crearReconocimiento,
   MENSAJE_MIC_DENEGADO,
@@ -109,6 +112,14 @@ export default function PaginaAyuda() {
   const [escuchando, setEscuchando] = useState(false)
   const [hablando, setHablando] = useState(false)
   const [faqAbierta, setFaqAbierta] = useState<string | null>(null)
+  const [rolUsuario, setRolUsuario] = useState<RolPerfil | null>(null)
+
+  useEffect(() => {
+    const p = cargarPerfil()
+    if (p?.rol) {
+      setRolUsuario(p.rol)
+    }
+  }, [])
   const [anuncio, setAnuncio] = useState('')
   const [ultimaRespuesta, setUltimaRespuesta] = useState(
     'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
@@ -376,13 +387,30 @@ export default function PaginaAyuda() {
         </div>
       </form>
 
-      <section className="mb-8 space-y-4" aria-labelledby="seccion-faqs">
+      <section className="mb-8 space-y-6" aria-labelledby="seccion-faqs">
         <div className="border-t border-court-200 pt-6">
           <h2 id="seccion-faqs" className="text-2xl font-bold text-court-800 mb-1">
-            Preguntas frecuentes sobre el juzgado
+            Preguntas frecuentes según tu papel
           </h2>
           <p className="text-court-700 text-sm">
-            Dudas recurrentes para personas en procesos judiciales. Pulsa en cualquier tarjeta para ver la respuesta o escucharla en voz alta.
+            Respuestas con fundamento legal (LECrim y Código Penal) y enlace directo al BOE. Selecciona tu papel para ver tus dudas clave o escucharlas en voz alta.
+          </p>
+        </div>
+
+        <TarjetasFaq
+          rolInicial={rolUsuario}
+          onSeleccionarPregunta={(txt) => {
+            setPregunta(txt)
+            window.scrollTo({ top: 250, behavior: 'smooth' })
+          }}
+        />
+
+        <div className="border-t border-court-200 pt-6">
+          <h3 className="text-xl font-bold text-court-800 mb-1">
+            Dudas generales del proceso
+          </h3>
+          <p className="text-court-700 text-sm mb-4">
+            Pausas, acompañamiento, facilitador y privacidad garantizada.
           </p>
         </div>
 
