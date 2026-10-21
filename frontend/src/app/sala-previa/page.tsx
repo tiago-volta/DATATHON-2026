@@ -244,7 +244,6 @@ export default function PaginaSalaPrevia() {
       ruido: 0,
       luz: Math.min(v.luz, 12),
       gente: 0,
-      eco: 0,
     }))
     desbloquear('primera-calma')
     setLoQueTeAyuda((d) => registrarCalmaLoQueTeAyuda(d))
@@ -313,7 +312,7 @@ export default function PaginaSalaPrevia() {
   const descripcionAudioguia = useMemo(() => {
     const partes = [
       escena.audioguia,
-      `Ruido: ${Math.round(valores.ruido)}. Luz: ${Math.round(valores.luz)}. Gente: ${Math.round(valores.gente)}. Eco: ${Math.round(valores.eco)}.`,
+      `Ruido: ${Math.round(valores.ruido)}. Luz: ${Math.round(valores.luz)}. Gente: ${Math.round(valores.gente)}.`,
       enCalma ? 'Modo calma activo. Los estímulos están bajos.' : '',
     ]
     return partes.filter(Boolean).join(' ')
@@ -407,7 +406,7 @@ export default function PaginaSalaPrevia() {
                   {modoAudioguia && (
                     <p className="text-puente-700 mt-3 text-sm" aria-live="polite">
                       Ahora: ruido {Math.round(valores.ruido)}, luz {Math.round(valores.luz)},
-                      gente {Math.round(valores.gente)}, eco {Math.round(valores.eco)}.
+                      gente {Math.round(valores.gente)}.
                     </p>
                   )}
                 </div>

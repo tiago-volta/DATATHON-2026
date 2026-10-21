@@ -30,7 +30,7 @@ export interface LoQueTeAyuda {
   checkIns: number
 }
 
-const ESTIMULOS_VALIDOS: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
+const ESTIMULOS_VALIDOS: IdEstimulo[] = ['ruido', 'luz', 'gente']
 const AJUSTES_VALIDOS = new Set(AJUSTES_DISPONIBLES.map((a) => a.id))
 
 const INICIAL: LoQueTeAyuda = {
@@ -185,11 +185,6 @@ export function fraseMolestia(id: IdEstimulo, nivel: NivelMolestia): string {
   const etiqueta = ESTIMULOS_META[id].etiqueta.toLowerCase()
   if (id === 'gente') {
     return nivel === 'alto' ? 'Me molesta mucha gente' : 'Me molesta la gente'
-  }
-  if (id === 'eco') {
-    return nivel === 'alto'
-      ? 'Me molestan las voces y el eco fuertes'
-      : 'Me molestan las voces y el eco'
   }
   return nivel === 'alto'
     ? `Me molesta el ${etiqueta} alto`

@@ -4,7 +4,7 @@ import { INSIGNIAS, NIVELES } from './niveles'
 const CLAVE = 'puente-sala-previa-progreso'
 /** Intro 2.1 vista: clave aparte para no mezclar con el progreso de niveles. */
 const CLAVE_INTRO = 'puente-sala-previa-intro-vista'
-const ESTIMULOS_VALIDOS: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
+const ESTIMULOS_VALIDOS: IdEstimulo[] = ['ruido', 'luz', 'gente']
 
 const INICIAL: ProgresoSala = {
   nivelMaximo: 0,

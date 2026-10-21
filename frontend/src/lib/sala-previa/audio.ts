@@ -17,27 +17,6 @@ function rampGain(param: AudioParam, value: number, seconds: number, ctx: AudioC
   param.linearRampToValueAtTime(Math.max(0.0001, value), now + seconds)
 }
 
-/** Impulso sintético: sala mediana (eco de pasillo/juzgado), no delay metálico. */
-function crearImpulsoReverb(ctx: AudioContext, segundos = 2.4): AudioBuffer {
-  const rate = ctx.sampleRate
-  const length = Math.floor(rate * segundos)
-  const buffer = ctx.createBuffer(2, length, rate)
-  for (let ch = 0; ch < 2; ch++) {
-    const data = buffer.getChannelData(ch)
-    for (let i = 0; i < length; i++) {
-      const t = i / rate
-      const env = Math.exp(-t * 2.8) * (1 - i / length)
-      // Ruido filtrado por decaimiento + early reflections espaciadas
-      let sample = (Math.random() * 2 - 1) * env * 0.55
-      if (i === Math.floor(0.018 * rate + ch * 40)) sample += 0.35 * env
-      if (i === Math.floor(0.041 * rate + ch * 70)) sample += 0.22 * env
-      if (i === Math.floor(0.078 * rate + ch * 55)) sample += 0.14 * env
-      data[i] = sample
-    }
-  }
-  return buffer
-}
-
 /**
  * Loop con crossfade: dos BufferSource solapados para evitar clic
  * y el corte seco de loop=true en ambient/murmullos.
@@ -114,7 +93,8 @@ async function cargarBuffer(ctx: AudioContext, url: string): Promise<AudioBuffer
 }
 
 /**
- * Motor de audio Sala Previa: samples CC0 en loop con crossfade + reverb.
+ * Motor de audio Sala Previa: samples CC0 en loop con crossfade.
+ * El estímulo «ruido» incluye murmullos y voces lejanas (antes repartidos con eco).
  * API pública estable para page.tsx (iniciar / actualizar / volverACalma / detener).
  */
 export class MotorAudioSala {
@@ -123,15 +103,12 @@ export class MotorAudioSala {
   private ambienteGain: GainNode | null = null
   private murmullosSalaGain: GainNode | null = null
   private genteGain: GainNode | null = null
-  private ecoWetGain: GainNode | null = null
   private impulsosGain: GainNode | null = null
-  private busDry: GainNode | null = null
-  private busEcoSend: GainNode | null = null
   private capas: CapaLoopCrossfade[] = []
   private impulsosTimer: number | null = null
   private activo = false
   private cargando: Promise<void> | null = null
-  private valores: ValoresEstimulo = { ruido: 0, luz: 0, gente: 0, eco: 0 }
+  private valores: ValoresEstimulo = { ruido: 0, luz: 0, gente: 0 }
 
   async iniciar() {
     if (typeof window === 'undefined') return
@@ -158,35 +135,6 @@ export class MotorAudioSala {
     this.master.gain.value = 0.0001
     this.master.connect(this.ctx.destination)
 
-    this.busDry = this.ctx.createGain()
-    this.busDry.gain.value = 1
-    this.busDry.connect(this.master)
-
-    this.busEcoSend = this.ctx.createGain()
-    this.busEcoSend.gain.value = 1
-
-    const convolver = this.ctx.createConvolver()
-    convolver.buffer = crearImpulsoReverb(this.ctx)
-    const ecoFiltro = this.ctx.createBiquadFilter()
-    ecoFiltro.type = 'lowpass'
-    ecoFiltro.frequency.value = 4200
-    this.ecoWetGain = this.ctx.createGain()
-    this.ecoWetGain.gain.value = 0.0001
-
-    this.busEcoSend.connect(convolver)
-    convolver.connect(ecoFiltro)
-    ecoFiltro.connect(this.ecoWetGain)
-    this.ecoWetGain.connect(this.master)
-
-    // Early reflection corta (complementa el convolver)
-    const early = this.ctx.createDelay(0.5)
-    early.delayTime.value = 0.085
-    const earlyGain = this.ctx.createGain()
-    earlyGain.gain.value = 0.22
-    this.busEcoSend.connect(early)
-    early.connect(earlyGain)
-    earlyGain.connect(this.ecoWetGain)
-
     this.ambienteGain = this.ctx.createGain()
     this.ambienteGain.gain.value = 0.0001
     this.murmullosSalaGain = this.ctx.createGain()
@@ -196,15 +144,10 @@ export class MotorAudioSala {
     this.impulsosGain = this.ctx.createGain()
     this.impulsosGain.gain.value = 0.0001
 
-    const conectarCapa = (g: GainNode) => {
-      g.connect(this.busDry!)
-      g.connect(this.busEcoSend!)
-    }
-    conectarCapa(this.ambienteGain)
-    conectarCapa(this.murmullosSalaGain)
-    conectarCapa(this.genteGain)
-    this.impulsosGain.connect(this.busDry)
-    this.impulsosGain.connect(this.busEcoSend)
+    this.ambienteGain.connect(this.master)
+    this.murmullosSalaGain.connect(this.master)
+    this.genteGain.connect(this.master)
+    this.impulsosGain.connect(this.master)
 
     const [bufAmbiente, bufSala, bufGente] = await Promise.all([
       cargarBuffer(this.ctx, RUTAS.ambiente),
@@ -228,7 +171,6 @@ export class MotorAudioSala {
       window.clearTimeout(this.impulsosTimer)
       this.impulsosTimer = null
     }
-    // Tras el fade, detener capas para no gastar CPU en silencio.
     window.setTimeout(
       () => {
         if (!this.activo) {
@@ -241,7 +183,7 @@ export class MotorAudioSala {
 
   volverACalma() {
     this.actualizar(
-      { ruido: 0, luz: this.valores.luz * 0.15, gente: 0, eco: 0 },
+      { ruido: 0, luz: this.valores.luz * 0.15, gente: 0 },
       FADE_CALMA
     )
   }
@@ -258,7 +200,6 @@ export class MotorAudioSala {
       !this.ambienteGain ||
       !this.murmullosSalaGain ||
       !this.genteGain ||
-      !this.ecoWetGain ||
       !this.impulsosGain
     ) {
       return
@@ -266,29 +207,24 @@ export class MotorAudioSala {
 
     const r = valores.ruido / 100
     const g = valores.gente / 100
-    const e = valores.eco / 100
 
-    // Room tone suave con el estímulo ruido (sin soplido de ventilador).
-    rampGain(this.ambienteGain.gain, r * 0.38, segundos, this.ctx)
-    // Murmullo lejano de sala: sube con ruido y un poco con gente.
+    // Room tone + voces lejanas (antes mezcladas con el estímulo eco).
+    rampGain(this.ambienteGain.gain, r * 0.42, segundos, this.ctx)
     rampGain(
       this.murmullosSalaGain.gain,
-      Math.min(1, r * 0.55 + g * 0.25) * 0.28,
+      Math.min(1, r * 0.7 + g * 0.2) * 0.34,
       segundos,
       this.ctx
     )
-    // Voces/gente: estímulo gente (principal) + algo de ruido alto.
     rampGain(
       this.genteGain.gain,
-      Math.min(1, g * 0.85 + r * 0.18) * 0.42,
+      Math.min(1, g * 0.88 + r * 0.22) * 0.46,
       segundos,
       this.ctx
     )
-    // Wet reverb según eco.
-    rampGain(this.ecoWetGain.gain, e * 0.72, segundos, this.ctx)
     rampGain(
       this.impulsosGain.gain,
-      Math.max(r, g, e) * 0.28,
+      Math.max(r, g) * 0.3,
       segundos,
       this.ctx
     )
@@ -299,8 +235,7 @@ export class MotorAudioSala {
 
     const tick = () => {
       if (!this.activo || !this.ctx || !this.impulsosGain) return
-      const intensidad =
-        Math.max(this.valores.ruido, this.valores.gente, this.valores.eco) / 100
+      const intensidad = Math.max(this.valores.ruido, this.valores.gente) / 100
       if (intensidad > 0.12 && Math.random() < 0.45 + intensidad * 0.3) {
         this.dispararPaso()
       }
@@ -358,4 +293,4 @@ export class MotorAudioSala {
 }
 
 export const CREDITO_AUDIO =
-  'Sonido: ambientación y murmullos CC0 (Freesound: callmethefoo, Breviceps, craigsmith). Eco generado en el navegador.'
+  'Sonido: ambientación y murmullos CC0 (Freesound: callmethefoo, Breviceps, craigsmith).'

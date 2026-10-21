@@ -4,14 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { ESTIMULOS_META, etiquetaNivelEstimulo } from '@/lib/sala-previa/niveles'
 import type { IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
-const ORDEN: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
+const ORDEN: IdEstimulo[] = ['ruido', 'luz', 'gente']
 
 /** IDs ARASAAC fijos (CC BY-NC-SA). */
 const PICTO_ID: Record<IdEstimulo, number> = {
   ruido: 37857,
   luz: 8619,
   gente: 7117,
-  eco: 36989,
 }
 
 function urlArasaac(id: number) {

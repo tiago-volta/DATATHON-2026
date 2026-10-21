@@ -1,33 +1,22 @@
-Sala Previa — créditos de imagen 360 y personas
+Sala Previa — créditos de la simulación 3D
 
-== Panorama de la sala ==
+== Escena visual ==
 
-Archivo: sala-vistas-panorama.jpg (original)
-         sala-vistas-360.jpg (equirectangular 2:1 derivado para el viewer)
+Sala de vistas construida en Three.js (@react-three/fiber):
+habitación con estrado, mesas de abogados, banquillos, puerta de
+entrada y figuras estilizadas (mallas simples iluminadas).
 
-Fuente: «Sala Segunda del Tribunal Supremo español»
-Autor: AlonsoMartinez (Wikimedia Commons)
-Licencia: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-URL licencia: https://creativecommons.org/licenses/by-sa/4.0/
-URL archivo: https://commons.wikimedia.org/wiki/File:Sala_Segunda_del_Tribunal_Supremo_espa%C3%B1ol..JPG
+No se usan panoramas fotográficos ni cutouts Unsplash: el falso 360
+basado en la foto del Tribunal Supremo distorsionaba al rotar.
 
-El archivo sala-vistas-360.jpg adapta la fotografía de la sala de vistas
-(estrado de madera, escudo y ambiente de juzgado español) a un mapa
-equirectangular 2:1 (franja ecuatorial + cielo/suelo neutros) para la
-proyección en primera persona. Misma licencia CC BY-SA 4.0; atribución
-al autor original requerida.
+Colores y madera son materiales procedurales (sin texturas externas).
 
-== Personas (estímulo «gente») ==
+== Audio ==
 
-Carpeta: gente/
-Recortes fotográficos con fondo transparente para overlay en el viewer.
-Licencias libres (Unsplash License o CC BY 2.0). Atribuciones:
+Carpeta: audio/
+Ambientación y murmullos CC0 (Freesound: callmethefoo, Breviceps, craigsmith).
 
-- abogado-hombre.png, abogada-mujer.png, profesional-hombre.png
-  Fotografías de Unsplash (licencia Unsplash:
-  https://unsplash.com/license). Recorte de fondo con rembg.
-- publico-1.png, publico-2.png
-  Derivados de «Audience at TED» (tedxgateway / Flickr),
-  CC BY 2.0 — https://commons.wikimedia.org/wiki/File:Audience_at_TED.jpg
-- espalda-back3.png, publico-espaldas.png, grupo-sentados.png
-  Fotografías de Unsplash (licencia Unsplash), recorte con rembg.
+== Estímulos ==
+
+Tres estímulos: ruido, luz y gente.
+El antiguo «Voces y eco» se eliminó; su aporte se redistribuyó en ruido/gente.

@@ -38,10 +38,9 @@ export function EscenaSensorial({
   const luz = enCalma ? Math.min(valores.luz, 12) : valores.luz
   const gente = enCalma ? 0 : valores.gente
   const ruido = enCalma ? 0 : valores.ruido
-  const eco = enCalma ? 0 : valores.eco
 
   const [anuncio, setAnuncio] = useState('')
-  const prevRef = useRef({ ruido: -1, eco: -1, luz: -1, gente: -1 })
+  const prevRef = useRef({ ruido: -1, luz: -1, gente: -1 })
 
   useEffect(() => {
     const prev = prevRef.current
@@ -49,23 +48,20 @@ export function EscenaSensorial({
     if (nivelPalabra(ruido) !== nivelPalabra(prev.ruido) && prev.ruido >= 0) {
       partes.push(`Ruido ${nivelPalabra(ruido)}`)
     }
-    if (nivelPalabra(eco) !== nivelPalabra(prev.eco) && prev.eco >= 0) {
-      partes.push(`Eco ${nivelPalabra(eco)}`)
-    }
     if (nivelPalabra(luz) !== nivelPalabra(prev.luz) && prev.luz >= 0) {
       partes.push(`Luz ${nivelPalabra(luz)}`)
     }
     if (nivelPalabra(gente) !== nivelPalabra(prev.gente) && prev.gente >= 0) {
       partes.push(`Gente ${nivelPalabra(gente)}`)
     }
-    prevRef.current = { ruido, eco, luz, gente }
+    prevRef.current = { ruido, luz, gente }
     if (partes.length === 0) return
 
     const t = window.setTimeout(() => {
       setAnuncio(partes.join('. '))
     }, reduced ? 0 : 400)
     return () => window.clearTimeout(t)
-  }, [ruido, eco, luz, gente, reduced])
+  }, [ruido, luz, gente, reduced])
 
   return (
     <div className="space-y-3">
@@ -78,7 +74,6 @@ export function EscenaSensorial({
         deshabilitadoEstimulos={deshabilitadoEstimulos}
       />
 
-      {/* Caption de lectura fácil: no es el único visual, refuerza la escena */}
       <div className="rounded-suave border border-puente-100 bg-white/90 px-4 py-3">
         <p className="font-bold text-puente-800 text-lg">{nivel.nombre}</p>
         <p className="text-puente-700 mt-1">{nivel.descripcion}</p>

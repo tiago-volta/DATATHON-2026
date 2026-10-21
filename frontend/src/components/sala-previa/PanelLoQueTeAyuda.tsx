@@ -18,7 +18,6 @@ const PICTO_ESTIMULO: Record<IdEstimulo, number> = {
   ruido: 37857,
   luz: 8619,
   gente: 7117,
-  eco: 36989,
 }
 
 /** Pictogramas calmados para ajustes frecuentes del Pasaporte. */

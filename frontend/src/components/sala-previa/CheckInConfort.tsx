@@ -37,7 +37,7 @@ const OPCIONES: {
   },
 ]
 
-const ESTIMULOS: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
+const ESTIMULOS: IdEstimulo[] = ['ruido', 'luz', 'gente']
 
 function urlArasaac(id: number) {
   return `https://static.arasaac.org/pictograms/${id}/${id}_300.png`

@@ -3,7 +3,7 @@
 import { ESTIMULOS_META } from '@/lib/sala-previa/niveles'
 import type { IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
-const ORDEN: IdEstimulo[] = ['ruido', 'luz', 'gente', 'eco']
+const ORDEN: IdEstimulo[] = ['ruido', 'luz', 'gente']
 
 function nivelPalabra(valor: number): 'Bajo' | 'Medio' | 'Alto' {
   if (valor < 34) return 'Bajo'
@@ -24,7 +24,7 @@ interface Props {
 }
 
 /**
- * Panel compacto de los 4 estímulos, a la izquierda del viewer 360
+ * Panel compacto de los 3 estímulos, a la izquierda del viewer 360
  * (fuera del canvas). Los controles largos de ControlesEstimulo siguen abajo.
  */
 export function BarritasEstimulo({
