@@ -632,20 +632,45 @@ function validarTextoCitacion(valor: string): string | null {
   return null
 }
 
-function generarICSLocal(plazos: Plazo[], titulo: string) {
+function generarICSLocal(plazos: Plazo[], titulo: string, hora?: string) {
+  const tzid = 'Europe/Madrid'
   const lineas = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//InclusiveCourt//Accesibilidad Judicial//ES',
     'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VTIMEZONE',
+    `TZID:${tzid}`,
+    'BEGIN:STANDARD',
+    'DTSTART:19701025T030000',
+    'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU',
+    'TZOFFSETFROM:+0200',
+    'TZOFFSETTO:+0100',
+    'TZNAME:CET',
+    'END:STANDARD',
+    'BEGIN:DAYLIGHT',
+    'DTSTART:19700329T020000',
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU',
+    'TZOFFSETFROM:+0100',
+    'TZOFFSETTO:+0200',
+    'TZNAME:CEST',
+    'END:DAYLIGHT',
+    'END:VTIMEZONE',
   ]
+  const horaMatch = (hora || '10:00').match(/\b(\d{1,2}):(\d{2})\b/)
+  const hh = horaMatch ? horaMatch[1].padStart(2, '0') : '10'
+  const mm = horaMatch ? horaMatch[2] : '00'
+  const hhFin = horaMatch ? String(Math.min(23, Number(hh) + 1)).padStart(2, '0') : '11'
+
   for (const plazo of plazos) {
     const fechaCompacta = plazo.fecha.replace(/-/g, '')
     lineas.push(
       'BEGIN:VEVENT',
       `SUMMARY:${titulo} - ${plazo.descripcion}`,
-      `DTSTART;VALUE=DATE:${fechaCompacta}`,
-      `DESCRIPTION:${plazo.descripcion}. Recuerda llevar tu DNI y tu Pasaporte de Ajustes InclusiveCourt.`,
+      `DTSTART;TZID=${tzid}:${fechaCompacta}T${hh}${mm}00`,
+      `DTEND;TZID=${tzid}:${fechaCompacta}T${hhFin}${mm}00`,
+      `DESCRIPTION:${plazo.descripcion}. Recuerda acudir con tu DNI y tu Pasaporte de Ajustes InclusiveCourt.`,
       'END:VEVENT'
     )
   }
@@ -784,13 +809,18 @@ export default function PaginaCitacion() {
     if (!resultado || resultado.plazos.length === 0) return
     setErrorCalendario('')
 
+    const plazosConHora = resultado.plazos.map((p) => ({
+      ...p,
+      hora: resultado.datos_clave.hora || '10:00',
+    }))
+
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
       const params = new URLSearchParams({ titulo: 'Cita Judicial InclusiveCourt' })
       const response = await fetch(`${apiUrl}/api/generar-ics?${params.toString()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(resultado.plazos),
+        body: JSON.stringify(plazosConHora),
       })
 
       if (!response.ok) throw new Error('Error al generar calendario')
@@ -803,7 +833,7 @@ export default function PaginaCitacion() {
       a.click()
       window.URL.revokeObjectURL(url)
     } catch {
-      generarICSLocal(resultado.plazos, 'Cita Judicial InclusiveCourt')
+      generarICSLocal(plazosConHora, 'Cita Judicial InclusiveCourt', resultado.datos_clave.hora)
     }
   }
 

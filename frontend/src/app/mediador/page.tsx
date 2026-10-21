@@ -210,7 +210,7 @@ function analizarPreguntaLocal(textoPregunta: string): AnalisisPregunta {
 
   if (tieneDobleNegacion) {
     problemas.push('Doble negación')
-    borrador = borrador.replace(/\bno\s+vio\b/gi, 'viste').replace(/\bno\s+estaba\b/gi, 'estabas')
+    // Preserva el sentido de la negación y el registro formal de la pregunta
     consejos.push('Formula la pregunta en positivo para que responder «sí» o «no» sea inequívoco.')
     impactos.push('La doble negación exige invertir mentalmente la oración.')
   }
@@ -673,10 +673,13 @@ export default function PaginaMediador() {
           </div>
         </section>
 
-        <div className="mt-8 p-4 bg-calma-sage rounded-lg text-sm text-court-600">
-          <strong>Base metodológica:</strong> Adaptación fundamentada en el artículo 7 bis LEC, la
-          Guía práctica del CGPJ sobre discapacidad (2025), la Guía de Autismo España (2025), la
-          norma UNE 153101 (Lectura Fácil) y los toolkits de <em>The Advocate&apos;s Gateway</em>.
+        <div className="mt-8 p-4 bg-calma-sage rounded-lg text-sm text-court-700 space-y-2 border border-court-200" role="note">
+          <p>
+            <strong>Marco procesal y normativo:</strong> Artículos 439 y 709 de la Ley de Enjuiciamiento Criminal (prohibición taxativa de formular preguntas capciosas, sugestivas o impertinentes en instrucción y juicio oral), artículo 7 bis de la LEC y artículo 9 de la LO 5/2024 del Derecho de Defensa.
+          </p>
+          <p className="text-xs text-court-600">
+            Aviso procesal: La decisión sobre la pertinencia, admisión o rechazo de las preguntas en sala corresponde exclusivamente a quien presida el tribunal o juzgado. Esta herramienta ofrece sugerencias técnicas de lenguaje claro para apoyar a los operadores jurídicos y facilitadores sin alterar el sentido de las pruebas.
+          </p>
         </div>
       </main>
     </>

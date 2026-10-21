@@ -111,6 +111,7 @@ class PlazoItem(BaseModel):
     descripcion: str
     fecha: str
     dias_restantes: int
+    hora: Optional[str] = None
 
     @field_validator("descripcion")
     @classmethod

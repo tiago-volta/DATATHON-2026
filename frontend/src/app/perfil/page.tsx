@@ -12,6 +12,8 @@ import {
   etiquetaEstimulo,
   guardarPerfil,
   type NivelTolerancia,
+  type RolPerfil,
+  ROLES_DISPONIBLES,
 } from '@/lib/perfil/perfil'
 import { sanitizarNombre, validarNombre } from '@/lib/pasaporte'
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
@@ -23,6 +25,7 @@ export default function PaginaPerfil() {
   const [eliminando, setEliminando] = useState(false)
   const [mensajeBorrado, setMensajeBorrado] = useState('')
   const [nombre, setNombre] = useState('')
+  const [rol, setRol] = useState<RolPerfil>('testigo')
   const [tolerancia, setTolerancia] = useState<NivelTolerancia>(1)
   const [estimulos, setEstimulos] = useState<IdEstimulo[]>([])
   const [errorNombre, setErrorNombre] = useState<string | undefined>()
@@ -39,6 +42,7 @@ export default function PaginaPerfil() {
     const guardado = cargarPerfil()
     if (guardado) {
       setNombre(guardado.nombre)
+      setRol(guardado.rol ?? 'testigo')
       setTolerancia(guardado.tolerancia)
       setEstimulos(guardado.estimulosSensibles)
       setYaExiste(true)
@@ -64,6 +68,7 @@ export default function PaginaPerfil() {
     setErrorNombre(undefined)
     const resultado = guardarPerfil({
       nombre,
+      rol,
       tolerancia,
       estimulosSensibles: estimulos,
     })
@@ -148,15 +153,46 @@ export default function PaginaPerfil() {
               aria-invalid={Boolean(errorNombre)}
               aria-describedby={errorNombre ? 'error-perfil-nombre' : 'ayuda-perfil-nombre'}
             />
-            <p id="ayuda-perfil-nombre" className="text-sm text-court-700 mt-2">
-              Vas como testigo en este recorrido.
-            </p>
             {errorNombre && (
               <p id="error-perfil-nombre" className="text-sm text-red-700 font-medium mt-2" role="alert">
                 {errorNombre}
               </p>
             )}
           </div>
+
+          <fieldset>
+            <legend className="block text-lg font-medium text-court-800 mb-1">
+              ¿Para qué vas al juzgado? (tu papel en el juicio)
+            </legend>
+            <p className="text-sm text-court-700 mb-3">
+              Selecciona tu rol. Cada papel tiene derechos, rutas y consecuencias procesales distintas.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Rol en el juzgado">
+              {ROLES_DISPONIBLES.map((r) => {
+                const activo = rol === r.id
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={activo}
+                    onClick={() => setRol(r.id)}
+                    className={`p-4 rounded-suave border-2 text-left transition-[border-color,background-color] duration-200 ${
+                      activo
+                        ? 'border-court-500 bg-court-50 ring-2 ring-court-400/30'
+                        : 'border-court-200 bg-white hover:border-court-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl" aria-hidden="true">{r.icono}</span>
+                      <span className="font-bold text-court-900">{r.nombre}</span>
+                    </div>
+                    <p className="text-xs text-court-700">{r.subtitulo}</p>
+                  </button>
+                )
+              })}
+            </div>
+          </fieldset>
 
           <fieldset>
             <legend className="text-lg font-medium text-court-800 mb-2">

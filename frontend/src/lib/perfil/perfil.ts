@@ -9,8 +9,19 @@ import { programarSyncEstado } from '@/lib/sync/estadoUsuario'
 export const CLAVE_PERFIL = 'court-perfil'
 export const EVENTO_PERFIL = 'court-perfil-cambio'
 
-/** En este foco solo hay testigo (Luis / TEA). */
-export type RolPerfil = 'testigo'
+export type RolPerfil = 'testigo' | 'investigado' | 'victima' | 'parte_civil' | 'desconocido'
+
+export const ROLES_DISPONIBLES: {
+  id: RolPerfil
+  nombre: string
+  subtitulo: string
+  icono: string
+}[] = [
+  { id: 'testigo', nombre: 'Testigo', subtitulo: 'Viste o sabes algo (no estás acusado)', icono: '👁️' },
+  { id: 'investigado', nombre: 'Investigado o acusado', subtitulo: 'Hay una denuncia o proceso penal contra ti', icono: '🛡️' },
+  { id: 'victima', nombre: 'Víctima o perjudicado', subtitulo: 'Has sufrido el delito o un daño directo', icono: '🤝' },
+  { id: 'parte_civil', nombre: 'Demandante o demandado', subtitulo: 'Juicio civil, familia, vivienda o laboral', icono: '📑' },
+]
 
 /** Nivel de tolerancia declarado al empezar (0 = poca carga, 5 = mucha). */
 export type NivelTolerancia = 0 | 1 | 2 | 3 | 4 | 5
@@ -121,9 +132,13 @@ function sanitizarPerfil(raw: Partial<PerfilUsuario> | null | undefined): Perfil
     typeof raw.actualizado === 'number' && Number.isFinite(raw.actualizado)
       ? raw.actualizado
       : creado
+  const rol: RolPerfil =
+    raw.rol === 'investigado' || raw.rol === 'victima' || raw.rol === 'parte_civil' || raw.rol === 'desconocido'
+      ? raw.rol
+      : 'testigo'
   return {
     nombre,
-    rol: 'testigo',
+    rol,
     tolerancia,
     estimulosSensibles: sanitizarEstimulos(raw.estimulosSensibles),
     creado,
@@ -162,6 +177,7 @@ export function hayPerfil(): boolean {
 /** Guarda el perfil local. No escribe en las claves de la sala. */
 export function guardarPerfil(entrada: {
   nombre: string
+  rol?: RolPerfil
   tolerancia: NivelTolerancia
   estimulosSensibles: IdEstimulo[]
 }): PerfilUsuario | null {
@@ -169,7 +185,7 @@ export function guardarPerfil(entrada: {
   const anterior = cargarPerfil()
   const candidato = sanitizarPerfil({
     nombre: entrada.nombre,
-    rol: 'testigo',
+    rol: entrada.rol ?? anterior?.rol ?? 'testigo',
     tolerancia: entrada.tolerancia,
     estimulosSensibles: entrada.estimulosSensibles,
     creado: anterior?.creado ?? Date.now(),

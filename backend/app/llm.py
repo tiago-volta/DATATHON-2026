@@ -314,8 +314,7 @@ def analizar_pregunta_determinista(pregunta: str, perfil: Optional[str] = None) 
         consejos.append("Cambia los juicios de valor por preguntas sobre hechos concretos y observables.")
         impactos.append("El tono acusatorio dispara la sobrecarga emocional y dificulta recuperar recuerdos con precisión.")
 
-    borrador = re.sub(r"\busted\s+no\s+vio\b", "viste", borrador, flags=re.IGNORECASE)
-    borrador = re.sub(r"\busted\s+vio\b", "viste", borrador, flags=re.IGNORECASE)
+    # Mantiene el registro formal ("usted") y preserva el sentido de la negación si corresponde
 
     preguntas_divididas: List[str] = []
     if es_compuesta:
