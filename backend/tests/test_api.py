@@ -139,3 +139,13 @@ def test_obtener_rol_inexistente():
     res = client.get("/api/roles?rol=desconocido")
     assert res.status_code == 404
 
+def test_ayuda_preguntar_fuente_boe():
+    res = client.post(
+        "/api/ayuda/preguntar",
+        json={"pregunta": "¿De dónde sacas las leyes? ¿Vas al BOE?"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "BOE" in data["respuesta"]
+    assert "Boletín Oficial del Estado" in data["respuesta"]
+

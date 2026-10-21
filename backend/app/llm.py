@@ -663,6 +663,7 @@ Reglas OBLIGATORIAS:
 - Si preguntan por salud o discapacidad clínica, di con calma que no eres médica y que pueden
   pedir apoyos en el Pasaporte sin escribir ningún diagnóstico.
 - Habla solo de InclusiveCourt y del proceso judicial accesible (citación, plazos, pasaporte, sala previa y ensayo).
+- Si te preguntan por las leyes, fuentes o si vas al BOE: responde con claridad que toda la información legal se basa en las leyes oficiales del Boletín Oficial del Estado (BOE) como la Ley de Enjuiciamiento Civil (artículo 7 bis), la Ley de Enjuiciamiento Criminal (LECrim) y el Código Penal, así como en las guías del CGPJ. Señala que en la aplicación hay enlaces directos a boe.es para ver el texto íntegro.
 - Si no sabes algo concreto del caso, dilo y sugiere ir a «Mi citación» o hablar con su abogado/a.
 - Responde en texto plano (sin JSON, sin markdown denso). Máximo 8 frases cortas.
 """
@@ -695,6 +696,13 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
         "ruido, luz y gente. "
         "Puedes bajar estímulos y usar el botón de calma. "
         "Entra en Sala desde el menú.",
+    ),
+    (
+        re.compile(r"boe|leyes?|fuentes?|normas?|art[ií]culos?|de\s+d[oó]nde\s+sacas", re.I),
+        "Toda la información legal se basa en las leyes oficiales publicadas en el Boletín Oficial del Estado (BOE), "
+        "como el artículo 7 bis de la Ley de Enjuiciamiento Civil y la Ley de Enjuiciamiento Criminal, "
+        "además de las guías del Consejo General del Poder Judicial (CGPJ). "
+        "En la aplicación tienes enlaces directos para consultar cada artículo en el BOE.",
     ),
     (
         re.compile(r"medic[oa]|diagn[oó]stico|enfermedad|trastorno|salud|tdah|autismo|ciego", re.I),
