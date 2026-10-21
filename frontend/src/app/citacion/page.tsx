@@ -37,6 +37,30 @@ Que debo ABSOLVER Y ABSUELVO libremente a Dña. MARÍA CARMEN R. V. del delito d
 
 Contra la presente resolución cabe interponer recurso de apelación ante la Audiencia Provincial de A Coruña en el plazo de DIEZ DÍAS hábiles contados desde el siguiente al de su notificación.`
 
+/** Modelos públicos (COET, Aula Judicial León, estilo MJusticia). Datos anonimizados. Ver /pruebas/citaciones/FUENTES.md */
+const CITACIONES_PRUEBA = [
+  {
+    id: 'coet-testigo',
+    etiqueta: 'COET · Testigo (juicios rápidos)',
+    archivo: '/pruebas/citaciones/01-testigo-juicios-rapidos-coet.txt',
+  },
+  {
+    id: 'coet-investigado',
+    etiqueta: 'COET · Investigado / denunciado',
+    archivo: '/pruebas/citaciones/02-investigado-juicio-rapido-coet.txt',
+  },
+  {
+    id: 'leon-demandada',
+    etiqueta: 'León · Demandada (vista civil)',
+    archivo: '/pruebas/citaciones/03-demandada-vista-leon-aula-judicial.txt',
+  },
+  {
+    id: 'mjusticia-lf',
+    etiqueta: 'MJusticia · Testigo (lectura fácil)',
+    archivo: '/pruebas/citaciones/04-testigo-lectura-facil-estilo-mjusticia.txt',
+  },
+] as const
+
 const TERMINOS_JUDICIALES =
   /\b(juzgado|citaci[oó]n|cita|comparezca|comparecer|procedimiento|diligencias|juicio|testigo|investigad[oa]|demandad[oa]|demandante|vista|declaraci[oó]n|tribunal|audiencia|letrad[oa]|fiscal|sentencia|fallo|absuelvo|absolver|condeno|hurto|notificaci[oó]n|c[eé]dula|autos|expediente|delito|instrucci[oó]n|penal|civil|denuncia|querella|recurso)\b/i
 
@@ -492,6 +516,30 @@ export default function PaginaCitacion() {
   const [errorCalendario, setErrorCalendario] = useState('')
   const [extrayendo, setExtrayendo] = useState(false)
   const [mensajeExitoArchivo, setMensajeExitoArchivo] = useState('')
+  const [cargandoPrueba, setCargandoPrueba] = useState<string | null>(null)
+
+  const cargarCitacionPrueba = async (archivo: string, etiqueta: string) => {
+    setCargandoPrueba(archivo)
+    setError('')
+    setMensajeExitoArchivo('')
+    try {
+      const res = await fetch(archivo)
+      if (!res.ok) throw new Error(`No se pudo cargar ${archivo}`)
+      const contenido = (await res.text()).trim()
+      if (contenido.length < 20) throw new Error('El archivo de prueba está vacío.')
+      setTexto(contenido.slice(0, 8000))
+      setNombreArchivo(etiqueta)
+      setMensajeExitoArchivo(
+        `Cargada citación de prueba «${etiqueta}» (modelo público anonimizado). Revisa el texto o pulsa «Transformar documento».`
+      )
+    } catch {
+      setError(
+        'No se pudo cargar la citación de prueba. Comprueba que el servidor sirve /pruebas/citaciones/ o pega el texto a mano.'
+      )
+    } finally {
+      setCargandoPrueba(null)
+    }
+  }
 
   const manejarSubidaArchivo = async (e: ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0]
@@ -707,7 +755,7 @@ export default function PaginaCitacion() {
                 aria-describedby={error ? 'ayuda-citacion error-citacion' : 'ayuda-citacion'}
               />
               <p id="ayuda-citacion" className="text-sm text-puente-700">
-                Puedes probar directamente con cualquiera de los tres documentos reales de ejemplo:
+                Prueba con citaciones basadas en modelos públicos (COET, Aula Judicial León, estilo Ministerio de Justicia) o con los ejemplos cortos:
               </p>
 
               {error && (
@@ -720,12 +768,25 @@ export default function PaginaCitacion() {
                 <button type="button" onClick={procesarCitacion} className="btn-primary">
                   Transformar documento
                 </button>
+                {CITACIONES_PRUEBA.map((prueba) => (
+                  <button
+                    key={prueba.id}
+                    type="button"
+                    disabled={cargandoPrueba !== null}
+                    onClick={() => void cargarCitacionPrueba(prueba.archivo, prueba.etiqueta)}
+                    className="btn-ghost"
+                    aria-busy={cargandoPrueba === prueba.archivo}
+                  >
+                    {cargandoPrueba === prueba.archivo ? 'Cargando…' : prueba.etiqueta}
+                  </button>
+                ))}
                 <button
                   type="button"
                   onClick={() => {
                     setTexto(EJEMPLO_LUIS)
                     setNombreArchivo('')
                     setError('')
+                    setMensajeExitoArchivo('')
                   }}
                   className="btn-ghost"
                 >
@@ -737,6 +798,7 @@ export default function PaginaCitacion() {
                     setTexto(EJEMPLO_JUAN)
                     setNombreArchivo('')
                     setError('')
+                    setMensajeExitoArchivo('')
                   }}
                   className="btn-ghost"
                 >
@@ -748,6 +810,7 @@ export default function PaginaCitacion() {
                     setTexto(EJEMPLO_SENTENCIA)
                     setNombreArchivo('')
                     setError('')
+                    setMensajeExitoArchivo('')
                   }}
                   className="btn-ghost"
                 >
