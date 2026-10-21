@@ -88,6 +88,30 @@ export interface AnalisisPregunta {
   consejos: string[]
 }
 
+export interface DocumentoExtraido {
+  texto: string
+  nombre: string
+  paginas: number
+  caracteres: number
+}
+
+export async function extraerTextoDocumentoAPI(archivo: File): Promise<DocumentoExtraido> {
+  const formData = new FormData()
+  formData.append('archivo', archivo)
+
+  const response = await fetch(`${API_URL}/api/extraer-texto`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null)
+    throw new Error(errorData?.detail || 'No se pudo extraer texto del documento.')
+  }
+
+  return response.json()
+}
+
 export async function procesarCitacion(texto: string, perfil?: string): Promise<CitacionProcesada> {
   const response = await fetch(`${API_URL}/api/procesar-citacion`, {
     method: 'POST',

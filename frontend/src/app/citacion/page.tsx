@@ -8,7 +8,7 @@ import { Pictograma } from '@/components/Pictograma'
 import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
 import { FASES_TESTIGO, FASES_INVESTIGADO, ROLES } from '@/lib/contenido'
-import type { CitacionProcesada, Plazo } from '@/lib/api'
+import { extraerTextoDocumentoAPI, type CitacionProcesada, type Plazo } from '@/lib/api'
 
 const EJEMPLO_LUIS = `JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA
 Procedimiento: Diligencias Previas 245/2026
@@ -428,27 +428,53 @@ export default function PaginaCitacion() {
   const [resultado, setResultado] = useState<CitacionProcesada | null>(null)
   const [error, setError] = useState('')
   const [errorCalendario, setErrorCalendario] = useState('')
+  const [extrayendo, setExtrayendo] = useState(false)
+  const [mensajeExitoArchivo, setMensajeExitoArchivo] = useState('')
 
   const manejarSubidaArchivo = async (e: ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0]
     if (!archivo) return
     setNombreArchivo(archivo.name)
     setError('')
+    setMensajeExitoArchivo('')
+
+    const nombreMin = archivo.name.toLowerCase()
+    const esPdf = nombreMin.endsWith('.pdf') || archivo.type === 'application/pdf'
+    const esDocx = nombreMin.endsWith('.docx')
+
+    if (esPdf || esDocx) {
+      setExtrayendo(true)
+      try {
+        const datos = await extraerTextoDocumentoAPI(archivo)
+        if (!datos.texto || datos.texto.trim().length < 20) {
+          throw new Error('El documento no contiene texto legible suficiente.')
+        }
+        setTexto(datos.texto.slice(0, 8000))
+        setMensajeExitoArchivo(
+          `Documento extraído con éxito (${datos.paginas} ${datos.paginas === 1 ? 'página' : 'páginas'}, ${datos.caracteres.toLocaleString()} caracteres). Ya puedes revisarlo o pulsar «Transformar documento».`
+        )
+      } catch (err: unknown) {
+        const mensaje = err instanceof Error ? err.message : 'No se pudo leer el archivo.'
+        setError(
+          `${mensaje} Si el PDF es un escaneo sin capa de texto seleccionable (OCR), copia y pega el texto de la citación.`
+        )
+      } finally {
+        setExtrayendo(false)
+      }
+      return
+    }
 
     try {
       const contenido = await archivo.text()
       const textoExtraido = contenido.replace(/\0/g, ' ').trim()
-      if (TERMINOS_JUDICIALES.test(textoExtraido) && textoExtraido.length >= 30) {
+      if (textoExtraido.length >= 20) {
         setTexto(textoExtraido.slice(0, 8000))
-      } else if (archivo.name.toLowerCase().includes('sentencia')) {
-        setTexto(EJEMPLO_SENTENCIA)
-      } else if (archivo.name.toLowerCase().includes('juan')) {
-        setTexto(EJEMPLO_JUAN)
+        setMensajeExitoArchivo('Texto cargado con éxito. Ya puedes revisarlo o pulsar «Transformar documento».')
       } else {
-        setTexto(EJEMPLO_LUIS)
+        setError('El archivo seleccionado contiene muy poco texto.')
       }
     } catch {
-      setError('No se pudo leer el archivo. Prueba con un archivo .txt o pega el texto directamente.')
+      setError('No se pudo leer el archivo de texto. Prueba a copiar y pegar el texto directamente.')
     }
   }
 
@@ -566,25 +592,37 @@ export default function PaginaCitacion() {
                 htmlFor="archivo-judicial"
                 className="block font-bold text-puente-800 mb-2"
               >
-                Opción A: Subir documento del juzgado (.txt, .pdf)
+                Opción A: Subir documento del juzgado (.pdf, .docx, .txt)
               </label>
               <div className="flex flex-wrap items-center gap-3">
                 <input
                   id="archivo-judicial"
                   type="file"
-                  accept=".txt,.pdf,.doc,.docx"
+                  accept=".pdf,.docx,.txt,.md"
                   onChange={manejarSubidaArchivo}
+                  disabled={extrayendo}
                   aria-describedby="ayuda-archivo"
-                  className="text-sm text-puente-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-puente-600 file:text-white hover:file:bg-puente-700"
+                  className="text-sm text-puente-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-puente-600 file:text-white hover:file:bg-puente-700 disabled:opacity-50"
                 />
-                {nombreArchivo && (
+                {extrayendo && (
+                  <span className="text-sm font-semibold text-puente-800 flex items-center gap-2" aria-live="polite">
+                    <span className="inline-block animate-spin" aria-hidden="true">⏳</span>
+                    Extrayendo texto del PDF...
+                  </span>
+                )}
+                {nombreArchivo && !extrayendo && (
                   <span className="text-sm font-medium text-puente-700" aria-live="polite">
-                    Archivo cargado: {nombreArchivo}
+                    Archivo: {nombreArchivo}
                   </span>
                 )}
               </div>
+              {mensajeExitoArchivo && (
+                <p className="text-sm font-medium text-green-800 bg-green-50 p-2.5 rounded-lg border border-green-200 mt-3" role="status">
+                  ✓ {mensajeExitoArchivo}
+                </p>
+              )}
               <p id="ayuda-archivo" className="text-xs text-puente-600 mt-2">
-                El documento se procesa sin guardar tus datos personales.
+                Admite documentos oficiales en PDF y Word. El archivo se procesa en memoria sin guardarse en disco (RGPD).
               </p>
             </div>
 

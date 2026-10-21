@@ -5,7 +5,7 @@ Enfoque determinista con soporte opcional de LLM (OpenAI / Anthropic).
 """
 
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, field_validator
@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from .llm import procesar_citacion, analizar_pregunta
 from .arasaac import obtener_pictogramas
 from .calendario import generar_ics
+from .documentos import extraer_texto_documento
 from .tts import MAX_CARACTERES, sintetizar_mp3, sanitizar_texto
 from .voz import interpretar_peticion
 from .mock_data import (
@@ -216,6 +217,43 @@ async def health():
     return {"status": "ok"}
 
 
+@app.post("/api/extraer-texto")
+async def extraer_texto_endpoint(archivo: UploadFile = File(...)):
+    """
+    Extrae el texto de un documento judicial (PDF, DOCX o TXT).
+    No almacena el documento en disco (minimización de datos y privacidad RGPD).
+    """
+    if not archivo.filename:
+        raise HTTPException(status_code=400, detail="Debes seleccionar un archivo.")
+
+    contenido = await archivo.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El archivo está vacío.")
+
+    if len(contenido) > 15 * 1024 * 1024:
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo supera el tamaño máximo permitido (15 MB).",
+        )
+
+    try:
+        texto, paginas = extraer_texto_documento(contenido, archivo.filename)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"No se pudo procesar el documento: {str(exc)}",
+        ) from exc
+
+    return {
+        "texto": texto,
+        "nombre": archivo.filename,
+        "paginas": paginas,
+        "caracteres": len(texto),
+    }
+
+
 class VozInput(BaseModel):
     texto: str
 
@@ -311,6 +349,28 @@ async def procesar_citacion_endpoint(input_data: CitacionInput):
     resultado["pictogramas"] = pictogramas
 
     return CitacionResponse(**resultado)
+
+
+@app.post("/api/procesar-documento", response_model=CitacionResponse)
+async def procesar_documento_endpoint(
+    archivo: UploadFile = File(...),
+    perfil: Optional[str] = Form(None),
+):
+    """
+    Endpoint 'todo-en-uno': recibe directamente un archivo PDF, DOCX o TXT,
+    extrae el texto y devuelve la citación/sentencia explicada.
+    """
+    contenido = await archivo.read()
+    if not contenido:
+        raise HTTPException(status_code=400, detail="El archivo está vacío.")
+
+    try:
+        texto, _ = extraer_texto_documento(contenido, archivo.filename)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    input_data = CitacionInput(texto=texto, perfil=perfil)
+    return await procesar_citacion_endpoint(input_data)
 
 
 @app.post("/api/analizar-pregunta", response_model=PreguntaResponse)
