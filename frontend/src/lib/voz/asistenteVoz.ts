@@ -96,22 +96,23 @@ export function procesarPeticionVozLocal(texto: string): ResultadoPeticionVoz {
     }
   }
 
-  if (coincideActivacion(textoNormalizado)) {
-    return {
-      intent: 'activar_modo',
-      respuestaHabla: CONFIRMACION_ACTIVACION,
-      accion: 'activar_modo_voz',
-      textoNormalizado,
-      fuente: 'local',
-    }
-  }
-
+  // Desactivar antes que activar: «desactivar modo con voz» contiene «modo con voz».
   if (RE_DESACTIVAR.test(textoNormalizado)) {
     return {
       intent: 'desactivar_modo',
       respuestaHabla:
         'Modo con voz desactivado. Puedes seguir con los botones o activarlo otra vez cuando quieras.',
       accion: 'desactivar_modo_voz',
+      textoNormalizado,
+      fuente: 'local',
+    }
+  }
+
+  if (coincideActivacion(textoNormalizado)) {
+    return {
+      intent: 'activar_modo',
+      respuestaHabla: CONFIRMACION_ACTIVACION,
+      accion: 'activar_modo_voz',
       textoNormalizado,
       fuente: 'local',
     }

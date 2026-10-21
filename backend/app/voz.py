@@ -54,8 +54,8 @@ CONFIRMACION = (
 )
 
 AYUDA = (
-    "Puedes decir: activar modo con voz, repite, otra vez, más despacio, para, "
-    "o ayuda. También puedes pulsar Escuchar pedido."
+    "Puedes decir: activar modo con voz, desactivar modo con voz, repite, "
+    "otra vez, más despacio, para, o ayuda. También puedes pulsar Escuchar pedido."
 )
 
 
@@ -78,6 +78,23 @@ def interpretar_peticion(texto: str) -> dict:
                 "No te he oído bien. Puedes decir «ayuda» o pulsar Escuchar pedido."
             ),
             "accion": "ninguna",
+            "textoNormalizado": n,
+            "fuente": "api",
+        }
+
+    # Desactivar antes que activar: «desactivar modo con voz» contiene «modo con voz».
+    if re.search(
+        r"\b(desactivar|apagar|quitar|cerrar)\s+(el\s+)?(modo\s+)?(con\s+)?voz\b"
+        r"|\bdesactivar\s+modo\b",
+        n,
+    ):
+        return {
+            "intent": "desactivar_modo",
+            "respuestaHabla": (
+                "Modo con voz desactivado. Puedes seguir con los botones o "
+                "activarlo otra vez cuando quieras."
+            ),
+            "accion": "desactivar_modo_voz",
             "textoNormalizado": n,
             "fuente": "api",
         }
