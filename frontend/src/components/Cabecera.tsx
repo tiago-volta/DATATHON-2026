@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Marca } from '@/components/Marca'
 import { BotonPerfilInsignias } from '@/components/insignias/BotonPerfilInsignias'
-import { IndicadorModoVoz } from '@/components/voz/IndicadorModoVoz'
 import { useCabeceraFlotante } from '@/hooks/useCabeceraFlotante'
 
 const ENLACES = [
@@ -59,7 +58,6 @@ export function Cabecera() {
             )
           })}
           <div className="flex items-center gap-1 md:ml-2 md:border-l md:border-court-200 md:pl-4">
-            <IndicadorModoVoz />
             <Link
               href="/profesional"
               aria-current={panelActivo ? 'page' : undefined}
