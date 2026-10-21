@@ -16,7 +16,7 @@ import {
   validarNombre,
   validarTelefono,
 } from '@/lib/pasaporte'
-import { leerAyudasSala } from '@/lib/perfil/perfil'
+import { leerAjustesDesdePerfilYSala, leerNombrePerfil } from '@/lib/perfil/perfil'
 import {
   guardarPreferencias,
   leerPreferencias,
@@ -89,10 +89,14 @@ export default function PaginaPasaporte() {
     const idsUrl = raw
       ? normalizarAjustes(raw.split(',').map((id) => id.trim()))
       : []
-    const ayudasSala = idsUrl.length === 0 ? leerAyudasSala() : []
+    const ayudasPerfilSala = idsUrl.length === 0 ? leerAjustesDesdePerfilYSala() : []
+    if (!nombreGuardado) {
+      const nombrePerfil = leerNombrePerfil()
+      if (nombrePerfil) nombreGuardado = nombrePerfil
+    }
 
     const ajustesCombinados = Array.from(
-      new Set([...ajustesGuardados, ...idsUrl, ...ayudasSala])
+      new Set([...ajustesGuardados, ...idsUrl, ...ayudasPerfilSala])
     )
 
     if (nombreGuardado || contactoGuardado || ajustesCombinados.length > 0) {
@@ -200,6 +204,7 @@ export default function PaginaPasaporte() {
         'court-pasaporte',
         JSON.stringify({ id, ...datosLimpios, url, creado: Date.now() })
       )
+      void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
     } catch {
       /* ignore quota / private mode */
     }

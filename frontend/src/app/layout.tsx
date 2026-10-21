@@ -4,10 +4,11 @@ import { Cabecera } from '@/components/Cabecera'
 import { Pie } from '@/components/Pie'
 import { TutorialInicio } from '@/components/TutorialInicio'
 import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
+import { ProveedorAuth } from '@/lib/auth/AuthContext'
 
 export const metadata: Metadata = {
   title: 'InclusiveCourt - Accesibilidad en la Justicia',
-  description: 'Prueba el juzgado y ensaya tu declaración antes del día.',
+  description: 'Crea tu perfil, prueba el juzgado y ensaya tu declaración antes del día.',
 }
 
 export const viewport: Viewport = {
@@ -30,11 +31,13 @@ export default function RootLayout({
         >
           Ir al contenido principal
         </a>
-        <TutorialInicio />
-        <OnboardingVoz />
-        <Cabecera />
-        <div className="flex-1">{children}</div>
-        <Pie />
+        <ProveedorAuth>
+          <TutorialInicio />
+          <OnboardingVoz />
+          <Cabecera />
+          <div className="flex-1">{children}</div>
+          <Pie />
+        </ProveedorAuth>
       </body>
     </html>
   )

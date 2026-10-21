@@ -101,6 +101,7 @@ export function guardarLoQueTeAyuda(dato: LoQueTeAyuda) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(CLAVE_LO_QUE_TE_AYUDA, JSON.stringify(sanitizar(dato)))
+    void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
   } catch {
     /* ignore storage quota / private mode */
   }

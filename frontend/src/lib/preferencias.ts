@@ -62,6 +62,7 @@ export function guardarPreferencias(
   try {
     window.localStorage.setItem(LS_PREFERENCIAS, JSON.stringify(next))
     window.dispatchEvent(new Event('court-preferencias-cambio'))
+    void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
   } catch {
     /* private mode / quota */
   }

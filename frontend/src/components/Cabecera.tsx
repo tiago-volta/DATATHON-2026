@@ -2,12 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { BotonesAuthCabecera } from '@/components/auth/BotonesAuthCabecera'
 import { Marca } from '@/components/Marca'
 import { BotonPerfilInsignias } from '@/components/insignias/BotonPerfilInsignias'
 import { useCabeceraFlotante } from '@/hooks/useCabeceraFlotante'
 
 const ENLACES = [
   { href: '/', etiqueta: 'Inicio' },
+  { href: '/perfil', etiqueta: 'Perfil' },
   { href: '/citacion', etiqueta: 'Citación' },
   { href: '/pasaporte', etiqueta: 'Pasaporte' },
   { href: '/sala-previa', etiqueta: 'Sala' },
@@ -69,6 +71,7 @@ export function Cabecera() {
             >
               Para el juzgado
             </Link>
+            <BotonesAuthCabecera />
             <BotonPerfilInsignias />
           </div>
         </nav>

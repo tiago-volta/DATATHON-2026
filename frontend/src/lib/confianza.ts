@@ -130,6 +130,7 @@ export function guardarConfianza(estado: EstadoConfianza) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(CLAVE_CONFIANZA, JSON.stringify(sanitizar(estado)))
+    void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
   } catch {
     /* ignore quota / private mode */
   }

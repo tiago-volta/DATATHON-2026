@@ -31,22 +31,48 @@ from .mock_data import (
     MOCK_RESPONSE_JUAN,
     MOCK_RESPONSE_SENTENCIA,
 )
+from .db import init_db
+from .routers import auth as auth_router
+from .routers import estado as estado_router
 
 load_dotenv()
 
 app = FastAPI(
     title="InclusiveCourt API",
     description="API para accesibilidad cognitiva en la justicia",
-    version="0.2.0",
+    version="0.3.0",
 )
+
+
+def _cors_origins() -> list[str]:
+    origenes = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
+    extra = (os.getenv("FRONTEND_ORIGIN") or "").strip()
+    if extra:
+        for parte in extra.split(","):
+            limpio = parte.strip().rstrip("/")
+            if limpio and limpio not in origenes:
+                origenes.append(limpio)
+    return origenes
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router.router)
+app.include_router(estado_router.router)
+
+# Crea tablas al importar (tests y uvicorn). Idempotente.
+init_db()
 
 TERMINOS_JUDICIALES_RE = re.compile(
     r"\b(juzgado|citaci[oó]n|cita|comparezca|comparecer|procedimiento|diligencias|juicio|testigo|"

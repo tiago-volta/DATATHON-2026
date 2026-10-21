@@ -101,6 +101,7 @@ export function guardarPractica(estado: EstadoPractica) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(CLAVE_PRACTICA, JSON.stringify(sanitizar(estado)))
+    void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
   } catch {
     /* ignore quota / private mode */
   }

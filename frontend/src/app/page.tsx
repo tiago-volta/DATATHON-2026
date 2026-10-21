@@ -24,7 +24,7 @@ export default function Inicio() {
           Prueba el juzgado antes del día
         </h1>
         <p className="entradilla max-w-[46ch]">
-          Entiende tu citación en Lectura Fácil. Entra en la sala 3D, gradúa los estímulos y ensaya tu declaración frente al juez y los letrados.
+          Primero creas tu perfil. Después entiendes tu citación en Lectura Fácil, entras en la sala 3D y ensayas tu declaración.
         </p>
       </section>
 

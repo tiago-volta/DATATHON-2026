@@ -27,6 +27,10 @@ Navegador  →  https://tu-app.vercel.app  (Next.js)
 | `LLM_PROVIDER` | `gemini` (o `mock` para demo sin clave) |
 | `GEMINI_API_KEY` | tu clave (si usas Gemini) |
 | `GEMINI_MODEL` | `gemini-3.8-flash` (opcional) |
+| `DATABASE_URL` | URL de Postgres (el Blueprint `render.yaml` la enlaza) |
+| `JWT_SECRET` | secreto largo (el Blueprint puede generarlo) |
+| `FRONTEND_ORIGIN` | URL de Vercel, p. ej. `https://tu-app.vercel.app` |
+| `COOKIE_SECURE` | `true` en producción |
 
 4. Copia la URL pública, p. ej. `https://court-api.onrender.com`.  
    Comprueba: `https://…/docs` debe abrir Swagger.

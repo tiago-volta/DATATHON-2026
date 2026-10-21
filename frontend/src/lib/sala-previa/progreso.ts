@@ -74,6 +74,7 @@ export function guardarProgreso(progreso: ProgresoSala) {
   if (typeof window === 'undefined') return
   try {
     localStorage.setItem(CLAVE, JSON.stringify(sanitizarProgreso(progreso)))
+    void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
   } catch {
     /* ignore storage quota / private mode */
   }

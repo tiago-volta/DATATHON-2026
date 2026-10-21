@@ -59,18 +59,18 @@ Perfil → Citación (en flujo) → Sala + Ensayo → Ficha de ajustes → (vuel
 
 Hoy el QR está, pero cuesta usarlo: la pantalla pide «enséñalo», mezcla el enlace largo con el código, y en el panel el código corto solo funciona en el mismo dispositivo.
 
-- [ ] Perfil de usuario (local primero): rol, tolerancia, estímulos, historial de práctica.
-- [ ] Flujo continuo citación → entrada al simulador → ficha de ajustes (sin menú de 4 módulos).
-- [ ] QR más fácil en la ficha de cierre:
+- [x] Perfil de usuario (local primero): rol, tolerancia, estímulos, historial de práctica (`/perfil`, clave `court-perfil`).
+- [x] Flujo continuo perfil → citación → entrada al simulador → ficha de ajustes (sin menú de 4 módulos).
+- [x] QR más fácil en la ficha de cierre:
   - La lista de ajustes se lee en la hoja, sin escanear.
   - El QR es grande y es la acción principal (en pantalla y al imprimir).
   - El código corto se lee de un vistazo, para dictarlo.
   - Copiar el enlace es un solo botón. El enlace largo no compite con el QR.
   - El texto pide mostrar la ficha. El QR es la forma de abrirla en el otro móvil.
-- [ ] En el panel profesional: escanear con la cámara, o pegar el enlace. El código corto sigue como apoyo.
-- [ ] Pasaporte fusionado con la simulación: la ficha sale del perfil / check-in de la sala.
-- [ ] Textos de home y pitch alineados al problema único.
-- [ ] Recortar narrativa Juan y entradas que dispersen.
+- [x] En el panel profesional: escanear con la cámara, o pegar el enlace. El código corto sigue como apoyo.
+- [x] Pasaporte fusionado con la simulación: la ficha sale del perfil / check-in de la sala.
+- [x] Textos de home y pitch alineados al problema único.
+- [x] Recortar narrativa Juan y entradas que dispersen.
 
 **Archivos base:** `frontend/src/app/citacion/`, `frontend/src/app/pasaporte/`, `frontend/src/app/profesional/`, nuevo módulo de perfil (p. ej. `frontend/src/lib/perfil/`), `frontend/src/app/page.tsx` (copy).
 
@@ -80,7 +80,7 @@ Hoy el QR está, pero cuesta usarlo: la pantalla pide «enséñalo», mezcla el 
 
 - No ampliar el pitch a Juan, mediador, panel profesional largo ni “suite de módulos”.
 - No quitar el QR. El pitch sigue siendo el simulador. El QR abre la ficha.
-- No implementar este briefing en código hasta repartir tareas del checklist.
+- Persona B: perfil local en el dispositivo. No hace falta login ni servidor de cuentas.
 
 ---
 

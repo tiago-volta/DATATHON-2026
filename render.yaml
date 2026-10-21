@@ -1,5 +1,9 @@
-# Blueprint Render: API FastAPI de PUENTE
+# Blueprint Render: API FastAPI InclusiveCourt
 # https://render.com/docs/blueprint-spec
+databases:
+  - name: inclusivecourt-db
+    plan: free
+
 services:
   - type: web
     name: puente-api
@@ -18,3 +22,13 @@ services:
         value: gemini-3.8-flash
       - key: PYTHON_VERSION
         value: "3.12.8"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: inclusivecourt-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: FRONTEND_ORIGIN
+        sync: false

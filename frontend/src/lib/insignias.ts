@@ -178,6 +178,7 @@ export function guardarInsigniasUtiles(ids: IdInsigniaUtil[]) {
   const limpios = sanitizar(ids)
   try {
     localStorage.setItem(CLAVE_INSIGNIAS, JSON.stringify(limpios))
+    void import('@/lib/sync/estadoUsuario').then((m) => m.programarSyncEstado())
   } catch {
     /* ignore quota / private mode */
   }
