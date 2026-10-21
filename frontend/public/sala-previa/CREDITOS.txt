@@ -3,8 +3,8 @@ Sala Previa — créditos de la simulación 3D
 == Escena visual ==
 
 Sala de vistas en Three.js (@react-three/fiber + drei):
-habitación con estrado, mesas de abogados, banquillos, puerta de
-entrada, iluminación de sala y cutouts fotográficos (planos con alpha).
+habitación con estrado, mesas de abogados, bancos de público, puerta de
+entrada, iluminación de sala y figuras estilizadas (cápsulas, sin fotos).
 
 No se usan panoramas 360 fotográficos: distorsionaban al rotar.
 
@@ -17,6 +17,23 @@ Fuente: ambientCG (https://ambientcg.com/) — licencia CC0 1.0
 - madera-mueble*.jpg    ← Wood051
 - marmol*.jpg           ← Marble013
 - pared-yeso*.jpg       ← Plaster001
+
+== Muebles 3D (CC0) ==
+
+Carpeta: modelos/
+Fuente: Poly Haven (https://polyhaven.com/models) — licencia CC0 1.0
+Optimizados con gltf-transform (meshopt + texturas webp 512 px).
+
+- WoodenChair_01.glb         ← silla del juez
+- modern_arm_chair_01.glb    ← sillones de abogados y laterales
+- wooden_table_02.glb        ← mesas de abogados
+- painted_wooden_bench.glb   ← bancos del público
+- modern_ceiling_lamp_01.glb ← lámparas de techo
+- wall_clock.glb             ← reloj de pared
+
+No existe en GitHub una sala de juzgado 3D con licencia reutilizable;
+la escena se monta con estos muebles genéricos adaptados a una sala
+de vistas española.
 
 == HDRI (CC0) ==
 
@@ -48,4 +65,5 @@ El antiguo «Voces y eco» se eliminó; su aporte se redistribuyó en ruido/gent
 == Rendimiento ==
 
 frameloop «demand» cuando no hay arrastre/animación;
-DPR acotado; texturas 512–768; HDRI 1K; sin sombras dinámicas.
+DPR acotado; texturas 512–768; HDRI 1K; sin sombras dinámicas
+(solo ContactShadows suaves en el suelo).

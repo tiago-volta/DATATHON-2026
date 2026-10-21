@@ -1,7 +1,7 @@
 'use client'
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Environment, useTexture } from '@react-three/drei'
+import { ContactShadows, Environment, useGLTF, useTexture } from '@react-three/drei'
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import {
@@ -21,9 +21,108 @@ const TEX = {
   marmolRough: '/sala-previa/texturas/marmol-rough.jpg',
 } as const
 
-// Muñecos 3D geométricos estilizados para máxima fluidez y accesibilidad
+// Muebles CC0 de Poly Haven (GLB con meshopt y texturas webp 512 px).
+const MODELOS = {
+  sillaJuez: '/sala-previa/modelos/WoodenChair_01.glb',
+  sillon: '/sala-previa/modelos/modern_arm_chair_01.glb',
+  mesa: '/sala-previa/modelos/wooden_table_02.glb',
+  banco: '/sala-previa/modelos/painted_wooden_bench.glb',
+  lampara: '/sala-previa/modelos/modern_ceiling_lamp_01.glb',
+  reloj: '/sala-previa/modelos/wall_clock.glb',
+} as const
 
 const HDRI = '/sala-previa/hdri/sala-interior.hdr'
+
+function Modelo({
+  url,
+  position,
+  rotationY = 0,
+  scale = 1,
+}: {
+  url: string
+  position: [number, number, number]
+  rotationY?: number
+  scale?: number | [number, number, number]
+}) {
+  const { scene } = useGLTF(url)
+  const copia = useMemo(() => scene.clone(true), [scene])
+  return (
+    <primitive
+      object={copia}
+      position={position}
+      rotation={[0, rotationY, 0]}
+      scale={scale}
+    />
+  )
+}
+
+const X_BANCOS = [-2.9, -1.74, -0.58, 0.58, 1.74, 2.9]
+const Z_FILAS = [1.85, 3.45, 5.05]
+const LAMPARAS: [number, number][] = [
+  [-2.2, -4.2],
+  [2.2, -4.2],
+  [-2.2, 1.2],
+  [2.2, 1.2],
+  [0, 4.8],
+]
+
+function MueblesCC0() {
+  return (
+    <group>
+      <Modelo url={MODELOS.sillaJuez} position={[0, 0.7, -6.85]} scale={1} />
+
+      {[-1, 1].map((lado) => (
+        <group key={lado}>
+          <Modelo url={MODELOS.mesa} position={[lado * 1.85, 0, -3.2]} />
+          <Modelo url={MODELOS.mesa} position={[lado * 2.98, 0, -3.2]} />
+          <Modelo
+            url={MODELOS.sillon}
+            position={[lado * 2.4, 0, -2.45]}
+            scale={0.92}
+          />
+        </group>
+      ))}
+
+      {Z_FILAS.map((z) =>
+        X_BANCOS.map((x) => (
+          <Modelo
+            key={`${x}-${z}`}
+            url={MODELOS.banco}
+            position={[x, 0, z + 0.05]}
+          />
+        ))
+      )}
+
+      {[
+        { x: -3.6, z: -0.2, rot: Math.PI * 0.15 },
+        { x: 3.6, z: -0.2, rot: -Math.PI * 0.15 },
+        { x: -3.4, z: 0.9, rot: Math.PI * 0.1 },
+        { x: 3.4, z: 0.9, rot: -Math.PI * 0.1 },
+      ].map((s) => (
+        <Modelo
+          key={`${s.x}-${s.z}`}
+          url={MODELOS.sillon}
+          position={[s.x, 0, s.z]}
+          rotationY={s.rot + Math.PI}
+          scale={0.9}
+        />
+      ))}
+
+      {LAMPARAS.map(([x, z]) => (
+        <Modelo key={`${x}-${z}`} url={MODELOS.lampara} position={[x, 2.95, z]} />
+      ))}
+
+      <Modelo
+        url={MODELOS.reloj}
+        position={[5.79, 2.9, -3.4]}
+        rotationY={-Math.PI / 2}
+        scale={1.1}
+      />
+    </group>
+  )
+}
+
+// Muñecos 3D geométricos estilizados para máxima fluidez y accesibilidad
 
 function lerpAngle(from: number, to: number, t: number): number {
   let d = ((to - from + 540) % 360) - 180
@@ -271,33 +370,66 @@ function Mobiliario() {
         </mesh>
       ))}
 
-      <mesh position={[0, 0.35, -6.2]}>
-        <boxGeometry args={[5.5, 0.7, 2.2]} />
+      {/* Estrado: tarima, mesa con frontal y peana, y panel de fondo con molduras */}
+      <mesh position={[0, 0.35, -6.4]}>
+        <boxGeometry args={[6, 0.7, 2.8]} />
         {matMaderaOsc}
       </mesh>
-      <mesh position={[0, 1.05, -6.55]}>
-        <boxGeometry args={[4.2, 0.7, 0.9]} />
+      <mesh position={[0, 0.12, -4.85]}>
+        <boxGeometry args={[2.2, 0.24, 0.5]} />
+        {matMaderaOsc}
+      </mesh>
+      <mesh position={[0, 0.47, -5.25]}>
+        <boxGeometry args={[2.2, 0.24, 0.5]} />
+        {matMaderaOsc}
+      </mesh>
+      <mesh position={[0, 1.08, -5.6]}>
+        <boxGeometry args={[4.6, 0.76, 0.12]} />
         {matMadera}
       </mesh>
-      <mesh position={[0, 1.85, -6.95]}>
-        <boxGeometry args={[3.6, 1.4, 0.18]} />
+      <mesh position={[0, 1.48, -5.85]}>
+        <boxGeometry args={[4.8, 0.06, 0.7]} />
         {matMaderaOsc}
       </mesh>
-      <mesh position={[0, 1.35, -6.85]}>
-        <boxGeometry args={[0.7, 1.1, 0.55]} />
-        <meshStandardMaterial color="#1e1e24" roughness={0.8} />
+      {[-1.7, -0.57, 0.57, 1.7].map((x) => (
+        <mesh key={x} position={[x, 1.08, -5.53]}>
+          <boxGeometry args={[0.95, 0.5, 0.03]} />
+          {matMadera}
+        </mesh>
+      ))}
+      <mesh position={[-1.4, 1.53, -5.9]} rotation={[0, 0.15, 0]}>
+        <boxGeometry args={[0.32, 0.04, 0.24]} />
+        <meshStandardMaterial color="#efe9dc" roughness={0.9} />
+      </mesh>
+      <mesh position={[1.3, 1.55, -5.95]}>
+        <boxGeometry args={[0.24, 0.08, 0.3]} />
+        <meshStandardMaterial color="#7a1f2b" roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 2.2, -7.72]}>
+        <boxGeometry args={[4.4, 3, 0.12]} />
+        {matMadera}
+      </mesh>
+      {[-1.6, 1.6].map((x) => (
+        <mesh key={x} position={[x, 2.2, -7.62]}>
+          <boxGeometry args={[0.18, 3, 0.1]} />
+          {matMaderaOsc}
+        </mesh>
+      ))}
+      <mesh position={[0, 3.75, -7.62]}>
+        <boxGeometry args={[4.6, 0.16, 0.16]} />
+        {matMadera}
       </mesh>
 
-      <mesh position={[0, 2.85, -7.75]}>
+      <mesh position={[0, 3.3, -7.65]}>
         <circleGeometry args={[0.35, 24]} />
         <meshStandardMaterial color="#c9a227" metalness={0.45} roughness={0.3} />
       </mesh>
-      <mesh position={[0, 2.85, -7.74]}>
+      <mesh position={[0, 3.3, -7.64]}>
         <circleGeometry args={[0.22, 24]} />
         <meshStandardMaterial color="#8b1e2d" roughness={0.5} />
       </mesh>
 
-      <group position={[-2.2, 2.6, -7.75]}>
+      <group position={[-2.9, 2.6, -7.75]}>
         <mesh>
           <planeGeometry args={[0.7, 0.45]} />
           <meshStandardMaterial color="#c60b1e" side={THREE.DoubleSide} />
@@ -308,22 +440,22 @@ function Mobiliario() {
         </mesh>
       </group>
 
-      <mesh position={[-2.4, 0.55, -3.2]}>
-        <boxGeometry args={[2.2, 0.12, 1.1]} />
-        {matMadera}
-      </mesh>
-      <mesh position={[-2.4, 0.25, -3.2]}>
-        <boxGeometry args={[2.0, 0.5, 0.9]} />
-        {matMaderaOsc}
-      </mesh>
-      <mesh position={[2.4, 0.55, -3.2]}>
-        <boxGeometry args={[2.2, 0.12, 1.1]} />
-        {matMadera}
-      </mesh>
-      <mesh position={[2.4, 0.25, -3.2]}>
-        <boxGeometry args={[2.0, 0.5, 0.9]} />
-        {matMaderaOsc}
-      </mesh>
+      {[-2.4, 2.4].map((x) => (
+        <group key={x}>
+          <mesh position={[x, 0.42, -3.54]}>
+            <boxGeometry args={[2.3, 0.72, 0.04]} />
+            {matMaderaOsc}
+          </mesh>
+          <mesh position={[x - 0.5, 0.82, -3.3]} rotation={[0, -0.2, 0]}>
+            <boxGeometry args={[0.3, 0.03, 0.22]} />
+            <meshStandardMaterial color="#efe9dc" roughness={0.9} />
+          </mesh>
+          <mesh position={[x + 0.6, 0.83, -3.25]}>
+            <boxGeometry args={[0.26, 0.05, 0.32]} />
+            <meshStandardMaterial color="#2f3e57" roughness={0.6} />
+          </mesh>
+        </group>
+      ))}
 
       <mesh position={[0, 0.55, -1.6]}>
         <boxGeometry args={[7, 0.08, 0.08]} />
@@ -336,17 +468,24 @@ function Mobiliario() {
         </mesh>
       ))}
 
-      {[1.8, 3.4, 5.0].map((z) => (
-        <group key={z}>
-          <mesh position={[0, 0.28, z]}>
-            <boxGeometry args={[7.5, 0.12, 0.55]} />
+      {[-1, 1].map((lado) =>
+        [-6, -3, 0, 3, 6].map((z) => (
+          <mesh key={`${lado}-${z}`} position={[lado * 5.76, 2.05, z]}>
+            <boxGeometry args={[0.14, 4.1, 0.35]} />
             {matMadera}
           </mesh>
-          <mesh position={[0, 0.55, z + 0.22]}>
-            <boxGeometry args={[7.5, 0.45, 0.08]} />
-            {matMaderaOsc}
-          </mesh>
-        </group>
+        ))
+      )}
+      {[
+        [0, 3.98, -7.75, 11.6, 0.18, 0.18],
+        [0, 3.98, 7.75, 11.6, 0.18, 0.18],
+        [-5.75, 3.98, 0, 0.18, 0.18, 15.6],
+        [5.75, 3.98, 0, 0.18, 0.18, 15.6],
+      ].map((v, i) => (
+        <mesh key={i} position={[v[0], v[1], v[2]]}>
+          <boxGeometry args={[v[3], v[4], v[5]]} />
+          <meshStandardMaterial color="#e6dfd2" roughness={0.9} />
+        </mesh>
       ))}
 
       <mesh position={[0, 1.5, 7.78]}>
@@ -443,12 +582,13 @@ function PersonasEscena({
 
       {/* Juez en el estrado con toga mirando hacia la sala (+Z) */}
       <FiguraPersona
-        position={[0, 0.7, -6.5]}
+        position={[0, 0.95, -6.6]}
         rotationY={0}
         tonoPiel="#c6866a"
         ropa="#121218"
         visible={juezVis}
-        scale={enfoque === 'juez' ? 1.15 : 1.05}
+        scale={enfoque === 'juez' ? 1.18 : 1.1}
+        sentada
         toga
       />
 
@@ -683,6 +823,16 @@ function EscenaInterior(props: EscenaProps) {
       <Suspense fallback={null}>
         <Environment files={HDRI} environmentIntensity={0.32} />
         <Mobiliario />
+        <MueblesCC0 />
+        <ContactShadows
+          position={[0, 0.02, 0]}
+          scale={[12, 16]}
+          resolution={512}
+          far={2.2}
+          blur={2.4}
+          opacity={0.5}
+          color="#2b2118"
+        />
         <PersonasEscena gente={props.gente} enfoque={props.enfoque} personaEntrando={props.personaEntrando} />
       </Suspense>
     </>
@@ -722,3 +872,5 @@ export function SalaVistas3D(props: SalaVistas3DProps) {
     </div>
   )
 }
+
+Object.values(MODELOS).forEach((url) => useGLTF.preload(url))
