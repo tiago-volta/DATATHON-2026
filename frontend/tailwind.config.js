@@ -22,14 +22,15 @@ module.exports = {
         calma: {
           cream: '#ffffff',
           sand: '#ffffff',
-          sage: '#f5f5f7',
-          mist: '#f5f5f7',
+          sage: '#eef4f2',
+          mist: '#f0f5f8',
         },
         accent: {
           warm: '#9a5340',
           success: '#1e6b45',
           alert: '#8a4b12',
-          info: '#3e5874',
+          info: '#0369a1',
+          navy: '#0c4a6e',
         }
       },
       fontFamily: {

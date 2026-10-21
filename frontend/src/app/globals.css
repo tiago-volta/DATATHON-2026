@@ -9,8 +9,10 @@
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --papel: #ffffff;
     --tinta: #1d1d1f;
-    --accion: #1d1d1f;
-    --accion-hover: #000000;
+    --accion: #0369a1;
+    --accion-hover: #0c4a6e;
+    --accion-activa: #075985;
+    --foco: #0369a1;
     --marco-ancho: 90rem;
     --marco-lectura: 60rem;
   }
@@ -35,7 +37,7 @@
   }
 
   *:focus-visible {
-    outline: 3px solid #1d1d1f;
+    outline: 3px solid var(--foco);
     outline-offset: 2px;
   }
 
@@ -74,19 +76,19 @@
 
   .btn {
     @apply inline-flex items-center justify-center gap-3 px-6 py-4 rounded-suave font-bold cursor-pointer;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
     transition:
-      background-color 220ms var(--ease-out),
-      border-color 220ms var(--ease-out),
-      color 220ms var(--ease-out),
-      box-shadow 220ms var(--ease-out),
-      transform 220ms var(--ease-out);
+      background-color 200ms var(--ease-out),
+      border-color 200ms var(--ease-out),
+      color 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out),
+      transform 200ms var(--ease-out);
     min-height: 56px;
     touch-action: manipulation;
   }
 
   .btn:focus-visible {
-    outline: 3px solid #1d1d1f;
+    outline: 3px solid var(--foco);
     outline-offset: 2px;
   }
 
@@ -110,31 +112,31 @@
   }
 
   .btn-primary:active:not(:disabled) {
-    background-color: #000000;
+    background-color: var(--accion-activa);
   }
 
   .btn-secondary {
-    @apply btn bg-white text-court-900 border border-court-300;
-    @apply hover:bg-court-50 hover:border-court-900;
+    @apply btn bg-white text-accent-navy border border-accent-info/40;
+    @apply hover:bg-calma-mist hover:border-accent-info;
   }
 
   .btn-ghost {
     @apply btn bg-transparent text-court-900 shadow-none;
-    @apply hover:bg-court-50;
+    @apply hover:bg-calma-mist hover:text-accent-navy;
   }
 
   .card {
     @apply bg-white rounded-tarjeta p-6 border border-court-200;
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
     transition:
-      background-color 220ms var(--ease-out),
-      border-color 220ms var(--ease-out),
-      box-shadow 220ms var(--ease-out),
-      transform 220ms var(--ease-out);
+      background-color 200ms var(--ease-out),
+      border-color 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out),
+      transform 200ms var(--ease-out);
   }
 
   .card-destacada {
-    @apply card border-2 border-court-900;
+    @apply card border-2 border-accent-info;
   }
 
   a.card, button.card {
@@ -143,41 +145,41 @@
 
   a.card:focus-visible,
   button.card:focus-visible {
-    outline: 3px solid #1d1d1f;
+    outline: 3px solid var(--foco);
     outline-offset: 2px;
   }
 
   .fila-enlace {
     @apply flex items-start gap-4 py-5 px-4 -mx-4 rounded-tarjeta;
-    transition: background-color 220ms var(--ease-out);
+    transition: background-color 200ms var(--ease-out);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgb(0 0 0 / 0.12);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgb(3 105 161 / 0.14);
     }
 
     .btn:active:not(:disabled) {
       transform: scale(0.98);
-      box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
     }
 
     .card:hover {
-      border-color: #1d1d1f;
-      box-shadow: 0 16px 36px rgb(0 0 0 / 0.08);
+      border-color: #0369a1;
+      box-shadow: 0 6px 18px rgb(3 105 161 / 0.08);
     }
 
     a.card:hover, button.card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-1px);
     }
 
     .fila-enlace:hover {
-      background-color: #f5f5f7;
+      background-color: #f0f5f8;
     }
 
     .input-accesible:hover {
-      border-color: #1d1d1f;
+      border-color: #0369a1;
     }
   }
 
@@ -194,11 +196,11 @@
   }
 
   .paso-indicador {
-    @apply flex items-center justify-center w-12 h-12 rounded-full bg-court-100 text-court-700 font-bold text-xl;
+    @apply flex items-center justify-center w-12 h-12 rounded-full bg-calma-mist text-accent-navy font-bold text-xl;
   }
 
   .paso-activo .paso-indicador {
-    @apply bg-court-600 text-white;
+    @apply bg-accent-info text-white;
   }
 
   .pasos-nav {
@@ -206,19 +208,19 @@
   }
 
   .pasos-nav [aria-current='step'] {
-    @apply font-bold text-court-700;
+    @apply font-bold text-accent-navy;
   }
 
   .input-accesible {
     @apply w-full px-5 py-4 text-lg rounded-suave border border-court-300 bg-white;
     @apply placeholder:text-court-400;
-    transition: border-color 220ms var(--ease-out), background-color 220ms var(--ease-out);
+    transition: border-color 200ms var(--ease-out), background-color 200ms var(--ease-out);
     min-height: 56px;
   }
 
   .input-accesible:focus-visible {
-    border-color: #1d1d1f;
-    outline: 3px solid #1d1d1f;
+    border-color: var(--foco);
+    outline: 3px solid var(--foco);
     outline-offset: 2px;
   }
 
@@ -232,37 +234,37 @@
   }
 
   .etiqueta-info {
-    @apply etiqueta bg-accent-info/25 text-court-800;
+    @apply etiqueta bg-accent-info/15 text-accent-navy;
   }
 
   .etiqueta-exito {
-    @apply etiqueta bg-accent-success/25 text-court-900;
+    @apply etiqueta bg-accent-success/20 text-court-900;
   }
 
   .etiqueta-alerta {
-    @apply etiqueta bg-accent-alert/25 text-court-900;
+    @apply etiqueta bg-accent-alert/20 text-court-900;
   }
 
   .panel-suave {
-    @apply rounded-tarjeta bg-calma-sage border border-court-200 p-6 md:p-8;
+    @apply rounded-tarjeta bg-calma-sage border border-accent-success/25 p-6 md:p-8;
   }
 
   .link-atras {
-    @apply inline-flex items-center gap-2 text-court-900 font-medium mb-6 rounded-suave px-3 -mx-3;
+    @apply inline-flex items-center gap-2 text-accent-navy font-medium mb-6 rounded-suave px-3 -mx-3;
     min-height: 44px;
     text-decoration: underline;
     text-underline-offset: 4px;
-    text-decoration-color: #d2d2d7;
-    transition: background-color 220ms var(--ease-out), text-decoration-color 220ms var(--ease-out);
+    text-decoration-color: rgb(3 105 161 / 0.35);
+    transition: background-color 200ms var(--ease-out), text-decoration-color 200ms var(--ease-out);
   }
 
   .link-atras:hover {
-    background-color: #f5f5f7;
-    text-decoration-color: #1d1d1f;
+    background-color: #f0f5f8;
+    text-decoration-color: #0369a1;
   }
 
   .avatar-inicial {
-    @apply w-20 h-20 rounded-full bg-court-700 text-white flex items-center justify-center text-3xl font-bold;
+    @apply w-20 h-20 rounded-full bg-accent-info text-white flex items-center justify-center text-3xl font-bold;
   }
 }
 
@@ -331,14 +333,14 @@
   height: 28px;
   margin-top: -10px;
   border-radius: 999px;
-  background: #1d1d1f;
+  background: #0369a1;
   border: 3px solid #ffffff;
   cursor: pointer;
-  transition: transform 220ms var(--ease-out);
+  transition: transform 200ms var(--ease-out);
 }
 
 .sala-slider:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 4px #1d1d1f;
+  box-shadow: 0 0 0 4px var(--foco);
 }
 
 .sala-slider::-moz-range-track {
@@ -352,13 +354,13 @@
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: #1d1d1f;
+  background: #0369a1;
   border: 3px solid #ffffff;
   cursor: pointer;
 }
 
 .sala-slider:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 4px #1d1d1f;
+  box-shadow: 0 0 0 4px var(--foco);
 }
 
 .sala-slider:disabled {
@@ -476,15 +478,15 @@ button.hoja {
   cursor: pointer;
   touch-action: manipulation;
   transition:
-    background-color 220ms var(--ease-out),
-    border-color 220ms var(--ease-out),
-    box-shadow 220ms var(--ease-out),
-    transform 220ms var(--ease-out);
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
 }
 
 a.hoja:focus-visible,
 button.hoja:focus-visible {
-  outline: 3px solid #1d1d1f;
+  outline: 3px solid var(--foco);
   outline-offset: 2px;
 }
 
@@ -496,9 +498,9 @@ button.hoja:active {
 @media (hover: hover) and (pointer: fine) {
   a.hoja:hover,
   button.hoja:hover {
-    border-color: #1d1d1f;
-    box-shadow: 0 18px 40px rgb(0 0 0 / 0.1);
-    transform: translateY(-3px);
+    border-color: #0369a1;
+    box-shadow: 0 6px 18px rgb(3 105 161 / 0.1);
+    transform: translateY(-1px);
   }
 }
 
@@ -522,14 +524,14 @@ button.hoja:active {
   backdrop-filter: blur(0);
   -webkit-backdrop-filter: blur(0);
   transition:
-    width 520ms var(--ease-out),
-    max-width 520ms var(--ease-out),
-    background-color 520ms var(--ease-out),
-    border-color 520ms var(--ease-out),
-    border-radius 520ms var(--ease-out),
-    box-shadow 520ms var(--ease-out),
-    transform 520ms var(--ease-out),
-    backdrop-filter 520ms var(--ease-out);
+    width 200ms var(--ease-out),
+    max-width 200ms var(--ease-out),
+    background-color 200ms var(--ease-out),
+    border-color 200ms var(--ease-out),
+    border-radius 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    backdrop-filter 200ms var(--ease-out);
 }
 
 .cabecera-interior {
@@ -593,7 +595,8 @@ button.hoja:active {
 }
 
 .cabecera--flotante {
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
+  border-bottom-color: rgb(3 105 161 / 0.28);
+  box-shadow: 0 6px 18px rgb(3 105 161 / 0.08);
 }
 
 @media print {

@@ -64,11 +64,11 @@ export function ResumenPerfil() {
   if (!vista?.tienePerfil) {
     return (
       <section
-        className="card mb-8 border-2 border-court-400 bg-gradient-to-br from-white to-court-50 p-6 shadow-sm"
+        className="card mb-8 border-2 border-accent-info/40 bg-white p-6"
         aria-labelledby="titulo-empieza"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-court-200 text-court-800 text-xs font-bold uppercase tracking-wider mb-3">
-          <span>🧭</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-suave bg-accent-info/15 text-accent-navy text-xs font-bold uppercase tracking-wider mb-3 border border-accent-info/25">
+          <span aria-hidden="true">🧭</span>
           <span>Primer paso de preparación</span>
         </div>
         <h2 id="titulo-empieza" className="text-2xl font-bold text-court-900 mb-2">
@@ -107,11 +107,11 @@ export function ResumenPerfil() {
 
   return (
     <section
-      className="card mb-8 border-2 border-court-600 bg-gradient-to-br from-white to-calma-sage/25 p-6 shadow-sm"
+      className="card mb-8 border-2 border-accent-info/40 bg-white p-6"
       aria-labelledby="titulo-bienvenida"
     >
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <span className="text-xs font-bold uppercase tracking-wider text-court-700 bg-court-100 px-2.5 py-1 rounded-full">
+        <span className="text-xs font-bold uppercase tracking-wider text-accent-navy bg-accent-info/15 px-2.5 py-1 rounded-suave border border-accent-info/25">
           Tu plan de juicio
         </span>
         {sesion?.email && (
@@ -126,24 +126,24 @@ export function ResumenPerfil() {
       </h2>
       <p className="text-court-800 text-base mb-4">
         Tu papel en el juicio:{' '}
-        <span className="font-bold text-court-950 underline decoration-court-400">
+        <span className="font-bold text-accent-navy underline decoration-accent-info/50">
           {rolTexto}
         </span>
         .
       </p>
 
       {/* Progreso del simulador */}
-      <div className="bg-white/90 rounded-lg p-3.5 border border-court-200 mb-5">
+      <div className="bg-calma-mist rounded-suave p-3.5 border border-accent-info/20 mb-5">
         <div className="flex items-center justify-between text-sm mb-1.5">
           <span className="font-semibold text-court-800">
             Progreso en el simulador de sala
           </span>
-          <span className="font-bold text-court-900">
+          <span className="font-bold text-accent-navy numeros">
             {nivelesHechos} de 5 niveles
           </span>
         </div>
         <div
-          className="w-full bg-court-100 rounded-full h-2.5 overflow-hidden"
+          className="w-full bg-white rounded-full h-2.5 overflow-hidden border border-court-200"
           role="progressbar"
           aria-valuenow={nivelesHechos}
           aria-valuemin={0}
@@ -151,7 +151,7 @@ export function ResumenPerfil() {
           aria-label={`Progreso: ${nivelesHechos} de 5 niveles del simulador completados`}
         >
           <div
-            className="bg-court-700 h-2.5 rounded-full transition-all duration-500"
+            className="bg-accent-info h-2.5 rounded-full transition-all duration-200"
             style={{ width: `${(nivelesHechos / 5) * 100}%` }}
           />
         </div>
@@ -187,7 +187,7 @@ export function ResumenPerfil() {
       <div className="pt-3 border-t border-court-200 flex items-center justify-between">
         <Link
           href="/perfil"
-          className="text-xs text-court-600 hover:text-court-900 underline font-medium min-h-[36px] inline-flex items-center"
+          className="text-xs text-accent-navy hover:text-accent-info underline font-medium min-h-[36px] inline-flex items-center transition-colors duration-200"
         >
           Cambiar perfil o empezar de nuevo
         </Link>

@@ -71,10 +71,10 @@ export function BotonesAuthCabecera() {
     const enLogin = pathname === '/login' || pathname.startsWith('/login/')
     const enRegistro = pathname === '/registro' || pathname.startsWith('/registro/')
     const claseEnlace = (activo: boolean) =>
-      `inline-flex items-center min-h-[44px] px-3 rounded-suave cursor-pointer ${
+      `inline-flex items-center min-h-[44px] px-3 rounded-suave cursor-pointer transition-colors duration-200 ${
         activo
-          ? 'font-bold text-court-900 underline decoration-court-900 decoration-2 underline-offset-8'
-          : 'font-medium text-court-800 hover:bg-court-50'
+          ? 'font-bold text-accent-navy underline decoration-accent-info decoration-2 underline-offset-8 bg-calma-mist'
+          : 'font-medium text-court-800 hover:bg-calma-mist hover:text-accent-navy'
       }`
 
     return (
@@ -114,8 +114,8 @@ export function BotonesAuthCabecera() {
       <button
         ref={botonRef}
         type="button"
-        className={`relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] w-11 h-11 rounded-full border bg-white text-court-900 cursor-pointer transition-colors duration-200 hover:bg-court-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-court-400 ${
-          enPerfil || abierto ? 'border-court-800' : 'border-court-300'
+        className={`relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] w-11 h-11 rounded-full border bg-white text-accent-navy cursor-pointer transition-colors duration-200 hover:bg-calma-mist focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-info/40 ${
+          enPerfil || abierto ? 'border-accent-info' : 'border-court-300'
         }`}
         aria-label={`Tu perfil. Sesión de ${nombreVisible}`}
         aria-expanded={abierto}

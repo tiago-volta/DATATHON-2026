@@ -10,11 +10,17 @@ import {
 } from 'lucide-react'
 import { ResumenPerfil } from '@/components/perfil/ResumenPerfil'
 
-function IconoInicio({ icono: Dibujo }: { icono: LucideIcon }) {
+function IconoInicio({
+  icono: Dibujo,
+  className = 'text-accent-navy',
+}: {
+  icono: LucideIcon
+  className?: string
+}) {
   return (
     <Dibujo
       aria-hidden="true"
-      className="h-6 w-6 shrink-0 text-court-900"
+      className={`h-6 w-6 shrink-0 ${className}`}
       strokeWidth={1.75}
     />
   )
@@ -24,8 +30,8 @@ export default function Inicio() {
   return (
     <main id="contenido-principal" className="page-shell">
       <section className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-court-100 text-court-800 text-xs font-bold uppercase tracking-wider mb-3">
-          <span>🏛️</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-suave bg-accent-info/15 text-accent-navy text-xs font-bold uppercase tracking-wider mb-3 border border-accent-info/25">
+          <span aria-hidden="true">🏛️</span>
           <span>Anticipación cognitiva y sensorial</span>
         </div>
         <h1 className="titulo-pagina max-w-[18ch]">
@@ -49,12 +55,12 @@ export default function Inicio() {
           {/* 1. Citación */}
           <Link
             href="/citacion"
-            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+            className="card border-2 border-accent-info/25 hover:border-accent-info transition-colors duration-200 p-4 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-court-100 rounded text-court-800">
-                  <IconoInicio icono={FileText} />
+                <div className="p-2 bg-accent-info/15 rounded-suave text-accent-navy">
+                  <IconoInicio icono={FileText} className="text-accent-info" />
                 </div>
                 <h3 className="text-lg font-bold text-court-900">
                   Comprender citación
@@ -64,7 +70,7 @@ export default function Inicio() {
                 Pasa tu citación judicial a Lectura Fácil (UNE 153101): fecha, tribunal, papel de testigo o investigado y consecuencias si no puedes acudir.
               </p>
             </div>
-            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+            <span className="text-xs text-accent-navy font-bold underline decoration-accent-info/50 mt-3 inline-block">
               Abrir citación →
             </span>
           </Link>
@@ -72,12 +78,12 @@ export default function Inicio() {
           {/* 2. Pasaporte de ajustes */}
           <Link
             href="/pasaporte"
-            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+            className="card border-2 border-accent-success/25 hover:border-accent-success transition-colors duration-200 p-4 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-court-100 rounded text-court-800">
-                  <IconoInicio icono={ShieldCheck} />
+                <div className="p-2 bg-accent-success/15 rounded-suave text-accent-success">
+                  <IconoInicio icono={ShieldCheck} className="text-accent-success" />
                 </div>
                 <h3 className="text-lg font-bold text-court-900">
                   Pasaporte de ajustes
@@ -87,7 +93,7 @@ export default function Inicio() {
                 Solicita pausas, luz tenue o preguntas directas amparado en el art. 7 bis de la LEC y CGPJ 2025, sin divulgar tu informe clínico.
               </p>
             </div>
-            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+            <span className="text-xs text-accent-navy font-bold underline decoration-accent-success/50 mt-3 inline-block">
               Ver o crear Pasaporte →
             </span>
           </Link>
@@ -95,12 +101,12 @@ export default function Inicio() {
           {/* 3. Sala Previa 3D */}
           <Link
             href="/sala-previa"
-            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+            className="card border-2 border-accent-info/25 hover:border-accent-info transition-colors duration-200 p-4 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-court-100 rounded text-court-800">
-                  <IconoInicio icono={Compass} />
+                <div className="p-2 bg-calma-mist rounded-suave text-accent-navy">
+                  <IconoInicio icono={Compass} className="text-accent-navy" />
                 </div>
                 <h3 className="text-lg font-bold text-court-900">
                   Sala de vistas 3D
@@ -110,7 +116,7 @@ export default function Inicio() {
                 Recorre la sala de vistas en 5 niveles: gradúa el volumen de toses, la luz, el aforo y prueba cascos antirruido o pausas de calma.
               </p>
             </div>
-            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+            <span className="text-xs text-accent-navy font-bold underline decoration-accent-info/50 mt-3 inline-block">
               Entrar en la sala 3D →
             </span>
           </Link>
@@ -118,12 +124,12 @@ export default function Inicio() {
           {/* 4. Ensayo de declaración */}
           <Link
             href="/ensaya"
-            className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 flex flex-col justify-between"
+            className="card border-2 border-accent-warm/25 hover:border-accent-warm transition-colors duration-200 p-4 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-court-100 rounded text-court-800">
-                  <IconoInicio icono={MessageSquareQuote} />
+                <div className="p-2 bg-accent-warm/10 rounded-suave text-accent-warm">
+                  <IconoInicio icono={MessageSquareQuote} className="text-accent-warm" />
                 </div>
                 <h3 className="text-lg font-bold text-court-900">
                   Banco de preguntas
@@ -133,7 +139,7 @@ export default function Inicio() {
                 Entrena preguntas con trampas habituales: preguntas compuestas, dobles negaciones y practica decir "No lo recuerdo" con serenidad.
               </p>
             </div>
-            <span className="text-xs text-court-900 font-bold underline decoration-court-400 mt-3 inline-block">
+            <span className="text-xs text-accent-navy font-bold underline decoration-accent-warm/50 mt-3 inline-block">
               Practicar respuestas →
             </span>
           </Link>
@@ -141,13 +147,13 @@ export default function Inicio() {
       </section>
 
       {/* Caso de referencia de demostración: Luis (Testigo con TEA) */}
-      <div className="card mb-8 bg-calma-cream/60 border border-court-200 p-5">
+      <div className="card mb-8 bg-white border border-accent-info/30 p-5">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-court-600 flex items-center gap-1.5">
-            <IconoInicio icono={UserCheck} />
+          <span className="text-xs font-bold uppercase tracking-wider text-accent-navy flex items-center gap-1.5">
+            <IconoInicio icono={UserCheck} className="text-accent-info" />
             Caso de referencia • Testigo penal
           </span>
-          <span className="text-xs bg-court-200/80 text-court-800 font-semibold px-2.5 py-0.5 rounded-full">
+          <span className="text-xs bg-accent-info/15 text-accent-navy font-semibold px-2.5 py-0.5 rounded-suave border border-accent-info/25">
             Luis, 28 años (TEA)
           </span>
         </div>
@@ -165,9 +171,9 @@ export default function Inicio() {
       <p className="mb-8">
         <Link
           href="/ayuda"
-          className="inline-flex items-center gap-3 min-h-[44px] text-court-900 font-bold underline decoration-court-400 underline-offset-4 hover:decoration-court-900"
+          className="inline-flex items-center gap-3 min-h-[44px] text-accent-navy font-bold underline decoration-accent-info/50 underline-offset-4 transition-colors duration-200 hover:decoration-accent-info hover:text-accent-info"
         >
-          <IconoInicio icono={CircleHelp} />
+          <IconoInicio icono={CircleHelp} className="text-accent-info" />
           Preguntas frecuentes y ayuda sobre el juzgado
         </Link>
       </p>
