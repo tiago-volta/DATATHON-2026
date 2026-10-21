@@ -24,6 +24,10 @@ import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { escenaPorIndice } from '@/lib/sala-previa/escenas'
+import { generarAgendaEventos, type EventoSala } from '@/lib/sala-previa/eventos'
+import { NarradorAhoraDespues } from '@/components/sala-previa/NarradorAhoraDespues'
+import { HerramientasSensoriales } from '@/components/sala-previa/HerramientasSensoriales'
+import type { IdHerramienta } from '@/lib/perfil/tipos'
 import { cargarPerfil, guardarPerfil, ROLES_DISPONIBLES, type RolPerfil } from '@/lib/perfil/perfil'
 import {
   ESTIMULOS_VACIOS,
@@ -67,6 +71,7 @@ export default function PaginaSalaPrevia() {
   const [nivelActual, setNivelActual] = useState(0)
   const [escenaIndice, setEscenaIndice] = useState(0)
   const [rolUsuario, setRolUsuario] = useState<RolPerfil>('testigo')
+  const [herramientasActivas, setHerramientasActivas] = useState<IdHerramienta[]>([])
   const [valores, setValores] = useState<ValoresEstimulo>(ESTIMULOS_VACIOS)
   const [enCalma, setEnCalma] = useState(false)
   const [audioListo, setAudioListo] = useState(false)
@@ -117,6 +122,37 @@ export default function PaginaSalaPrevia() {
       setRolUsuario(p.rol)
     }
   }, [])
+
+  const agenda = useMemo(() => generarAgendaEventos(cargarPerfil()), [])
+
+  const alDispararEvento = useCallback((ev: EventoSala) => {
+    if (ev.tipo === 'gente') {
+      motorRef.current?.reproducirTosMurmullo()
+    } else if (ev.tipo === 'puerta') {
+      motorRef.current?.reproducirPuerta()
+    } else if (ev.tipo === 'movil') {
+      motorRef.current?.reproducirMovil()
+    } else if (ev.tipo === 'nombre-en-alto') {
+      const nom = cargarPerfil()?.nombre || 'Luis García'
+      motorRef.current?.reproducirNombreEnAlto(nom)
+    }
+  }, [])
+
+  const toggleHerramienta = useCallback((id: IdHerramienta) => {
+    setHerramientasActivas((prev) => {
+      const existe = prev.includes(id)
+      const next = existe ? prev.filter((h) => h !== id) : [...prev, id]
+      // Aplicar modulación sonora o visual
+      if (id === 'cascos') {
+        const factor = existe ? 1 : 0.5
+        motorRef.current?.actualizar({
+          ...valores,
+          ruido: Math.round(valores.ruido * factor),
+        })
+      }
+      return next
+    })
+  }, [valores])
 
   const nivel = NIVELES[nivelActual]
   const escena = escenaPorIndice(escenaIndice, rolUsuario)
@@ -544,6 +580,10 @@ export default function PaginaSalaPrevia() {
                   </p>
                 )}
 
+                <div className="bg-calma-sage/70 border border-court-200 rounded-suave px-4 py-2 text-xs text-court-700 flex items-center justify-between gap-2 mb-4">
+                  <span>ℹ️ <strong>Aviso legal:</strong> Esto es un ensayo preparatorio. No sustituye a tu citación oficial ni a un abogado. En el juicio decide la autoridad judicial (arts. 7 bis LEC y 709 LECrim).</span>
+                </div>
+
                 <div className="grid lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 space-y-4">
                     {rolUsuario === 'desconocido' && (
@@ -578,6 +618,18 @@ export default function PaginaSalaPrevia() {
                         </div>
                       </div>
                     )}
+                    <NarradorAhoraDespues
+                      agenda={agenda}
+                      enCalma={enCalma}
+                      nivel={nivelActual}
+                      onDispararEvento={alDispararEvento}
+                    />
+
+                    <HerramientasSensoriales
+                      herramientasActivas={herramientasActivas}
+                      onToggleHerramienta={toggleHerramienta}
+                    />
+
                     <RecorridoEscenas
                       indice={escenaIndice}
                       onCambiar={cambiarEscena}
@@ -674,6 +726,7 @@ export default function PaginaSalaPrevia() {
         <CheckInConfort
           nivelNombre={nivel.nombre}
           valores={valores}
+          herramientasUsadas={herramientasActivas}
           puedeBajar={nivelActual > 0}
           puedeSubir={nivelActual < NIVELES.length - 1}
           onBajarEstimulos={bajarEstimulosMolestos}

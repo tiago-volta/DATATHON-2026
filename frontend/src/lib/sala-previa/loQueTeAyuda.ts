@@ -225,3 +225,32 @@ export function fraseAyuda(ajusteId: string): string {
 export function etiquetaNivelMolestia(nivel: NivelMolestia): string {
   return nivel === 'alto' ? 'nivel alto' : 'nivel medio'
 }
+
+export function mapearHerramientaAAjuste(id: string): string {
+  switch (id) {
+    case 'cascos':
+      return 'sala-tranquila'
+    case 'gafas-sol':
+      return 'luz-tenue'
+    case 'objeto-mano':
+    case 'pausa':
+    case 'respiracion':
+      return 'pausas'
+    case 'acompanante':
+      return 'acompanante'
+    default:
+      return 'sala-tranquila'
+  }
+}
+
+export function registrarHerramientaUtil(id: string): LoQueTeAyuda {
+  const actual = cargarLoQueTeAyuda()
+  const ajuste = mapearHerramientaAAjuste(id)
+  const nuevasAyudas = Array.from(new Set([...actual.ayudas, ajuste]))
+  const next: LoQueTeAyuda = {
+    ...actual,
+    ayudas: nuevasAyudas,
+  }
+  guardarLoQueTeAyuda(next)
+  return next
+}

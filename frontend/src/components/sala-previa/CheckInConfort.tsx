@@ -10,6 +10,9 @@ import {
   molestiasDesdeValores,
 } from '@/lib/sala-previa/niveles'
 import type { ConfortCheckIn, IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import type { IdHerramienta } from '@/lib/perfil/tipos'
+import { registrarHerramienta } from '@/lib/perfil/perfil'
+import { registrarHerramientaUtil } from '@/lib/sala-previa/loQueTeAyuda'
 
 /** IDs ARASAAC fijos (CC BY-NC-SA). */
 const OPCIONES: {
@@ -98,6 +101,7 @@ interface Props {
   onCerrar: () => void
   puedeBajar: boolean
   puedeSubir: boolean
+  herramientasUsadas?: IdHerramienta[]
 }
 
 export function CheckInConfort({
@@ -110,7 +114,9 @@ export function CheckInConfort({
   onCerrar,
   puedeBajar,
   puedeSubir,
+  herramientasUsadas = [],
 }: Props) {
+  const [respuestaHerramienta, setRespuestaHerramienta] = useState<'si' | 'un-poco' | 'no' | null>(null)
   const sugeridas = useMemo(() => molestiasDesdeValores(valores), [valores])
   const [confort, setConfort] = useState<ConfortCheckIn | null>(null)
   const [molestias, setMolestias] = useState<IdEstimulo[]>([])
@@ -248,6 +254,37 @@ export function CheckInConfort({
                 ? 'Bien. Vas a tu ritmo. Si quieres, puedes subir de nivel. Si no, quédate aquí.'
                 : 'Bien. Ya has llegado al nivel más alto de la Sala Previa.'}
             </p>
+            {herramientasUsadas.length > 0 && (
+              <div className="bg-white border border-court-200 rounded-suave p-3 space-y-1.5 text-left">
+                <p className="font-bold text-xs text-court-800">
+                  ¿Te ayudaron las herramientas que probaste (cascos/gafas/objeto)?
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {(['si', 'un-poco', 'no'] as const).map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => {
+                        const ayudo = r !== 'no'
+                        for (const h of herramientasUsadas) {
+                          registrarHerramienta(h, ayudo)
+                          registrarHerramientaUtil(h)
+                        }
+                        setRespuestaHerramienta(r)
+                      }}
+                      className={`px-3 py-1.5 rounded-suave text-xs font-semibold border min-h-[44px] ${
+                        respuestaHerramienta === r
+                          ? 'bg-court-600 text-white border-court-600'
+                          : 'bg-white text-court-800 border-court-300'
+                      }`}
+                    >
+                      {r === 'si' ? '✓ Sí, me ayudaron' : r === 'un-poco' ? 'Un poco' : 'No'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col gap-3">
               {puedeSubir && (
                 <button

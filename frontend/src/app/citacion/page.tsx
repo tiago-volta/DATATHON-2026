@@ -69,7 +69,7 @@ const PIPELINE_POR_DEFECTO = [
   },
   {
     paso: 3,
-    nombre: 'Adaptación a Lectura Fácil (UNE 153101) y Discalculia',
+    nombre: 'Adaptación orientada a lectura fácil (sin validar) y discalculia',
     detalle: 'Divide en una idea por línea y convierte cifras y plazos en palabras comprensibles.',
   },
   {
@@ -1007,7 +1007,7 @@ export default function PaginaCitacion() {
                 </li>
                 <li>1. Extrayendo fechas, juzgado y rol procesal</li>
                 <li>2. Traduciendo términos jurídicos a lenguaje claro (ISO 24495-1)</li>
-                <li>3. Creando versión en Lectura Fácil (UNE 153101) y cifras en palabras</li>
+                <li>3. Creando versión orientada a lectura fácil y cifras en palabras</li>
                 <li>4. Buscando pictogramas ARASAAC y preparando lectura por voz</li>
               </ol>
             </div>
@@ -1241,7 +1241,7 @@ export default function PaginaCitacion() {
                   className={`btn ${modoLectura === 'facil' ? 'btn-primary' : 'btn-secondary'}`}
                   aria-pressed={modoLectura === 'facil'}
                 >
-                  Lectura fácil (UNE 153101)
+                  Lectura fácil orientada (sin validar)
                 </button>
                 {pasosSimples.length > 0 && (
                   <button
@@ -1270,7 +1270,7 @@ export default function PaginaCitacion() {
                     {modoLectura === 'clara'
                       ? 'Frases directas en voz activa, sin tecnicismos.'
                       : modoLectura === 'facil'
-                        ? 'Pautas UNE 153101: frases cortas y vocabulario cotidiano.'
+                        ? 'Pautas de lectura fácil (sin validar por personas lectoras): frases cortas y vocabulario cotidiano.'
                         : 'Una sola acción concreta en cada tarjeta.'}
                   </p>
                 </div>
