@@ -14,7 +14,7 @@ import os
 import re
 from dotenv import load_dotenv
 
-from .llm import procesar_citacion, analizar_pregunta
+from .llm import procesar_citacion, analizar_pregunta, responder_ayuda
 from .arasaac import obtener_pictogramas
 from .calendario import generar_ics
 from .documentos import extraer_texto_documento
@@ -273,6 +273,36 @@ async def voz_interpretar(input_data: VozInput):
     TODO(Gemini): sustituir el cuerpo por LLM manteniendo el mismo JSON.
     """
     return interpretar_peticion(input_data.texto)
+
+
+class AyudaInput(BaseModel):
+    pregunta: str
+
+    @field_validator("pregunta")
+    @classmethod
+    def validar_pregunta_ayuda(cls, v: str) -> str:
+        limpio = (v or "").strip()
+        if len(limpio) < 2:
+            raise ValueError("Escribe o dicta tu duda (al menos 2 caracteres).")
+        if len(limpio) > 800:
+            raise ValueError("La pregunta es demasiado larga. Acórtala un poco.")
+        return limpio
+
+
+class AyudaResponse(BaseModel):
+    respuesta: str
+    fuente: str  # "gemini" | "mock"
+
+
+@app.post("/api/ayuda/preguntar", response_model=AyudaResponse)
+async def ayuda_preguntar(input_data: AyudaInput):
+    """
+    Chat de dudas sobre citación, Pasaporte, Ensaya, Sala Previa, modo con voz.
+    Gemini si hay GEMINI_API_KEY; si no, respuestas mock calmadas.
+    Nunca diagnóstico médico ni datos sensibles de salud.
+    """
+    resultado = await responder_ayuda(input_data.pregunta)
+    return AyudaResponse(**resultado)
 
 
 @app.post("/api/tts")

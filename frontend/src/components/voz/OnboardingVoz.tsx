@@ -15,9 +15,10 @@ import {
 } from '@/lib/voz/reconocimiento'
 import { useEscuchaVoz } from '@/hooks/useEscuchaVoz'
 import { useModoVoz } from '@/hooks/useModoVoz'
+import { EVENTO_TUTORIAL, tutorialVisto } from '@/lib/tutorial'
 
 /**
- * Primera visita: explica PUENTE y la frase para activar el Modo con voz.
+ * Tras el tutorial general: explica la frase para activar el Modo con voz.
  * Nada más abrir: pide permiso de micrófono de forma clara.
  * No atrapa el foco: «Ahora no» / «Ya lo activé» cierran el panel.
  */
@@ -36,9 +37,19 @@ export function OnboardingVoz() {
 
   useEffect(() => {
     if (!listo) return
-    if (onboardingPendiente && !activo) {
-      setAbierto(true)
+    const sync = () => {
+      // Tutorial general primero; no duplicar overlays.
+      if (!tutorialVisto()) {
+        setAbierto(false)
+        return
+      }
+      if (onboardingPendiente && !activo) {
+        setAbierto(true)
+      }
     }
+    sync()
+    window.addEventListener(EVENTO_TUTORIAL, sync)
+    return () => window.removeEventListener(EVENTO_TUTORIAL, sync)
   }, [listo, onboardingPendiente, activo])
 
   /** Primera carga del panel: pedir micrófono con mensaje calmado. */

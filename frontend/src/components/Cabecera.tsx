@@ -12,6 +12,7 @@ const ENLACES = [
   { href: '/pasaporte', etiqueta: 'Pasaporte' },
   { href: '/ensaya', etiqueta: 'Ensaya' },
   { href: '/sala-previa', etiqueta: 'Sala' },
+  { href: '/ayuda', etiqueta: 'Ayuda' },
 ] as const
 
 function estaActivo(pathname: string, href: string) {

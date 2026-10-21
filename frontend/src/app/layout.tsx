@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Cabecera } from '@/components/Cabecera'
 import { Pie } from '@/components/Pie'
+import { TutorialInicio } from '@/components/TutorialInicio'
 import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default function RootLayout({
         >
           Ir al contenido principal
         </a>
+        <TutorialInicio />
         <OnboardingVoz />
         <Cabecera />
         <div className="flex-1">{children}</div>

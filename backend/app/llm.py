@@ -562,3 +562,153 @@ async def _llamar_anthropic(texto: str, perfil: Optional[str]) -> dict:
             return resultado
     except Exception:
         return adaptar_documento_personalizado(texto)
+
+
+# ── Chat de ayuda (dudas sobre PUENTE / proceso) ─────────────────────────────
+# Nunca diagnóstico médico. Sin datos sensibles de salud. Lectura fácil, tuteo.
+
+SYSTEM_PROMPT_AYUDA = """Eres PUENTE, una guía calmada de accesibilidad cognitiva en la justicia española.
+Ayudas a personas neurodivergentes (y a quien lo necesite) a entender citaciones, el juzgado,
+el Pasaporte de ajustes, Ensaya y la Sala Previa.
+
+Reglas OBLIGATORIAS:
+- Español de España, tuteo, lectura fácil: frases cortas, una idea por frase.
+- NUNCA des diagnóstico médico ni preguntes por enfermedades, tratamientos o datos de salud.
+- NUNCA pidas DNI, número de expediente real, ni datos personales sensibles.
+- Si preguntan por salud o discapacidad clínica, di con calma que no eres médica y que pueden
+  pedir apoyos en el Pasaporte sin escribir ningún diagnóstico.
+- Habla solo de PUENTE y del proceso judicial accesible (citación, plazos, pasaporte, ensaya, sala previa, modo con voz).
+- Si no sabes algo concreto del caso, dilo y sugiere ir a «Mi citación» o hablar con su abogado/a.
+- Responde en texto plano (sin JSON, sin markdown denso). Máximo 8 frases cortas.
+"""
+
+
+RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
+    (
+        re.compile(r"citaci[oó]n|carta|documento|fecha|hora|plazos?", re.I),
+        "En «Mi citación» puedes pegar el texto de la carta del juzgado. "
+        "Te la explicamos con frases cortas: qué día, a qué hora y dónde. "
+        "También puedes pedir que te la lean en voz alta. "
+        "Si quieres, ve a Citación en el menú de arriba.",
+    ),
+    (
+        re.compile(r"pasaporte|ajustes?|adaptaciones?", re.I),
+        "El Pasaporte es una lista de lo que te ayuda en el juzgado. "
+        "Tú eliges los apoyos. No hace falta escribir ningún diagnóstico. "
+        "Puedes generar un código QR para enseñarlo. "
+        "Entra en Pasaporte desde el menú.",
+    ),
+    (
+        re.compile(r"ensaya|declaraci[oó]n|preguntas?|testigo", re.I),
+        "En Ensaya practicas preguntas antes del día. "
+        "Puedes parar cuando quieras. "
+        "Hay pictogramas y ayuda si una pregunta te confunde. "
+        "Entra en Ensaya desde el menú.",
+    ),
+    (
+        re.compile(r"sala\s*previa|ruido|luz|juzgado|sala\s*3d|estimul", re.I),
+        "La Sala Previa te deja probar el ambiente del juzgado a tu ritmo: "
+        "ruido, luz y gente. "
+        "Puedes bajar estímulos y usar el botón de calma. "
+        "Entra en Sala desde el menú.",
+    ),
+    (
+        re.compile(r"voz|micr[oó]fono|hablar|escuchar|audio|leer", re.I),
+        "Puedes activar el «modo con voz» para que PUENTE te lea y te escuche. "
+        "Di «quiero activar el modo con voz» o usa el botón de la cabecera. "
+        "En esta página de Ayuda también puedes dictar tu pregunta con el micrófono.",
+    ),
+    (
+        re.compile(r"medic[oa]|diagn[oó]stico|enfermedad|trastorno|salud|tdah|autismo|ciego", re.I),
+        "No soy médica y no hago diagnósticos. "
+        "En PUENTE no hace falta decir tu diagnóstico. "
+        "Puedes marcar «Necesito más apoyos de voz y lectura» en el Pasaporte "
+        "y elegir los ajustes que te ayudan. "
+        "Si tienes dudas de salud, habla con tu profesional de confianza.",
+    ),
+]
+
+
+def _respuesta_mock_ayuda(pregunta: str) -> str:
+    limpia = re.sub(r"\s+", " ", (pregunta or "").strip())
+    if len(limpia) < 2:
+        return (
+            "Escribe o dicta tu duda. "
+            "Puedo ayudarte con la citación, el Pasaporte, Ensaya o la Sala Previa."
+        )
+    for patron, texto in RESPUESTAS_MOCK_AYUDA:
+        if patron.search(limpia):
+            return texto
+    return (
+        "PUENTE te ayuda a entender el juzgado con frases cortas. "
+        "Puedes ir a Citación (explicar la carta), Pasaporte (pedir apoyos), "
+        "Ensaya (practicar) o Sala Previa (probar el ambiente). "
+        "Si quieres, reformula tu duda con otras palabras. "
+        "No pido datos de salud ni hago diagnósticos."
+    )
+
+
+def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
+    """Gemini en texto plano (chat de ayuda). Misma clave que el resto del LLM."""
+    from google import genai
+    from google.genai import types
+
+    api_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+    if not api_key or len(api_key) < 20:
+        raise ValueError("GEMINI_API_KEY no válida")
+
+    modelos = list(
+        dict.fromkeys(
+            [
+                os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
+                "gemini-3.7-flash",
+                "gemini-3.6-flash",
+                "gemini-3.5-flash",
+            ]
+        )
+    )
+    client = genai.Client(api_key=api_key)
+    ultimo_error: Optional[Exception] = None
+    for modelo in modelos:
+        try:
+            response = client.models.generate_content(
+                model=modelo,
+                contents=user_content,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    temperature=0.4,
+                    max_output_tokens=512,
+                ),
+            )
+            texto = (response.text or "").strip()
+            if texto:
+                return texto
+        except Exception as e:
+            ultimo_error = e
+            continue
+    raise ultimo_error or RuntimeError("No se pudo conectar con Gemini")
+
+
+async def responder_ayuda(pregunta: str) -> dict:
+    """
+    Responde dudas sobre PUENTE / proceso judicial.
+    Usa Gemini si hay GEMINI_API_KEY (o LLM_PROVIDER=gemini); si no, mock calmado.
+    """
+    limpia = re.sub(r"\s+", " ", (pregunta or "").strip())[:800]
+    provider = os.getenv("LLM_PROVIDER", "mock").lower()
+    gemini_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+    fuente = "mock"
+
+    if provider == "gemini" or (provider in ("mock", "") and len(gemini_key) >= 20):
+        try:
+            texto = await asyncio.to_thread(
+                _llamar_gemini_texto_sync,
+                SYSTEM_PROMPT_AYUDA,
+                f"Pregunta de la persona (responde en lectura fácil, tuteo):\n{limpia}",
+            )
+            fuente = "gemini"
+            return {"respuesta": texto, "fuente": fuente}
+        except Exception:
+            pass
+
+    return {"respuesta": _respuesta_mock_ayuda(limpia), "fuente": "mock"}

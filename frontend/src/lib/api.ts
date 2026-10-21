@@ -161,6 +161,30 @@ export async function obtenerRoles(): Promise<Rol[]> {
   return response.json()
 }
 
+export interface AyudaRespuesta {
+  respuesta: string
+  fuente: 'gemini' | 'mock' | string
+}
+
+export async function preguntarAyudaAPI(pregunta: string): Promise<AyudaRespuesta> {
+  const response = await fetch(`${API_URL}/api/ayuda/preguntar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pregunta }),
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null)
+    throw new Error(
+      typeof errorData?.detail === 'string'
+        ? errorData.detail
+        : 'No se pudo obtener la respuesta de ayuda.'
+    )
+  }
+
+  return response.json()
+}
+
 export function descargarICS(plazos: Plazo[], titulo: string) {
   const params = new URLSearchParams({ titulo })
 

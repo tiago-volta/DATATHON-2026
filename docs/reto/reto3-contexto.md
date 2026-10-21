@@ -65,7 +65,7 @@ Persona cuyo funcionamiento del cerebro difiere de lo neurotípico. No es mejor 
 ## 5. Competencias digitales sugeridas (ideas del enunciado)
 
 - UX/UI, gamificación / simuladores, RV, IA, prototipado.
-- Integración con organismos para reconocimientos de discapacidad o *flag* de identificación (con cuidado de privacidad).
+- Integración con organismos para reconocimientos de discapacidad o *flag* de identificación (con cuidado de privacidad). **Estado en PUENTE:** [PENDIENTE / stub] — sin APIs de IMSERSO; flag local opcional `necesitoApoyos` («Necesito más apoyos de voz y lectura») en preferencias/Pasaporte, sin etiqueta estigmatizante.
 - Adaptación de notificaciones, horarios y plazos.
 - Colegios profesionales específicos (p. ej. intérpretes).
 - IA como mediadores; **suma de varias IAs** (lectura fácil, lectura clara…).

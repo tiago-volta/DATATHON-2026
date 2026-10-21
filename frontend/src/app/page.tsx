@@ -1,5 +1,12 @@
 import Link from 'next/link'
-import { Building2, FileText, IdCard, MessagesSquare, type LucideIcon } from 'lucide-react'
+import {
+  Building2,
+  CircleHelp,
+  FileText,
+  IdCard,
+  MessagesSquare,
+  type LucideIcon,
+} from 'lucide-react'
 
 function IconoInicio({ icono: Dibujo }: { icono: LucideIcon }) {
   return (
@@ -38,6 +45,16 @@ export default function Inicio() {
           </div>
           <span className="btn-primary w-full sm:w-auto">Empezar con mi citación</span>
         </Link>
+
+        <p className="mb-10">
+          <Link
+            href="/ayuda"
+            className="inline-flex items-center gap-3 min-h-[44px] text-puente-900 font-bold underline decoration-puente-400 underline-offset-4 hover:decoration-puente-900"
+          >
+            <IconoInicio icono={CircleHelp} />
+            Preguntar a PUENTE
+          </Link>
+        </p>
 
         <section className="mb-14">
           <h2 className="text-2xl text-puente-900 mb-2">También puedes preparar el día</h2>

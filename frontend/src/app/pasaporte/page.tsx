@@ -18,6 +18,10 @@ import {
   validarNombre,
   validarTelefono,
 } from '@/lib/pasaporte'
+import {
+  guardarPreferencias,
+  leerPreferencias,
+} from '@/lib/preferencias'
 
 interface PasaporteData {
   nombre: string
@@ -39,6 +43,8 @@ export default function PaginaPasaporte() {
   const [pasaporteId, setPasaporteId] = useState('')
   const [qrUrl, setQrUrl] = useState('')
   const [copiado, setCopiado] = useState(false)
+  /** Apoyo local opcional (no va al QR). Ver preferencias.ts — integración organismos [PENDIENTE]. */
+  const [necesitoApoyos, setNecesitoApoyos] = useState(false)
   const {
     conseguidas: insigniasUtiles,
     aviso: avisoInsignia,
@@ -51,6 +57,13 @@ export default function PaginaPasaporte() {
     let nombreGuardado = ''
     let contactoGuardado = ''
     let ajustesGuardados: string[] = []
+
+    try {
+      const prefs = leerPreferencias()
+      setNecesitoApoyos(prefs.necesitoApoyos)
+    } catch {
+      /* ignore */
+    }
 
     try {
       const rawLocal = localStorage.getItem('puente-pasaporte')
@@ -348,6 +361,45 @@ export default function PaginaPasaporte() {
                     </p>
                   )}
                 </div>
+
+                <fieldset className="border border-puente-200 rounded-suave p-4">
+                  <legend className="px-1 text-lg font-medium text-puente-800">
+                    Apoyos de voz y lectura
+                  </legend>
+                  <label
+                    htmlFor="necesito-apoyos"
+                    className="flex items-start gap-4 min-h-[44px] cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      id="necesito-apoyos"
+                      className="mt-1 h-5 w-5 shrink-0 accent-puente-700"
+                      checked={necesitoApoyos}
+                      onChange={(e) => {
+                        const valor = e.target.checked
+                        setNecesitoApoyos(valor)
+                        // Solo preferencia local; no viaja en el QR ni etiqueta discapacidad.
+                        guardarPreferencias({
+                          necesitoApoyos: valor,
+                          accesoPorVoz: valor,
+                        })
+                      }}
+                      aria-describedby="ayuda-necesito-apoyos"
+                    />
+                    <span>
+                      <span className="block font-bold text-puente-900">
+                        Necesito más apoyos de voz y lectura
+                      </span>
+                      <span
+                        id="ayuda-necesito-apoyos"
+                        className="block text-sm text-puente-700 mt-1"
+                      >
+                        Opcional. Se guarda solo en este dispositivo. No es un
+                        diagnóstico ni una etiqueta de discapacidad.
+                      </span>
+                    </span>
+                  </label>
+                </fieldset>
 
                 <button
                   type="submit"
