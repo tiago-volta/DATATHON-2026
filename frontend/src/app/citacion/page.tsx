@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ChangeEvent } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
 import { Pictograma } from '@/components/Pictograma'
@@ -68,7 +68,7 @@ const PIPELINE_POR_DEFECTO = [
   },
   {
     paso: 3,
-    nombre: 'Adaptación orientada a lectura fácil (sin validar) y discalculia',
+    nombre: 'Adaptación orientada a lectura fácil y discalculia',
     detalle: 'Divide en una idea por línea y convierte cifras y plazos en palabras comprensibles.',
   },
   {
@@ -76,6 +76,14 @@ const PIPELINE_POR_DEFECTO = [
     nombre: 'Síntesis multimodal (Pictogramas ARASAAC + Voz)',
     detalle: 'Enlaza conceptos visuales validados y prepara la lectura por voz.',
   },
+]
+
+const PASOS_PROCESAMIENTO = [
+  'Protegiendo datos personales en el dispositivo',
+  'Buscando fechas, juzgado y tu papel en el proceso',
+  'Pasando términos jurídicos a lenguaje claro',
+  'Preparando una versión de lectura fácil y cifras comprensibles',
+  'Organizando apoyos visuales y la lectura por voz',
 ]
 
 function construirRespaldoLocal(textoEntrada: string): CitacionProcesada {
@@ -689,6 +697,7 @@ export default function PaginaCitacion() {
   const [texto, setTexto] = useState('')
   const [nombreArchivo, setNombreArchivo] = useState('')
   const [modoLectura, setModoLectura] = useState<'clara' | 'facil' | 'simple'>('clara')
+  const [pasoExplicacion, setPasoExplicacion] = useState(0)
   const [mostrarOriginal, setMostrarOriginal] = useState(false)
   const [mostrarRoles, setMostrarRoles] = useState(false)
   const [resultado, setResultado] = useState<CitacionProcesada | null>(null)
@@ -697,6 +706,35 @@ export default function PaginaCitacion() {
   const [extrayendo, setExtrayendo] = useState(false)
   const [mensajeExitoArchivo, setMensajeExitoArchivo] = useState('')
   const [cargandoPrueba, setCargandoPrueba] = useState<string | null>(null)
+  const [progresoProcesamiento, setProgresoProcesamiento] = useState(0)
+  const [arrastrandoArchivo, setArrastrandoArchivo] = useState(false)
+
+  useEffect(() => {
+    if (paso !== 'resultado') return
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById('inicio-explicacion')?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [pasoExplicacion, paso])
+
+  useEffect(() => {
+    if (paso !== 'procesando') return
+
+    const inicio = window.performance.now()
+    let frame = 0
+    const actualizarProgreso = (ahora: number) => {
+      const segundos = (ahora - inicio) / 1000
+      const progreso = Math.max(6, Math.min(94, Math.round(94 * (1 - Math.exp(-segundos / 2.6)))))
+      setProgresoProcesamiento(progreso)
+      frame = window.requestAnimationFrame(actualizarProgreso)
+    }
+
+    frame = window.requestAnimationFrame(actualizarProgreso)
+    return () => window.cancelAnimationFrame(frame)
+  }, [paso])
 
   const cargarCitacionPrueba = async (archivo: string, etiqueta: string) => {
     setCargandoPrueba(archivo)
@@ -721,9 +759,7 @@ export default function PaginaCitacion() {
     }
   }
 
-  const manejarSubidaArchivo = async (e: ChangeEvent<HTMLInputElement>) => {
-    const archivo = e.target.files?.[0]
-    if (!archivo) return
+  const cargarArchivo = async (archivo: File) => {
     setNombreArchivo(archivo.name)
     setError('')
     setMensajeExitoArchivo('')
@@ -768,6 +804,11 @@ export default function PaginaCitacion() {
     }
   }
 
+  const manejarSubidaArchivo = (e: ChangeEvent<HTMLInputElement>) => {
+    const archivo = e.target.files?.[0]
+    if (archivo) void cargarArchivo(archivo)
+  }
+
   const procesarCitacion = async () => {
     const errorValidacion = validarTextoCitacion(texto)
     if (errorValidacion) {
@@ -776,7 +817,14 @@ export default function PaginaCitacion() {
     }
 
     setPaso('procesando')
+    setPasoExplicacion(0)
+    setProgresoProcesamiento(6)
     setError('')
+    const inicioProceso = window.performance.now()
+    const mantenerLectura = async () => {
+      const restante = 4500 - (window.performance.now() - inicioProceso)
+      if (restante > 0) await new Promise((resolver) => window.setTimeout(resolver, restante))
+    }
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
@@ -797,10 +845,12 @@ export default function PaginaCitacion() {
           ...data.datos_clave,
         },
       })
+      await mantenerLectura()
       setPaso('resultado')
     } catch {
       const respaldo = construirRespaldoLocal(texto)
       setResultado(respaldo)
+      await mantenerLectura()
       setPaso('resultado')
     }
   }
@@ -842,6 +892,12 @@ export default function PaginaCitacion() {
   const apoyoNumerico = resultado?.datos_clave.apoyo_numerico || []
   const quePasaSiNoVoy = resultado?.datos_clave.que_pasa_si_no_voy
   const pipelineIA = resultado?.datos_clave.pipeline_ia || PIPELINE_POR_DEFECTO
+  const pasosExplicacion = [
+    { titulo: 'Lo importante', descripcion: 'Fecha, lugar y tu papel' },
+    { titulo: 'Entender', descripcion: 'La carta en palabras claras' },
+    { titulo: 'Prepararte', descripcion: 'Plazos, ayudas y derechos' },
+    { titulo: 'Antes de ir', descripcion: 'La sala y los siguientes pasos' },
+  ]
 
   return (
     <>
@@ -870,14 +926,26 @@ export default function PaginaCitacion() {
               Lo transformamos a lenguaje claro, lectura fácil, cifras en palabras y voz.
             </p>
 
-            <div className="card mb-6 bg-calma-sage">
+            <div className="mb-8">
+              <p className="mb-3 text-lg font-medium text-court-700">Opción A</p>
               <label
                 htmlFor="archivo-judicial"
-                className="block font-bold text-court-800 mb-2"
+                onDragEnter={() => setArrastrandoArchivo(true)}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setArrastrandoArchivo(true)
+                }}
+                onDragLeave={() => setArrastrandoArchivo(false)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  setArrastrandoArchivo(false)
+                  const archivo = e.dataTransfer.files?.[0]
+                  if (archivo && !extrayendo) void cargarArchivo(archivo)
+                }}
+                className={`block cursor-pointer rounded-suave border-[3px] border-dashed border-[#128a3e] px-4 py-8 text-center text-base text-court-700 transition-colors ${
+                  arrastrandoArchivo ? 'bg-calma-sage text-court-900' : 'hover:bg-calma-sage'
+                } ${extrayendo ? 'cursor-wait opacity-60' : ''}`}
               >
-                Opción A: Subir documento del juzgado (.pdf, .docx, .txt)
-              </label>
-              <div className="flex flex-wrap items-center gap-3">
                 <input
                   id="archivo-judicial"
                   type="file"
@@ -885,33 +953,21 @@ export default function PaginaCitacion() {
                   onChange={manejarSubidaArchivo}
                   disabled={extrayendo}
                   aria-describedby="ayuda-archivo"
-                  className="text-sm text-court-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-court-600 file:text-white hover:file:bg-court-700 disabled:opacity-50"
+                  className="sr-only"
                 />
-                {extrayendo && (
-                  <span className="text-sm font-semibold text-court-800 flex items-center gap-2" aria-live="polite">
-                    <span className="inline-block animate-spin" aria-hidden="true">⏳</span>
-                    Extrayendo texto del PDF...
-                  </span>
-                )}
-                {nombreArchivo && !extrayendo && (
-                  <span className="text-sm font-medium text-court-700" aria-live="polite">
-                    Archivo: {nombreArchivo}
-                  </span>
-                )}
-              </div>
-              {mensajeExitoArchivo && (
-                <p className="text-sm font-medium text-green-800 bg-green-50 p-2.5 rounded-lg border border-green-200 mt-3" role="status">
-                  ✓ {mensajeExitoArchivo}
+                <span className="block text-base">Arrastra el documento o pulsa para elegirlo</span>
+                <span id="ayuda-archivo" className="mt-1 block text-sm text-court-600">PDF, Word o texto</span>
+              </label>
+              {(extrayendo || nombreArchivo || mensajeExitoArchivo) && (
+                <p className="mt-2 text-sm text-court-700" role="status">
+                  {extrayendo ? 'Extrayendo texto…' : mensajeExitoArchivo || nombreArchivo}
                 </p>
               )}
-              <p id="ayuda-archivo" className="text-xs text-court-600 mt-2">
-                Admite documentos oficiales en PDF y Word. Tus datos personales (nombre, DNI, dirección) se detectan y anonimizan en local antes de cualquier llamada a la IA (RGPD art. 25).
-              </p>
             </div>
 
             <div className="space-y-4">
               <label htmlFor="citacion" className="block text-lg font-medium text-court-700">
-                Opción B: Pega aquí el texto de tu citación o sentencia
+                Opción B
               </label>
               <textarea
                 id="citacion"
@@ -921,15 +977,12 @@ export default function PaginaCitacion() {
                   if (error) setError('')
                 }}
                 maxLength={8000}
-                className="textarea-accesible"
+                className="textarea-accesible !text-base !font-normal !text-court-700 placeholder:!text-court-700"
                 placeholder="Pega aquí el texto de tu citación o sentencia judicial…"
                 rows={9}
                 aria-invalid={Boolean(error)}
-                aria-describedby={error ? 'ayuda-citacion error-citacion' : 'ayuda-citacion'}
+                aria-describedby={error ? 'error-citacion' : undefined}
               />
-              <p id="ayuda-citacion" className="text-sm text-court-700">
-                Prueba con citaciones basadas en modelos públicos (COET, Aula Judicial León, estilo Ministerio de Justicia) o con los ejemplos cortos:
-              </p>
 
               {error && (
                 <p id="error-citacion" className="text-red-700 font-medium" role="alert">
@@ -983,19 +1036,53 @@ export default function PaginaCitacion() {
         )}
 
         {paso === 'procesando' && (
-          <section className="text-center py-16" aria-live="polite">
+          <section className="py-16" aria-labelledby="titulo-procesando">
             <div className="card max-w-lg mx-auto">
-              <p className="text-xl font-bold text-court-800 mb-3">
-                Adaptando tu documento paso a paso...
+              <p className="text-sm font-bold text-accent-navy mb-2">Preparando tu explicación</p>
+              <h1 id="titulo-procesando" className="text-2xl font-bold text-court-900">
+                Estamos leyendo tu documento
+              </h1>
+              <p className="mt-2 text-court-700">
+                Esto puede tardar unos segundos.
               </p>
-              <ol className="text-left text-sm text-court-700 space-y-2">
-                <li className="font-semibold text-emerald-900">
-                  ✓ 0. Anonimizando datos personales en local (DNI, nombres, domicilios) según RGPD art. 25
-                </li>
-                <li>1. Extrayendo fechas, juzgado y rol procesal</li>
-                <li>2. Traduciendo términos jurídicos a lenguaje claro (ISO 24495-1)</li>
-                <li>3. Creando versión orientada a lectura fácil y cifras en palabras</li>
-                <li>4. Buscando pictogramas ARASAAC y preparando lectura por voz</li>
+
+              <div className="mt-7">
+                <p className="text-right text-sm font-bold text-court-700 numeros" aria-hidden="true">
+                  {progresoProcesamiento}%
+                </p>
+                <p className="sr-only" aria-live="polite">
+                  {PASOS_PROCESAMIENTO[Math.min(4, Math.floor(progresoProcesamiento / 20))]}
+                </p>
+                <div
+                  className="barra-progreso mt-3"
+                  role="progressbar"
+                  aria-label="Progreso de la adaptación del documento"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={progresoProcesamiento}
+                >
+                  <span style={{ transform: `scaleX(${progresoProcesamiento / 100})` }} />
+                </div>
+              </div>
+
+              <ol className="mt-7 space-y-3 text-left">
+                {PASOS_PROCESAMIENTO.map((mensaje, indice) => {
+                  const activo = indice === Math.min(4, Math.floor(progresoProcesamiento / 20))
+                  const completado = indice < Math.floor(progresoProcesamiento / 20)
+                  return (
+                    <li
+                      key={mensaje}
+                      className={`flex gap-3 text-sm transition-colors ${
+                        activo ? 'font-bold text-court-900' : completado ? 'text-accent-success' : 'text-court-600'
+                      }`}
+                    >
+                      <span aria-hidden="true" className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-calma-sage text-xs">
+                        {completado ? '✓' : indice + 1}
+                      </span>
+                      <span>{mensaje}</span>
+                    </li>
+                  )
+                })}
               </ol>
             </div>
           </section>
@@ -1003,211 +1090,132 @@ export default function PaginaCitacion() {
 
         {paso === 'resultado' && resultado && (
           <section>
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-              <div>
-                <span className="etiqueta-info mb-2">
-                  {esSentencia ? 'Sentencia judicial explicada' : 'Citación judicial explicada'}
-                </span>
-                <h1 className="titulo-pagina mb-0">
-                  {esSentencia ? 'La decisión del juez en palabras claras' : 'Tu citación explicada'}
-                </h1>
-              </div>
-            </div>
+            <header id="inicio-explicacion" className="mb-6 scroll-mt-8">
+              {esSentencia && <p className="text-sm font-bold text-accent-navy mb-2">Sentencia judicial explicada</p>}
+              <h1 className="titulo-pagina mb-3">
+                {esSentencia ? 'La decisión del juez, explicada' : 'Primero, esto es lo que importa'}
+              </h1>
+              <p className="text-xl text-court-700 max-w-3xl">
+                Separamos lo que aparece en tu documento de las ayudas para entenderlo y prepararte.
+              </p>
+            </header>
 
-            {/* Privacidad verificada RGPD art. 25 */}
-            {resultado.datos_clave.privacidad_rgpd && (
-              <aside
-                aria-label="Verificación de privacidad y protección de datos"
-                className="card mb-6 border-l-4 border-l-emerald-600 bg-emerald-50/70 p-4 rounded-xl"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl select-none" aria-hidden="true">🛡️</span>
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h2 className="font-bold text-emerald-950 text-base">
-                        Privacidad verificada (RGPD art. 25 — Privacidad desde el diseño)
-                      </h2>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
-                        {resultado.datos_clave.privacidad_rgpd.total_protegidos > 0
-                          ? `${resultado.datos_clave.privacidad_rgpd.total_protegidos} datos personales protegidos`
-                          : 'Sin datos personales detectados'}
+            <aside className="mb-5 rounded-suave bg-court-100 px-3 py-2 text-sm leading-5 text-court-600" role="note">
+              Comprueba fecha, hora y lugar en el documento oficial. Esta ayuda no sustituye la notificación ni el asesoramiento jurídico.
+            </aside>
+
+            <nav aria-label="Pasos de la explicación" className="mb-8">
+              <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {pasosExplicacion.map((pasoItem, indice) => (
+                  <li key={pasoItem.titulo}>
+                    <button
+                      type="button"
+                      onClick={() => setPasoExplicacion(indice)}
+                      aria-current={pasoExplicacion === indice ? 'step' : undefined}
+                      className={`explicacion-etapa w-full rounded-suave p-3 text-left ${
+                        pasoExplicacion === indice
+                          ? 'bg-accent-info text-white'
+                          : indice < pasoExplicacion
+                            ? 'bg-calma-sage text-court-800'
+                            : 'bg-court-100 text-court-600 hover:bg-calma-mist'
+                      }`}
+                    >
+                      <span className="block text-sm font-bold">{indice + 1}. {pasoItem.titulo}</span>
+                      <span className={`mt-1 block text-xs ${pasoExplicacion === indice ? 'text-white/90' : 'text-court-600'}`}>
+                        {pasoItem.descripcion}
                       </span>
-                    </div>
-                    <p className="text-sm text-emerald-900 mt-1">
-                      {resultado.datos_clave.privacidad_rgpd.garantia} Ningún nombre, DNI o domicilio real fue transmitido al modelo de IA externo.
-                    </p>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <p className="sr-only" aria-live="polite">
+                Paso {pasoExplicacion + 1} de {pasosExplicacion.length}: {pasosExplicacion[pasoExplicacion].titulo}
+              </p>
+            </nav>
 
-                    {resultado.datos_clave.privacidad_rgpd.elementos_protegidos.length > 0 && (
-                      <details className="mt-3">
-                        <summary className="text-xs font-semibold text-emerald-800 cursor-pointer hover:underline focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded">
-                          Ver elementos personales anonimizados en este documento ({resultado.datos_clave.privacidad_rgpd.elementos_protegidos.length})
-                        </summary>
-                        <ul className="mt-2 space-y-1.5 text-xs text-emerald-900 bg-white/80 p-3 rounded-lg border border-emerald-200">
-                          {resultado.datos_clave.privacidad_rgpd.elementos_protegidos.map((elem, idx) => (
-                            <li key={idx} className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-emerald-950">{elem.tipo}:</span>
-                              <code className="bg-emerald-100/90 px-1.5 py-0.5 rounded text-emerald-900 font-mono text-[11px]">
-                                {elem.valor_protegido}
-                              </code>
-                              <span className="text-emerald-700 text-[11px]">(enviado a la IA como {elem.marcador})</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </details>
-                    )}
-                  </div>
-                </div>
-              </aside>
-            )}
-
-            {/* Aviso legal informativo */}
-            <div className="card mb-6 border-l-4 border-l-amber-600 bg-amber-50/80 p-4 rounded-xl text-court-800" role="note">
-              <div className="flex items-start gap-3">
-                <span className="text-xl select-none" aria-hidden="true">⚖️</span>
-                <div className="flex-1 text-sm space-y-1">
-                  <p className="font-bold text-amber-950">Aviso informativo sobre este documento</p>
-                  <p>
-                    Esta adaptación en lenguaje claro y lectura fácil te ayuda a comprender la citación o resolución. <strong>No sustituye a la notificación oficial ni al asesoramiento de un abogado.</strong> Si observas discrepancias o dudas, prevalece siempre el documento oficial emitido por el juzgado.
+            {pasoExplicacion === 0 && (
+            <section id="datos-encontrados" aria-labelledby="titulo-datos-encontrados" className="explicacion-panel card-destacada mb-8">
+              <div className="flex flex-wrap justify-between items-start gap-3 mb-5">
+                <div>
+                  <p className="text-sm font-bold text-accent-navy mb-1">Extraído del documento</p>
+                  <h2 id="titulo-datos-encontrados" className="text-2xl font-bold text-court-900">
+                    Datos encontrados en tu carta
+                  </h2>
+                  <p className="text-court-700 mt-1">
+                    Comprueba estos datos con el documento oficial antes de organizarte.
                   </p>
-                  {texto && (
-                    <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setMostrarOriginal(!mostrarOriginal)}
-                        className="text-xs font-semibold text-amber-900 underline hover:text-amber-950 inline-flex items-center gap-1"
-                      >
-                        {mostrarOriginal ? 'Ocultar documento original' : 'Ver texto del documento original'}
-                      </button>
-                      {mostrarOriginal && (
-                        <pre className="mt-2 p-3 bg-white/90 border border-amber-200 rounded-lg text-xs font-mono text-court-800 whitespace-pre-wrap max-h-60 overflow-y-auto">
-                          {texto}
-                        </pre>
-                      )}
-                    </div>
-                  )}
                 </div>
+                {texto && (
+                  <button
+                    type="button"
+                    onClick={() => setMostrarOriginal(!mostrarOriginal)}
+                    aria-expanded={mostrarOriginal}
+                    aria-controls="documento-original"
+                    className="btn-ghost text-sm !min-h-[44px] !px-3 !py-2"
+                  >
+                    {mostrarOriginal ? 'Ocultar documento original' : 'Ver documento original'}
+                  </button>
+                )}
               </div>
-            </div>
 
-            {/* Métrica científica de legibilidad objetiva (Fernández-Huerta) */}
-            {resultado.metricas_legibilidad && (
-              <aside
-                aria-label="Medición científica de legibilidad y accesibilidad cognitiva"
-                className="card mb-6 border-l-4 border-l-blue-600 bg-blue-50/70 p-4 rounded-xl"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl select-none" aria-hidden="true">📊</span>
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h2 className="font-bold text-blue-950 text-base">
-                        Métricas de legibilidad objetiva (Fórmula Fernández-Huerta)
-                      </h2>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-900 border border-blue-300">
-                        +{resultado.metricas_legibilidad.incremento_puntos} pts de legibilidad
-                      </span>
-                    </div>
+              {mostrarOriginal && (
+                <pre
+                  id="documento-original"
+                  tabIndex={0}
+                  aria-label="Documento original. Puedes recorrer el texto con las teclas de dirección."
+                  className="mb-5 max-h-60 overflow-y-auto rounded-suave bg-calma-mist p-4 text-sm text-court-800 whitespace-pre-wrap"
+                >
+                  {texto}
+                </pre>
+              )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                      <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200">
-                        <span className="text-xs font-semibold text-court-700 block mb-0.5">
-                          Documento original del juzgado:
-                        </span>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-court-900 font-mono">
-                            {resultado.metricas_legibilidad.original.score}/100
-                          </span>
-                          <span className="text-xs text-court-600">
-                            ({resultado.metricas_legibilidad.original.nivel})
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-court-500 block mt-1">
-                          Media: {resultado.metricas_legibilidad.original.palabras_por_frase} palabras por frase
-                        </span>
-                      </div>
-
-                      <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200">
-                        <span className="text-xs font-semibold text-emerald-800 block mb-0.5">
-                          Versión adaptada por InclusiveCourt:
-                        </span>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-emerald-900 font-mono">
-                            {resultado.metricas_legibilidad.adaptado.score}/100
-                          </span>
-                          <span className="text-xs text-emerald-700">
-                            ({resultado.metricas_legibilidad.adaptado.nivel})
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-emerald-600 block mt-1">
-                          Media: {resultado.metricas_legibilidad.adaptado.palabras_por_frase} palabras por frase (Orientada a pautas UNE 153101 - no validada por personas lectoras)
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-blue-900 mt-2 font-medium">
-                      ✓ {resultado.metricas_legibilidad.resumen_impacto}
-                    </p>
-                  </div>
-                </div>
-              </aside>
-            )}
-
-            {/* Datos clave con iconos (C03) */}
-            <div className="card-destacada mb-8">
-              <h2 className="text-xl font-bold text-court-800 mb-4">
-                Lo más importante de un vistazo
-              </h2>
-              <dl className="grid gap-4 sm:grid-cols-2">
-                <div className="bg-calma-sage rounded-lg p-4">
-                  <dt className="text-sm text-court-600 mb-1 flex items-center gap-2">
-                    <Icono nombre="👤" className="h-4 w-4" /> Tu situación o rol
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-suave bg-calma-sage p-4">
+                  <dt className="text-sm font-bold text-court-700 flex items-center gap-2">
+                    <Icono nombre="👤" className="h-5 w-5 text-accent-navy" /> Tu papel
                   </dt>
-                  <dd className="text-xl font-bold text-court-800 capitalize">
-                    {resultado.datos_clave.rol}
+                  <dd className="mt-2 text-xl font-bold text-court-900 capitalize">{resultado.datos_clave.rol}</dd>
+                </div>
+                <div className="rounded-suave bg-calma-sage p-4">
+                  <dt className="text-sm font-bold text-court-700 flex items-center gap-2">
+                    <Icono nombre="📅" className="h-5 w-5 text-accent-navy" /> Fecha y hora
+                  </dt>
+                  <dd className="mt-2 text-xl font-bold text-court-900">
+                    {resultado.datos_clave.fecha}{resultado.datos_clave.hora ? ` · ${resultado.datos_clave.hora}` : ''}
                   </dd>
                 </div>
-                <div className="bg-calma-sage rounded-lg p-4">
-                  <dt className="text-sm text-court-600 mb-1 flex items-center gap-2">
-                    <Icono nombre="📅" className="h-4 w-4" /> Fecha y hora
+                <div className="rounded-suave bg-calma-sage p-4 sm:col-span-2">
+                  <dt className="text-sm font-bold text-court-700 flex items-center gap-2">
+                    <Icono nombre="📍" className="h-5 w-5 text-accent-navy" /> Dónde tienes que ir
                   </dt>
-                  <dd className="text-xl font-bold text-court-800">
-                    {resultado.datos_clave.fecha}
-                    {resultado.datos_clave.hora ? ` · ${resultado.datos_clave.hora}` : ''}
-                  </dd>
-                </div>
-                <div className="bg-calma-sage rounded-lg p-4 sm:col-span-2">
-                  <dt className="text-sm text-court-600 mb-1 flex items-center gap-2">
-                    <Icono nombre="📍" className="h-4 w-4" /> Juzgado
-                  </dt>
-                  <dd className="text-lg font-bold text-court-800">
-                    {resultado.datos_clave.lugar}
-                  </dd>
+                  <dd className="mt-2 text-lg font-bold text-court-900">{resultado.datos_clave.lugar}</dd>
                 </div>
               </dl>
 
-              {resultado.datos_clave.que_llevar && resultado.datos_clave.que_llevar.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-court-200">
-                  <h3 className="font-bold text-court-800 mb-2">Qué tienes que hacer o llevar</h3>
-                  <ul className="list-disc pl-5 text-court-700 space-y-1">
-                    {resultado.datos_clave.que_llevar.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {resultado.datos_clave.derechos && resultado.datos_clave.derechos.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-court-200">
-                  <h3 className="font-bold text-court-800 mb-2">Tus derechos</h3>
-                  <ul className="list-disc pl-5 text-court-700 space-y-1">
-                    {resultado.datos_clave.derechos.map((derecho) => (
-                      <li key={derecho}>{derecho}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+              <div className="grid gap-5 mt-5 pt-5 border-t-2 border-court-200 md:grid-cols-2">
+                {resultado.datos_clave.que_llevar && resultado.datos_clave.que_llevar.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-bold text-court-900 mb-2">Qué hacer o llevar</h3>
+                    <ul className="space-y-2 text-court-700">
+                      {resultado.datos_clave.que_llevar.map((item) => <li key={item} className="flex gap-2"><Icono nombre="✓" className="mt-1 h-4 w-4 text-accent-success" />{item}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {resultado.datos_clave.derechos && resultado.datos_clave.derechos.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-bold text-court-900 mb-2">Tus derechos</h3>
+                    <ul className="space-y-2 text-court-700">
+                      {resultado.datos_clave.derechos.map((derecho) => <li key={derecho} className="flex gap-2"><Icono nombre="✓" className="mt-1 h-4 w-4 text-accent-success" />{derecho}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </section>
+            )}
 
             {/* Selector de nivel de lectura (C06) */}
+            {pasoExplicacion === 1 && (
+            <section id="explicacion-adaptada" aria-labelledby="titulo-explicacion-adaptada" className="explicacion-panel mb-6">
             <div className="mb-4">
               <p className="text-sm font-medium text-court-700 mb-2">
                 Elige cómo prefieres leer la explicación:
@@ -1227,7 +1235,7 @@ export default function PaginaCitacion() {
                   className={`btn ${modoLectura === 'facil' ? 'btn-primary' : 'btn-secondary'}`}
                   aria-pressed={modoLectura === 'facil'}
                 >
-                  Lectura fácil orientada (sin validar)
+                  Lectura fácil orientada
                 </button>
                 {pasosSimples.length > 0 && (
                   <button
@@ -1245,7 +1253,7 @@ export default function PaginaCitacion() {
             <div className="card mb-6" aria-live="polite">
               <div className="flex flex-wrap justify-between items-start gap-3 mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-court-800">
+                  <h2 id="titulo-explicacion-adaptada" className="text-xl font-bold text-court-800">
                     {modoLectura === 'clara'
                       ? 'En lenguaje claro (ISO 24495-1)'
                       : modoLectura === 'facil'
@@ -1256,7 +1264,7 @@ export default function PaginaCitacion() {
                     {modoLectura === 'clara'
                       ? 'Frases directas en voz activa, sin tecnicismos.'
                       : modoLectura === 'facil'
-                        ? 'Pautas de lectura fácil (sin validar por personas lectoras): frases cortas y vocabulario cotidiano.'
+                        ? 'Pautas de lectura fácil: frases cortas y vocabulario cotidiano.'
                         : 'Una sola acción concreta en cada tarjeta.'}
                   </p>
                 </div>
@@ -1279,8 +1287,13 @@ export default function PaginaCitacion() {
                 </div>
               )}
             </div>
+            </section>
+            )}
 
             {/* Bloque de Apoyo para Discalculia (C04 + Reto 3) */}
+            {pasoExplicacion === 2 && (
+            <section id="ayudas-preparacion" aria-labelledby="titulo-ayudas-preparacion" className="explicacion-panel">
+            <h2 id="titulo-ayudas-preparacion" className="sr-only">Ayudas para prepararte</h2>
             {apoyoNumerico.length > 0 && (
               <div className="card mb-6">
                 <div className="flex flex-wrap justify-between items-start gap-3 mb-3">
@@ -1336,7 +1349,6 @@ export default function PaginaCitacion() {
                 </h2>
                 <ul className="space-y-3">
                   {resultado.plazos.map((plazo, i) => {
-                    const semanas = Math.max(1, Math.round(plazo.dias_restantes / 7))
                     const diasHabiles = calcularDiasHabilesRestantes(plazo.fecha)
                     const porcentajeTiempo = Math.min(
                       100,
@@ -1447,8 +1459,13 @@ export default function PaginaCitacion() {
                 faseActual={esSentencia ? 5 : 1}
               />
             </div>
+            </section>
+            )}
 
             {/* Quién estará en la sala (TarjetaRol) */}
+            {pasoExplicacion === 3 && (
+            <>
+            <div className="explicacion-panel">
             <div className="card mb-6">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
@@ -1463,13 +1480,14 @@ export default function PaginaCitacion() {
                   type="button"
                   onClick={() => setMostrarRoles((prev) => !prev)}
                   aria-expanded={mostrarRoles}
+                  aria-controls="personas-sala"
                   className="btn-secondary text-sm"
                 >
                   {mostrarRoles ? 'Ocultar personas de la sala' : 'Ver quién es quién en la sala'}
                 </button>
               </div>
               {mostrarRoles && (
-                <div className="grid gap-4 sm:grid-cols-2 mt-4">
+                <div id="personas-sala" className="grid gap-4 sm:grid-cols-2 mt-4">
                   {ROLES.map((rol) => (
                     <TarjetaRol
                       key={rol.nombre}
@@ -1483,23 +1501,6 @@ export default function PaginaCitacion() {
                 </div>
               )}
             </div>
-
-            {/* Transparencia: Suma de varias IAs */}
-            <details className="card mb-8">
-              <summary className="font-bold text-court-800 cursor-pointer">
-                Cómo hemos adaptado este documento (Suma de varias IAs y normas UNE)
-              </summary>
-              <ol className="mt-4 space-y-3 text-sm text-court-700">
-                {pipelineIA.map((etapa) => (
-                  <li key={etapa.paso} className="p-3 bg-calma-sage rounded-lg">
-                    <span className="font-bold text-court-800">
-                      Paso {etapa.paso}. {etapa.nombre}:
-                    </span>{' '}
-                    {etapa.detalle}
-                  </li>
-                ))}
-              </ol>
-            </details>
 
             <div className="bg-accent-success/10 border-2 border-accent-success rounded-tarjeta p-6 mb-8">
               <h2 className="text-xl font-bold text-court-800 mb-2">
@@ -1519,12 +1520,56 @@ export default function PaginaCitacion() {
               </div>
             </div>
 
+            <details className="card mb-8">
+              <summary className="cursor-pointer text-lg font-bold text-court-900">
+                Cómo se ha elaborado esta explicación
+              </summary>
+              <div className="mt-5 space-y-5 text-court-700">
+                {resultado.datos_clave.privacidad_rgpd && (
+                  <section aria-labelledby="titulo-privacidad">
+                    <h2 id="titulo-privacidad" className="text-lg font-bold text-court-900">Tus datos personales</h2>
+                    <p className="mt-1">{resultado.datos_clave.privacidad_rgpd.garantia}</p>
+                    {resultado.datos_clave.privacidad_rgpd.elementos_protegidos.length > 0 && (
+                      <ul className="mt-3 space-y-2">
+                        {resultado.datos_clave.privacidad_rgpd.elementos_protegidos.map((elemento) => (
+                          <li key={elemento.marcador} className="rounded-suave bg-calma-sage p-3">
+                            <span className="font-bold text-court-900">{elemento.tipo}: </span>
+                            {elemento.valor_protegido}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </section>
+                )}
+                {resultado.metricas_legibilidad && (
+                  <section aria-labelledby="titulo-legibilidad">
+                    <h2 id="titulo-legibilidad" className="text-lg font-bold text-court-900">Cambio de claridad</h2>
+                    <p className="mt-1">{resultado.metricas_legibilidad.resumen_impacto}</p>
+                    <p className="mt-2 text-sm">
+                      La medición de legibilidad pasó de {resultado.metricas_legibilidad.original.score}/100 a {resultado.metricas_legibilidad.adaptado.score}/100.
+                    </p>
+                  </section>
+                )}
+                <section aria-labelledby="titulo-proceso-adaptacion">
+                  <h2 id="titulo-proceso-adaptacion" className="text-lg font-bold text-court-900">Cómo se ordenó la información</h2>
+                  <ol className="mt-3 space-y-2">
+                    {pipelineIA.map((etapa) => (
+                      <li key={etapa.paso} className="rounded-suave bg-calma-sage p-3">
+                        <span className="font-bold text-court-900">{etapa.nombre}. </span>{etapa.detalle}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              </div>
+            </details>
+
             <button
               type="button"
               onClick={() => {
                 setPaso('entrada')
                 setResultado(null)
                 setTexto('')
+                setPasoExplicacion(0)
                 setNombreArchivo('')
                 setError('')
                 setErrorCalendario('')
@@ -1534,6 +1579,33 @@ export default function PaginaCitacion() {
               <Icono nombre="←" />
               Transformar otro documento judicial
             </button>
+            </div>
+            </>
+            )}
+
+            <div className="mt-8 flex items-center justify-between gap-3 border-t border-court-200 pt-6">
+              <button
+                type="button"
+                onClick={() => setPasoExplicacion((actual) => Math.max(0, actual - 1))}
+                className="btn-secondary"
+                disabled={pasoExplicacion === 0}
+              >
+                <Icono nombre="←" />
+                Atrás
+              </button>
+              <span className="text-sm font-medium text-court-600">
+                {pasoExplicacion + 1} de {pasosExplicacion.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPasoExplicacion((actual) => Math.min(pasosExplicacion.length - 1, actual + 1))}
+                className="btn-primary"
+                disabled={pasoExplicacion === pasosExplicacion.length - 1}
+              >
+                Continuar
+                <Icono nombre="→" />
+              </button>
+            </div>
           </section>
         )}
       </main>

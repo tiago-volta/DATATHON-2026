@@ -211,6 +211,64 @@
     @apply font-bold text-accent-navy;
   }
 
+  .explicacion-etapa {
+    transition:
+      background-color 200ms var(--ease-out),
+      color 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out),
+      transform 200ms var(--ease-out);
+    min-height: 72px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .explicacion-etapa:hover:not([aria-current='step']) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgb(3 105 161 / 0.12);
+    }
+
+    .explicacion-etapa[aria-current='step']:hover {
+      background-color: var(--accion-hover);
+      box-shadow: 0 6px 16px rgb(3 105 161 / 0.18);
+      transform: translateY(-1px);
+    }
+
+    .explicacion-etapa:active:not(:disabled) {
+      transform: translateY(0) scale(0.98);
+    }
+  }
+
+  .explicacion-panel {
+    animation: explicacion-aparece 280ms var(--ease-out) both;
+  }
+
+  .barra-progreso {
+    height: 0.625rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e8e8ed;
+  }
+
+  .barra-progreso > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    transform-origin: left;
+    background: var(--accion);
+    transition: transform 240ms var(--ease-out);
+  }
+
+  @keyframes explicacion-aparece {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .input-accesible {
     @apply w-full px-5 py-4 text-lg rounded-suave border border-court-300 bg-white;
     @apply placeholder:text-court-400;
@@ -298,6 +356,19 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .explicacion-etapa,
+  .explicacion-panel,
+  .barra-progreso > span {
+    animation: none;
+    transition: none;
   }
 }
 
