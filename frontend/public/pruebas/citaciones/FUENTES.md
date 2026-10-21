@@ -1,6 +1,6 @@
 # Citaciones de prueba (fuentes públicas)
 
-Textos de ensayo para PUENTE. Datos personales **ficticios/anonimizados**.
+Textos de ensayo para InclusiveCourt. Datos personales **ficticios/anonimizados**.
 La estructura y el lenguaje siguen modelos públicos españoles:
 
 1. **COET** — *Cédula de citación para juicios rápidos por delito*  

@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-description: Stop Slop - reglas para escritura directa y natural sin patrones de IA en PUENTE
+description: Stop Slop - reglas para escritura directa y natural sin patrones de IA en InclusiveCourt
 ---
 
 # Stop Slop: escritura sin IA
@@ -38,7 +38,7 @@ Reglas para que el texto suene humano, no generado por IA.
 | "La decisión fue tomada" | "Decidimos" |
 | "Se recomienda" | "Recomendamos" |
 
-## Para PUENTE
+## Para InclusiveCourt
 
 - Tutear siempre: "Tienes derecho" no "Usted tiene derecho"
 - Frases cortas: máximo 20 palabras

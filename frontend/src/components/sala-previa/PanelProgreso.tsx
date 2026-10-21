@@ -41,7 +41,7 @@ export function PanelProgreso({
       />
 
       <div className="card space-y-3">
-        <h2 className="font-bold text-puente-800">Insignias de la sala</h2>
+        <h2 className="font-bold text-court-800">Insignias de la sala</h2>
         <ul className="space-y-2">
           {INSIGNIAS.map((ins) => {
             const conseguida = progreso.insignias.includes(ins.id)
@@ -49,16 +49,16 @@ export function PanelProgreso({
               <li
                 key={ins.id}
                 className={`flex items-start gap-3 p-3 rounded-suave ${
-                  conseguida ? 'bg-calma-sage' : 'bg-white border border-puente-200'
+                  conseguida ? 'bg-calma-sage' : 'bg-white border border-court-200'
                 }`}
               >
                 <Icono
                   nombre={conseguida ? '★' : '○'}
-                  className={`mt-0.5 h-5 w-5 ${conseguida ? 'text-puente-900' : 'text-puente-400'}`}
+                  className={`mt-0.5 h-5 w-5 ${conseguida ? 'text-court-900' : 'text-court-400'}`}
                 />
                 <span>
-                  <span className="font-bold text-puente-800 block">{ins.nombre}</span>
-                  <span className="text-sm text-puente-600">{ins.descripcion}</span>
+                  <span className="font-bold text-court-800 block">{ins.nombre}</span>
+                  <span className="text-sm text-court-600">{ins.descripcion}</span>
                   <span className="sr-only">
                     {conseguida ? 'Conseguida' : 'Aún no conseguida'}
                   </span>
@@ -71,7 +71,7 @@ export function PanelProgreso({
 
       {mensaje && (
         <p
-          className="bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-800"
+          className="bg-accent-success/15 border border-accent-success rounded-lg p-3 text-court-800"
           role="status"
           aria-live="polite"
         >

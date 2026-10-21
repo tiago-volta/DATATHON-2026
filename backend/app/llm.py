@@ -632,10 +632,10 @@ async def _llamar_anthropic(
         return adaptar_documento_personalizado(texto_anonimizado, elementos_protegidos)
 
 
-# ── Chat de ayuda (dudas sobre PUENTE / proceso) ─────────────────────────────
+# ── Chat de ayuda (dudas sobre InclusiveCourt / proceso) ─────────────────────────────
 # Nunca diagnóstico médico. Sin datos sensibles de salud. Lectura fácil, tuteo.
 
-SYSTEM_PROMPT_AYUDA = """Eres PUENTE, una guía calmada de accesibilidad cognitiva en la justicia española.
+SYSTEM_PROMPT_AYUDA = """Eres InclusiveCourt, una guía calmada de accesibilidad cognitiva en la justicia española.
 Ayudas a personas neurodivergentes (y a quien lo necesite) a entender citaciones, el juzgado,
 el Pasaporte de ajustes, Ensaya y la Sala Previa.
 
@@ -645,7 +645,7 @@ Reglas OBLIGATORIAS:
 - NUNCA pidas DNI, número de expediente real, ni datos personales sensibles.
 - Si preguntan por salud o discapacidad clínica, di con calma que no eres médica y que pueden
   pedir apoyos en el Pasaporte sin escribir ningún diagnóstico.
-- Habla solo de PUENTE y del proceso judicial accesible (citación, plazos, pasaporte, ensaya, sala previa, modo con voz).
+- Habla solo de InclusiveCourt y del proceso judicial accesible (citación, plazos, pasaporte, ensaya, sala previa, modo con voz).
 - Si no sabes algo concreto del caso, dilo y sugiere ir a «Mi citación» o hablar con su abogado/a.
 - Responde en texto plano (sin JSON, sin markdown denso). Máximo 8 frases cortas.
 """
@@ -682,14 +682,14 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
     ),
     (
         re.compile(r"voz|micr[oó]fono|hablar|escuchar|audio|leer", re.I),
-        "Puedes activar el «modo con voz» para que PUENTE te lea y te escuche. "
+        "Puedes activar el «modo con voz» para que InclusiveCourt te lea y te escuche. "
         "Di «quiero activar el modo con voz» o usa el botón de la cabecera. "
         "En esta página de Ayuda también puedes dictar tu pregunta con el micrófono.",
     ),
     (
         re.compile(r"medic[oa]|diagn[oó]stico|enfermedad|trastorno|salud|tdah|autismo|ciego", re.I),
         "No soy médica y no hago diagnósticos. "
-        "En PUENTE no hace falta decir tu diagnóstico. "
+        "En InclusiveCourt no hace falta decir tu diagnóstico. "
         "Puedes marcar «Necesito más apoyos de voz y lectura» en el Pasaporte "
         "y elegir los ajustes que te ayudan. "
         "Si tienes dudas de salud, habla con tu profesional de confianza.",
@@ -708,7 +708,7 @@ def _respuesta_mock_ayuda(pregunta: str) -> str:
         if patron.search(limpia):
             return texto
     return (
-        "PUENTE te ayuda a entender el juzgado con frases cortas. "
+        "InclusiveCourt te ayuda a entender el juzgado con frases cortas. "
         "Puedes ir a Citación (explicar la carta), Pasaporte (pedir apoyos), "
         "Ensaya (practicar) o Sala Previa (probar el ambiente). "
         "Si quieres, reformula tu duda con otras palabras. "
@@ -759,7 +759,7 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
 
 async def responder_ayuda(pregunta: str) -> dict:
     """
-    Responde dudas sobre PUENTE / proceso judicial.
+    Responde dudas sobre InclusiveCourt / proceso judicial.
     Usa Gemini si hay GEMINI_API_KEY (o LLM_PROVIDER=gemini); si no, mock calmado.
     """
     limpia = re.sub(r"\s+", " ", (pregunta or "").strip())[:800]

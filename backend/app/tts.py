@@ -25,7 +25,7 @@ _ESPACIOS = re.compile(r"\s+")
 _cache: dict[str, bytes] = {}
 _cache_orden: list[str] = []
 _cache_lock = asyncio.Lock()
-_tmp_dir = Path(tempfile.gettempdir()) / "puente-tts-cache"
+_tmp_dir = Path(tempfile.gettempdir()) / "court-tts-cache"
 _tmp_dir.mkdir(parents=True, exist_ok=True)
 
 

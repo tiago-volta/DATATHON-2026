@@ -14,7 +14,7 @@ def test_health():
 def test_root():
     res = client.get("/")
     assert res.status_code == 200
-    assert "PUENTE API" in res.json()["mensaje"]
+    assert "InclusiveCourt API" in res.json()["mensaje"]
 
 
 def test_anonimizar_endpoint():

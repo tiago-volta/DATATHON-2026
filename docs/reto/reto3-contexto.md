@@ -2,7 +2,7 @@
 
 Fuente oficial: [`20261018_DATATHON-Reto3-Brecha-Judicial.pdf`](./20261018_DATATHON-Reto3-Brecha-Judicial.pdf)  
 Evento: DATAthon Justicia 2026 (Brecha Judicial) · Presenta: Ana Tudela (INECO)  
-Extraído y estructurado para el equipo de PUENTE (octubre 2026).
+Extraído y estructurado para el equipo de InclusiveCourt (octubre 2026).
 
 > Este documento resume el PDF del reto. No sustituye el marco legal ampliado en [`../investigacion/marco-legal.md`](../investigacion/marco-legal.md).
 
@@ -65,7 +65,7 @@ Persona cuyo funcionamiento del cerebro difiere de lo neurotípico. No es mejor 
 ## 5. Competencias digitales sugeridas (ideas del enunciado)
 
 - UX/UI, gamificación / simuladores, RV, IA, prototipado.
-- Integración con organismos para reconocimientos de discapacidad o *flag* de identificación (con cuidado de privacidad). **Estado en PUENTE:** [PENDIENTE / stub] — sin APIs de IMSERSO; flag local opcional `necesitoApoyos` («Necesito más apoyos de voz y lectura») en preferencias/Pasaporte, sin etiqueta estigmatizante.
+- Integración con organismos para reconocimientos de discapacidad o *flag* de identificación (con cuidado de privacidad). **Estado en InclusiveCourt:** [PENDIENTE / stub] — sin APIs de IMSERSO; flag local opcional `necesitoApoyos` («Necesito más apoyos de voz y lectura») en preferencias/Pasaporte, sin etiqueta estigmatizante.
 - Adaptación de notificaciones, horarios y plazos.
 - Colegios profesionales específicos (p. ej. intérpretes).
 - IA como mediadores; **suma de varias IAs** (lectura fácil, lectura clara…).
@@ -106,7 +106,7 @@ Notas del PDF:
 - Puede no tener grado de discapacidad reconocido por TDAH, pero aporta informes clínicos.
 - Acredita condición de persona invidente y solicita ajustes de accesibilidad.
 
-> **Nota de producto:** en PUENTE el ejemplo de Juan a veces se etiqueta con art. 248 CP (estafa leve ≤400 €). El PDF del reto cita art. 249 CP. Ver precisión en [`../investigacion/marco-legal.md`](../investigacion/marco-legal.md) (LO 14/2022 y LO 1/2026).
+> **Nota de producto:** en InclusiveCourt el ejemplo de Juan a veces se etiqueta con art. 248 CP (estafa leve ≤400 €). El PDF del reto cita art. 249 CP. Ver precisión en [`../investigacion/marco-legal.md`](../investigacion/marco-legal.md) (LO 14/2022 y LO 1/2026).
 
 ---
 
@@ -119,9 +119,9 @@ Notas del PDF:
 
 ---
 
-## 9. Cómo responde PUENTE a este contexto
+## 9. Cómo responde InclusiveCourt a este contexto
 
-| Exigencia del reto | Módulo en PUENTE |
+| Exigencia del reto | Módulo en InclusiveCourt |
 |--------------------|------------------|
 | Información clara / lectura fácil | `/citacion` |
 | Anticipación del acto judicial | `/sala-previa`, línea de tiempo |

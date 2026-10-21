@@ -4,7 +4,7 @@ Este archivo contiene directrices para Claude Code, Cursor y otros agentes.
 
 ## Contexto del proyecto
 
-PUENTE es una aplicación de accesibilidad cognitiva para la justicia española.
+InclusiveCourt es una aplicación de accesibilidad cognitiva para la justicia española.
 Se desarrolla en el DATAthon Justicia 2026 con un equipo de 3 personas y ~1.5 días
 de desarrollo.
 
@@ -19,10 +19,10 @@ de desarrollo.
 ## Antes de escribir código
 
 1. Leer CLAUDE.md para entender la estructura
-2. Abrir `.cursor/skills/puente-mapa/SKILL.md` si no está claro qué skill toca
+2. Abrir `.cursor/skills/inclusivecourt-mapa/SKILL.md` si no está claro qué skill toca
 3. Consultar la skill relevante:
-   - Cambios en UI → `.claude/skills/puente-accesibilidad/SKILL.md`
-   - Textos de usuario → `.claude/skills/puente-lectura-facil/SKILL.md`
+   - Cambios en UI → `.claude/skills/inclusivecourt-accesibilidad/SKILL.md`
+   - Textos de usuario → `.claude/skills/inclusivecourt-lectura-facil/SKILL.md`
    - Pautas de interfaz → `.cursor/skills/ui-ux-pro-max/SKILL.md`
    - Backend → `.cursor/skills/fastapi-patterns/SKILL.md`
    - Docs de librerías → `.cursor/skills/documentation-lookup/SKILL.md`

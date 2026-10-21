@@ -1,6 +1,6 @@
 # Neurodiversidad: Barreras y Ajustes en el Ámbito Judicial
 
-> Investigación para PUENTE | DATAthon Justicia 2026 | Octubre 2026
+> Investigación para InclusiveCourt | DATAthon Justicia 2026 | Octubre 2026
 
 ## Introducción
 
@@ -472,7 +472,7 @@ Portal Aragonés de Comunicación Aumentativa y Alternativa. Ofrece más de 40.0
 - **Pictograma "facilitador de la comunicación en justicia"**: disponible en ARASAAC
 - **Accesibilidad cognitiva en Cortes de Aragón**: primer parlamento con pictogramas
 
-### 9.3 Cómo usar en PUENTE
+### 9.3 Cómo usar en InclusiveCourt
 
 - Apoyar textos de citación con pictogramas de fases
 - Usar pictogramas de roles (juez, fiscal, abogado)

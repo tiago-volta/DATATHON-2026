@@ -102,7 +102,7 @@ export function TutorialInicio() {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-4 bg-puente-900/40"
+      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-4 bg-court-900/40"
       role="presentation"
     >
       <div
@@ -110,9 +110,9 @@ export function TutorialInicio() {
         aria-modal="true"
         aria-labelledby={tituloId}
         aria-describedby={descId}
-        className="w-full max-w-lg bg-calma-cream border-2 border-puente-800 rounded-tarjeta shadow-lg p-6 md:p-8 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg bg-calma-cream border-2 border-court-800 rounded-tarjeta shadow-lg p-6 md:p-8 max-h-[90vh] overflow-y-auto"
       >
-        <p className="text-sm font-bold tracking-wide text-puente-700 mb-2">
+        <p className="text-sm font-bold tracking-wide text-court-700 mb-2">
           Tutorial · paso {indice + 1} de {PASOS_TUTORIAL.length}
         </p>
 
@@ -129,15 +129,15 @@ export function TutorialInicio() {
           </div>
         )}
 
-        <h2 id={tituloId} className="text-2xl text-puente-900 mb-3">
+        <h2 id={tituloId} className="text-2xl text-court-900 mb-3">
           {paso.titulo}
         </h2>
-        <p id={descId} className="text-lg text-puente-800 mb-6 leading-relaxed">
+        <p id={descId} className="text-lg text-court-800 mb-6 leading-relaxed">
           {paso.texto}
         </p>
 
         <div
-          className="mb-4 h-2 rounded-full bg-puente-100"
+          className="mb-4 h-2 rounded-full bg-court-100"
           role="progressbar"
           aria-valuemin={1}
           aria-valuemax={PASOS_TUTORIAL.length}
@@ -145,7 +145,7 @@ export function TutorialInicio() {
           aria-label={`Paso ${indice + 1} de ${PASOS_TUTORIAL.length}`}
         >
           <div
-            className="h-full rounded-full bg-puente-600 transition-[width] duration-300"
+            className="h-full rounded-full bg-court-600 transition-[width] duration-300"
             style={{
               width: `${((indice + 1) / PASOS_TUTORIAL.length) * 100}%`,
             }}
@@ -185,7 +185,7 @@ export function TutorialInicio() {
           )}
         </div>
 
-        <p className="text-sm text-puente-700" role="status" aria-live="polite">
+        <p className="text-sm text-court-700" role="status" aria-live="polite">
           Pulsa Escape o Saltar si quieres cerrar. No hace falta terminar.
         </p>
       </div>

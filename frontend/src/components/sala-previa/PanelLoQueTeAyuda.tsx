@@ -51,7 +51,7 @@ function PictoCalmado({
   if (fallo) {
     return (
       <span
-        className="flex items-center justify-center w-12 h-12 rounded-suave bg-puente-100 text-puente-700 text-lg font-bold shrink-0"
+        className="flex items-center justify-center w-12 h-12 rounded-suave bg-court-100 text-court-700 text-lg font-bold shrink-0"
         role="img"
         aria-label={alt}
         title={etiqueta}
@@ -68,7 +68,7 @@ function PictoCalmado({
       alt={alt}
       width={48}
       height={48}
-      className="w-12 h-12 rounded-suave bg-white border border-puente-100 object-contain shrink-0"
+      className="w-12 h-12 rounded-suave bg-white border border-court-100 object-contain shrink-0"
       loading="lazy"
       decoding="async"
       onError={() => setFallo(true)}
@@ -125,14 +125,14 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
   if (vacio) {
     return (
       <section
-        className="card border-2 border-puente-200 bg-calma-mist/50"
+        className="card border-2 border-court-200 bg-calma-mist/50"
         aria-labelledby={tituloId}
         aria-describedby={descId}
       >
-        <h2 id={tituloId} className="font-bold text-puente-800 mb-2">
+        <h2 id={tituloId} className="font-bold text-court-800 mb-2">
           Lo que te ayuda
         </h2>
-        <p id={descId} className="text-puente-700">
+        <p id={descId} className="text-court-700">
           Cuando practiques un poco, aquí verás lo que te ayuda. No hay prisa.
         </p>
       </section>
@@ -146,10 +146,10 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
       aria-describedby={descId}
     >
       <div>
-        <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+        <h2 id={tituloId} className="font-bold text-court-800 mb-1">
           Lo que te ayuda
         </h2>
-        <p id={descId} className="text-sm text-puente-700">
+        <p id={descId} className="text-sm text-court-700">
           Resumen de tu práctica. Tú decides qué va al Pasaporte. Solo ajustes,
           nunca un diagnóstico.
         </p>
@@ -157,7 +157,7 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
 
       {dato.molestias.length > 0 && (
         <div>
-          <h3 className="font-bold text-puente-800 mb-3">Me molesta…</h3>
+          <h3 className="font-bold text-court-800 mb-3">Me molesta…</h3>
           <ul className="space-y-2 list-none p-0 m-0" aria-label="Estímulos que me molestan">
             {dato.molestias.map((m) => {
               const meta = ESTIMULOS_META[m.id]
@@ -165,16 +165,16 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
               return (
                 <li
                   key={m.id}
-                  className="flex items-center gap-3 p-3 rounded-suave bg-calma-mist/70 border border-puente-100"
+                  className="flex items-center gap-3 p-3 rounded-suave bg-calma-mist/70 border border-court-100"
                 >
                   <PictoCalmado
                     id={PICTO_ESTIMULO[m.id]}
                     alt={`Pictograma: ${meta.etiqueta}`}
                     etiqueta={meta.etiqueta}
                   />
-                  <span className="text-puente-800">
+                  <span className="text-court-800">
                     <span className="font-bold block">{frase}</span>
-                    <span className="text-sm text-puente-700">
+                    <span className="text-sm text-court-700">
                       {etiquetaNivelMolestia(m.nivel)}
                     </span>
                   </span>
@@ -186,21 +186,21 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
       )}
 
       <fieldset className="m-0 p-0 border-0">
-        <legend className="font-bold text-puente-800 mb-3 px-0">
+        <legend className="font-bold text-court-800 mb-3 px-0">
           Me ayuda…{' '}
-          <span className="font-normal text-sm text-puente-700">
+          <span className="font-normal text-sm text-court-700">
             (marca lo que quieras pasar al Pasaporte)
           </span>
         </legend>
 
         {ayudasDisponibles.length === 0 && dato.usoCalma && (
-          <p className="text-puente-700 mb-3">
+          <p className="text-court-700 mb-3">
             Me ayuda volver a la calma cuando lo necesito.
           </p>
         )}
 
         {ayudasDisponibles.length === 0 && !dato.usoCalma ? (
-          <p className="text-puente-700">
+          <p className="text-court-700">
             Aún no hay ajustes sugeridos. Si algo te molesta en el check-in,
             aparecerán aquí.
           </p>
@@ -216,14 +216,14 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
                     htmlFor={inputId}
                     className={`flex items-start gap-3 p-3 rounded-suave border-2 min-h-[48px] cursor-pointer transition-colors ${
                       checked
-                        ? 'border-puente-500 bg-puente-50'
-                        : 'border-puente-100 bg-white hover:border-puente-300'
+                        ? 'border-court-500 bg-court-50'
+                        : 'border-court-100 bg-white hover:border-court-300'
                     }`}
                   >
                     <input
                       id={inputId}
                       type="checkbox"
-                      className="mt-1 w-5 h-5 shrink-0 rounded border-puente-400 text-puente-600 focus:ring-puente-400"
+                      className="mt-1 w-5 h-5 shrink-0 rounded border-court-400 text-court-600 focus:ring-court-400"
                       checked={checked}
                       onChange={() => toggle(ajuste.id)}
                     />
@@ -232,11 +232,11 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
                       alt={`Pictograma: ${ajuste.nombre}`}
                       etiqueta={ajuste.nombre}
                     />
-                    <span className="text-puente-800 min-w-0">
+                    <span className="text-court-800 min-w-0">
                       <span className="font-bold block">
                         {fraseAyuda(ajuste.id)}
                       </span>
-                      <span className="text-sm text-puente-700">
+                      <span className="text-sm text-court-700">
                         {ajuste.descripcion}
                       </span>
                     </span>
@@ -249,7 +249,7 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
       </fieldset>
 
       {dato.usoCalma && (
-        <p className="text-sm text-puente-700 rounded-suave bg-calma-sage/50 border border-puente-100 px-3 py-2">
+        <p className="text-sm text-court-700 rounded-suave bg-calma-sage/50 border border-court-100 px-3 py-2">
           Me ayuda hacer pausas y volver a la calma.
         </p>
       )}
@@ -264,7 +264,7 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
         >
           Pasar a mi Pasaporte
         </Link>
-        <p id={`${tituloId}-export-hint`} className="text-xs text-puente-700">
+        <p id={`${tituloId}-export-hint`} className="text-xs text-court-700">
           {seleccionados.length === 0
             ? 'Abre el Pasaporte sin ajustes premarcados. Puedes marcarlos allí.'
             : `Llevará ${seleccionados.length} ajuste${
@@ -273,11 +273,11 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
         </p>
       </div>
 
-      <p className="text-xs text-puente-700">
+      <p className="text-xs text-court-700">
         Pictogramas:{' '}
         <a
           href="https://arasaac.org"
-          className="underline underline-offset-2 hover:text-puente-800 min-h-[44px] inline-flex items-center"
+          className="underline underline-offset-2 hover:text-court-800 min-h-[44px] inline-flex items-center"
           target="_blank"
           rel="noopener noreferrer"
         >

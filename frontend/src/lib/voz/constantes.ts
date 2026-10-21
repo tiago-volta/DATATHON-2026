@@ -1,7 +1,7 @@
 /** Claves y textos del Modo con voz (acceso por voz / modo audiodescrito). */
 
-export const LS_ONBOARDING_VISTO = 'puente-voz-onboarding-visto'
-export const LS_MODO_VOZ = 'puente-modo-voz'
+export const LS_ONBOARDING_VISTO = 'court-voz-onboarding-visto'
+export const LS_MODO_VOZ = 'court-modo-voz'
 
 /** Frase mágica principal (lectura fácil, calmada). */
 export const FRASE_ACTIVACION =
@@ -24,7 +24,7 @@ export const FRASES_ACTIVACION = [
 ] as const
 
 export const TEXTO_ONBOARDING = [
-  'Hola. PUENTE funciona así: te explicamos el juzgado con frases cortas, pictogramas y voz.',
+  'Hola. InclusiveCourt funciona así: te explicamos el juzgado con frases cortas, pictogramas y voz.',
   'Si quieres moverte con la voz, di: «quiero activar el modo con voz».',
   'También puedes pulsar el botón Escuchar explicación o activar el Modo audioguía en la Sala Previa.',
 ].join(' ')

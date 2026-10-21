@@ -1,5 +1,5 @@
 ---
-name: puente-lectura-facil
+name: inclusivecourt-lectura-facil
 description: >-
   Pautas para generar textos accesibles en español según las normas UNE 153101
   (Lectura fácil) y UNE-ISO 24495-1 (Lenguaje claro) adaptados por perfil
@@ -7,7 +7,7 @@ description: >-
   judiciales o redactar textos de usuario.
 ---
 
-# Skill: Lectura fácil y lectura clara para PUENTE
+# Skill: Lectura fácil y lectura clara para InclusiveCourt
 
 Pautas para generar textos accesibles en español según las normas UNE.
 

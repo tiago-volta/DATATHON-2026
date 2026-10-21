@@ -1,5 +1,5 @@
 """
-PUENTE Backend API
+InclusiveCourt Backend API
 FastAPI backend para el DATAthon Justicia 2026 (Reto 3: Neurodiversidad).
 Enfoque determinista con soporte opcional de LLM (OpenAI / Anthropic).
 """
@@ -35,7 +35,7 @@ from .mock_data import (
 load_dotenv()
 
 app = FastAPI(
-    title="PUENTE API",
+    title="InclusiveCourt API",
     description="API para accesibilidad cognitiva en la justicia",
     version="0.2.0",
 )
@@ -231,7 +231,7 @@ class TtsInput(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"mensaje": "PUENTE API - Accesibilidad cognitiva para la justicia"}
+    return {"mensaje": "InclusiveCourt API - Accesibilidad cognitiva para la justicia"}
 
 
 @app.get("/health")
@@ -532,7 +532,7 @@ async def generar_calendario(plazos: List[PlazoItem], titulo: str = "Citación J
     return Response(
         content=ics_content,
         media_type="text/calendar",
-        headers={"Content-Disposition": "attachment; filename=citacion_puente.ics"},
+        headers={"Content-Disposition": "attachment; filename=citacion_inclusivecourt.ics"},
     )
 
 

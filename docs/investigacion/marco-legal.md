@@ -1,6 +1,6 @@
 # Marco Legal: Accesibilidad y Ajustes en la Justicia Española
 
-> Investigación para PUENTE | DATAthon Justicia 2026 | Actualizado: octubre 2026
+> Investigación para InclusiveCourt | DATAthon Justicia 2026 | Actualizado: octubre 2026
 
 ## 1. Constitución Española
 
@@ -178,7 +178,7 @@ Definen los ajustes de procedimiento como:
 
 ---
 
-## Resumen para PUENTE
+## Resumen para InclusiveCourt
 
 | Situación | Norma aplicable | Ajuste disponible |
 |-----------|-----------------|-------------------|

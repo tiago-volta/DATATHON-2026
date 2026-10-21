@@ -82,10 +82,10 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
 
   return (
     <nav aria-labelledby={tituloId} className="card">
-      <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+      <h2 id={tituloId} className="font-bold text-court-800 mb-1">
         Tu mapa de niveles
       </h2>
-      <p id={ayudaId} className="text-sm text-puente-700 mb-4">
+      <p id={ayudaId} className="text-sm text-court-700 mb-4">
         Seis pasos, del silencio a la sala llena. Solo avanzas si tú quieres.
       </p>
 
@@ -108,12 +108,12 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
                 aria-disabled={!desbloqueado}
                 aria-current={estado === 'actual' ? 'step' : undefined}
                 aria-describedby={estadoId}
-                className={`w-full text-left flex items-center gap-3 px-3 py-3 min-h-[48px] rounded-suave border-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400 focus-visible:ring-offset-2 ${
+                className={`w-full text-left flex items-center gap-3 px-3 py-3 min-h-[48px] rounded-suave border-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-court-400 focus-visible:ring-offset-2 ${
                   estado === 'actual'
-                    ? 'border-puente-600 bg-puente-50 shadow-sm'
+                    ? 'border-court-600 bg-court-50 shadow-sm'
                     : estado === 'desbloqueado'
-                      ? 'border-puente-200 bg-white hover:border-puente-400 hover:bg-calma-mist/40'
-                      : 'border-puente-100 bg-calma-mist/50 text-puente-700 cursor-not-allowed'
+                      ? 'border-court-200 bg-white hover:border-court-400 hover:bg-calma-mist/40'
+                      : 'border-court-100 bg-calma-mist/50 text-court-700 cursor-not-allowed'
                 }`}
                 style={{
                   transition: reduced
@@ -124,10 +124,10 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
                 <span
                   className={`shrink-0 flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-suave border-2 ${
                     estado === 'actual'
-                      ? 'border-puente-600 bg-puente-600 text-white'
+                      ? 'border-court-600 bg-court-600 text-white'
                       : estado === 'desbloqueado'
-                        ? 'border-accent-success/60 bg-accent-success/20 text-puente-800'
-                        : 'border-puente-200 bg-white text-puente-600'
+                        ? 'border-accent-success/60 bg-accent-success/20 text-court-800'
+                        : 'border-court-200 bg-white text-court-600'
                   }`}
                   aria-hidden="true"
                 >
@@ -136,30 +136,30 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
 
                 <span className="flex-1 min-w-0">
                   <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                    <span className="font-bold text-puente-800">
+                    <span className="font-bold text-court-800">
                       Nivel {nivel.id}. {nivel.nombre}
                     </span>
                     <span
                       id={estadoId}
                       className={`text-sm font-medium ${
                         estado === 'actual'
-                          ? 'text-puente-800'
+                          ? 'text-court-800'
                           : estado === 'desbloqueado'
-                            ? 'text-puente-700'
-                            : 'text-puente-600'
+                            ? 'text-court-700'
+                            : 'text-court-600'
                       }`}
                     >
                       {meta.etiqueta}
                       <span className="sr-only">. {meta.explicacion}</span>
                     </span>
                   </span>
-                  <span className="block text-sm text-puente-700 mt-0.5">
+                  <span className="block text-sm text-court-700 mt-0.5">
                     {nivel.descripcion}
                   </span>
                 </span>
 
                 {desbloqueado && estado !== 'actual' && (
-                  <span className="shrink-0 text-sm text-puente-700 font-medium hidden sm:inline">
+                  <span className="shrink-0 text-sm text-court-700 font-medium hidden sm:inline">
                     Volver
                   </span>
                 )}
@@ -169,7 +169,7 @@ export function MapaNiveles({ nivelActual, nivelMaximo, onSeleccionar }: Props) 
         })}
       </ol>
 
-      <p className="text-sm text-puente-700 mt-4">
+      <p className="text-sm text-court-700 mt-4">
         No hay puntos ni ranking. Puedes repetir un nivel hecho cuando quieras.
       </p>
     </nav>

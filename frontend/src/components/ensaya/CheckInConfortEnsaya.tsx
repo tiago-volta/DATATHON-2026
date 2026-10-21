@@ -49,7 +49,7 @@ function PictoConfort({
   if (fallo) {
     return (
       <span
-        className="flex items-center justify-center w-20 h-20 rounded-suave bg-puente-100 text-puente-700 text-3xl font-bold"
+        className="flex items-center justify-center w-20 h-20 rounded-suave bg-court-100 text-court-700 text-3xl font-bold"
         role="img"
         aria-label={alt}
         title={etiqueta}
@@ -66,7 +66,7 @@ function PictoConfort({
       alt={alt}
       width={80}
       height={80}
-      className="w-20 h-20 rounded-suave bg-white border border-puente-100 object-contain"
+      className="w-20 h-20 rounded-suave bg-white border border-court-100 object-contain"
       loading="lazy"
       decoding="async"
       onError={() => setFallo(true)}
@@ -123,14 +123,14 @@ export function CheckInConfortEnsaya({
       aria-modal="true"
       aria-labelledby={tituloId}
       aria-describedby={descId}
-      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-4 pb-28 bg-puente-900/40"
+      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-4 pb-28 bg-court-900/40"
       onClick={(e) => {
         if (e.target === e.currentTarget) onCerrar()
       }}
     >
-      <div className="bg-white rounded-tarjeta border-2 border-puente-800 max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto">
+      <div className="bg-white rounded-tarjeta border-2 border-court-800 max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto">
         <div className="flex items-start justify-between gap-3 mb-2">
-          <h2 id={tituloId} className="text-2xl font-bold text-puente-800">
+          <h2 id={tituloId} className="text-2xl font-bold text-court-800">
             ¿Cómo te sientes?
           </h2>
           <button
@@ -143,7 +143,7 @@ export function CheckInConfortEnsaya({
             Cerrar
           </button>
         </div>
-        <p id={descId} className="text-puente-700 mb-6">
+        <p id={descId} className="text-court-700 mb-6">
           Acabas de practicar: {nivelNombre}. No hay respuesta correcta. Pulsa
           Escape o Cerrar para seguir.
         </p>
@@ -164,8 +164,8 @@ export function CheckInConfortEnsaya({
                 onClick={() => setConfort(item.valor)}
                 className={`flex flex-col items-center gap-3 p-4 rounded-tarjeta border-2 min-h-[140px] transition-colors ${
                   activo
-                    ? 'border-puente-500 bg-puente-50'
-                    : 'border-puente-100 hover:border-puente-300'
+                    ? 'border-court-500 bg-court-50'
+                    : 'border-court-100 hover:border-court-300'
                 }`}
               >
                 <PictoConfort
@@ -173,7 +173,7 @@ export function CheckInConfortEnsaya({
                   alt={item.alt}
                   etiqueta={item.etiqueta}
                 />
-                <span className="text-lg font-bold text-puente-800">
+                <span className="text-lg font-bold text-court-800">
                   {item.etiqueta}
                 </span>
               </button>
@@ -184,7 +184,7 @@ export function CheckInConfortEnsaya({
         {confort === 'bien' && (
           <div className="space-y-4">
             <p
-              className="bg-accent-success/15 border border-accent-success rounded-lg p-4 text-puente-900"
+              className="bg-accent-success/15 border border-accent-success rounded-lg p-4 text-court-900"
               role="status"
               aria-live="polite"
             >
@@ -204,10 +204,10 @@ export function CheckInConfortEnsaya({
         {necesitaApoyo && (
           <div className="space-y-4">
             <p
-              className={`rounded-lg p-4 text-puente-900 ${
+              className={`rounded-lg p-4 text-court-900 ${
                 confort === 'mal'
                   ? 'bg-accent-alert/15 border border-accent-alert'
-                  : 'bg-calma-sage border border-puente-200'
+                  : 'bg-calma-sage border border-court-200'
               }`}
               role="status"
               aria-live="polite"
@@ -241,11 +241,11 @@ export function CheckInConfortEnsaya({
           </div>
         )}
 
-        <p className="text-xs text-puente-700 mt-6">
+        <p className="text-xs text-court-700 mt-6">
           Pictogramas:{' '}
           <a
             href="https://arasaac.org"
-            className="underline underline-offset-2 hover:text-puente-800 min-h-[44px] inline-flex items-center"
+            className="underline underline-offset-2 hover:text-court-800 min-h-[44px] inline-flex items-center"
             target="_blank"
             rel="noopener noreferrer"
           >

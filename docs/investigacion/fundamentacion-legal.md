@@ -1,9 +1,9 @@
-# Fundamentación Legal de PUENTE
+# Fundamentación Legal de InclusiveCourt
 
 > Documento de verificación legal | DATAthon Justicia 2026 | A Coruña
 > Actualizado: 21 de octubre de 2026
 
-Este documento verifica que cada funcionalidad de la aplicación PUENTE tiene base legal en la normativa española vigente. Incluye enlaces al BOE consolidado para cada norma citada.
+Este documento verifica que cada funcionalidad de la aplicación InclusiveCourt tiene base legal en la normativa española vigente. Incluye enlaces al BOE consolidado para cada norma citada.
 
 ---
 
@@ -367,7 +367,7 @@ Esta atribución aparece en:
 
 ## Conclusión
 
-**Toda funcionalidad de PUENTE tiene base legal verificada.**
+**Toda funcionalidad de InclusiveCourt tiene base legal verificada.**
 
 La aplicación implementa derechos reconocidos en:
 - La Constitución Española (art. 24: tutela judicial efectiva; art. 49: inclusión)

@@ -34,15 +34,15 @@ export function BarraProgresoInsignias({
     <section
       aria-labelledby={tituloId}
       aria-describedby={descId}
-      className={`rounded-suave border border-puente-200 bg-white/85 backdrop-blur-sm p-4 shadow-sm ${className}`}
+      className={`rounded-suave border border-court-200 bg-white/85 backdrop-blur-sm p-4 shadow-sm ${className}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <h2 id={tituloId} className="font-bold text-puente-800 text-base m-0">
+        <h2 id={tituloId} className="font-bold text-court-800 text-base m-0">
           Tus medallas
         </h2>
         <p
           id={descId}
-          className="text-sm text-puente-700 tabular-nums m-0"
+          className="text-sm text-court-700 tabular-nums m-0"
           aria-live="polite"
         >
           {hechas} de {total}
@@ -51,7 +51,7 @@ export function BarraProgresoInsignias({
       </div>
 
       <div
-        className="h-3 rounded-full bg-puente-100 overflow-hidden mb-3"
+        className="h-3 rounded-full bg-court-100 overflow-hidden mb-3"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={total}
@@ -60,7 +60,7 @@ export function BarraProgresoInsignias({
         aria-labelledby={tituloId}
       >
         <div
-          className="h-full rounded-full bg-gradient-to-r from-puente-500 to-accent-success origin-left transition-[width] duration-500 ease-out"
+          className="h-full rounded-full bg-gradient-to-r from-court-500 to-accent-success origin-left transition-[width] duration-500 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -76,7 +76,7 @@ export function BarraProgresoInsignias({
             <li key={ins.id} className="flex-1 flex justify-center relative">
               <button
                 type="button"
-                className="rounded-full p-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400"
+                className="rounded-full p-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-court-400"
                 aria-label={tipTexto}
                 aria-describedby={visible ? tipId : undefined}
                 onMouseEnter={() => setTipActivo(ins.id)}
@@ -96,10 +96,10 @@ export function BarraProgresoInsignias({
                 <div
                   id={tipId}
                   role="tooltip"
-                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(14rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-md p-2.5 text-xs text-puente-800 pointer-events-none"
+                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(14rem,70vw)] rounded-suave border border-court-200 bg-white shadow-md p-2.5 text-xs text-court-800 pointer-events-none"
                 >
                   <p className="font-bold mb-0.5">Medalla: {ins.nombre}</p>
-                  <p className="text-puente-700 leading-snug">
+                  <p className="text-court-700 leading-snug">
                     {ins.comoConseguirla}
                   </p>
                 </div>

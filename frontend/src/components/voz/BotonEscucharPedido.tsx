@@ -108,7 +108,7 @@ export function BotonEscucharPedido({
       {!escucha.disponible && (
         <p
           id="escucha-pedido-sin-soporte"
-          className="text-sm text-puente-700"
+          className="text-sm text-court-700"
           role="status"
         >
           {escucha.mensajeSinSoporte}
@@ -117,7 +117,7 @@ export function BotonEscucharPedido({
 
       {(escucha.parcial || feedback || escucha.anuncio) && (
         <p
-          className="text-sm text-puente-700 max-w-md"
+          className="text-sm text-court-700 max-w-md"
           role="status"
           aria-live="polite"
         >

@@ -64,25 +64,25 @@ export default function DemoJuan() {
         <header className="mb-8">
           <div className="mb-4">
             <h1 className="titulo-pagina">Juan, 32 años</h1>
-            <p className="text-xl text-puente-700">Investigado en un juicio por delito leve</p>
+            <p className="text-xl text-court-700">Investigado en un juicio por delito leve</p>
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
-            <p className="text-puente-700">
+            <p className="text-court-700">
               Juan tiene TDAH combinado y es ciego. Necesita que le lean los documentos en voz alta,
               le cuesta concentrarse en explicaciones largas y necesita pausas frecuentes.
             </p>
           </div>
         </header>
 
-        <div className="bg-puente-800 text-white rounded-tarjeta p-6 mb-8">
+        <div className="bg-court-800 text-white rounded-tarjeta p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">Modo voz para Juan</h2>
-          <p className="mb-4 text-puente-100">
+          <p className="mb-4 text-court-100">
             Juan usa lector de pantalla. Esta demo está pensada para escucharse.
           </p>
           <button
             type="button"
             onClick={() => setModoVoz(!modoVoz)}
-            className="btn bg-white text-puente-800 hover:bg-puente-50"
+            className="btn bg-white text-court-800 hover:bg-court-50"
             aria-pressed={modoVoz}
           >
             {modoVoz ? (
@@ -118,8 +118,8 @@ export default function DemoJuan() {
               aria-current={seccion === s.id ? 'true' : undefined}
               className={`px-4 py-2 rounded-full font-medium transition-colors ${
                 seccion === s.id
-                  ? 'bg-puente-600 text-white'
-                  : 'bg-puente-100 text-puente-700 hover:bg-puente-200'
+                  ? 'bg-court-600 text-white'
+                  : 'bg-court-100 text-court-700 hover:bg-court-200'
               }`}
             >
               {s.label}
@@ -129,8 +129,8 @@ export default function DemoJuan() {
 
         {seccion === 'intro' && (
           <section className="card">
-            <h2 className="text-2xl font-bold text-puente-800 mb-4">La situación de Juan</h2>
-            <div className="space-y-4 text-lg text-puente-700">
+            <h2 className="text-2xl font-bold text-court-800 mb-4">La situación de Juan</h2>
+            <div className="space-y-4 text-lg text-court-700">
               <p>
                 Juan vendió un objeto de segunda mano por internet. El comprador dice que nunca
                 lo recibió y le ha denunciado por estafa. Juan cree que hubo un problema con el
@@ -142,7 +142,7 @@ export default function DemoJuan() {
                 largos sin perderse.
               </p>
               <p>
-                <strong>PUENTE le ayuda a:</strong>
+                <strong>InclusiveCourt le ayuda a:</strong>
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Escuchar su citación en voz alta, en bloques cortos</li>
@@ -161,27 +161,27 @@ export default function DemoJuan() {
         {seccion === 'citacion' && (
           <section>
             <div className="card-destacada mb-6">
-              <h2 className="text-xl font-bold text-puente-800 mb-4">Lo esencial (3 puntos)</h2>
+              <h2 className="text-xl font-bold text-court-800 mb-4">Lo esencial (3 puntos)</h2>
               <ol className="space-y-4">
                 <li className="flex items-start gap-4 p-4 bg-calma-sage rounded-lg">
                   <span className="paso-indicador shrink-0">1</span>
                   <div>
-                    <p className="font-bold text-puente-800">Te acusan de una estafa pequeña</p>
-                    <p className="text-puente-600">Por una venta en internet. Menos de cuatrocientos euros.</p>
+                    <p className="font-bold text-court-800">Te acusan de una estafa pequeña</p>
+                    <p className="text-court-600">Por una venta en internet. Menos de cuatrocientos euros.</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4 p-4 bg-calma-sage rounded-lg">
                   <span className="paso-indicador shrink-0">2</span>
                   <div>
-                    <p className="font-bold text-puente-800">Tienes derechos</p>
-                    <p className="text-puente-600">Puedes no hablar. Tienes derecho a abogado gratis. Puedes presentar pruebas.</p>
+                    <p className="font-bold text-court-800">Tienes derechos</p>
+                    <p className="text-court-600">Puedes no hablar. Tienes derecho a abogado gratis. Puedes presentar pruebas.</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4 p-4 bg-calma-sage rounded-lg">
                   <span className="paso-indicador shrink-0">3</span>
                   <div>
-                    <p className="font-bold text-puente-800">El juicio es el 12 de noviembre</p>
-                    <p className="text-puente-600">A las 9:30, en el Juzgado nº 7 de A Coruña.</p>
+                    <p className="font-bold text-court-800">El juicio es el 12 de noviembre</p>
+                    <p className="text-court-600">A las 9:30, en el Juzgado nº 7 de A Coruña.</p>
                   </div>
                 </li>
               </ol>
@@ -189,7 +189,7 @@ export default function DemoJuan() {
 
             <div className="card mb-6">
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-bold text-puente-800">Citación completa</h2>
+                <h2 className="text-xl font-bold text-court-800">Citación completa</h2>
                 <BotonLeerEnVoz texto={JUAN_LECTURA_CLARA} />
               </div>
               <div className="lectura-facil whitespace-pre-line">
@@ -206,46 +206,46 @@ export default function DemoJuan() {
 
         {seccion === 'linea-tiempo' && (
           <section>
-            <h2 className="text-2xl font-bold text-puente-800 mb-2">Mi línea de tiempo</h2>
-            <p className="text-puente-600 mb-6">
+            <h2 className="text-2xl font-bold text-court-800 mb-2">Mi línea de tiempo</h2>
+            <p className="text-court-600 mb-6">
               Juan necesita ordenar los hechos para contarlos bien. Esta herramienta le ayuda
               a construir su versión de forma organizada.
             </p>
 
             <div className="card-destacada mb-8">
-              <h3 className="text-lg font-bold text-puente-800 mb-4">Los hechos de Juan</h3>
+              <h3 className="text-lg font-bold text-court-800 mb-4">Los hechos de Juan</h3>
               <ol className="space-y-3">
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-700 numeros shrink-0">25 sep</span>
-                  <span className="text-puente-700">Publiqué el anuncio del objeto en Wallapop</span>
+                  <span className="text-court-700 numeros shrink-0">25 sep</span>
+                  <span className="text-court-700">Publiqué el anuncio del objeto en Wallapop</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-700 numeros shrink-0">28 sep</span>
-                  <span className="text-puente-700">El comprador me escribió interesado</span>
+                  <span className="text-court-700 numeros shrink-0">28 sep</span>
+                  <span className="text-court-700">El comprador me escribió interesado</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-700 numeros shrink-0">30 sep</span>
-                  <span className="text-puente-700">Acordamos el precio: trescientos cincuenta euros</span>
+                  <span className="text-court-700 numeros shrink-0">30 sep</span>
+                  <span className="text-court-700">Acordamos el precio: trescientos cincuenta euros</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-700 numeros shrink-0">1 oct</span>
-                  <span className="text-puente-700">Recibí el pago por Bizum</span>
+                  <span className="text-court-700 numeros shrink-0">1 oct</span>
+                  <span className="text-court-700">Recibí el pago por Bizum</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-700 numeros shrink-0">2 oct</span>
-                  <span className="text-puente-700">Envié el paquete por Correos</span>
+                  <span className="text-court-700 numeros shrink-0">2 oct</span>
+                  <span className="text-court-700">Envié el paquete por Correos</span>
                 </li>
                 <li className="flex gap-4 p-3 bg-calma-sage rounded-lg">
-                  <span className="text-puente-700 numeros shrink-0">10 oct</span>
-                  <span className="text-puente-700">El comprador dice que no lo recibió</span>
+                  <span className="text-court-700 numeros shrink-0">10 oct</span>
+                  <span className="text-court-700">El comprador dice que no lo recibió</span>
                 </li>
               </ol>
-              <p className="text-sm text-puente-700 mt-4">
+              <p className="text-sm text-court-700 mt-4">
                 Esta información se la puede dar a su abogado para preparar la defensa.
               </p>
             </div>
 
-            <h3 className="text-xl font-bold text-puente-800 mb-4">Fases del proceso</h3>
+            <h3 className="text-xl font-bold text-court-800 mb-4">Fases del proceso</h3>
             <LineaTiempo fases={FASES_INVESTIGADO} faseActual={1} />
 
             <button type="button" onClick={() => setSeccion('ajustes')} className="btn-primary mt-8">
@@ -257,15 +257,15 @@ export default function DemoJuan() {
 
         {seccion === 'ajustes' && (
           <section>
-            <h2 className="text-2xl font-bold text-puente-800 mb-2">Ajustes para Juan</h2>
-            <p className="text-puente-600 mb-6">
+            <h2 className="text-2xl font-bold text-court-800 mb-2">Ajustes para Juan</h2>
+            <p className="text-court-600 mb-6">
               Juan tiene dos condiciones: TDAH y ceguera. Puede pedir ajustes por ambas
               (Art. 118 LECrim, Ley 15/2022: discriminación múltiple).
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div className="card">
-                <h3 className="font-bold text-puente-800 mb-3 flex items-center gap-2">
+                <h3 className="font-bold text-court-800 mb-3 flex items-center gap-2">
                   <Icono nombre="🦯" /> Por su ceguera
                 </h3>
                 <ul className="space-y-2">
@@ -277,14 +277,14 @@ export default function DemoJuan() {
                   ].map((ajuste) => (
                     <li key={ajuste} className="flex items-start gap-2">
                       <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
-                      <span className="text-puente-700">{ajuste}</span>
+                      <span className="text-court-700">{ajuste}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div className="card">
-                <h3 className="font-bold text-puente-800 mb-3 flex items-center gap-2">
+                <h3 className="font-bold text-court-800 mb-3 flex items-center gap-2">
                   <Icono nombre="⚡" /> Por su TDAH
                 </h3>
                 <ul className="space-y-2">
@@ -296,7 +296,7 @@ export default function DemoJuan() {
                   ].map((ajuste) => (
                     <li key={ajuste} className="flex items-start gap-2">
                       <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
-                      <span className="text-puente-700">{ajuste}</span>
+                      <span className="text-court-700">{ajuste}</span>
                     </li>
                   ))}
                 </ul>
@@ -304,10 +304,10 @@ export default function DemoJuan() {
             </div>
 
             <div className="bg-accent-success/10 border-2 border-accent-success rounded-tarjeta p-6">
-              <h3 className="text-xl font-bold text-puente-800 mb-4">
+              <h3 className="text-xl font-bold text-court-800 mb-4">
                 Crear el Pasaporte de Juan
               </h3>
-              <p className="text-puente-600 mb-4">
+              <p className="text-court-600 mb-4">
                 Su Pasaporte mostrará que necesita ajustes de accesibilidad visual y de
                 atención, sin revelar diagnósticos específicos.
               </p>

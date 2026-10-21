@@ -39,21 +39,21 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
       className="card-destacada max-w-2xl"
       aria-labelledby={tituloId}
     >
-      <p className="text-sm font-medium text-puente-700 mb-2" aria-live="polite">
+      <p className="text-sm font-medium text-court-700 mb-2" aria-live="polite">
         Intro · paso {paso + 1} de {total}
       </p>
-      <h2 id={tituloId} className="text-2xl font-bold text-puente-800 mb-3">
+      <h2 id={tituloId} className="text-2xl font-bold text-court-800 mb-3">
         {actual.titulo}
       </h2>
-      <p className="text-lg text-puente-800 mb-6">{actual.cuerpo}</p>
+      <p className="text-lg text-court-800 mb-6">{actual.cuerpo}</p>
 
       {esUltimo && (
         <div
           className="mb-6 rounded-suave border-2 border-accent-alert bg-accent-alert/10 p-4"
           role="status"
         >
-          <p className="font-bold text-puente-800 mb-1">Aviso de audio</p>
-          <p className="text-puente-700">
+          <p className="font-bold text-court-800 mb-1">Aviso de audio</p>
+          <p className="text-court-700">
             Va a haber sonido. Baja el volumen o ponte auriculares. No suena nada
             hasta que pulses «Empezar en nivel 0».
           </p>
@@ -72,7 +72,7 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
           <span
             key={PASOS[i].titulo}
             className={`h-2 flex-1 rounded-full ${
-              i <= paso ? 'bg-puente-600' : 'bg-puente-100'
+              i <= paso ? 'bg-court-600' : 'bg-court-100'
             }`}
             aria-hidden="true"
           />
@@ -111,7 +111,7 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
         )}
       </div>
 
-      <p className="text-sm text-puente-700 mt-4">{CREDITO_AUDIO}</p>
+      <p className="text-sm text-court-700 mt-4">{CREDITO_AUDIO}</p>
     </section>
   )
 }

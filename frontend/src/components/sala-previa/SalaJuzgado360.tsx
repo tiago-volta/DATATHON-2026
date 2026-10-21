@@ -26,7 +26,7 @@ const SalaVistas3D = dynamic(
   {
     ssr: false,
     loading: () => (
-      <p className="absolute inset-0 flex items-center justify-center text-puente-700 text-sm bg-puente-50/90">
+      <p className="absolute inset-0 flex items-center justify-center text-court-700 text-sm bg-court-50/90">
         Cargando la sala…
       </p>
     ),
@@ -232,7 +232,7 @@ export function SalaJuzgado360({
 
         <div className="sala-fs-columna min-w-0 flex-1 space-y-2 flex flex-col">
           <div
-            className={`sala-fs-viewer relative aspect-[16/10] sm:aspect-video rounded-tarjeta overflow-hidden border-2 border-puente-200 select-none touch-none bg-puente-100 ${
+            className={`sala-fs-viewer relative aspect-[16/10] sm:aspect-video rounded-tarjeta overflow-hidden border-2 border-court-200 select-none touch-none bg-court-100 ${
               reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'
             }`}
             role="img"
@@ -279,7 +279,7 @@ export function SalaJuzgado360({
                 return (
                   <span
                     key={i}
-                    className="flex-1 rounded-full bg-puente-800/45 origin-bottom"
+                    className="flex-1 rounded-full bg-court-800/45 origin-bottom"
                     style={{
                       height: '100%',
                       transform: `scaleY(${Math.min(1, alto)})`,
@@ -293,13 +293,13 @@ export function SalaJuzgado360({
 
             <div className="absolute top-2 right-2 z-[5] flex flex-col items-end gap-2" data-sala-ui>
               {enCalma && (
-                <span className="inline-block bg-white text-puente-800 font-bold px-3 py-1.5 rounded-suave text-sm border border-puente-200">
+                <span className="inline-block bg-white text-court-800 font-bold px-3 py-1.5 rounded-suave text-sm border border-court-200">
                   Modo calma activo
                 </span>
               )}
               <button
                 type="button"
-                className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-suave bg-white text-puente-800 border border-puente-200 hover:bg-calma-mist focus-visible:ring-4 focus-visible:ring-puente-400"
+                className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-suave bg-white text-court-800 border border-court-200 hover:bg-calma-mist focus-visible:ring-4 focus-visible:ring-court-400"
                 onClick={(e) => {
                   e.stopPropagation()
                   void alternarPantallaCompleta()
@@ -319,7 +319,7 @@ export function SalaJuzgado360({
 
             {!reduced && (
               <p
-                className="absolute bottom-2 right-3 z-[3] text-sm text-puente-800 bg-white px-2 py-1 rounded-suave border border-puente-200 pointer-events-none"
+                className="absolute bottom-2 right-3 z-[3] text-sm text-court-800 bg-white px-2 py-1 rounded-suave border border-court-200 pointer-events-none"
                 aria-hidden="true"
               >
                 Arrastra para mirar
@@ -357,8 +357,8 @@ export function SalaJuzgado360({
               <button
                 type="button"
                 key={m.id}
-                className={`btn-ghost text-sm min-h-[44px] border border-puente-200 ${
-                  enfoque === m.id ? 'bg-puente-100 font-bold' : ''
+                className={`btn-ghost text-sm min-h-[44px] border border-court-200 ${
+                  enfoque === m.id ? 'bg-court-100 font-bold' : ''
                 }`}
                 onClick={() => mirarHacia(m.id)}
                 aria-label={`Mirar hacia ${m.etiqueta.toLowerCase()}`}
@@ -370,14 +370,14 @@ export function SalaJuzgado360({
           </div>
 
           {reduced && (
-            <p className="sala-fs-nota text-sm text-puente-700" role="note">
+            <p className="sala-fs-nota text-sm text-court-700" role="note">
               Vista con menos movimiento: usa los botones para mirar la entrada, los abogados
               o el juez. Las barritas de estímulo siguen a la izquierda
               {enPantallaCompleta ? ' (arriba a la izquierda en pantalla completa)' : ''}.
             </p>
           )}
 
-          <p className="sala-fs-credito text-xs text-puente-600 leading-snug">
+          <p className="sala-fs-credito text-xs text-court-600 leading-snug">
             Sala de vistas en 3D (Three.js): texturas PBR CC0, HDRI de interior y
             cutouts fotográficos. Ver CREDITOS en /sala-previa/.
           </p>

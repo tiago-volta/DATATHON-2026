@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        puente: {
+        court: {
           50: '#f5f5f7',
           100: '#e8e8ed',
           200: '#d2d2d7',

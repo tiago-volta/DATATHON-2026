@@ -31,51 +31,51 @@ export default function PaginaVerPasaporte({
           </section>
         ) : (
           <section aria-labelledby="titulo-pasaporte">
-            <p className="text-puente-700 font-medium mb-6">
+            <p className="text-court-700 font-medium mb-6">
               Escaneado · Pasaporte de Ajustes
             </p>
 
             <article className="hoja">
-              <header className="border-b-2 border-puente-800 pb-6 mb-6">
-                <div className="flex items-center gap-3 mb-4 text-puente-800">
+              <header className="border-b-2 border-court-800 pb-6 mb-6">
+                <div className="flex items-center gap-3 mb-4 text-court-800">
                   <Marca className="w-8 h-8" />
-                  <span className="text-xl font-bold" translate="no">PUENTE</span>
+                  <span className="text-xl font-bold" translate="no">InclusiveCourt</span>
                 </div>
-                <h1 id="titulo-pasaporte" className="text-3xl font-bold text-puente-900 mb-1">
+                <h1 id="titulo-pasaporte" className="text-3xl font-bold text-court-900 mb-1">
                   {pasaporte.nombre}
                 </h1>
-                <p className="text-puente-700">
+                <p className="text-court-700">
                   Necesita estos ajustes en el juzgado
                 </p>
-                <p className="text-puente-800 mt-3 numeros">
+                <p className="text-court-800 mt-3 numeros">
                   Código: {pasaporte.id}
                 </p>
               </header>
 
-              <h2 className="font-bold text-puente-800 mb-4 text-lg">
+              <h2 className="font-bold text-court-800 mb-4 text-lg">
                 Adaptaciones pedidas
               </h2>
               <ul className="space-y-3">
                 {ajustes.map((ajuste) => (
                   <li
                     key={ajuste.id}
-                    className="flex items-start gap-3 p-3 rounded-suave bg-white border border-puente-200"
+                    className="flex items-start gap-3 p-3 rounded-suave bg-white border border-court-200"
                   >
                     <Icono nombre="✓" className="mt-0.5 h-5 w-5 text-accent-success" />
                     <div>
-                      <p className="font-bold text-puente-800">{ajuste.nombre}</p>
-                      <p className="text-puente-700 text-base">{ajuste.descripcion}</p>
+                      <p className="font-bold text-court-800">{ajuste.nombre}</p>
+                      <p className="text-court-700 text-base">{ajuste.descripcion}</p>
                     </div>
                   </li>
                 ))}
               </ul>
 
               {pasaporte.contacto && (
-                <div className="mt-6 p-4 rounded-suave border-2 border-puente-200 bg-white">
-                  <p className="text-puente-800 mb-1">
+                <div className="mt-6 p-4 rounded-suave border-2 border-court-200 bg-white">
+                  <p className="text-court-800 mb-1">
                     Contacto de emergencia
                   </p>
-                  <p className="text-lg font-bold text-puente-900">
+                  <p className="text-lg font-bold text-court-900">
                     <a href={`tel:${pasaporte.contacto.replace(/\s/g, '')}`} className="underline">
                       {pasaporte.contacto}
                     </a>
@@ -83,7 +83,7 @@ export default function PaginaVerPasaporte({
                 </div>
               )}
 
-              <p className="mt-6 text-puente-800">
+              <p className="mt-6 text-court-800">
                 Este Pasaporte no muestra ningún diagnóstico. Solo indica qué
                 adaptaciones necesita la persona.
                 <br />

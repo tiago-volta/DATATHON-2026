@@ -164,7 +164,7 @@ export function OnboardingVoz() {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 bg-puente-900/40"
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 bg-court-900/40"
       role="presentation"
     >
       <div
@@ -172,23 +172,23 @@ export function OnboardingVoz() {
         role="dialog"
         aria-modal="true"
         aria-labelledby={tituloId}
-        className="w-full max-w-lg bg-calma-cream border-2 border-puente-800 rounded-tarjeta shadow-lg p-6 md:p-8 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg bg-calma-cream border-2 border-court-800 rounded-tarjeta shadow-lg p-6 md:p-8 max-h-[90vh] overflow-y-auto"
       >
-        <p className="text-sm font-bold tracking-wide text-puente-700 mb-2">
-          PUENTE · Modo con voz
+        <p className="text-sm font-bold tracking-wide text-court-700 mb-2">
+          InclusiveCourt · Modo con voz
         </p>
-        <h2 id={tituloId} className="text-2xl text-puente-900 mb-3">
-          Cómo funciona PUENTE
+        <h2 id={tituloId} className="text-2xl text-court-900 mb-3">
+          Cómo funciona InclusiveCourt
         </h2>
-        <p className="text-lg text-puente-800 mb-4 leading-relaxed">
+        <p className="text-lg text-court-800 mb-4 leading-relaxed">
           {TEXTO_ONBOARDING}
         </p>
 
-        <blockquote className="border-l-4 border-puente-500 pl-4 mb-6">
-          <p className="text-xl font-bold text-puente-900">
+        <blockquote className="border-l-4 border-court-500 pl-4 mb-6">
+          <p className="text-xl font-bold text-court-900">
             «{FRASE_ACTIVACION}»
           </p>
-          <p className="text-puente-700 mt-1 text-sm">
+          <p className="text-court-700 mt-1 text-sm">
             También vale: «activar acceso por voz», «necesito audio» o «modo
             audiodescrito».
           </p>
@@ -227,7 +227,7 @@ export function OnboardingVoz() {
 
         {(escucha.parcial || feedback) && (
           <p
-            className="mb-4 text-puente-800 bg-puente-50 border border-puente-200 rounded-lg p-3"
+            className="mb-4 text-court-800 bg-court-50 border border-court-200 rounded-lg p-3"
             role="status"
             aria-live="polite"
           >
@@ -236,7 +236,7 @@ export function OnboardingVoz() {
         )}
 
         {!escucha.disponible && (
-          <p className="mb-4 text-sm text-puente-700" role="status">
+          <p className="mb-4 text-sm text-court-700" role="status">
             {escucha.mensajeSinSoporte}
           </p>
         )}
@@ -250,20 +250,20 @@ export function OnboardingVoz() {
           </button>
         </div>
 
-        <p className="text-sm text-puente-700 mb-2">
+        <p className="text-sm text-court-700 mb-2">
           Cuando esté activo, puedes ir a:
         </p>
-        <div className="flex flex-wrap gap-4 text-puente-800 font-bold">
+        <div className="flex flex-wrap gap-4 text-court-800 font-bold">
           <Link
             href="/sala-previa"
-            className="underline underline-offset-4 hover:text-puente-600"
+            className="underline underline-offset-4 hover:text-court-600"
             onClick={cerrar}
           >
             Sala Previa
           </Link>
           <Link
             href="/citacion"
-            className="underline underline-offset-4 hover:text-puente-600"
+            className="underline underline-offset-4 hover:text-court-600"
             onClick={cerrar}
           >
             Mi citación

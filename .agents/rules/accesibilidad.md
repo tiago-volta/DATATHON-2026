@@ -1,9 +1,9 @@
 ---
 trigger: always_on
-description: Reglas de accesibilidad web (screen-reader first, teclado, ARIA) para PUENTE
+description: Reglas de accesibilidad web (screen-reader first, teclado, ARIA) para InclusiveCourt
 ---
 
-# Accesibilidad en PUENTE
+# Accesibilidad en InclusiveCourt
 
 Reglas específicas para garantizar que la aplicación funcione para Juan (ciego + TDAH).
 

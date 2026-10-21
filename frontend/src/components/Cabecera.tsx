@@ -32,11 +32,11 @@ export function Cabecera() {
         <div className="cabecera-interior">
         <Link
           href="/"
-          className="flex items-center gap-3 text-puente-900 min-h-[44px] min-w-0 shrink-0 rounded-suave px-2 -mx-2 transition-colors duration-200 hover:bg-puente-50"
+          className="flex items-center gap-3 text-court-900 min-h-[44px] min-w-0 shrink-0 rounded-suave px-2 -mx-2 transition-colors duration-200 hover:bg-court-50"
         >
           <Marca />
           <span className="text-2xl font-bold tracking-tight" translate="no">
-            PUENTE
+            InclusiveCourt
           </span>
         </Link>
 
@@ -50,23 +50,23 @@ export function Cabecera() {
                 aria-current={activo ? 'page' : undefined}
                 className={`inline-flex items-center min-h-[44px] px-3 rounded-suave transition-colors duration-200 ${
                   activo
-                    ? 'font-bold text-puente-900 underline decoration-puente-900 decoration-2 underline-offset-8'
-                    : 'font-medium text-puente-800 hover:bg-puente-50'
+                    ? 'font-bold text-court-900 underline decoration-court-900 decoration-2 underline-offset-8'
+                    : 'font-medium text-court-800 hover:bg-court-50'
                 }`}
               >
                 {enlace.etiqueta}
               </Link>
             )
           })}
-          <div className="flex items-center gap-1 md:ml-2 md:border-l md:border-puente-200 md:pl-4">
+          <div className="flex items-center gap-1 md:ml-2 md:border-l md:border-court-200 md:pl-4">
             <IndicadorModoVoz />
             <Link
               href="/profesional"
               aria-current={panelActivo ? 'page' : undefined}
               className={`inline-flex items-center min-h-[44px] px-3 rounded-suave transition-colors duration-200 ${
                 panelActivo
-                  ? 'font-bold text-puente-900 underline decoration-puente-900 decoration-2 underline-offset-8'
-                  : 'text-puente-800 hover:bg-puente-50'
+                  ? 'font-bold text-court-900 underline decoration-court-900 decoration-2 underline-offset-8'
+                  : 'text-court-800 hover:bg-court-50'
               }`}
             >
               Para el juzgado

@@ -6,7 +6,7 @@ import { TutorialInicio } from '@/components/TutorialInicio'
 import { OnboardingVoz } from '@/components/voz/OnboardingVoz'
 
 export const metadata: Metadata = {
-  title: 'PUENTE - Accesibilidad en la Justicia',
+  title: 'InclusiveCourt - Accesibilidad en la Justicia',
   description: 'De la citación a la sentencia, a tu manera',
 }
 

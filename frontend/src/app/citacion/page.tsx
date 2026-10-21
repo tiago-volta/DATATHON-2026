@@ -482,7 +482,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string) {
   const lineas = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//PUENTE//Accesibilidad Judicial//ES',
+    'PRODID:-//InclusiveCourt//Accesibilidad Judicial//ES',
     'CALSCALE:GREGORIAN',
   ]
   for (const plazo of plazos) {
@@ -491,7 +491,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string) {
       'BEGIN:VEVENT',
       `SUMMARY:${titulo} - ${plazo.descripcion}`,
       `DTSTART;VALUE=DATE:${fechaCompacta}`,
-      `DESCRIPTION:${plazo.descripcion}. Recuerda llevar tu DNI y tu Pasaporte de Ajustes PUENTE.`,
+      `DESCRIPTION:${plazo.descripcion}. Recuerda llevar tu DNI y tu Pasaporte de Ajustes InclusiveCourt.`,
       'END:VEVENT'
     )
   }
@@ -500,7 +500,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string) {
   const url = window.URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'citacion_puente.ics'
+  a.download = 'citacion_inclusivecourt.ics'
   a.click()
   window.URL.revokeObjectURL(url)
 }
@@ -631,7 +631,7 @@ export default function PaginaCitacion() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-      const params = new URLSearchParams({ titulo: 'Cita Judicial PUENTE' })
+      const params = new URLSearchParams({ titulo: 'Cita Judicial InclusiveCourt' })
       const response = await fetch(`${apiUrl}/api/generar-ics?${params.toString()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -644,11 +644,11 @@ export default function PaginaCitacion() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'citacion_puente.ics'
+      a.download = 'citacion_inclusivecourt.ics'
       a.click()
       window.URL.revokeObjectURL(url)
     } catch {
-      generarICSLocal(resultado.plazos, 'Cita Judicial PUENTE')
+      generarICSLocal(resultado.plazos, 'Cita Judicial InclusiveCourt')
     }
   }
 
@@ -675,13 +675,13 @@ export default function PaginaCitacion() {
       <main id="contenido-principal" className="page-shell">
         <nav className="mb-8" aria-label="Pasos del proceso">
           <ol className="flex items-center gap-2 text-sm">
-            <li className={paso === 'entrada' ? 'font-bold text-puente-900 underline underline-offset-4' : 'text-puente-700'}>
+            <li className={paso === 'entrada' ? 'font-bold text-court-900 underline underline-offset-4' : 'text-court-700'}>
               1. Tu documento judicial
             </li>
-            <li aria-hidden="true" className="text-puente-300">
+            <li aria-hidden="true" className="text-court-300">
               <Icono nombre="→" className="h-4 w-4" />
             </li>
-            <li className={paso === 'resultado' ? 'font-bold text-puente-900 underline underline-offset-4' : 'text-puente-700'}>
+            <li className={paso === 'resultado' ? 'font-bold text-court-900 underline underline-offset-4' : 'text-court-700'}>
               2. Explicación accesible
             </li>
           </ol>
@@ -700,7 +700,7 @@ export default function PaginaCitacion() {
             <div className="card mb-6 bg-calma-sage">
               <label
                 htmlFor="archivo-judicial"
-                className="block font-bold text-puente-800 mb-2"
+                className="block font-bold text-court-800 mb-2"
               >
                 Opción A: Subir documento del juzgado (.pdf, .docx, .txt)
               </label>
@@ -712,16 +712,16 @@ export default function PaginaCitacion() {
                   onChange={manejarSubidaArchivo}
                   disabled={extrayendo}
                   aria-describedby="ayuda-archivo"
-                  className="text-sm text-puente-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-puente-600 file:text-white hover:file:bg-puente-700 disabled:opacity-50"
+                  className="text-sm text-court-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-court-600 file:text-white hover:file:bg-court-700 disabled:opacity-50"
                 />
                 {extrayendo && (
-                  <span className="text-sm font-semibold text-puente-800 flex items-center gap-2" aria-live="polite">
+                  <span className="text-sm font-semibold text-court-800 flex items-center gap-2" aria-live="polite">
                     <span className="inline-block animate-spin" aria-hidden="true">⏳</span>
                     Extrayendo texto del PDF...
                   </span>
                 )}
                 {nombreArchivo && !extrayendo && (
-                  <span className="text-sm font-medium text-puente-700" aria-live="polite">
+                  <span className="text-sm font-medium text-court-700" aria-live="polite">
                     Archivo: {nombreArchivo}
                   </span>
                 )}
@@ -731,13 +731,13 @@ export default function PaginaCitacion() {
                   ✓ {mensajeExitoArchivo}
                 </p>
               )}
-              <p id="ayuda-archivo" className="text-xs text-puente-600 mt-2">
+              <p id="ayuda-archivo" className="text-xs text-court-600 mt-2">
                 Admite documentos oficiales en PDF y Word. Tus datos personales (nombre, DNI, dirección) se detectan y anonimizan en local antes de cualquier llamada a la IA (RGPD art. 25).
               </p>
             </div>
 
             <div className="space-y-4">
-              <label htmlFor="citacion" className="block text-lg font-medium text-puente-700">
+              <label htmlFor="citacion" className="block text-lg font-medium text-court-700">
                 Opción B: Pega aquí el texto de tu citación o sentencia
               </label>
               <textarea
@@ -754,7 +754,7 @@ export default function PaginaCitacion() {
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? 'ayuda-citacion error-citacion' : 'ayuda-citacion'}
               />
-              <p id="ayuda-citacion" className="text-sm text-puente-700">
+              <p id="ayuda-citacion" className="text-sm text-court-700">
                 Prueba con citaciones basadas en modelos públicos (COET, Aula Judicial León, estilo Ministerio de Justicia) o con los ejemplos cortos:
               </p>
 
@@ -824,10 +824,10 @@ export default function PaginaCitacion() {
         {paso === 'procesando' && (
           <section className="text-center py-16" aria-live="polite">
             <div className="card max-w-lg mx-auto">
-              <p className="text-xl font-bold text-puente-800 mb-3">
+              <p className="text-xl font-bold text-court-800 mb-3">
                 Adaptando tu documento paso a paso...
               </p>
-              <ol className="text-left text-sm text-puente-700 space-y-2">
+              <ol className="text-left text-sm text-court-700 space-y-2">
                 <li className="font-semibold text-emerald-900">
                   ✓ 0. Anonimizando datos personales en local (DNI, nombres, domicilios) según RGPD art. 25
                 </li>
@@ -920,25 +920,25 @@ export default function PaginaCitacion() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                       <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200">
-                        <span className="text-xs font-semibold text-puente-700 block mb-0.5">
+                        <span className="text-xs font-semibold text-court-700 block mb-0.5">
                           Documento original del juzgado:
                         </span>
                         <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-puente-900 font-mono">
+                          <span className="text-lg font-bold text-court-900 font-mono">
                             {resultado.metricas_legibilidad.original.score}/100
                           </span>
-                          <span className="text-xs text-puente-600">
+                          <span className="text-xs text-court-600">
                             ({resultado.metricas_legibilidad.original.nivel})
                           </span>
                         </div>
-                        <span className="text-[11px] text-puente-500 block mt-1">
+                        <span className="text-[11px] text-court-500 block mt-1">
                           Media: {resultado.metricas_legibilidad.original.palabras_por_frase} palabras por frase
                         </span>
                       </div>
 
                       <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200">
                         <span className="text-xs font-semibold text-emerald-800 block mb-0.5">
-                          Versión adaptada por PUENTE:
+                          Versión adaptada por InclusiveCourt:
                         </span>
                         <div className="flex items-baseline gap-2">
                           <span className="text-lg font-bold text-emerald-900 font-mono">
@@ -964,41 +964,41 @@ export default function PaginaCitacion() {
 
             {/* Datos clave con iconos (C03) */}
             <div className="card-destacada mb-8">
-              <h2 className="text-xl font-bold text-puente-800 mb-4">
+              <h2 className="text-xl font-bold text-court-800 mb-4">
                 Lo más importante de un vistazo
               </h2>
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div className="bg-calma-sage rounded-lg p-4">
-                  <dt className="text-sm text-puente-600 mb-1 flex items-center gap-2">
+                  <dt className="text-sm text-court-600 mb-1 flex items-center gap-2">
                     <Icono nombre="👤" className="h-4 w-4" /> Tu situación o rol
                   </dt>
-                  <dd className="text-xl font-bold text-puente-800 capitalize">
+                  <dd className="text-xl font-bold text-court-800 capitalize">
                     {resultado.datos_clave.rol}
                   </dd>
                 </div>
                 <div className="bg-calma-sage rounded-lg p-4">
-                  <dt className="text-sm text-puente-600 mb-1 flex items-center gap-2">
+                  <dt className="text-sm text-court-600 mb-1 flex items-center gap-2">
                     <Icono nombre="📅" className="h-4 w-4" /> Fecha y hora
                   </dt>
-                  <dd className="text-xl font-bold text-puente-800">
+                  <dd className="text-xl font-bold text-court-800">
                     {resultado.datos_clave.fecha}
                     {resultado.datos_clave.hora ? ` · ${resultado.datos_clave.hora}` : ''}
                   </dd>
                 </div>
                 <div className="bg-calma-sage rounded-lg p-4 sm:col-span-2">
-                  <dt className="text-sm text-puente-600 mb-1 flex items-center gap-2">
+                  <dt className="text-sm text-court-600 mb-1 flex items-center gap-2">
                     <Icono nombre="📍" className="h-4 w-4" /> Juzgado
                   </dt>
-                  <dd className="text-lg font-bold text-puente-800">
+                  <dd className="text-lg font-bold text-court-800">
                     {resultado.datos_clave.lugar}
                   </dd>
                 </div>
               </dl>
 
               {resultado.datos_clave.que_llevar && resultado.datos_clave.que_llevar.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-puente-200">
-                  <h3 className="font-bold text-puente-800 mb-2">Qué tienes que hacer o llevar</h3>
-                  <ul className="list-disc pl-5 text-puente-700 space-y-1">
+                <div className="mt-4 pt-4 border-t border-court-200">
+                  <h3 className="font-bold text-court-800 mb-2">Qué tienes que hacer o llevar</h3>
+                  <ul className="list-disc pl-5 text-court-700 space-y-1">
                     {resultado.datos_clave.que_llevar.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -1007,9 +1007,9 @@ export default function PaginaCitacion() {
               )}
 
               {resultado.datos_clave.derechos && resultado.datos_clave.derechos.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-puente-200">
-                  <h3 className="font-bold text-puente-800 mb-2">Tus derechos garantizados</h3>
-                  <ul className="list-disc pl-5 text-puente-700 space-y-1">
+                <div className="mt-4 pt-4 border-t border-court-200">
+                  <h3 className="font-bold text-court-800 mb-2">Tus derechos garantizados</h3>
+                  <ul className="list-disc pl-5 text-court-700 space-y-1">
                     {resultado.datos_clave.derechos.map((derecho) => (
                       <li key={derecho}>{derecho}</li>
                     ))}
@@ -1020,7 +1020,7 @@ export default function PaginaCitacion() {
 
             {/* Selector de nivel de lectura (C06) */}
             <div className="mb-4">
-              <p className="text-sm font-medium text-puente-700 mb-2">
+              <p className="text-sm font-medium text-court-700 mb-2">
                 Elige cómo prefieres leer la explicación:
               </p>
               <div className="flex flex-wrap gap-2" role="group" aria-label="Nivel de adaptación de lectura">
@@ -1056,14 +1056,14 @@ export default function PaginaCitacion() {
             <div className="card mb-6" aria-live="polite">
               <div className="flex flex-wrap justify-between items-start gap-3 mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-puente-800">
+                  <h2 className="text-xl font-bold text-court-800">
                     {modoLectura === 'clara'
                       ? 'En lenguaje claro (ISO 24495-1)'
                       : modoLectura === 'facil'
                         ? 'En lectura fácil (una idea por línea)'
                         : 'Resumen en pasos cortos'}
                   </h2>
-                  <p className="text-sm text-puente-600">
+                  <p className="text-sm text-court-600">
                     {modoLectura === 'clara'
                       ? 'Frases directas en voz activa, sin tecnicismos.'
                       : modoLectura === 'facil'
@@ -1079,7 +1079,7 @@ export default function PaginaCitacion() {
                   {pasosSimples.map((frase, idx) => (
                     <li
                       key={idx}
-                      className="p-4 bg-calma-sage rounded-lg text-lg font-medium text-puente-800"
+                      className="p-4 bg-calma-sage rounded-lg text-lg font-medium text-court-800"
                     >
                       {frase}
                     </li>
@@ -1097,10 +1097,10 @@ export default function PaginaCitacion() {
               <div className="card mb-6">
                 <div className="flex flex-wrap justify-between items-start gap-3 mb-3">
                   <div>
-                    <h2 className="text-xl font-bold text-puente-800">
+                    <h2 className="text-xl font-bold text-court-800">
                       Números, horas e importes en palabras (Apoyo Discalculia)
                     </h2>
-                    <p className="text-sm text-puente-600">
+                    <p className="text-sm text-court-600">
                       Traducimos las cifras y plazos a palabras para que no haya confusión con los números.
                     </p>
                   </div>
@@ -1114,12 +1114,12 @@ export default function PaginaCitacion() {
                   {apoyoNumerico.map((item, i) => (
                     <div key={i} className="p-4 rounded-lg bg-calma-sage flex flex-col justify-between">
                       <div>
-                        <dt className="text-xs font-bold uppercase tracking-wide text-puente-600">
+                        <dt className="text-xs font-bold uppercase tracking-wide text-court-600">
                           {item.etiqueta}
                         </dt>
-                        <dd className="text-lg font-bold text-puente-800 mt-1">{item.cifra}</dd>
+                        <dd className="text-lg font-bold text-court-800 mt-1">{item.cifra}</dd>
                       </div>
-                      <p className="text-sm text-puente-700 mt-2 pt-2 border-t border-puente-200">
+                      <p className="text-sm text-court-700 mt-2 pt-2 border-t border-court-200">
                         {item.en_palabras}
                       </p>
                     </div>
@@ -1131,7 +1131,7 @@ export default function PaginaCitacion() {
             {/* Pictogramas ARASAAC (C01) */}
             {resultado.pictogramas.length > 0 && (
               <div className="card mb-6">
-                <h2 className="text-xl font-bold text-puente-800 mb-4">
+                <h2 className="text-xl font-bold text-court-800 mb-4">
                   Apoyo visual con pictogramas
                 </h2>
                 <div className="flex flex-wrap gap-4 justify-center">
@@ -1139,7 +1139,7 @@ export default function PaginaCitacion() {
                     <Pictograma key={p.id} url={p.url} keyword={p.keyword} />
                   ))}
                 </div>
-                <p className="text-sm text-puente-700 mt-4 text-center">
+                <p className="text-sm text-court-700 mt-4 text-center">
                   Pictogramas: ARASAAC, Sergio Palao, Gobierno de Aragón. Licencia CC BY-NC-SA.
                 </p>
               </div>
@@ -1148,7 +1148,7 @@ export default function PaginaCitacion() {
             {/* Plazos con cuenta atrás visual y calendario (C04 + C05) */}
             {resultado.plazos.length > 0 && (
               <div className="card mb-6">
-                <h2 className="text-xl font-bold text-puente-800 mb-4">
+                <h2 className="text-xl font-bold text-court-800 mb-4">
                   Fechas importantes y cuenta atrás
                 </h2>
                 <ul className="space-y-3">
@@ -1162,10 +1162,10 @@ export default function PaginaCitacion() {
                       <li key={i} className="p-4 bg-calma-sage rounded-lg space-y-2">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-3">
-                            <Icono nombre="📅" className="h-6 w-6 text-puente-900" />
+                            <Icono nombre="📅" className="h-6 w-6 text-court-900" />
                             <div>
-                              <p className="font-bold text-puente-800">{plazo.descripcion}</p>
-                              <p className="text-puente-700">
+                              <p className="font-bold text-court-800">{plazo.descripcion}</p>
+                              <p className="text-court-700">
                                 {new Date(plazo.fecha).toLocaleDateString('es-ES', {
                                   weekday: 'long',
                                   year: 'numeric',
@@ -1176,7 +1176,7 @@ export default function PaginaCitacion() {
                             </div>
                           </div>
                           {plazo.dias_restantes > 0 && (
-                            <span className="inline-block bg-white text-puente-800 font-bold text-sm px-3 py-1.5 rounded-lg border border-puente-200">
+                            <span className="inline-block bg-white text-court-800 font-bold text-sm px-3 py-1.5 rounded-lg border border-court-200">
                               Faltan {plazo.dias_restantes} días (unas {semanas} semanas)
                             </span>
                           )}
@@ -1184,7 +1184,7 @@ export default function PaginaCitacion() {
                         {plazo.dias_restantes > 0 && (
                           <div aria-hidden="true" className="w-full bg-white rounded-full h-2.5 overflow-hidden">
                             <div
-                              className="bg-puente-600 h-2.5 rounded-full"
+                              className="bg-court-600 h-2.5 rounded-full"
                               style={{ width: `${porcentajeTiempo}%` }}
                             />
                           </div>
@@ -1224,9 +1224,9 @@ export default function PaginaCitacion() {
 
             {/* Bloque ¿Qué pasa si no voy o no puedo ir ese día? (C07) */}
             {quePasaSiNoVoy && (
-              <div className="card mb-6 border-l-4 border-l-puente-600">
+              <div className="card mb-6 border-l-4 border-l-court-600">
                 <div className="flex flex-wrap justify-between items-start gap-3 mb-3">
-                  <h2 className="text-xl font-bold text-puente-800">
+                  <h2 className="text-xl font-bold text-court-800">
                     {esSentencia
                       ? '¿Tengo que ir al juzgado después de esta carta?'
                       : '¿Qué pasa si ese día estoy enfermo o no puedo ir?'}
@@ -1235,13 +1235,13 @@ export default function PaginaCitacion() {
                     texto={`${quePasaSiNoVoy.resumen} ${quePasaSiNoVoy.pasos_si_no_puedes.join(' ')} ${quePasaSiNoVoy.mensaje_calma}`}
                   />
                 </div>
-                <p className="text-puente-700 mb-3">{quePasaSiNoVoy.resumen}</p>
-                <ol className="list-decimal pl-5 space-y-1 text-puente-700 mb-3">
+                <p className="text-court-700 mb-3">{quePasaSiNoVoy.resumen}</p>
+                <ol className="list-decimal pl-5 space-y-1 text-court-700 mb-3">
                   {quePasaSiNoVoy.pasos_si_no_puedes.map((pasoItem, idx) => (
                     <li key={idx}>{pasoItem}</li>
                   ))}
                 </ol>
-                <p className="text-sm font-medium text-puente-800 bg-calma-sage p-3 rounded-lg">
+                <p className="text-sm font-medium text-court-800 bg-calma-sage p-3 rounded-lg">
                   {quePasaSiNoVoy.mensaje_calma}
                 </p>
               </div>
@@ -1249,7 +1249,7 @@ export default function PaginaCitacion() {
 
             {/* Fases del proceso */}
             <div className="card mb-6">
-              <h2 className="text-xl font-bold text-puente-800 mb-4">
+              <h2 className="text-xl font-bold text-court-800 mb-4">
                 En qué paso del proceso estás
               </h2>
               <LineaTiempo
@@ -1266,10 +1266,10 @@ export default function PaginaCitacion() {
             <div className="card mb-6">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-puente-800">
+                  <h2 className="text-xl font-bold text-court-800">
                     ¿Quién estará en la sala del juzgado?
                   </h2>
-                  <p className="text-sm text-puente-600">
+                  <p className="text-sm text-court-600">
                     Conoce de antemano qué hace cada persona y cómo distinguirla.
                   </p>
                 </div>
@@ -1300,13 +1300,13 @@ export default function PaginaCitacion() {
 
             {/* Transparencia: Suma de varias IAs */}
             <details className="card mb-8">
-              <summary className="font-bold text-puente-800 cursor-pointer">
+              <summary className="font-bold text-court-800 cursor-pointer">
                 Cómo hemos adaptado este documento (Suma de varias IAs y normas UNE)
               </summary>
-              <ol className="mt-4 space-y-3 text-sm text-puente-700">
+              <ol className="mt-4 space-y-3 text-sm text-court-700">
                 {pipelineIA.map((etapa) => (
                   <li key={etapa.paso} className="p-3 bg-calma-sage rounded-lg">
-                    <span className="font-bold text-puente-800">
+                    <span className="font-bold text-court-800">
                       Paso {etapa.paso}. {etapa.nombre}:
                     </span>{' '}
                     {etapa.detalle}
@@ -1316,10 +1316,10 @@ export default function PaginaCitacion() {
             </details>
 
             <div className="bg-accent-success/10 border-2 border-accent-success rounded-tarjeta p-6 mb-8">
-              <h2 className="text-xl font-bold text-puente-800 mb-2">
+              <h2 className="text-xl font-bold text-court-800 mb-2">
                 Puedes pedir apoyos con tu Pasaporte de Ajustes
               </h2>
-              <p className="text-puente-600 mb-4">
+              <p className="text-court-600 mb-4">
                 Tienes derecho a pedir adaptaciones sin tener que explicar tu diagnóstico:
                 sala de espera tranquila, preguntas de una en una, lectura en voz alta o persona facilitadora.
               </p>

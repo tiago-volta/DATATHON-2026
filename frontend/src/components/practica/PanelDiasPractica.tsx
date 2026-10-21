@@ -46,10 +46,10 @@ export function PanelDiasPractica({
 
   return (
     <section aria-labelledby={tituloId} className="card">
-      <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+      <h2 id={tituloId} className="font-bold text-court-800 mb-1">
         {titulo}
       </h2>
-      <p id={ayudaId} className="text-sm text-puente-700 mb-4">
+      <p id={ayudaId} className="text-sm text-court-700 mb-4">
         Contamos los días en que practicas. Si paras unos días, al volver te
         damos la bienvenida. No pierdes nada.
       </p>
@@ -60,7 +60,7 @@ export function PanelDiasPractica({
           role="status"
           aria-live="polite"
         >
-          <p className="flex-1 text-puente-900 text-sm min-w-0">{bienvenida}</p>
+          <p className="flex-1 text-court-900 text-sm min-w-0">{bienvenida}</p>
           {onDescartarBienvenida && (
             <button
               type="button"
@@ -74,9 +74,9 @@ export function PanelDiasPractica({
         </div>
       )}
 
-      <p id={resumenId} className="text-puente-800 mb-3">
+      <p id={resumenId} className="text-court-800 mb-3">
         <span className="font-bold">{resumenTotal}</span>{' '}
-        <span className="text-puente-700">{resumenSemana}</span>
+        <span className="text-court-700">{resumenSemana}</span>
       </p>
 
       <ul
@@ -90,18 +90,18 @@ export function PanelDiasPractica({
               className={`flex flex-col items-center justify-center gap-1 rounded-suave border-2 px-1 py-2 min-h-[72px] ${
                 dia.practicado
                   ? 'border-accent-success/50 bg-calma-sage/90'
-                  : 'border-puente-100 bg-puente-50/80'
+                  : 'border-court-100 bg-court-50/80'
               }`}
             >
               <span
-                className="text-xs font-bold text-puente-800 uppercase"
+                className="text-xs font-bold text-court-800 uppercase"
                 aria-hidden="true"
               >
                 {dia.etiqueta}
               </span>
               <Icono
                 nombre={dia.practicado ? '✓' : '·'}
-                className={`h-5 w-5 ${dia.practicado ? 'text-accent-success' : 'text-puente-300'}`}
+                className={`h-5 w-5 ${dia.practicado ? 'text-accent-success' : 'text-court-300'}`}
               />
               <span className="sr-only">
                 {dia.nombreLargo}:{' '}
@@ -109,7 +109,7 @@ export function PanelDiasPractica({
               </span>
               <span
                 className={`text-[10px] leading-tight text-center ${
-                  dia.practicado ? 'text-puente-800' : 'text-puente-600'
+                  dia.practicado ? 'text-court-800' : 'text-court-600'
                 }`}
                 aria-hidden="true"
               >

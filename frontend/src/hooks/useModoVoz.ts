@@ -14,7 +14,7 @@ import {
  * No usa Context para no forzar re-renders en todo el árbol:
  * cada consumidor lee/escucha el mismo storage + evento custom.
  */
-const EVENTO = 'puente-modo-voz-cambio'
+const EVENTO = 'court-modo-voz-cambio'
 
 function emitirCambio(): void {
   if (typeof window === 'undefined') return

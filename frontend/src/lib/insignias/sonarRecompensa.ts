@@ -1,11 +1,11 @@
 /**
  * Sonido corto al ganar una medalla.
- * Respeta mute global (`localStorage puente-audio-mute`),
+ * Respeta mute global (`localStorage court-audio-mute`),
  * prefers-reduced-motion (volumen bajo) y modo calma (volumen bajo).
  */
 
 const RUTA = '/sala-previa/audio/recompensa-medalla.mp3'
-const CLAVE_MUTE = 'puente-audio-mute'
+const CLAVE_MUTE = 'court-audio-mute'
 
 let audio: HTMLAudioElement | null = null
 

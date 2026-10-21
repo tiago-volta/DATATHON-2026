@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arranca PUENTE (backend + frontend) con un solo comando:
+# Arranca InclusiveCourt (backend + frontend) con un solo comando:
 #   ./start.sh
 set -euo pipefail
 
@@ -13,7 +13,7 @@ PID_FRONTEND=""
 
 limpiar() {
   echo ""
-  echo "Cerrando PUENTE..."
+  echo "Cerrando InclusiveCourt..."
   [[ -n "$PID_FRONTEND" ]] && kill "$PID_FRONTEND" 2>/dev/null || true
   [[ -n "$PID_BACKEND" ]] && kill "$PID_BACKEND" 2>/dev/null || true
   # Hijos de next/uvicorn
@@ -58,7 +58,7 @@ npm run dev -- --hostname 0.0.0.0 --port "$FRONTEND_PORT" &
 PID_FRONTEND=$!
 
 echo ""
-echo "PUENTE en marcha"
+echo "InclusiveCourt en marcha"
 echo "  App:     http://localhost:$FRONTEND_PORT"
 echo "  API:     http://localhost:$BACKEND_PORT"
 echo "  Salud:   http://localhost:$BACKEND_PORT/health"

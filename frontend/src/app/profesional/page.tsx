@@ -130,7 +130,7 @@ export default function PaginaProfesional() {
     }
 
     try {
-      const guardado = localStorage.getItem('puente-pasaporte')
+      const guardado = localStorage.getItem('court-pasaporte')
       if (guardado) {
         const datos = JSON.parse(guardado)
         if (datos?.id?.toUpperCase() === valor && typeof datos.url === 'string') {
@@ -168,7 +168,7 @@ export default function PaginaProfesional() {
         </p>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-puente-800 mb-4">
+          <h2 className="text-2xl font-bold text-court-800 mb-4">
             Perfil individualizado de ajustes (4 pasos CGPJ)
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
@@ -177,8 +177,8 @@ export default function PaginaProfesional() {
                 <div className="flex items-start gap-4">
                   <span className="paso-indicador shrink-0">{paso.numero}</span>
                   <div>
-                    <h3 className="font-bold text-puente-800">{paso.titulo}</h3>
-                    <p className="text-puente-600 text-sm">{paso.descripcion}</p>
+                    <h3 className="font-bold text-court-800">{paso.titulo}</h3>
+                    <p className="text-court-600 text-sm">{paso.descripcion}</p>
                   </div>
                 </div>
               </div>
@@ -187,10 +187,10 @@ export default function PaginaProfesional() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-puente-800 mb-4">
+          <h2 className="text-2xl font-bold text-court-800 mb-4">
             Ajustes por perfil
           </h2>
-          <p className="text-puente-600 mb-6">
+          <p className="text-court-600 mb-6">
             Selecciona un perfil para ver los ajustes recomendados.
           </p>
 
@@ -203,8 +203,8 @@ export default function PaginaProfesional() {
                 aria-pressed={perfilSeleccionado === key}
                 className={`px-4 py-2 rounded-full font-medium transition-colors ${
                   perfilSeleccionado === key
-                    ? 'bg-puente-600 text-white'
-                    : 'bg-puente-100 text-puente-700 hover:bg-puente-200'
+                    ? 'bg-court-600 text-white'
+                    : 'bg-court-100 text-court-700 hover:bg-court-200'
                 }`}
               >
                 {value.nombre}
@@ -214,7 +214,7 @@ export default function PaginaProfesional() {
 
           {perfil && (
             <div className="card-destacada">
-              <h3 className="text-xl font-bold text-puente-800 mb-4">{perfil.nombre}</h3>
+              <h3 className="text-xl font-bold text-court-800 mb-4">{perfil.nombre}</h3>
               <ul className="space-y-3">
                 {perfil.ajustes.map((ajuste, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -223,9 +223,9 @@ export default function PaginaProfesional() {
                       id={`ajuste-${i}`}
                       checked={ajustesMarcados.includes(ajuste)}
                       onChange={() => toggleAjustePerfil(ajuste)}
-                      className="mt-1 w-5 h-5 accent-puente-600"
+                      className="mt-1 w-5 h-5 accent-court-600"
                     />
-                    <label htmlFor={`ajuste-${i}`} className="text-puente-700">
+                    <label htmlFor={`ajuste-${i}`} className="text-court-700">
                       {ajuste}
                     </label>
                   </li>
@@ -242,16 +242,16 @@ export default function PaginaProfesional() {
 
               {informeGenerado && (
                 <div
-                  className="mt-6 p-5 bg-calma-sage rounded-suave border border-puente-200"
+                  className="mt-6 p-5 bg-calma-sage rounded-suave border border-court-200"
                   aria-live="polite"
                 >
-                  <h4 className="font-bold text-puente-800 mb-2">
+                  <h4 className="font-bold text-court-800 mb-2">
                     Informe individualizado de ajustes (Guía CGPJ 2025)
                   </h4>
-                  <p className="text-sm text-puente-600 mb-3">
+                  <p className="text-sm text-court-600 mb-3">
                     Medidas propuestas para incorporar al expediente (Art. 7 bis LEC / Art. 109 LECrim):
                   </p>
-                  <ul className="list-disc pl-5 space-y-1 text-puente-800 mb-4">
+                  <ul className="list-disc pl-5 space-y-1 text-court-800 mb-4">
                     {informeGenerado.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -270,17 +270,17 @@ export default function PaginaProfesional() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-puente-800 mb-4">
+          <h2 className="text-2xl font-bold text-court-800 mb-4">
             Leer Pasaporte de Ajustes
           </h2>
           <form className="card" onSubmit={consultarPasaporte} noValidate>
             <label
               htmlFor="codigo-pasaporte"
-              className="block font-medium text-puente-700 mb-2"
+              className="block font-medium text-court-700 mb-2"
             >
               Código o enlace del Pasaporte
             </label>
-            <p id="ayuda-codigo" className="text-puente-600 text-sm mb-4">
+            <p id="ayuda-codigo" className="text-court-600 text-sm mb-4">
               Introduce el código alfanumérico (ej: A1B2C3D4) o pega el enlace completo del código QR.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -313,10 +313,10 @@ export default function PaginaProfesional() {
         </section>
 
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-puente-800 mb-4">
+          <h2 className="text-2xl font-bold text-court-800 mb-4">
             Analizar preguntas
           </h2>
-          <p className="text-puente-600 mb-4">
+          <p className="text-court-600 mb-4">
             Revisa si las preguntas del interrogatorio pueden confundir a la persona.
           </p>
           <Link href="/mediador" className="btn-secondary">
@@ -325,27 +325,27 @@ export default function PaginaProfesional() {
         </section>
 
         <section className="bg-calma-sage rounded-tarjeta p-6">
-          <h2 className="text-xl font-bold text-puente-800 mb-4">
+          <h2 className="text-xl font-bold text-court-800 mb-4">
             Derivación a recursos de apoyo
           </h2>
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div>
-              <h3 className="font-bold text-puente-700 mb-2">Facilitación procesal</h3>
-              <ul className="space-y-1 text-puente-600">
+              <h3 className="font-bold text-court-700 mb-2">Facilitación procesal</h3>
+              <ul className="space-y-1 text-court-600">
                 <li>Plena inclusión · 917 444 600</li>
                 <li>UAVDI (Fundación A LA PAR) · 917 355 790</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-puente-700 mb-2">Asociaciones (Galicia)</h3>
-              <ul className="space-y-1 text-puente-600">
+              <h3 className="font-bold text-court-700 mb-2">Asociaciones (Galicia)</h3>
+              <ul className="space-y-1 text-court-600">
                 <li>ASPERGA · 881 917 318</li>
                 <li>ANHIDA Coruña · 981 903 830</li>
                 <li>ONCE · 900 221 221</li>
               </ul>
             </div>
           </div>
-          <p className="text-xs text-puente-700 mt-4">
+          <p className="text-xs text-court-700 mt-4">
             Base legal: Art. 7 bis LEC, Art. 109 LECrim, Ley 15/2022, Guía CGPJ 2025.
           </p>
         </section>

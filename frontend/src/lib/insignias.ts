@@ -26,7 +26,7 @@ export interface InsigniaUtil {
   pictograma: string
 }
 
-export const CLAVE_INSIGNIAS = 'puente-insignias-utiles'
+export const CLAVE_INSIGNIAS = 'court-insignias-utiles'
 
 export const INSIGNIAS_UTILES: InsigniaUtil[] = [
   {
@@ -133,7 +133,7 @@ export function insigniasDeApartado(apartado: ApartadoInsignias): InsigniaUtil[]
 }
 
 /** Evento en window cuando cambian las medallas (cabecera / otras pestañas). */
-export const EVENTO_INSIGNIAS = 'puente:insignias-cambiadas'
+export const EVENTO_INSIGNIAS = 'InclusiveCourt:insignias-cambiadas'
 
 export function avisarCambioInsignias(ids: IdInsigniaUtil[]) {
   if (typeof window === 'undefined') return

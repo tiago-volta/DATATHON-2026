@@ -451,7 +451,7 @@ export default function PaginaMediador() {
 
         {/* Preguntas frecuentes predefinidas (M03) */}
         <section className="mb-6" aria-labelledby="titulo-preguntas-frecuentes">
-          <h2 id="titulo-preguntas-frecuentes" className="text-sm font-bold text-puente-700 mb-2">
+          <h2 id="titulo-preguntas-frecuentes" className="text-sm font-bold text-court-700 mb-2">
             Prueba con preguntas reales de sala (clic para analizar):
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -474,7 +474,7 @@ export default function PaginaMediador() {
 
         <div className="card mb-8">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <label htmlFor="pregunta" className="block font-bold text-puente-800">
+            <label htmlFor="pregunta" className="block font-bold text-court-800">
               Escribe o dicta la pregunta del interrogatorio
             </label>
             <button
@@ -491,7 +491,7 @@ export default function PaginaMediador() {
           </div>
 
           {escuchando && (
-            <p className="text-sm text-puente-700 font-medium mb-2" aria-live="polite">
+            <p className="text-sm text-court-700 font-medium mb-2" aria-live="polite">
               Escuchando tu voz... Di la pregunta en voz alta.
             </p>
           )}
@@ -551,14 +551,14 @@ export default function PaginaMediador() {
                 />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-puente-800">
+                <h2 className="text-xl font-bold text-court-800">
                   {resultado.semaforo === 'verde'
                     ? 'Pregunta clara y accesible'
                     : resultado.semaforo === 'amarillo'
                       ? 'Pregunta mejorable'
                       : 'Pregunta confusa: requiere adaptación'}
                 </h2>
-                <p className="text-puente-700 mt-1">{resultado.impacto_cognitivo}</p>
+                <p className="text-court-700 mt-1">{resultado.impacto_cognitivo}</p>
                 {resultado.problemas.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {resultado.problemas.map((prob) => (
@@ -572,9 +572,9 @@ export default function PaginaMediador() {
             </div>
 
             {resultado.reformulada && (
-              <div className="bg-calma-sage rounded-lg p-5 mt-4 border border-puente-200">
+              <div className="bg-calma-sage rounded-lg p-5 mt-4 border border-court-200">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                  <h3 className="font-bold text-puente-800">
+                  <h3 className="font-bold text-court-800">
                     Pregunta reescrita en Lectura Fácil (lista para leer en sala)
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -588,19 +588,19 @@ export default function PaginaMediador() {
                     </button>
                   </div>
                 </div>
-                <p className="text-xl font-bold text-puente-900 mt-2">{resultado.reformulada}</p>
+                <p className="text-xl font-bold text-court-900 mt-2">{resultado.reformulada}</p>
               </div>
             )}
 
             {resultado.preguntas_divididas && resultado.preguntas_divididas.length > 1 && (
-              <div className="mt-4 p-4 bg-white rounded-lg border border-puente-200">
+              <div className="mt-4 p-4 bg-white rounded-lg border border-court-200">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                  <h3 className="font-bold text-puente-800">
+                  <h3 className="font-bold text-court-800">
                     Desglose paso a paso (hazlas de una en una y espera respuesta):
                   </h3>
                   <BotonLeerEnVoz texto={resultado.preguntas_divididas.join(' ')} />
                 </div>
-                <ul className="space-y-2 text-puente-800 font-medium">
+                <ul className="space-y-2 text-court-800 font-medium">
                   {resultado.preguntas_divididas.map((sub, idx) => (
                     <li key={idx} className="p-3 bg-calma-sage rounded-lg">
                       {sub}
@@ -611,11 +611,11 @@ export default function PaginaMediador() {
             )}
 
             {resultado.consejos && resultado.consejos.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-puente-200">
-                <h3 className="font-bold text-puente-800 text-sm mb-2">
+              <div className="mt-4 pt-4 border-t border-court-200">
+                <h3 className="font-bold text-court-800 text-sm mb-2">
                   Pautas para el operador jurídico (Guía CGPJ 2025 / The Advocate&apos;s Gateway):
                 </h3>
-                <ul className="list-disc pl-5 text-sm text-puente-700 space-y-1">
+                <ul className="list-disc pl-5 text-sm text-court-700 space-y-1">
                   {resultado.consejos.map((consejo, idx) => (
                     <li key={idx}>{consejo}</li>
                   ))}
@@ -626,7 +626,7 @@ export default function PaginaMediador() {
         )}
 
         <section>
-          <h2 className="text-2xl font-bold text-puente-800 mb-4">
+          <h2 className="text-2xl font-bold text-court-800 mb-4">
             Guía rápida de transformación de preguntas
           </h2>
           <div className="space-y-4">
@@ -644,7 +644,7 @@ export default function PaginaMediador() {
                     >
                       <Icono nombre={ej.semaforo === 'verde' ? '✓' : '⚠'} className="h-4 w-4" />
                     </span>
-                    <p className="text-puente-800 font-medium">&ldquo;{ej.original}&rdquo;</p>
+                    <p className="text-court-800 font-medium">&ldquo;{ej.original}&rdquo;</p>
                   </div>
                 </div>
 
@@ -659,10 +659,10 @@ export default function PaginaMediador() {
                     </div>
                     <div className="ml-11 bg-calma-sage rounded-lg p-3 flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="text-xs font-bold uppercase text-puente-600 mb-1">
+                        <p className="text-xs font-bold uppercase text-court-600 mb-1">
                           Versión en Lectura Fácil:
                         </p>
-                        <p className="text-puente-800 font-medium">&ldquo;{ej.reformulada}&rdquo;</p>
+                        <p className="text-court-800 font-medium">&ldquo;{ej.reformulada}&rdquo;</p>
                       </div>
                       <BotonLeerEnVoz texto={ej.reformulada} />
                     </div>
@@ -673,7 +673,7 @@ export default function PaginaMediador() {
           </div>
         </section>
 
-        <div className="mt-8 p-4 bg-calma-sage rounded-lg text-sm text-puente-600">
+        <div className="mt-8 p-4 bg-calma-sage rounded-lg text-sm text-court-600">
           <strong>Base metodológica:</strong> Adaptación fundamentada en el artículo 7 bis LEC, la
           Guía práctica del CGPJ sobre discapacidad (2025), la Guía de Autismo España (2025), la
           norma UNE 153101 (Lectura Fácil) y los toolkits de <em>The Advocate&apos;s Gateway</em>.

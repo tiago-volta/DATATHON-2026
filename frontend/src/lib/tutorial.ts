@@ -3,8 +3,8 @@
  * Independiente del OnboardingVoz: el tutorial general va primero.
  */
 
-export const LS_TUTORIAL_VISTO = 'puente-tutorial-visto'
-export const EVENTO_TUTORIAL = 'puente-tutorial-cambio'
+export const LS_TUTORIAL_VISTO = 'court-tutorial-visto'
+export const EVENTO_TUTORIAL = 'court-tutorial-cambio'
 
 export type PasoTutorial = {
   id: string
@@ -18,7 +18,7 @@ export type PasoTutorial = {
 export const PASOS_TUTORIAL: PasoTutorial[] = [
   {
     id: 'bienvenida',
-    titulo: 'Hola, soy PUENTE',
+    titulo: 'Hola, soy InclusiveCourt',
     texto:
       'Te ayudo a entender el juzgado con frases cortas, pictogramas y voz. Sin prisas.',
     pictoKeyword: 'hola',

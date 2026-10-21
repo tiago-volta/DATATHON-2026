@@ -2,21 +2,21 @@
 name: apple-design
 description: >
   Criterio de oficio a partir de las Human Interface Guidelines, solo para principios
-  transferibles a la web de PUENTE: claridad, jerarquía, tipografía, color con significado
-  y accesibilidad. No es la skill de accesibilidad del proyecto (esa es puente-accesibilidad)
+  transferibles a la web de InclusiveCourt: claridad, jerarquía, tipografía, color con significado
+  y accesibilidad. No es la skill de accesibilidad del proyecto (esa es inclusivecourt-accesibilidad)
   ni un sistema visual iOS. No apliques Liquid Glass, SF Symbols, widgets ni layouts de iPhone.
-  Úsala cuando haga falta citar una pauta de layout, tipo o color más allá del checklist de PUENTE.
+  Úsala cuando haga falta citar una pauta de layout, tipo o color más allá del checklist de InclusiveCourt.
 ---
 
 # Apple Design Skill
 
-## Límite PUENTE
+## Límite InclusiveCourt
 
-PUENTE es una web Next.js 14, no una app de iOS, macOS ni React Native.
+InclusiveCourt es una web Next.js 14, no una app de iOS, macOS ni React Native.
 
 Usa esta skill solo como criterio de oficio: claridad, jerarquía, accesibilidad, tipografía, color con significado y movimiento contenido. Traduce el vocabulario a HTML, ARIA y Tailwind.
 
-No apliques Liquid Glass, SF Symbols, widgets, Live Activities, Apple Pay ni layouts de iPhone como sistema visual. Si una pauta de aquí choca con `puente-accesibilidad` o `puente-lectura-facil`, mandan esas.
+No apliques Liquid Glass, SF Symbols, widgets, Live Activities, Apple Pay ni layouts de iPhone como sistema visual. Si una pauta de aquí choca con `inclusivecourt-accesibilidad` o `inclusivecourt-lectura-facil`, mandan esas.
 
 Al revisar, carga como mucho `accessibility.md`, `layout.md`, `typography.md` y `color.md`. No cargues el resto del HIG salvo que el usuario pida una comparación explícita con Apple.
 

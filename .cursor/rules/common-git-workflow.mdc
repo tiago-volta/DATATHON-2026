@@ -6,7 +6,7 @@ alwaysApply: true
 
 ## Commit Message Format
 
-En PUENTE el mensaje sigue `CONTRIBUTING.md`: tipo en inglés, texto en español, sin mencionar IA y sin trailer `Co-Authored-By`.
+En InclusiveCourt el mensaje sigue `CONTRIBUTING.md`: tipo en inglés, texto en español, sin mencionar IA y sin trailer `Co-Authored-By`.
 
 ```
 tipo(módulo): descripción en español

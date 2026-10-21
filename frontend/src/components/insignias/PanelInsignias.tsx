@@ -48,10 +48,10 @@ export function PanelInsignias({
     <>
       {!embebido && (
         <>
-          <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+          <h2 id={tituloId} className="font-bold text-court-800 mb-1">
             {tituloFinal}
           </h2>
-          <p id={ayudaId} className="text-sm text-puente-700 mb-4">
+          <p id={ayudaId} className="text-sm text-court-700 mb-4">
             {ayuda}
           </p>
         </>
@@ -77,10 +77,10 @@ export function PanelInsignias({
             <li key={ins.id} className="relative flex flex-col items-center">
               <button
                 type="button"
-                className={`group flex flex-col items-center gap-2 w-full p-2 rounded-suave border-2 transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400 ${
+                className={`group flex flex-col items-center gap-2 w-full p-2 rounded-suave border-2 transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-court-400 ${
                   conseguida
-                    ? 'bg-calma-sage/70 border-accent-success/50 hover:border-puente-500'
-                    : 'bg-puente-50/90 border-puente-100 hover:border-puente-300'
+                    ? 'bg-calma-sage/70 border-accent-success/50 hover:border-court-500'
+                    : 'bg-court-50/90 border-court-100 hover:border-court-300'
                 }`}
                 aria-label={tipTexto}
                 aria-describedby={visible ? tipId : undefined}
@@ -96,7 +96,7 @@ export function PanelInsignias({
                 />
                 <span
                   className={`text-xs sm:text-sm font-bold text-center leading-tight ${
-                    conseguida ? 'text-puente-800' : 'text-puente-600'
+                    conseguida ? 'text-court-800' : 'text-court-600'
                   }`}
                 >
                   {ins.nombre}
@@ -110,12 +110,12 @@ export function PanelInsignias({
                 <div
                   id={tipId}
                   role="tooltip"
-                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(16rem,70vw)] rounded-suave border border-puente-200 bg-white shadow-sm p-3 text-sm text-puente-800 pointer-events-none"
+                  className="absolute z-20 left-1/2 -translate-x-1/2 top-full mt-2 w-[min(16rem,70vw)] rounded-suave border border-court-200 bg-white shadow-sm p-3 text-sm text-court-800 pointer-events-none"
                 >
-                  <p className="font-bold text-puente-800 mb-1">
+                  <p className="font-bold text-court-800 mb-1">
                     Medalla: {ins.nombre}
                   </p>
-                  <p className="text-puente-700 leading-snug">
+                  <p className="text-court-700 leading-snug">
                     {ins.comoConseguirla}
                   </p>
                 </div>

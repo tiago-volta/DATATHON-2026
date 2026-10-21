@@ -5,7 +5,7 @@
  * Persistencia compartida en localStorage (fecha local YYYY-MM-DD).
  */
 
-export const CLAVE_PRACTICA = 'puente-practica'
+export const CLAVE_PRACTICA = 'court-practica'
 
 /** Mensaje al volver tras uno o más días sin practicar. */
 export const MENSAJE_BIENVENIDA =

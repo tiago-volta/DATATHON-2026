@@ -30,7 +30,7 @@ function PictoEstimulo({ id, etiqueta }: { id: number; etiqueta: string }) {
   if (fallo) {
     return (
       <span
-        className="flex items-center justify-center w-9 h-9 rounded-suave bg-puente-100 text-puente-700 text-sm font-bold shrink-0"
+        className="flex items-center justify-center w-9 h-9 rounded-suave bg-court-100 text-court-700 text-sm font-bold shrink-0"
         role="img"
         aria-label={alt}
       >
@@ -46,7 +46,7 @@ function PictoEstimulo({ id, etiqueta }: { id: number; etiqueta: string }) {
       alt={alt}
       width={36}
       height={36}
-      className="w-9 h-9 rounded-suave bg-white border border-puente-100 object-contain shrink-0"
+      className="w-9 h-9 rounded-suave bg-white border border-court-100 object-contain shrink-0"
       loading="lazy"
       decoding="async"
       onError={() => setFallo(true)}
@@ -81,11 +81,11 @@ export function BarritasEstimulo({
 }: Props) {
   return (
     <div
-      className={`rounded-suave border-2 border-puente-200 bg-white shadow-sm p-3 w-[12.5rem] sm:w-[13.5rem] ${className}`}
+      className={`rounded-suave border-2 border-court-200 bg-white shadow-sm p-3 w-[12.5rem] sm:w-[13.5rem] ${className}`}
       role="group"
       aria-label="Niveles de estímulo de la escena"
     >
-      <p className="text-xs font-bold text-puente-800 mb-2 leading-tight">
+      <p className="text-xs font-bold text-court-800 mb-2 leading-tight">
         {titulo}
       </p>
       <ul className="space-y-2.5 list-none p-0 m-0">
@@ -104,19 +104,19 @@ export function BarritasEstimulo({
                   <div className="flex items-baseline justify-between gap-1">
                     <label
                       htmlFor={inputId}
-                      className="text-xs font-bold text-puente-800 cursor-pointer"
+                      className="text-xs font-bold text-court-800 cursor-pointer"
                     >
                       {meta.etiqueta}
                     </label>
-                    <span className="text-[11px] font-bold text-puente-700 tabular-nums">
+                    <span className="text-[11px] font-bold text-court-700 tabular-nums">
                       {palabras}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="h-2 rounded-full bg-puente-100 overflow-hidden mb-1">
+              <div className="h-2 rounded-full bg-court-100 overflow-hidden mb-1">
                 <div
-                  className="h-full rounded-full bg-puente-600 origin-left"
+                  className="h-full rounded-full bg-court-600 origin-left"
                   style={{
                     transform: `scaleX(${valor / 100})`,
                     transition: 'transform 0.45s ease-out',
@@ -151,11 +151,11 @@ export function BarritasEstimulo({
           )
         })}
       </ul>
-      <p className="text-[10px] text-puente-600 mt-2 leading-snug">
+      <p className="text-[10px] text-court-600 mt-2 leading-snug">
         Pictogramas{' '}
         <a
           href="https://arasaac.org"
-          className="underline underline-offset-2 hover:text-puente-800"
+          className="underline underline-offset-2 hover:text-court-800"
           target="_blank"
           rel="noopener noreferrer"
         >

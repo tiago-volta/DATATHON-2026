@@ -1,6 +1,6 @@
 # Ajustes de Procedimiento en la Justicia Española
 
-> Investigación para PUENTE | DATAthon Justicia 2026 | Octubre 2026
+> Investigación para InclusiveCourt | DATAthon Justicia 2026 | Octubre 2026
 
 ## 1. Diferencia entre ajustes razonables y ajustes de procedimiento
 

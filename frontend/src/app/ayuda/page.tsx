@@ -18,12 +18,12 @@ import {
 
 type Mensaje = {
   id: string
-  rol: 'persona' | 'puente'
+  rol: 'persona' | 'asistente'
   texto: string
 }
 
 /**
- * Pregunta a PUENTE: dudas por texto o voz.
+ * Pregunta a InclusiveCourt: dudas por texto o voz.
  * Respuesta leída con vozNatural (mutex). Sin diagnóstico médico.
  */
 export default function PaginaAyuda() {
@@ -34,9 +34,9 @@ export default function PaginaAyuda() {
   const [mensajes, setMensajes] = useState<Mensaje[]>([
     {
       id: 'saludo',
-      rol: 'puente',
+      rol: 'asistente',
       texto:
-        'Hola. Soy PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz. Escribe o habla. No pido datos de salud.',
+        'Hola. Soy InclusiveCourt. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz. Escribe o habla. No pido datos de salud.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
@@ -44,7 +44,7 @@ export default function PaginaAyuda() {
   const [hablando, setHablando] = useState(false)
   const [anuncio, setAnuncio] = useState('')
   const [ultimaRespuesta, setUltimaRespuesta] = useState(
-    'Hola. Soy PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
+    'Hola. Soy InclusiveCourt. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
   )
   const cancelarHablaRef = useRef<(() => void) | null>(null)
   const reconocimientoRef = useRef<ControlesReconocimiento | null>(null)
@@ -103,10 +103,10 @@ export default function PaginaAyuda() {
 
       try {
         const { respuesta } = await preguntarAyudaAPI(texto)
-        const idPuente = `r-${Date.now()}`
+        const idInclusiveCourt = `r-${Date.now()}`
         setMensajes((prev) => [
           ...prev,
-          { id: idPuente, rol: 'puente', texto: respuesta },
+          { id: idInclusiveCourt, rol: 'asistente', texto: respuesta },
         ])
         setUltimaRespuesta(respuesta)
         setAnuncio('Respuesta lista.')
@@ -116,7 +116,7 @@ export default function PaginaAyuda() {
           'Ahora mismo no puedo responder. Prueba otra vez en unos segundos, o mira Citación, Pasaporte, Ensaya o Sala en el menú.'
         setMensajes((prev) => [
           ...prev,
-          { id: `e-${Date.now()}`, rol: 'puente', texto: fallback },
+          { id: `e-${Date.now()}`, rol: 'asistente', texto: fallback },
         ])
         setUltimaRespuesta(fallback)
         setAnuncio(fallback)
@@ -200,8 +200,8 @@ export default function PaginaAyuda() {
   return (
     <main id="contenido-principal" className="page-shell">
       <header className="mb-8">
-        <p className="text-sm font-bold tracking-wide text-puente-700 mb-2">
-          Pregunta a PUENTE
+        <p className="text-sm font-bold tracking-wide text-court-700 mb-2">
+          Pregunta a InclusiveCourt
         </p>
         <h1 id={tituloId} className="titulo-pagina">
           Ayuda
@@ -224,14 +224,14 @@ export default function PaginaAyuda() {
             key={m.id}
             className={
               m.rol === 'persona'
-                ? 'ml-4 md:ml-12 p-4 rounded-tarjeta bg-puente-50 border border-puente-200'
-                : 'mr-4 md:mr-12 p-4 rounded-tarjeta bg-calma-sage border border-puente-200'
+                ? 'ml-4 md:ml-12 p-4 rounded-tarjeta bg-court-50 border border-court-200'
+                : 'mr-4 md:mr-12 p-4 rounded-tarjeta bg-calma-sage border border-court-200'
             }
           >
-            <p className="text-sm font-bold text-puente-700 mb-1">
-              {m.rol === 'persona' ? 'Tú' : 'PUENTE'}
+            <p className="text-sm font-bold text-court-700 mb-1">
+              {m.rol === 'persona' ? 'Tú' : 'InclusiveCourt'}
             </p>
-            <p className="text-puente-900 leading-relaxed">{m.texto}</p>
+            <p className="text-court-900 leading-relaxed">{m.texto}</p>
           </li>
         ))}
       </ul>
@@ -242,7 +242,7 @@ export default function PaginaAyuda() {
 
       {anuncio && (
         <p
-          className="mb-4 text-puente-800 bg-puente-50 border border-puente-200 rounded-lg p-3"
+          className="mb-4 text-court-800 bg-court-50 border border-court-200 rounded-lg p-3"
           role="status"
           aria-live="polite"
         >
@@ -251,7 +251,7 @@ export default function PaginaAyuda() {
       )}
 
       <form onSubmit={onSubmit} className="card mb-6" aria-labelledby={tituloId}>
-        <label htmlFor={campoId} className="block text-lg font-medium text-puente-800 mb-2">
+        <label htmlFor={campoId} className="block text-lg font-medium text-court-800 mb-2">
           Tu pregunta
         </label>
         <textarea
@@ -264,7 +264,7 @@ export default function PaginaAyuda() {
           disabled={enviando}
           aria-describedby="ayuda-pregunta-hint"
         />
-        <p id="ayuda-pregunta-hint" className="text-sm text-puente-700 mb-4">
+        <p id="ayuda-pregunta-hint" className="text-sm text-court-700 mb-4">
           Puedes escribir o pulsar Hablar para dictar. Máximo 800 caracteres.
         </p>
 
@@ -309,7 +309,7 @@ export default function PaginaAyuda() {
         </div>
       </form>
 
-      <nav aria-label="Atajos de ayuda" className="flex flex-wrap gap-4 text-puente-800">
+      <nav aria-label="Atajos de ayuda" className="flex flex-wrap gap-4 text-court-800">
         <Link href="/citacion" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
           Citación
         </Link>

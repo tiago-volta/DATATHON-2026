@@ -18,7 +18,7 @@ def generar_ics(plazos: List[Any], titulo: str = "Citación Judicial") -> str:
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//PUENTE//Accesibilidad Justicia//ES",
+        "PRODID:-//InclusiveCourt//Accesibilidad Justicia//ES",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
     ]
@@ -39,7 +39,7 @@ def generar_ics(plazos: List[Any], titulo: str = "Citación Judicial") -> str:
             f"DTSTAMP:{datetime.now().strftime('%Y%m%dT%H%M%SZ')}",
             f"DTSTART:{fecha_inicio.strftime('%Y%m%dT%H%M%S')}",
             f"DTEND:{fecha_fin.strftime('%Y%m%dT%H%M%S')}",
-            f"SUMMARY:PUENTE: {descripcion}",
+            f"SUMMARY:InclusiveCourt: {descripcion}",
             f"DESCRIPTION:{titulo_limpio}",
             "END:VEVENT",
         ])

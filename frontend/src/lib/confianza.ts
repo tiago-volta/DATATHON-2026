@@ -4,7 +4,7 @@
  * Persistencia propia en localStorage, en paralelo a insignias útiles.
  */
 
-export const CLAVE_CONFIANZA = 'puente-confianza'
+export const CLAVE_CONFIANZA = 'court-confianza'
 
 /** Eventos que pueden sumar (idempotentes o con techo). */
 export type TipoEventoConfianza =

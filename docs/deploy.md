@@ -1,4 +1,4 @@
-# Publicar PUENTE (sin túnel Cloudflare)
+# Publicar InclusiveCourt (sin túnel Cloudflare)
 
 Recomendación: **frontend en Vercel** + **API FastAPI en Render** (gratis).  
 Así tienes URL estable HTTPS y no dependes de `trycloudflare` ni de dejar el portátil encendido.
@@ -28,7 +28,7 @@ Navegador  →  https://tu-app.vercel.app  (Next.js)
 | `GEMINI_API_KEY` | tu clave (si usas Gemini) |
 | `GEMINI_MODEL` | `gemini-3.8-flash` (opcional) |
 
-4. Copia la URL pública, p. ej. `https://puente-api.onrender.com`.  
+4. Copia la URL pública, p. ej. `https://court-api.onrender.com`.  
    Comprueba: `https://…/docs` debe abrir Swagger.
 
 **Nota:** en el plan free, Render duerme la API tras ~15 min sin tráfico; la primera petición puede tardar ~30–60 s.

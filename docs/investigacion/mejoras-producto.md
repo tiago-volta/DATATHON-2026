@@ -1,6 +1,6 @@
-# Mejoras de Producto PUENTE: Mapeadas a Pantallas
+# Mejoras de Producto InclusiveCourt: Mapeadas a Pantallas
 
-> Investigación para PUENTE | DATAthon Justicia 2026 | Octubre 2026
+> Investigación para InclusiveCourt | DATAthon Justicia 2026 | Octubre 2026
 
 ## Prioridades
 

@@ -335,7 +335,7 @@ export default function PaginaEnsaya() {
             </p>
 
             <div
-              className="flex flex-wrap gap-4 justify-center mb-8 p-4 rounded-tarjeta bg-white border border-puente-200"
+              className="flex flex-wrap gap-4 justify-center mb-8 p-4 rounded-tarjeta bg-white border border-court-200"
               aria-label="Pictogramas: hablar, oír, preguntar, escribir"
             >
               {PICTOS_INTRO.map((p) => (
@@ -347,7 +347,7 @@ export default function PaginaEnsaya() {
                 />
               ))}
             </div>
-            <p className="text-sm text-puente-600 mb-8 text-center max-w-xl mx-auto">
+            <p className="text-sm text-court-600 mb-8 text-center max-w-xl mx-auto">
               Cada pregunta lleva pictogramas para entenderla mejor si lees con
               apoyos visuales o si usas lengua de signos junto al texto.
             </p>
@@ -361,8 +361,8 @@ export default function PaginaEnsaya() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h2 className="font-bold text-puente-800">{n.nombre}</h2>
-                        <p className="text-puente-600">{n.descripcion}</p>
+                        <h2 className="font-bold text-court-800">{n.nombre}</h2>
+                        <p className="text-court-600">{n.descripcion}</p>
                       </div>
                       <Pictograma
                         url={urlArasaac(n.pictograma.id)}
@@ -383,7 +383,7 @@ export default function PaginaEnsaya() {
               Empezar a practicar
             </button>
 
-            <p className="text-puente-700 mt-6">
+            <p className="text-court-700 mt-6">
               Puedes parar cuando quieras. No hay respuestas buenas ni malas.
             </p>
 
@@ -397,11 +397,11 @@ export default function PaginaEnsaya() {
               />
             </div>
 
-            <p className="text-xs text-puente-700 mt-8">
+            <p className="text-xs text-court-700 mt-8">
               Pictogramas:{' '}
               <a
                 href="https://arasaac.org"
-                className="underline underline-offset-2 hover:text-puente-700"
+                className="underline underline-offset-2 hover:text-court-700"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -415,10 +415,10 @@ export default function PaginaEnsaya() {
           !checkInPendiente &&
           nivelAcabadoMeta ? (
           <section className="card-destacada" aria-live="polite">
-            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+            <h1 className="text-3xl font-bold text-court-800 mb-3">
               Has terminado el nivel
             </h1>
-            <p className="text-lg text-puente-700 mb-6">
+            <p className="text-lg text-court-700 mb-6">
               Completaste «{nivelAcabadoMeta.nombre}». Puedes seguir ensayando o
               probar la sala del juzgado con calma, en el nivel sensorial que ya
               tengas.
@@ -442,37 +442,37 @@ export default function PaginaEnsaya() {
               )}
             </div>
 
-            <p className="text-puente-600 text-sm">
+            <p className="text-court-600 text-sm">
               La sala no sube el estímulo por ti. Empiezas donde lo dejaste.
             </p>
           </section>
         ) : checkInPendiente && nivelAcabadoMeta ? (
           <section className="card-destacada" aria-live="polite">
-            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+            <h1 className="text-3xl font-bold text-court-800 mb-3">
               Has terminado el nivel
             </h1>
-            <p className="text-lg text-puente-700 mb-2">
+            <p className="text-lg text-court-700 mb-2">
               Completaste «{nivelAcabadoMeta.nombre}».
             </p>
-            <p className="text-puente-600 text-sm">
+            <p className="text-court-600 text-sm">
               Antes de seguir, cuéntanos cómo te sientes. No hay respuesta
               correcta.
             </p>
           </section>
         ) : completado ? (
           <section className="card-destacada" aria-live="polite">
-            <h1 className="text-3xl font-bold text-puente-800 mb-3">
+            <h1 className="text-3xl font-bold text-court-800 mb-3">
               Has terminado el ensayo
             </h1>
-            <p className="text-lg text-puente-700 mb-4">
+            <p className="text-lg text-court-700 mb-4">
               Has recorrido los 3 niveles de preguntas
               {preguntasRespondidas > 0
                 ? ` y has escrito ${preguntasRespondidas} ${preguntasRespondidas === 1 ? 'respuesta' : 'respuestas'}.`
                 : '.'}
             </p>
-            <div className="bg-calma-sage rounded-lg p-4 mb-6 text-puente-800 space-y-2">
+            <div className="bg-calma-sage rounded-lg p-4 mb-6 text-court-800 space-y-2">
               <p className="font-bold">Recuerda para el día del juzgado:</p>
-              <ul className="list-disc pl-5 space-y-1 text-puente-700">
+              <ul className="list-disc pl-5 space-y-1 text-court-700">
                 <li>Si no entiendes una pregunta, tienes derecho a pedir que la repitan con palabras sencillas.</li>
                 <li>Si no recuerdas un dato exacto, puedes decir: &ldquo;No lo recuerdo con seguridad&rdquo;.</li>
                 <li>Puedes pedir una pausa si necesitas tranquilizarte.</li>
@@ -503,7 +503,7 @@ export default function PaginaEnsaya() {
               </div>
             </div>
 
-            <p className="text-puente-600 text-sm mb-6">
+            <p className="text-court-600 text-sm mb-6">
               Si pruebas la sala, entras en el nivel sensorial que ya tengas. No
               subimos nada por ti.
             </p>
@@ -522,8 +522,8 @@ export default function PaginaEnsaya() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <p className="text-sm text-puente-700">Nivel {nivelActual + 1} de 3</p>
-                <h1 className="text-2xl font-bold text-puente-800">{nivel.nombre}</h1>
+                <p className="text-sm text-court-700">Nivel {nivelActual + 1} de 3</p>
+                <h1 className="text-2xl font-bold text-court-800">{nivel.nombre}</h1>
               </div>
               <span className="etiqueta-info" aria-live="polite">
                 Pregunta {preguntaActual + 1} de {nivel.preguntas.length}
@@ -531,7 +531,7 @@ export default function PaginaEnsaya() {
             </div>
 
             <div
-              className="w-full bg-puente-100 rounded-full h-2 mb-8 overflow-hidden"
+              className="w-full bg-court-100 rounded-full h-2 mb-8 overflow-hidden"
               role="progressbar"
               aria-valuemin={1}
               aria-valuemax={nivel.preguntas.length}
@@ -539,7 +539,7 @@ export default function PaginaEnsaya() {
               aria-label="Avance de las preguntas"
             >
               <div
-                className="bg-puente-600 h-2 rounded-full origin-left"
+                className="bg-court-600 h-2 rounded-full origin-left"
                 style={{
                   width: '100%',
                   transform: `scaleX(${(preguntaActual + 1) / nivel.preguntas.length})`,
@@ -550,7 +550,7 @@ export default function PaginaEnsaya() {
 
             <div className="card-destacada mb-6">
               <div className="flex justify-between items-start mb-4 gap-3">
-                <p className="text-sm text-puente-700">Te preguntan:</p>
+                <p className="text-sm text-court-700">Te preguntan:</p>
                 <BotonLeerEnVoz texto={itemPregunta.texto} etiqueta="Escuchar" />
               </div>
 
@@ -568,7 +568,7 @@ export default function PaginaEnsaya() {
                 ))}
               </div>
 
-              <p className="text-2xl text-puente-800 font-medium text-center">
+              <p className="text-2xl text-court-800 font-medium text-center">
                 {itemPregunta.texto}
               </p>
             </div>
@@ -596,12 +596,12 @@ export default function PaginaEnsaya() {
                     />
                   ))}
                 </div>
-                <h2 className="font-bold text-puente-800 mb-2">Esta pregunta es confusa</h2>
-                <p className="text-puente-700 mb-4">
+                <h2 className="font-bold text-court-800 mb-2">Esta pregunta es confusa</h2>
+                <p className="text-court-700 mb-4">
                   {itemPregunta.ayuda.explicacion}{' '}
                   <strong>No tienes que responder con prisa.</strong> Puedes decir:
                 </p>
-                <ul className="list-disc pl-5 space-y-2 text-puente-700">
+                <ul className="list-disc pl-5 space-y-2 text-court-700">
                   {itemPregunta.ayuda.ejemplos.map((ej) => (
                     <li key={ej}>{ej}</li>
                   ))}
@@ -611,7 +611,7 @@ export default function PaginaEnsaya() {
 
             <div className="card mb-6">
               <div className="flex items-center justify-between gap-3 mb-3">
-                <label htmlFor="respuesta" className="block font-bold text-puente-800">
+                <label htmlFor="respuesta" className="block font-bold text-court-800">
                   Tu respuesta (opcional)
                 </label>
                 <div className="shrink-0" aria-hidden="true">
@@ -632,7 +632,7 @@ export default function PaginaEnsaya() {
                 rows={4}
                 aria-describedby="ayuda-respuesta"
               />
-              <div className="flex justify-between items-center text-sm text-puente-700 mt-2" id="ayuda-respuesta">
+              <div className="flex justify-between items-center text-sm text-court-700 mt-2" id="ayuda-respuesta">
                 <span>Esto es solo práctica. Nadie más ve lo que escribes.</span>
                 <span aria-hidden="true">{respuesta.length}/500</span>
               </div>
@@ -673,11 +673,11 @@ export default function PaginaEnsaya() {
               Salir del ensayo
             </button>
 
-            <p className="text-xs text-puente-700 mt-8 text-center">
+            <p className="text-xs text-court-700 mt-8 text-center">
               Pictogramas:{' '}
               <a
                 href="https://arasaac.org"
-                className="underline underline-offset-2 hover:text-puente-700"
+                className="underline underline-offset-2 hover:text-court-700"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -1,24 +1,24 @@
 ---
 name: design-taste-frontend
 description: >-
-  Dirección visual anti-plantilla para pantallas de PUENTE (Next.js y Tailwind). Úsala cuando
+  Dirección visual anti-plantilla para pantallas de InclusiveCourt (Next.js y Tailwind). Úsala cuando
   una página se vea genérica o el usuario pida más oficio visual. En este proyecto la dirección
   es calma, contraste alto y baja estimulación: descarta estilos de premio, neón o movimiento
-  decorativo. No redacta textos (puente-lectura-facil) ni sustituye el checklist de
-  puente-accesibilidad. Trae scripts de inspección en el navegador.
+  decorativo. No redacta textos (inclusivecourt-lectura-facil) ni sustituye el checklist de
+  inclusivecourt-accesibilidad. Trae scripts de inspección en el navegador.
 ---
 
 # tasteskill v2
 
-## Límite PUENTE
+## Límite InclusiveCourt
 
-PUENTE no es una landing de premio. Es una herramienta judicial para personas neurodivergentes.
+InclusiveCourt no es una landing de premio. Es una herramienta judicial para personas neurodivergentes.
 
 - No tires direcciones maximalistas, neón, glitch ni fotografía de stock dramática.
 - Prioriza calma, contraste, tipo grande, una idea por bloque y movimiento casi nulo.
 - Si `scripts/draw.mjs` ofrece una dirección intensa, descártala.
 - `prefers-reduced-motion` es obligatorio. Nada de loops decorativos.
-- La copy sale de `puente-lectura-facil`. Esta skill no redacta el texto legal.
+- La copy sale de `inclusivecourt-lectura-facil`. Esta skill no redacta el texto legal.
 - No propongas demos, pitch ni presentaciones.
 
 

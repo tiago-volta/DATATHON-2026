@@ -1,4 +1,4 @@
-# PUENTE — Resumen Ejecutivo de Investigación
+# InclusiveCourt — Resumen Ejecutivo de Investigación
 
 > DATAthon Justicia 2026, A Coruña | Reto 3: Neurodiversidad | Octubre 2026
 >
@@ -25,7 +25,7 @@
 
 ---
 
-## La solución: PUENTE
+## La solución: InclusiveCourt
 
 1. **Traduce la citación** a lenguaje accesible con pictogramas y audio  
 2. **Genera el Pasaporte de Ajustes** sin revelar diagnóstico  

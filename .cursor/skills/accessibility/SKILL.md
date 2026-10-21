@@ -1,15 +1,15 @@
 ---
 name: accessibility
-description: Criterio WCAG 2.2 genérico de apoyo. En PUENTE manda puente-accesibilidad (COGA, lector de pantalla, baja estimulación) y puente-lectura-facil. Usa esta skill solo si aquel checklist no cubre el criterio. Nunca muestres un diagnóstico en la interfaz.
+description: Criterio WCAG 2.2 genérico de apoyo. En InclusiveCourt manda inclusivecourt-accesibilidad (COGA, lector de pantalla, baja estimulación) y inclusivecourt-lectura-facil. Usa esta skill solo si aquel checklist no cubre el criterio. Nunca muestres un diagnóstico en la interfaz.
 metadata:
   origin: ECC
 ---
 
 # Accessibility (WCAG 2.2)
 
-## Límite PUENTE
+## Límite InclusiveCourt
 
-En este repo la fuente de accesibilidad es `puente-accesibilidad` (WCAG 2.2 + COGA, lector de pantalla, baja estimulación) y la de textos es `puente-lectura-facil`. Esta skill solo aporta criterio WCAG genérico cuando aquella no cubre el caso. Nunca muestres un diagnóstico en la interfaz.
+En este repo la fuente de accesibilidad es `inclusivecourt-accesibilidad` (WCAG 2.2 + COGA, lector de pantalla, baja estimulación) y la de textos es `inclusivecourt-lectura-facil`. Esta skill solo aporta criterio WCAG genérico cuando aquella no cubre el caso. Nunca muestres un diagnóstico en la interfaz.
 
 This skill ensures that digital interfaces are Perceivable, Operable, Understandable, and Robust (POUR) for all users, including those using screen readers, switch controls, or keyboard navigation. It focuses on the technical implementation of WCAG 2.2 success criteria.
 

@@ -1,6 +1,6 @@
-# Cumplimiento legal y RGPD — PUENTE vs Reto 3
+# Cumplimiento legal y RGPD — InclusiveCourt vs Reto 3
 
-Evaluación orientativa del prototipo PUENTE respecto a:
+Evaluación orientativa del prototipo InclusiveCourt respecto a:
 
 1. El marco citado en el PDF del Reto 3.
 2. La normativa procesal y de accesibilidad que el propio producto invoca.
@@ -19,17 +19,17 @@ Leyenda:
 
 ## 1. Normas del PDF del Reto 3
 
-| Norma | ¿Qué exige? | Estado en PUENTE | Comentario |
+| Norma | ¿Qué exige? | Estado en InclusiveCourt | Comentario |
 |-------|-------------|------------------|------------|
 | **Art. 24 CE** (tutela judicial efectiva) | Acceso a tribunales sin indefensión | **Cumple (espíritu)** | Facilita comprensión y preparación; no sustituye al órgano judicial |
 | **Ley 15/2022** (igualdad de trato) | Prohíbe discriminación; denegar ajustes puede ser discriminación | **Cumple (espíritu)** | Pasaporte y panel profesional ayudan a pedir y documentar ajustes |
 | **RDL 1/2013** (derechos personas con discapacidad) | Accesibilidad universal, ajustes razonables, inclusión | **Parcial** | Accesibilidad cognitiva y digital trabajadas; accesibilidad física de sede fuera de alcance |
 
-Conclusión respecto al PDF: **sí se alinea** con el marco legal de referencia del enunciado. PUENTE no “cumple la ley” en el sentido de ser un organismo obligado: **implementa herramientas** que hacen más viable el ejercicio de esos derechos.
+Conclusión respecto al PDF: **sí se alinea** con el marco legal de referencia del enunciado. InclusiveCourt no “cumple la ley” en el sentido de ser un organismo obligado: **implementa herramientas** que hacen más viable el ejercicio de esos derechos.
 
 ---
 
-## 2. Normas que PUENTE usa en producto (más allá del PDF)
+## 2. Normas que InclusiveCourt usa en producto (más allá del PDF)
 
 El PDF no enumera LEC/LECrim, pero el producto sí se fundamenta en ellas (correcto y recomendable).
 
@@ -57,7 +57,7 @@ El PDF no enumera LEC/LECrim, pero el producto sí se fundamenta en ellas (corre
 
 ### 3.1 Lo que ya va en la dirección correcta
 
-| Principio (art. 5 RGPD) | Cómo lo aborda PUENTE |
+| Principio (art. 5 RGPD) | Cómo lo aborda InclusiveCourt |
 |------------------------|------------------------|
 | **Minimización** | El Pasaporte muestra **necesidades**, no diagnóstico clínico |
 | **Limitación de la finalidad** | Datos locales para preparar el juicio / compartir ajustes |
@@ -79,7 +79,7 @@ El PDF no enumera LEC/LECrim, pero el producto sí se fundamenta en ellas (corre
 | **Seguridad (art. 32)** | **Parcial** | Prototipo local; sin cifrado de backups, auth ni auditoría |
 | **DPIA / evaluación de impacto** | **Pendiente** | Recomendable si se tratan datos de salud o vulnerables a escala |
 | **Cookies / tracking** | **Cumple (por ausencia)** | No hay analytics de terceros detectados en el alcance actual |
-| **Menores** | **Fuera / pendiente** | El PDF cita sentencia a niño; PUENTE está orientado a adultos de referencia (Luis/Juan) |
+| **Menores** | **Fuera / pendiente** | El PDF cita sentencia a niño; InclusiveCourt está orientado a adultos de referencia (Luis/Juan) |
 
 ### 3.3 Veredicto RGPD
 

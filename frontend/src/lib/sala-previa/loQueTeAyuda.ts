@@ -3,7 +3,7 @@ import { ESTIMULOS_META, UMBRAL_ESTIMULO_ALTO, ajustesDesdeMolestias } from './n
 import type { ConfortCheckIn, IdEstimulo, ValoresEstimulo } from './tipos'
 
 /** Clave localStorage: resumen de práctica exportable al Pasaporte (solo ajustes). */
-export const CLAVE_LO_QUE_TE_AYUDA = 'puente-lo-que-te-ayuda'
+export const CLAVE_LO_QUE_TE_AYUDA = 'court-lo-que-te-ayuda'
 
 export type NivelMolestia = 'medio' | 'alto'
 

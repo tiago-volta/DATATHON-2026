@@ -24,7 +24,7 @@
   }
 
   body {
-    @apply text-puente-900 bg-calma-cream;
+    @apply text-court-900 bg-calma-cream;
     font-size: 18px;
     line-height: 1.7;
     padding-left: env(safe-area-inset-left);
@@ -38,7 +38,7 @@
   }
 
   h1, h2, h3, h4 {
-    @apply font-bold text-puente-800;
+    @apply font-bold text-court-800;
     line-height: 1.25;
     text-wrap: balance;
   }
@@ -58,11 +58,11 @@
   }
 
   .titulo-pagina {
-    @apply text-3xl md:text-4xl font-bold text-puente-900 mb-4;
+    @apply text-3xl md:text-4xl font-bold text-court-900 mb-4;
   }
 
   .entradilla {
-    @apply text-xl text-puente-800 mb-8;
+    @apply text-xl text-court-800 mb-8;
     text-wrap: pretty;
   }
 
@@ -108,17 +108,17 @@
   }
 
   .btn-secondary {
-    @apply btn bg-white text-puente-900 border border-puente-300;
-    @apply hover:bg-puente-50 hover:border-puente-900;
+    @apply btn bg-white text-court-900 border border-court-300;
+    @apply hover:bg-court-50 hover:border-court-900;
   }
 
   .btn-ghost {
-    @apply btn bg-transparent text-puente-900 shadow-none;
-    @apply hover:bg-puente-50;
+    @apply btn bg-transparent text-court-900 shadow-none;
+    @apply hover:bg-court-50;
   }
 
   .card {
-    @apply bg-white rounded-tarjeta p-6 border border-puente-200;
+    @apply bg-white rounded-tarjeta p-6 border border-court-200;
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
     transition:
       background-color 220ms var(--ease-out),
@@ -128,7 +128,7 @@
   }
 
   .card-destacada {
-    @apply card border-2 border-puente-900;
+    @apply card border-2 border-court-900;
   }
 
   a.card, button.card {
@@ -184,15 +184,15 @@
   }
 
   .lectura-facil strong {
-    @apply text-puente-700 font-bold;
+    @apply text-court-700 font-bold;
   }
 
   .paso-indicador {
-    @apply flex items-center justify-center w-12 h-12 rounded-full bg-puente-100 text-puente-700 font-bold text-xl;
+    @apply flex items-center justify-center w-12 h-12 rounded-full bg-court-100 text-court-700 font-bold text-xl;
   }
 
   .paso-activo .paso-indicador {
-    @apply bg-puente-600 text-white;
+    @apply bg-court-600 text-white;
   }
 
   .pasos-nav {
@@ -200,12 +200,12 @@
   }
 
   .pasos-nav [aria-current='step'] {
-    @apply font-bold text-puente-700;
+    @apply font-bold text-court-700;
   }
 
   .input-accesible {
-    @apply w-full px-5 py-4 text-lg rounded-suave border border-puente-300 bg-white;
-    @apply placeholder:text-puente-400;
+    @apply w-full px-5 py-4 text-lg rounded-suave border border-court-300 bg-white;
+    @apply placeholder:text-court-400;
     transition: border-color 220ms var(--ease-out), background-color 220ms var(--ease-out);
     min-height: 56px;
   }
@@ -226,23 +226,23 @@
   }
 
   .etiqueta-info {
-    @apply etiqueta bg-accent-info/25 text-puente-800;
+    @apply etiqueta bg-accent-info/25 text-court-800;
   }
 
   .etiqueta-exito {
-    @apply etiqueta bg-accent-success/25 text-puente-900;
+    @apply etiqueta bg-accent-success/25 text-court-900;
   }
 
   .etiqueta-alerta {
-    @apply etiqueta bg-accent-alert/25 text-puente-900;
+    @apply etiqueta bg-accent-alert/25 text-court-900;
   }
 
   .panel-suave {
-    @apply rounded-tarjeta bg-calma-sage border border-puente-200 p-6 md:p-8;
+    @apply rounded-tarjeta bg-calma-sage border border-court-200 p-6 md:p-8;
   }
 
   .link-atras {
-    @apply inline-flex items-center gap-2 text-puente-900 font-medium mb-6 rounded-suave px-3 -mx-3;
+    @apply inline-flex items-center gap-2 text-court-900 font-medium mb-6 rounded-suave px-3 -mx-3;
     min-height: 44px;
     text-decoration: underline;
     text-underline-offset: 4px;
@@ -256,7 +256,7 @@
   }
 
   .avatar-inicial {
-    @apply w-20 h-20 rounded-full bg-puente-700 text-white flex items-center justify-center text-3xl font-bold;
+    @apply w-20 h-20 rounded-full bg-court-700 text-white flex items-center justify-center text-3xl font-bold;
   }
 }
 

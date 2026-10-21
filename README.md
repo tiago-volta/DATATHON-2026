@@ -1,4 +1,4 @@
-# PUENTE
+# InclusiveCourt
 
 **De la citación a la sentencia, a tu manera.**
 
@@ -186,8 +186,8 @@ Lee las skills antes de trabajar en cada área:
 
 | Skill | Usar para |
 |-------|----------|
-| `puente-lectura-facil` | Escribir textos de usuario |
-| `puente-accesibilidad` | Cambios en UI |
+| `inclusivecourt-lectura-facil` | Escribir textos de usuario |
+| `inclusivecourt-accesibilidad` | Cambios en UI |
 | `anthropics-frontend-design` | Diseño de componentes |
 | `superpowers-brainstorming` | Sesiones de ideación |
 

@@ -21,7 +21,7 @@ Skills descargadas de repositorios públicos para usar con Claude Code y Cursor.
 
 ## Prioridad de uso
 
-Para trabajo de UI en PUENTE:
+Para trabajo de UI en InclusiveCourt:
 1. `stop-slop` para todo texto (UI, commits, README)
 2. `frontend-design` + `impeccable` para diseño
 3. `a11y-audit` para accesibilidad

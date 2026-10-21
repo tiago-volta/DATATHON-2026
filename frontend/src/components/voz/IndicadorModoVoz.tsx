@@ -35,13 +35,13 @@ export function IndicadorModoVoz() {
               activar()
             })()
           }}
-          className="text-sm font-bold text-puente-700 underline underline-offset-4 hover:text-puente-600"
+          className="text-sm font-bold text-court-700 underline underline-offset-4 hover:text-court-600"
           title="Activa el Modo con voz para pedir cosas en voz alta"
         >
           Modo con voz
         </button>
         {aviso && (
-          <span className="text-xs text-puente-700 max-w-[14rem] text-right" role="status">
+          <span className="text-xs text-court-700 max-w-[14rem] text-right" role="status">
             {aviso}
           </span>
         )}
@@ -52,12 +52,12 @@ export function IndicadorModoVoz() {
   return (
     <div className="flex items-center gap-2 shrink-0">
       <span
-        className="inline-flex items-center gap-2 text-sm font-bold text-puente-800 bg-puente-100 border border-puente-300 rounded-suave px-3 py-1"
+        className="inline-flex items-center gap-2 text-sm font-bold text-court-800 bg-court-100 border border-court-300 rounded-suave px-3 py-1"
         role="status"
         aria-live="polite"
       >
         <span
-          className="w-2 h-2 rounded-full bg-puente-600"
+          className="w-2 h-2 rounded-full bg-court-600"
           aria-hidden="true"
         />
         Modo con voz activo
@@ -65,7 +65,7 @@ export function IndicadorModoVoz() {
       <button
         type="button"
         onClick={desactivar}
-        className="text-sm font-bold text-puente-700 underline underline-offset-4 hover:text-puente-600"
+        className="text-sm font-bold text-court-700 underline underline-offset-4 hover:text-court-600"
       >
         Desactivar
       </button>

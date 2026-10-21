@@ -1,4 +1,4 @@
-# Análisis del Reto 3 vs. Estado Actual de PUENTE (Actualizado Mañana Miércoles 21 Oct)
+# Análisis del Reto 3 vs. Estado Actual de InclusiveCourt (Actualizado Mañana Miércoles 21 Oct)
 
 > **Directriz para agentes de código**: No proponer ni generar guiones de demo, ideas para presentaciones ni flujos de demostración. Centrarse exclusivamente en el desarrollo del producto (UI/UX, frontend, backend y accesibilidad) hasta que el equipo pida explícitamente material de presentación.
 

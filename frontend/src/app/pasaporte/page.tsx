@@ -66,7 +66,7 @@ export default function PaginaPasaporte() {
     }
 
     try {
-      const rawLocal = localStorage.getItem('puente-pasaporte')
+      const rawLocal = localStorage.getItem('court-pasaporte')
       if (rawLocal) {
         const parsed = JSON.parse(rawLocal)
         if (typeof parsed?.nombre === 'string') {
@@ -195,7 +195,7 @@ export default function PaginaPasaporte() {
     registrarConfianza('pasaporte')
     try {
       localStorage.setItem(
-        'puente-pasaporte',
+        'court-pasaporte',
         JSON.stringify({ id, ...datosLimpios, url, creado: Date.now() })
       )
     } catch {
@@ -230,13 +230,13 @@ export default function PaginaPasaporte() {
             ].map((item, i) => (
               <li key={item.key} className="flex items-center gap-2">
                 {i > 0 && (
-                  <Icono nombre="→" className="h-4 w-4 text-puente-300" />
+                  <Icono nombre="→" className="h-4 w-4 text-court-300" />
                 )}
                 <span
                   className={
                     paso === item.key
-                      ? 'font-bold text-puente-900 underline underline-offset-4'
-                      : 'text-puente-700'
+                      ? 'font-bold text-court-900 underline underline-offset-4'
+                      : 'text-court-700'
                   }
                   aria-current={paso === item.key ? 'step' : undefined}
                 >
@@ -259,7 +259,7 @@ export default function PaginaPasaporte() {
 
             {datos.ajustes.length > 0 && (
               <div
-                className="mb-6 p-4 rounded-suave bg-calma-sage border border-puente-200 text-puente-700"
+                className="mb-6 p-4 rounded-suave bg-calma-sage border border-court-200 text-court-700"
                 role="status"
                 aria-live="polite"
               >
@@ -272,7 +272,7 @@ export default function PaginaPasaporte() {
             )}
 
             <form className="card" onSubmit={avanzarAAjustes} noValidate>
-              <h2 className="text-xl font-bold text-puente-800 mb-6">
+              <h2 className="text-xl font-bold text-court-800 mb-6">
                 Tus datos básicos
               </h2>
 
@@ -280,9 +280,9 @@ export default function PaginaPasaporte() {
                 <div>
                   <label
                     htmlFor="nombre"
-                    className="block text-lg font-medium text-puente-700 mb-2"
+                    className="block text-lg font-medium text-court-700 mb-2"
                   >
-                    Tu nombre <span className="text-puente-700 text-base font-normal">(obligatorio)</span>
+                    Tu nombre <span className="text-court-700 text-base font-normal">(obligatorio)</span>
                   </label>
                   <input
                     type="text"
@@ -319,7 +319,7 @@ export default function PaginaPasaporte() {
                 <div>
                   <label
                     htmlFor="contacto"
-                    className="block text-lg font-medium text-puente-700 mb-2"
+                    className="block text-lg font-medium text-court-700 mb-2"
                   >
                     Teléfono de contacto de emergencia (opcional)
                   </label>
@@ -348,7 +348,7 @@ export default function PaginaPasaporte() {
                         : 'ayuda-contacto'
                     }
                   />
-                  <p className="text-sm text-puente-700 mt-2" id="ayuda-contacto">
+                  <p className="text-sm text-court-700 mt-2" id="ayuda-contacto">
                     Solo números (9 cifras en España, empezando por 6, 7, 8 o 9). Una persona a la que puedan llamar si necesitas ayuda.
                   </p>
                   {errores.contacto && (
@@ -362,8 +362,8 @@ export default function PaginaPasaporte() {
                   )}
                 </div>
 
-                <fieldset className="border border-puente-200 rounded-suave p-4">
-                  <legend className="px-1 text-lg font-medium text-puente-800">
+                <fieldset className="border border-court-200 rounded-suave p-4">
+                  <legend className="px-1 text-lg font-medium text-court-800">
                     Apoyos de voz y lectura
                   </legend>
                   <label
@@ -373,7 +373,7 @@ export default function PaginaPasaporte() {
                     <input
                       type="checkbox"
                       id="necesito-apoyos"
-                      className="mt-1 h-5 w-5 shrink-0 accent-puente-700"
+                      className="mt-1 h-5 w-5 shrink-0 accent-court-700"
                       checked={necesitoApoyos}
                       onChange={(e) => {
                         const valor = e.target.checked
@@ -387,12 +387,12 @@ export default function PaginaPasaporte() {
                       aria-describedby="ayuda-necesito-apoyos"
                     />
                     <span>
-                      <span className="block font-bold text-puente-900">
+                      <span className="block font-bold text-court-900">
                         Necesito más apoyos de voz y lectura
                       </span>
                       <span
                         id="ayuda-necesito-apoyos"
-                        className="block text-sm text-puente-700 mt-1"
+                        className="block text-sm text-court-700 mt-1"
                       >
                         Opcional. Se guarda solo en este dispositivo. No es un
                         diagnóstico ni una etiqueta de discapacidad.
@@ -432,8 +432,8 @@ export default function PaginaPasaporte() {
                     onClick={() => toggleAjuste(ajuste.id)}
                     className={`w-full text-left p-5 rounded-tarjeta border-2 transition-[border-color,background-color] duration-150 ${
                       seleccionado
-                        ? 'border-puente-500 bg-puente-50'
-                        : 'border-puente-200 bg-white hover:border-puente-300'
+                        ? 'border-court-500 bg-court-50'
+                        : 'border-court-200 bg-white hover:border-court-300'
                     }`}
                     aria-pressed={seleccionado}
                   >
@@ -441,8 +441,8 @@ export default function PaginaPasaporte() {
                       <span
                         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
                           seleccionado
-                            ? 'border-puente-600 bg-puente-600 text-white'
-                            : 'border-puente-300'
+                            ? 'border-court-600 bg-court-600 text-white'
+                            : 'border-court-300'
                         }`}
                         aria-hidden="true"
                       >
@@ -463,10 +463,10 @@ export default function PaginaPasaporte() {
                         )}
                       </span>
                       <div>
-                        <p className="font-bold text-puente-800 text-lg">
+                        <p className="font-bold text-court-800 text-lg">
                           {ajuste.nombre}
                         </p>
-                        <p className="text-puente-600">{ajuste.descripcion}</p>
+                        <p className="text-court-600">{ajuste.descripcion}</p>
                       </div>
                     </div>
                   </button>
@@ -474,7 +474,7 @@ export default function PaginaPasaporte() {
               })}
             </div>
 
-            <p className="text-puente-700 mb-4" aria-live="polite">
+            <p className="text-court-700 mb-4" aria-live="polite">
               {datos.ajustes.length === 0
                 ? 'Aún no has marcado ningún ajuste.'
                 : `${datos.ajustes.length} ajuste${datos.ajustes.length === 1 ? '' : 's'} seleccionado${datos.ajustes.length === 1 ? '' : 's'}.`}
@@ -512,17 +512,17 @@ export default function PaginaPasaporte() {
             </p>
 
             <article className="hoja max-w-md mx-auto">
-              <header className="border-b-2 border-puente-800 pb-6 mb-6">
-                <div className="flex items-center gap-3 mb-4 text-puente-800">
+              <header className="border-b-2 border-court-800 pb-6 mb-6">
+                <div className="flex items-center gap-3 mb-4 text-court-800">
                   <Marca className="w-8 h-8" />
-                  <span className="text-xl font-bold" translate="no">PUENTE</span>
+                  <span className="text-xl font-bold" translate="no">InclusiveCourt</span>
                 </div>
-                <p className="text-3xl font-bold text-puente-900 mb-1">{datos.nombre}</p>
-                <p className="text-puente-700">Pasaporte de Ajustes</p>
+                <p className="text-3xl font-bold text-court-900 mb-1">{datos.nombre}</p>
+                <p className="text-court-700">Pasaporte de Ajustes</p>
               </header>
 
               <div className="flex justify-center mb-4">
-                <div className="bg-white p-4 rounded-suave border border-puente-200">
+                <div className="bg-white p-4 rounded-suave border border-court-200">
                   {qrUrl && (
                     <QRCodeSVG
                       value={qrUrl}
@@ -536,30 +536,30 @@ export default function PaginaPasaporte() {
                 </div>
               </div>
 
-              <p className="text-center text-puente-800 mb-2 numeros">
+              <p className="text-center text-court-800 mb-2 numeros">
                 Código: {pasaporteId}
               </p>
-              <p className="text-center text-sm text-puente-700 mb-6 break-all px-2">
+              <p className="text-center text-sm text-court-700 mb-6 break-all px-2">
                 {qrUrl}
               </p>
 
-              <div className="border-t border-puente-200 pt-6">
-                <h2 className="font-bold text-puente-800 mb-3">
+              <div className="border-t border-court-200 pt-6">
+                <h2 className="font-bold text-court-800 mb-3">
                   Esta persona necesita:
                 </h2>
                 <ul className="space-y-2">
                   {ajustesSeleccionados.map((ajuste) => (
                     <li key={ajuste.id} className="flex items-start gap-2">
                       <Icono nombre="✓" className="mt-1 h-5 w-5 text-accent-success" />
-                      <span className="text-puente-700">{ajuste.nombre}</span>
+                      <span className="text-court-700">{ajuste.nombre}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               {datos.contacto && (
-                <div className="border-t border-puente-200 pt-4 mt-4">
-                  <p className="text-sm text-puente-700">
+                <div className="border-t border-court-200 pt-4 mt-4">
+                  <p className="text-sm text-court-700">
                     <strong>Contacto de emergencia:</strong> {datos.contacto}
                   </p>
                 </div>
@@ -600,7 +600,7 @@ export default function PaginaPasaporte() {
                   setQrUrl('')
                   setCopiado(false)
                   try {
-                    localStorage.removeItem('puente-pasaporte')
+                    localStorage.removeItem('court-pasaporte')
                   } catch {
                     /* ignore */
                   }
@@ -611,7 +611,7 @@ export default function PaginaPasaporte() {
               </button>
             </div>
 
-            <div className="mt-8 p-4 bg-calma-sage rounded-tarjeta text-center text-puente-800">
+            <div className="mt-8 p-4 bg-calma-sage rounded-tarjeta text-center text-court-800">
               Este Pasaporte no muestra ningún diagnóstico. Solo indica qué
               adaptaciones necesitas.
               <br />

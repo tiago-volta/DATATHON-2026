@@ -7,7 +7,7 @@
  * de voz/lectura sin ningún diagnóstico clínico.
  */
 
-export const LS_PREFERENCIAS = 'puente-preferencias'
+export const LS_PREFERENCIAS = 'court-preferencias'
 
 export type PreferenciasAcceso = {
   /** La persona pide más apoyos de voz y lectura (opcional, local). */
@@ -61,7 +61,7 @@ export function guardarPreferencias(
   if (typeof window === 'undefined') return next
   try {
     window.localStorage.setItem(LS_PREFERENCIAS, JSON.stringify(next))
-    window.dispatchEvent(new Event('puente-preferencias-cambio'))
+    window.dispatchEvent(new Event('court-preferencias-cambio'))
   } catch {
     /* private mode / quota */
   }

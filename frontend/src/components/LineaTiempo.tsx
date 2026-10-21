@@ -30,7 +30,7 @@ export function LineaTiempo({ fases, faseActual = 1 }: Props) {
             {index < fases.length - 1 && (
               <div
                 className={`absolute left-6 top-14 w-0.5 h-full -translate-x-1/2 ${
-                  completada ? 'bg-puente-500' : 'bg-puente-200'
+                  completada ? 'bg-court-500' : 'bg-court-200'
                 }`}
                 aria-hidden="true"
               />
@@ -42,12 +42,12 @@ export function LineaTiempo({ fases, faseActual = 1 }: Props) {
 
             <div className={`card flex-1 ${esActual ? 'card-destacada' : ''}`}>
               <div className="flex items-center gap-3 mb-2">
-                <Icono nombre={fase.icono} className="h-6 w-6 text-puente-900" />
-                <h3 className="text-lg font-bold text-puente-800">{fase.nombre}</h3>
+                <Icono nombre={fase.icono} className="h-6 w-6 text-court-900" />
+                <h3 className="text-lg font-bold text-court-800">{fase.nombre}</h3>
               </div>
-              <p className="text-puente-600 mb-3">{fase.descripcion}</p>
+              <p className="text-court-600 mb-3">{fase.descripcion}</p>
               <div className="bg-calma-sage rounded-lg p-3">
-                <p className="text-puente-700 font-medium">
+                <p className="text-court-700 font-medium">
                   <span className="sr-only">Qué hacer: </span>
                   {fase.queHacer}
                 </p>

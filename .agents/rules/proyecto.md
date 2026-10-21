@@ -1,13 +1,13 @@
 ---
 trigger: always_on
-description: Reglas generales, stack técnico y convenciones del proyecto PUENTE
+description: Reglas generales, stack técnico y convenciones del proyecto InclusiveCourt
 ---
 
-# Reglas del proyecto PUENTE
+# Reglas del proyecto InclusiveCourt
 
 ## Contexto
 
-PUENTE es una aplicación de accesibilidad cognitiva para la justicia, desarrollada en el
+InclusiveCourt es una aplicación de accesibilidad cognitiva para la justicia, desarrollada en el
 DATAthon Justicia 2026 (A Coruña). Ayuda a personas neurodivergentes a entender y prepararse
 para procesos judiciales.
 
@@ -48,14 +48,14 @@ para procesos judiciales.
 - Compatible con lectores de pantalla (VoiceOver, NVDA)
 - Contraste mínimo WCAG AA
 - Sin animaciones que no se puedan pausar
-- Leer skill `puente-accesibilidad` antes de hacer cambios en UI
+- Leer skill `inclusivecourt-accesibilidad` antes de hacer cambios en UI
 
 ## Lectura fácil (obligatorio)
 
 - Al escribir texto para usuarios, seguir las pautas UNE 153101
 - Frases cortas, una idea por línea
 - Sin jerga jurídica sin explicar
-- Leer skill `puente-lectura-facil` antes de escribir contenido
+- Leer skill `inclusivecourt-lectura-facil` antes de escribir contenido
 
 ## División del equipo
 

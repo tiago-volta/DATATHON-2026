@@ -10,7 +10,7 @@ metadata:
 
 # Motion Foundations
 
-## Límite PUENTE
+## Límite InclusiveCourt
 
 No añadas la librería `motion/react` si el proyecto no la usa ya. La animación por defecto es CSS, corta, y apagada con `prefers-reduced-motion`. Sin loops decorativos. Si no hay una razón funcional (mostrar un cambio de estado), no animes.
 

@@ -32,21 +32,21 @@ export function MedidorConfianza({
 
   return (
     <section aria-labelledby={tituloId} className="card">
-      <h2 id={tituloId} className="font-bold text-puente-800 mb-1">
+      <h2 id={tituloId} className="font-bold text-court-800 mb-1">
         {titulo}
       </h2>
-      <p id={ayudaId} className="text-sm text-puente-700 mb-4">
+      <p id={ayudaId} className="text-sm text-court-700 mb-4">
         Para el día del juicio. Solo sube con lo que vas haciendo. No baja si
         paras, usas calma o un check-in sale regular o mal.
       </p>
 
       <div className="space-y-3" aria-describedby={ayudaId}>
-        <p className="text-xl font-bold text-puente-800" aria-hidden="true">
+        <p className="text-xl font-bold text-court-800" aria-hidden="true">
           {etiqueta.palabra}
         </p>
 
         <div
-          className="w-full h-3 rounded-full bg-puente-100 overflow-hidden"
+          className="w-full h-3 rounded-full bg-court-100 overflow-hidden"
           role="meter"
           aria-valuemin={0}
           aria-valuemax={100}
@@ -55,7 +55,7 @@ export function MedidorConfianza({
           aria-label="Confianza para el día del juicio"
         >
           <div
-            className="h-full bg-puente-600 rounded-full"
+            className="h-full bg-court-600 rounded-full"
             style={{
               width: `${valorSeguro}%`,
               transition: reduced ? 'none' : 'width 1s ease-out',
@@ -63,7 +63,7 @@ export function MedidorConfianza({
           />
         </div>
 
-        <p className="text-sm text-puente-700">{etiqueta.detalle}</p>
+        <p className="text-sm text-court-700">{etiqueta.detalle}</p>
       </div>
 
       {mensaje && (
@@ -72,7 +72,7 @@ export function MedidorConfianza({
           role="status"
           aria-live="polite"
         >
-          <p className="flex-1 text-puente-900 text-sm min-w-0">{mensaje}</p>
+          <p className="flex-1 text-court-900 text-sm min-w-0">{mensaje}</p>
           {onDescartarMensaje && (
             <button
               type="button"

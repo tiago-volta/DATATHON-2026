@@ -1,7 +1,7 @@
 ---
-name: puente-mapa
+name: inclusivecourt-mapa
 description: >-
-  Mapa de skills de PUENTE. Úsalo al empezar una tarea para elegir qué skill
+  Mapa de skills de InclusiveCourt. Úsalo al empezar una tarea para elegir qué skill
   abrir y cuál manda si dos se contradicen. Cubre accesibilidad, lectura fácil,
   UI, FastAPI, Next.js y seguridad.
 ---
@@ -11,8 +11,8 @@ description: >-
 ## Quién manda
 
 1. Reglas de `.cursor/rules/` y esta skill.
-2. `puente-accesibilidad` y `puente-lectura-facil` (en `.claude/skills/`).
-3. Skills de diseño, solo dentro de su límite PUENTE.
+2. `inclusivecourt-accesibilidad` y `inclusivecourt-lectura-facil` (en `.claude/skills/`).
+3. Skills de diseño, solo dentro de su límite InclusiveCourt.
 4. Skills de ingeniería (ECC) para código, tests y API.
 
 Si hay choque, gana el número más bajo. No propongas demos ni presentaciones. El frontend es Next.js 14, no 16. Los textos de usuario van en español y de tú. El Pasaporte no muestra diagnóstico.
@@ -21,8 +21,8 @@ Si hay choque, gana el número más bajo. No propongas demos ni presentaciones. 
 
 | Tarea | Skill |
 | --- | --- |
-| UI, teclado, lector de pantalla, COGA | `puente-accesibilidad` |
-| Texto para la persona usuaria o una citación | `puente-lectura-facil` |
+| UI, teclado, lector de pantalla, COGA | `inclusivecourt-accesibilidad` |
+| Texto para la persona usuaria o una citación | `inclusivecourt-lectura-facil` |
 | Pauta concreta de UX, tipo, color o stack | `ui-ux-pro-max` |
 | Una pantalla se ve genérica | `design-taste-frontend` |
 | Criterio de jerarquía, tipo o color más allá del checklist | `apple-design` |

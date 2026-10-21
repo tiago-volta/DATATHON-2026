@@ -1,10 +1,10 @@
-# PUENTE - Accesibilidad cognitiva en la justicia
+# InclusiveCourt - Accesibilidad cognitiva en la justicia
 
 Aplicación desarrollada en el DATAthon Justicia 2026 (A Coruña, Reto 3: Neurodiversidad).
 
 ## Qué es
 
-PUENTE ayuda a personas neurodivergentes (autismo, TDAH, dislexia, ceguera) a entender
+InclusiveCourt ayuda a personas neurodivergentes (autismo, TDAH, dislexia, ceguera) a entender
 y prepararse para procesos judiciales. Convierte citaciones en lenguaje claro, ofrece
 un Pasaporte de Ajustes sin revelar diagnóstico, y permite ensayar la declaración.
 
@@ -21,7 +21,7 @@ un Pasaporte de Ajustes sin revelar diagnóstico, y permite ensayar la declaraci
 │   └── app/           # main.py, llm.py, arasaac.py, mock_data.py
 ├── data/              # JSON de fases, roles, ajustes
 ├── .claude/skills/    # Skills de producto (accesibilidad, lectura fácil)
-└── .cursor/skills/    # Skills de ingeniería (ECC) y de diseño, con límite PUENTE
+└── .cursor/skills/    # Skills de ingeniería (ECC) y de diseño, con límite InclusiveCourt
 ```
 
 ## Ejecutar el proyecto
@@ -47,9 +47,9 @@ Abrir http://localhost:3000
 
 ## Skills disponibles
 
-- `puente-mapa`: qué skill abrir y cuál manda
-- `puente-lectura-facil`: pautas UNE para textos accesibles
-- `puente-accesibilidad`: checklist WCAG/COGA
+- `inclusivecourt-mapa`: qué skill abrir y cuál manda
+- `inclusivecourt-lectura-facil`: pautas UNE para textos accesibles
+- `inclusivecourt-accesibilidad`: checklist WCAG/COGA
 - `ui-ux-pro-max`, `design-taste-frontend`, `apple-design`: diseño, con límite de calma
 - `.cursor/skills/`: FastAPI, React, tests, seguridad y Context7 (base ECC)
 - `vendor/stop-slop` y `vendor/superpowers-*`: escritura y método de trabajo

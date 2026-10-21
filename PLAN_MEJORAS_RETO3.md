@@ -1,4 +1,4 @@
-# PUENTE: análisis de huecos y plan de mejoras para ganar el Reto 3
+# InclusiveCourt: análisis de huecos y plan de mejoras para ganar el Reto 3
 
 Fecha: miércoles 21 oct, 13:30. Base: `main` tras el commit `4433740`, el PDF oficial del reto ([`docs/reto/reto3-contexto.md`](docs/reto/reto3-contexto.md)) y la evaluación legal ([`docs/reto/cumplimiento-legal-rgpd.md`](docs/reto/cumplimiento-legal-rgpd.md)).
 

@@ -1,12 +1,12 @@
 ---
-name: puente-accesibilidad
+name: inclusivecourt-accesibilidad
 description: >-
-  Checklist y pautas para garantizar que la interfaz de PUENTE sea accesible
+  Checklist y pautas para garantizar que la interfaz de InclusiveCourt sea accesible
   según WCAG 2.2 y COGA (screen-reader first, teclado, contraste, baja estimulación).
   Usar siempre antes de hacer cambios en UI o componentes frontend.
 ---
 
-# Skill: Accesibilidad web para PUENTE
+# Skill: Accesibilidad web para InclusiveCourt
 
 Checklist y pautas para garantizar que la interfaz sea accesible según WCAG 2.2 y COGA.
 
@@ -70,10 +70,10 @@ Pautas adicionales para usuarios con dificultades cognitivas:
 
 ## Colores (contraste WCAG AA)
 
-El design system de PUENTE usa:
-- Texto principal: `puente-900` sobre `calma-cream` (ratio > 7:1)
-- Texto secundario: `puente-600` sobre blanco (ratio > 4.5:1)
-- Botones: texto blanco sobre `puente-600` (ratio > 4.5:1)
+El design system de InclusiveCourt usa:
+- Texto principal: `court-900` sobre `calma-cream` (ratio > 7:1)
+- Texto secundario: `court-600` sobre blanco (ratio > 4.5:1)
+- Botones: texto blanco sobre `court-600` (ratio > 4.5:1)
 
 ## Testing
 

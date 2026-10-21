@@ -62,10 +62,10 @@ export default function DemoLuis() {
         <header className="mb-8">
           <div className="mb-4">
             <h1 className="titulo-pagina">Luis, 28 años</h1>
-            <p className="text-xl text-puente-700">Testigo en un juicio penal</p>
+            <p className="text-xl text-court-700">Testigo en un juicio penal</p>
           </div>
           <div className="bg-calma-sage rounded-lg p-4">
-            <p className="text-puente-700">
+            <p className="text-court-700">
               Luis tiene autismo (TEA nivel 1). Le cuesta entender las frases con doble sentido,
               los ambientes ruidosos le agobian y necesita saber qué va a pasar con antelación.
             </p>
@@ -86,8 +86,8 @@ export default function DemoLuis() {
               onClick={() => setSeccion(s.id as typeof seccion)}
               className={`px-4 py-2 rounded-full font-medium transition-colors ${
                 seccion === s.id
-                  ? 'bg-puente-600 text-white'
-                  : 'bg-puente-100 text-puente-700 hover:bg-puente-200'
+                  ? 'bg-court-600 text-white'
+                  : 'bg-court-100 text-court-700 hover:bg-court-200'
               }`}
               aria-current={seccion === s.id ? 'true' : undefined}
             >
@@ -98,8 +98,8 @@ export default function DemoLuis() {
 
         {seccion === 'intro' && (
           <section className="card">
-            <h2 className="text-2xl font-bold text-puente-800 mb-4">La situación de Luis</h2>
-            <div className="space-y-4 text-lg text-puente-700">
+            <h2 className="text-2xl font-bold text-court-800 mb-4">La situación de Luis</h2>
+            <div className="space-y-4 text-lg text-court-700">
               <p>
                 Luis presenció un incidente en su barrio y la policía tomó sus datos.
                 Dos semanas después, recibe una carta del juzgado: es una citación para
@@ -111,7 +111,7 @@ export default function DemoLuis() {
                 &ldquo;se le apercibe&rdquo;, &ldquo;a los efectos oportunos&rdquo;...
               </p>
               <p>
-                <strong>PUENTE le ayuda a:</strong>
+                <strong>InclusiveCourt le ayuda a:</strong>
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Entender qué dice la citación en palabras claras</li>
@@ -135,19 +135,19 @@ export default function DemoLuis() {
         {seccion === 'citacion' && (
           <section>
             <div className="card-destacada mb-6">
-              <h2 className="text-xl font-bold text-puente-800 mb-4">Lo más importante</h2>
+              <h2 className="text-xl font-bold text-court-800 mb-4">Lo más importante</h2>
               <dl className="grid gap-4 sm:grid-cols-2">
                 <div className="bg-calma-sage rounded-lg p-4">
-                  <dt className="text-sm text-puente-600 mb-1">Tu rol</dt>
-                  <dd className="text-xl font-bold text-puente-800">Testigo</dd>
+                  <dt className="text-sm text-court-600 mb-1">Tu rol</dt>
+                  <dd className="text-xl font-bold text-court-800">Testigo</dd>
                 </div>
                 <div className="bg-calma-sage rounded-lg p-4">
-                  <dt className="text-sm text-puente-600 mb-1">Fecha y hora</dt>
-                  <dd className="text-xl font-bold text-puente-800">10 nov 2026, 10:00</dd>
+                  <dt className="text-sm text-court-600 mb-1">Fecha y hora</dt>
+                  <dd className="text-xl font-bold text-court-800">10 nov 2026, 10:00</dd>
                 </div>
                 <div className="bg-calma-sage rounded-lg p-4 sm:col-span-2">
-                  <dt className="text-sm text-puente-600 mb-1">Lugar</dt>
-                  <dd className="text-lg font-bold text-puente-800">
+                  <dt className="text-sm text-court-600 mb-1">Lugar</dt>
+                  <dd className="text-lg font-bold text-court-800">
                     Juzgado de Instrucción nº 3, A Coruña
                   </dd>
                 </div>
@@ -175,7 +175,7 @@ export default function DemoLuis() {
 
             <div className="card">
               <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-bold text-puente-800">
+                <h2 className="text-xl font-bold text-court-800">
                   {modoLectura === 'clara' ? 'En lenguaje claro' : 'En lectura fácil'}
                 </h2>
                 <BotonLeerEnVoz
@@ -198,8 +198,8 @@ export default function DemoLuis() {
 
         {seccion === 'fases' && (
           <section>
-            <h2 className="text-2xl font-bold text-puente-800 mb-2">Fases del proceso</h2>
-            <p className="text-puente-600 mb-6">
+            <h2 className="text-2xl font-bold text-court-800 mb-2">Fases del proceso</h2>
+            <p className="text-court-600 mb-6">
               Esto es lo que va a pasar, paso a paso. Luis está en la fase 1.
             </p>
             <LineaTiempo fases={FASES_TESTIGO} faseActual={1} />
@@ -212,8 +212,8 @@ export default function DemoLuis() {
 
         {seccion === 'roles' && (
           <section>
-            <h2 className="text-2xl font-bold text-puente-800 mb-2">Quién es quién</h2>
-            <p className="text-puente-600 mb-6">
+            <h2 className="text-2xl font-bold text-court-800 mb-2">Quién es quién</h2>
+            <p className="text-court-600 mb-6">
               Estas son las personas que Luis se encontrará en el juzgado.
             </p>
             <div className="space-y-4">
@@ -237,8 +237,8 @@ export default function DemoLuis() {
 
         {seccion === 'ajustes' && (
           <section>
-            <h2 className="text-2xl font-bold text-puente-800 mb-2">Ajustes para Luis</h2>
-            <p className="text-puente-600 mb-6">
+            <h2 className="text-2xl font-bold text-court-800 mb-2">Ajustes para Luis</h2>
+            <p className="text-court-600 mb-6">
               Luis puede pedir estas adaptaciones. Es su derecho (Art. 7 bis LEC).
             </p>
 
@@ -253,18 +253,18 @@ export default function DemoLuis() {
                 <div key={ajuste.nombre} className="card flex items-start gap-4">
                   <Icono nombre="✓" className="h-6 w-6 text-accent-success" />
                   <div>
-                    <p className="font-bold text-puente-800">{ajuste.nombre}</p>
-                    <p className="text-puente-600">{ajuste.desc}</p>
+                    <p className="font-bold text-court-800">{ajuste.nombre}</p>
+                    <p className="text-court-600">{ajuste.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="bg-accent-success/10 border-2 border-accent-success rounded-tarjeta p-6">
-              <h3 className="text-xl font-bold text-puente-800 mb-4">
+              <h3 className="text-xl font-bold text-court-800 mb-4">
                 Crear el Pasaporte de Luis
               </h3>
-              <p className="text-puente-600 mb-4">
+              <p className="text-court-600 mb-4">
                 Con el Pasaporte, Luis puede mostrar en el juzgado qué necesita,
                 sin tener que explicar su diagnóstico.
               </p>

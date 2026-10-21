@@ -24,7 +24,7 @@ export function AvisoInsignia({ insignia, onDescartar }: Props) {
       aria-live="polite"
       aria-atomic="true"
     >
-      <div className="pointer-events-auto flex items-start gap-3 rounded-tarjeta border-2 border-puente-900 bg-white p-3.5 text-puente-900 shadow-sm">
+      <div className="pointer-events-auto flex items-start gap-3 rounded-tarjeta border-2 border-court-900 bg-white p-3.5 text-court-900 shadow-sm">
         <span
           className="shrink-0 relative flex items-center justify-center mt-0.5"
           aria-hidden="true"
@@ -36,20 +36,20 @@ export function AvisoInsignia({ insignia, onDescartar }: Props) {
           />
         </span>
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-puente-600 mb-0.5">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-court-600 mb-0.5">
             Nueva medalla
           </p>
-          <p className="font-bold text-puente-800 text-base leading-tight">
+          <p className="font-bold text-court-800 text-base leading-tight">
             {insignia.nombre}
           </p>
-          <p className="text-sm text-puente-700 mt-1 leading-snug">
+          <p className="text-sm text-court-700 mt-1 leading-snug">
             {insignia.porQueImporta}
           </p>
         </div>
         <button
           type="button"
           onClick={onDescartar}
-          className="shrink-0 min-h-[44px] min-w-[44px] -mt-1 -mr-1 rounded-suave text-puente-700 hover:bg-puente-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400"
+          className="shrink-0 min-h-[44px] min-w-[44px] -mt-1 -mr-1 rounded-suave text-court-700 hover:bg-court-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-court-400"
           aria-label="Cerrar aviso de insignia"
         >
           <Icono nombre="✕" />

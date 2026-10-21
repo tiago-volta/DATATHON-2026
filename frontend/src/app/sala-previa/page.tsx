@@ -434,7 +434,7 @@ export default function PaginaSalaPrevia() {
 
             {mensaje && (
               <p
-                className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-puente-900 max-w-2xl"
+                className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-court-900 max-w-2xl"
                 role="status"
                 aria-live="polite"
               >
@@ -487,18 +487,18 @@ export default function PaginaSalaPrevia() {
                     Ver intro otra vez
                   </button>
                   {audioListo && !audioguia.hablando && (
-                    <span className="text-sm text-puente-700 self-center">
+                    <span className="text-sm text-court-700 self-center">
                       Audio activo. Usa los controles o la pausa.
                     </span>
                   )}
                   {audioguia.hablando && (
-                    <span className="text-sm text-puente-700 self-center">
+                    <span className="text-sm text-court-700 self-center">
                       Audioguía en curso. Di «repite» o pulsa Escuchar pedido.
                     </span>
                   )}
                   {modoVoz.activo && (
                     <span
-                      className="text-sm text-puente-700 self-center"
+                      className="text-sm text-court-700 self-center"
                       role="status"
                       aria-live="polite"
                     >
@@ -510,7 +510,7 @@ export default function PaginaSalaPrevia() {
                 {audioguia.sinSoporte && (
                   <p
                     id="audioguia-sin-soporte"
-                    className="mb-4 bg-puente-50 border border-puente-200 rounded-lg p-3 text-puente-800 max-w-2xl"
+                    className="mb-4 bg-court-50 border border-court-200 rounded-lg p-3 text-court-800 max-w-2xl"
                     role="status"
                   >
                     Tu navegador no puede leer en voz alta. Puedes seguir con el
@@ -520,7 +520,7 @@ export default function PaginaSalaPrevia() {
 
                 {audioguia.anuncio && !audioguia.sinSoporte && (
                   <p
-                    className="mb-4 text-sm text-puente-700 max-w-2xl"
+                    className="mb-4 text-sm text-court-700 max-w-2xl"
                     role="status"
                     aria-live="polite"
                     aria-atomic="true"
@@ -539,7 +539,7 @@ export default function PaginaSalaPrevia() {
                       onChangeEstimulo={onSlider}
                     />
 
-                    <p className="text-sm text-puente-700">
+                    <p className="text-sm text-court-700">
                       Ajusta ruido, luz y gente en el panel «En la entrada», junto
                       a la sala 3D. Los pictogramas te ayudan a reconocer cada estímulo.
                     </p>
@@ -599,7 +599,7 @@ export default function PaginaSalaPrevia() {
                   </div>
                 </div>
 
-                <p className="text-sm text-puente-700 mt-8">{CREDITO_AUDIO}</p>
+                <p className="text-sm text-court-700 mt-8">{CREDITO_AUDIO}</p>
               </>
             )}
 

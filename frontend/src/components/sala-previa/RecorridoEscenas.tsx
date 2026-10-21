@@ -61,7 +61,7 @@ export function RecorridoEscenas({
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p
-          className="text-sm font-bold text-puente-800"
+          className="text-sm font-bold text-court-800"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -86,10 +86,10 @@ export function RecorridoEscenas({
                   <span
                     className={`block w-3 h-3 rounded-full border-2 ${
                       actual
-                        ? 'bg-puente-600 border-puente-600'
+                        ? 'bg-court-600 border-court-600'
                         : pasado
                           ? 'bg-accent-success/60 border-accent-success'
-                          : 'bg-puente-100 border-puente-300'
+                          : 'bg-court-100 border-court-300'
                     }`}
                     aria-hidden="true"
                   />
@@ -101,23 +101,23 @@ export function RecorridoEscenas({
       </div>
 
       <div key={escena.id} className="space-y-4">
-        <div className="card border-2 border-puente-200">
+        <div className="card border-2 border-court-200">
           <h2
             id={tituloId}
             ref={tituloRef}
             tabIndex={-1}
-            className="text-2xl font-bold text-puente-800 mb-2 outline-none focus-visible:ring-4 focus-visible:ring-puente-400 focus-visible:ring-offset-2 rounded-suave"
+            className="text-2xl font-bold text-court-800 mb-2 outline-none focus-visible:ring-4 focus-visible:ring-court-400 focus-visible:ring-offset-2 rounded-suave"
           >
             {escena.titulo}
           </h2>
-          <p className="text-lg text-puente-700 mb-4">{escena.frase}</p>
+          <p className="text-lg text-court-700 mb-4">{escena.frase}</p>
 
           <div className="mb-4">
-            <h3 className="font-bold text-puente-800 mb-2">Quién está aquí</h3>
+            <h3 className="font-bold text-court-800 mb-2">Quién está aquí</h3>
             <ul className="space-y-3">
               {escena.roles.map((rol) => (
-                <li key={rol.nombre} className="text-puente-700">
-                  <span className="font-bold text-puente-800">{rol.nombre}.</span>{' '}
+                <li key={rol.nombre} className="text-court-700">
+                  <span className="font-bold text-court-800">{rol.nombre}.</span>{' '}
                   {rol.explicacion}
                 </li>
               ))}
@@ -126,7 +126,7 @@ export function RecorridoEscenas({
 
           {tipico && (
             <p
-              className="text-sm text-puente-700 rounded-suave bg-puente-50 border border-puente-100 px-3 py-2"
+              className="text-sm text-court-700 rounded-suave bg-court-50 border border-court-100 px-3 py-2"
               role="note"
             >
               En un día real, esta zona suele parecerse al nivel «{tipico}».
@@ -158,7 +158,7 @@ export function RecorridoEscenas({
         >
           Anterior
         </button>
-        <span className="text-puente-600 text-sm" aria-hidden="true">
+        <span className="text-court-600 text-sm" aria-hidden="true">
           {paso} / {TOTAL_ESCENAS}
         </span>
         <button
@@ -174,10 +174,10 @@ export function RecorridoEscenas({
 
       {seguro >= TOTAL_ESCENAS - 1 && (
         <div
-          className="rounded-tarjeta border-2 border-puente-200 bg-calma-sage p-4 space-y-3"
+          className="rounded-tarjeta border-2 border-court-200 bg-calma-sage p-4 space-y-3"
           aria-live="polite"
         >
-          <p className="text-puente-800">
+          <p className="text-court-800">
             Has llegado a la sala de vistas. Si quieres, puedes ensayar las
             preguntas que te pueden hacer, a tu ritmo.
           </p>

@@ -1,13 +1,13 @@
 ---
 name: ui-ux-pro-max
-description: "Buscador local de pautas UI para PUENTE (Next.js 14 y Tailwind): UX, contraste, tipografía, layout e interacción. Úsalo al diseñar o revisar interfaz, con --stack nextjs y prioridad en el dominio ux. No sustituye puente-accesibilidad ni puente-lectura-facil, no persiste un design system nuevo y no sube el motion."
+description: "Buscador local de pautas UI para InclusiveCourt (Next.js 14 y Tailwind): UX, contraste, tipografía, layout e interacción. Úsalo al diseñar o revisar interfaz, con --stack nextjs y prioridad en el dominio ux. No sustituye inclusivecourt-accesibilidad ni inclusivecourt-lectura-facil, no persiste un design system nuevo y no sube el motion."
 ---
 
 # UI/UX Pro Max - Design Intelligence
 
-## Límite PUENTE
+## Límite InclusiveCourt
 
-Esta skill busca pautas. No sustituye `puente-accesibilidad` ni `puente-lectura-facil`.
+Esta skill busca pautas. No sustituye `inclusivecourt-accesibilidad` ni `inclusivecourt-lectura-facil`.
 
 - Producto: web Next.js 14 + Tailwind, no app nativa.
 - Busca con `--stack nextjs` o `html-tailwind`. Prioridad de dominio: `ux` (contraste, teclado, foco, labels).

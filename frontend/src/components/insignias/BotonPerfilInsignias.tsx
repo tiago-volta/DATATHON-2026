@@ -26,7 +26,7 @@ export function BotonPerfilInsignias() {
     sync()
     const onCustom = () => sync()
     const onStorage = (e: StorageEvent) => {
-      if (e.key === null || e.key === 'puente-insignias-utiles') sync()
+      if (e.key === null || e.key === 'court-insignias-utiles') sync()
     }
     window.addEventListener(EVENTO_INSIGNIAS, onCustom)
     window.addEventListener('storage', onStorage)
@@ -68,7 +68,7 @@ export function BotonPerfilInsignias() {
       <button
         ref={botonRef}
         type="button"
-        className="relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] w-11 h-11 rounded-full border border-puente-300 bg-white text-puente-900 transition-colors duration-200 hover:bg-puente-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-puente-400"
+        className="relative inline-flex items-center justify-center min-h-[44px] min-w-[44px] w-11 h-11 rounded-full border border-court-300 bg-white text-court-900 transition-colors duration-200 hover:bg-court-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-court-400"
         aria-label={`Perfil de medallas: ${hechas} de ${TOTAL_INSIGNIAS} conseguidas`}
         aria-expanded={abierto}
         aria-controls={panelId}
@@ -96,7 +96,7 @@ export function BotonPerfilInsignias() {
           />
         </svg>
         <span
-          className="absolute -top-0.5 -right-0.5 min-w-[1.15rem] h-[1.15rem] px-1 rounded-full bg-puente-800 text-white text-[10px] font-bold leading-none inline-flex items-center justify-center tabular-nums"
+          className="absolute -top-0.5 -right-0.5 min-w-[1.15rem] h-[1.15rem] px-1 rounded-full bg-court-800 text-white text-[10px] font-bold leading-none inline-flex items-center justify-center tabular-nums"
           aria-hidden="true"
         >
           {hechas}
@@ -109,14 +109,14 @@ export function BotonPerfilInsignias() {
           role="dialog"
           aria-modal="false"
           aria-labelledby={tituloId}
-          className="absolute right-0 top-[calc(100%+0.5rem)] z-[60] w-[min(22rem,calc(100vw-1.5rem))] max-h-[min(70vh,32rem)] overflow-y-auto rounded-suave border border-puente-200 bg-white shadow-lg p-3"
+          className="absolute right-0 top-[calc(100%+0.5rem)] z-[60] w-[min(22rem,calc(100vw-1.5rem))] max-h-[min(70vh,32rem)] overflow-y-auto rounded-suave border border-court-200 bg-white shadow-lg p-3"
         >
           <div className="flex items-start justify-between gap-3 mb-2 px-1">
             <div>
-              <h2 id={tituloId} className="font-bold text-puente-800 text-base m-0">
+              <h2 id={tituloId} className="font-bold text-court-800 text-base m-0">
                 Tus medallas
               </h2>
-              <p className="text-sm text-puente-700 m-0 mt-0.5">
+              <p className="text-sm text-court-700 m-0 mt-0.5">
                 {hechas} de {TOTAL_INSIGNIAS} · sin ranking ni reloj
               </p>
             </div>

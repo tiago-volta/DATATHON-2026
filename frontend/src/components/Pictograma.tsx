@@ -24,7 +24,7 @@ export function Pictograma({ url, keyword, size = 'md' }: Props) {
         height={dimension}
         className="rounded-lg"
       />
-      <figcaption className="text-sm text-puente-600 text-center">
+      <figcaption className="text-sm text-court-600 text-center">
         {keyword}
       </figcaption>
     </figure>

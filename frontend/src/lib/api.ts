@@ -232,7 +232,7 @@ export function descargarICS(plazos: Plazo[], titulo: string) {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'citacion_puente.ics'
+      a.download = 'citacion_inclusivecourt.ics'
       a.click()
       window.URL.revokeObjectURL(url)
     })

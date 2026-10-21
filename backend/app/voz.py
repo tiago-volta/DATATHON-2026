@@ -158,7 +158,7 @@ def interpretar_peticion(texto: str) -> dict:
         return {
             "intent": "explicar",
             "respuestaHabla": (
-                "Estás en PUENTE. Aquí entiendes el juzgado con frases cortas y voz. "
+                "Estás en InclusiveCourt. Aquí entiendes el juzgado con frases cortas y voz. "
                 "En Sala Previa puedes probar ruido, luz y gente a tu ritmo. "
                 "Di «repite» si quieres oír otra vez el último bloque."
             ),
