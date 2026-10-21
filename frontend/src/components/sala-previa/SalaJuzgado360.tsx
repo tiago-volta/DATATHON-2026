@@ -62,8 +62,13 @@ interface Props {
 
 const CLAVE_AJUSTES = 'sala-previa-distracciones'
 
-function leerAjustes(): { nivel: NivelDistracciones; avisar: boolean } {
-  const defecto = { nivel: 'apagadas' as NivelDistracciones, avisar: true }
+interface AjustesDistraccion {
+  nivel: NivelDistracciones
+  avisar: boolean
+}
+
+function leerAjustes(): AjustesDistraccion {
+  const defecto: AjustesDistraccion = { nivel: 'apagadas', avisar: true }
   if (typeof window === 'undefined') return defecto
   try {
     const raw = window.localStorage.getItem(CLAVE_AJUSTES)
@@ -174,20 +179,22 @@ export function SalaJuzgado360({
   const gente = enCalma ? 0 : valores.gente
   const ruido = enCalma ? 0 : valores.ruido
 
-  const [ajustes, setAjustes] = useState<{ nivel: NivelDistracciones; avisar: boolean }>({
+  const [ajustes, setAjustes] = useState<AjustesDistraccion>({
     nivel: 'apagadas',
     avisar: true,
   })
   useEffect(() => {
     setAjustes(leerAjustes())
   }, [])
-  useEffect(() => {
+  const cambiarAjustes = (cambio: Partial<AjustesDistraccion>) => {
+    const siguiente = { ...ajustes, ...cambio }
+    setAjustes(siguiente)
     try {
-      window.localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(ajustes))
+      window.localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(siguiente))
     } catch {
       // Sin almacenamiento: los ajustes duran solo esta visita.
     }
-  }, [ajustes])
+  }
 
   const { activa, aviso, explicacion, historial, disparar } = useDistracciones({
     nivel: ajustes.nivel,
@@ -480,8 +487,8 @@ export function SalaJuzgado360({
             aviso={aviso}
             explicacion={explicacion}
             historial={historial}
-            onNivel={(nivel) => setAjustes((a) => ({ ...a, nivel }))}
-            onAvisar={(avisar) => setAjustes((a) => ({ ...a, avisar }))}
+            onNivel={(nivel) => cambiarAjustes({ nivel })}
+            onAvisar={(avisar) => cambiarAjustes({ avisar })}
           />
 
           {reduced && (

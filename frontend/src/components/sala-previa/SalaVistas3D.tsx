@@ -165,11 +165,11 @@ function AtrilTestigo() {
         <boxGeometry args={[0.16, 0.95, 0.16]} />
         <meshStandardMaterial color="#5c3d28" roughness={0.6} />
       </mesh>
-      <mesh position={[0, 1.04, 0.02]} rotation={[0.28, 0, 0]}>
+      <mesh position={[0, 1.0, 0.02]} rotation={[-0.28, 0, 0]}>
         <boxGeometry args={[0.72, 0.05, 0.46]} />
-        <meshStandardMaterial color="#6b4a32" roughness={0.55} />
+        <meshStandardMaterial color="#8a5f3f" roughness={0.55} />
       </mesh>
-      <mesh position={[0.05, 1.075, 0.04]} rotation={[0.28, 0.08, 0]}>
+      <mesh position={[0.05, 1.035, 0.04]} rotation={[-0.28, 0.08, 0]}>
         <boxGeometry args={[0.24, 0.006, 0.32]} />
         <meshStandardMaterial color="#efe9dc" roughness={0.9} />
       </mesh>
@@ -192,7 +192,7 @@ function AtrilTestigo() {
         <cylinderGeometry args={[0.031, 0.029, 0.07, 16]} />
         <meshStandardMaterial color="#9fc6d8" transparent opacity={0.45} roughness={0.1} />
       </mesh>
-      <mesh position={[0.05, 1.17, -0.12]} rotation={[0.5, 0, 0]}>
+      <mesh position={[0.05, 1.12, -0.1]} rotation={[0.5, 0, 0]}>
         <cylinderGeometry args={[0.012, 0.012, 0.22, 8]} />
         <meshStandardMaterial color="#222228" metalness={0.5} roughness={0.4} />
       </mesh>
@@ -887,6 +887,7 @@ function FiguraAnimada({
   const cuerpo = useRef<THREE.Group>(null)
   const cabeza = useRef<THREE.Group>(null)
   const pantalla = useRef<THREE.MeshStandardMaterial>(null)
+  const halo = useRef<THREE.MeshBasicMaterial>(null)
   const sentadaRef = useRef<THREE.Group>(null)
   const dePie = useRef<THREE.Group>(null)
   const progreso = useProgreso(gesto ? d : null)
@@ -901,6 +902,7 @@ function FiguraAnimada({
     c.position.set(0, 0, 0)
     h.rotation.set(0, 0, 0)
     if (pantalla.current) pantalla.current.emissiveIntensity = 0
+    if (halo.current) halo.current.opacity = 0
     if (sentadaRef.current) sentadaRef.current.visible = true
     if (dePie.current) dePie.current.visible = false
     if (t < 0 || !gesto) return
@@ -922,7 +924,8 @@ function FiguraAnimada({
       case 'movil': {
         const e = meseta(t, 0.05, 0.95, 0.12)
         h.rotation.x = 0.4 * e
-        if (pantalla.current) pantalla.current.emissiveIntensity = 1.1 * e
+        if (pantalla.current) pantalla.current.emissiveIntensity = 1.6 * e
+        if (halo.current) halo.current.opacity = 0.28 * e
         break
       }
       case 'tos': {
@@ -966,16 +969,29 @@ function FiguraAnimada({
           </group>
         )}
         {gesto === 'movil' && (
-          <mesh position={[0.06, sentada ? 0.66 : 1.0, 0.3]} rotation={[-0.9, 0, 0]}>
-            <boxGeometry args={[0.07, 0.13, 0.008]} />
-            <meshStandardMaterial
-              ref={pantalla}
-              color="#1b1d22"
-              emissive="#d6e6ff"
-              emissiveIntensity={0}
-              roughness={0.3}
-            />
-          </mesh>
+          <group position={[0.05, sentada ? 0.92 : 1.3, 0.3]} rotation={[-0.5, 0, 0]}>
+            <mesh>
+              <boxGeometry args={[0.085, 0.16, 0.012]} />
+              <meshStandardMaterial
+                ref={pantalla}
+                color="#2a2d33"
+                emissive="#d6e6ff"
+                emissiveIntensity={0}
+                roughness={0.3}
+              />
+            </mesh>
+            <mesh position={[0, 0, 0.02]}>
+              <circleGeometry args={[0.17, 24]} />
+              <meshBasicMaterial
+                ref={halo}
+                color="#cfe0ff"
+                transparent
+                opacity={0}
+                depthWrite={false}
+                toneMapped={false}
+              />
+            </mesh>
+          </group>
         )}
       </group>
     </group>

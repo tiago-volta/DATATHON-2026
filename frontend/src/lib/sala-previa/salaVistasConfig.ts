@@ -54,7 +54,7 @@ export const PAPELES_SALA: Record<PapelSala, ConfigPapel> = {
     descripcion: 'Miras desde el público, en la primera fila.',
   },
   testigo: {
-    camara: [0, 1.58, -2.95],
+    camara: [0, 1.6, -2.7],
     objetivos: { juez: JUEZ, abogados: [2.4, 1.05, -2.55], entrada: PUERTA },
     publico: 1,
     descripcion:
