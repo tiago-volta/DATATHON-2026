@@ -580,6 +580,10 @@ export default function PaginaSalaPrevia() {
                   </p>
                 )}
 
+                <div className="bg-calma-sage/70 border border-court-200 rounded-suave px-4 py-2 text-xs text-court-700 flex items-center justify-between gap-2 mb-4">
+                  <span>ℹ️ <strong>Aviso legal:</strong> Esto es un ensayo preparatorio. No sustituye a tu citación oficial ni a un abogado. En el juicio decide la autoridad judicial (arts. 7 bis LEC y 709 LECrim).</span>
+                </div>
+
                 <div className="grid lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 space-y-4">
                     {rolUsuario === 'desconocido' && (

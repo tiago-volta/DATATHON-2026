@@ -35,7 +35,7 @@ export default function PaginaPasaporte() {
     ajustes: [],
     contacto: '',
   })
-  const [consentimientoSalud, setConsentimientoSalud] = useState(true)
+  const [consentimientoSalud, setConsentimientoSalud] = useState(false)
   const [errores, setErrores] = useState<{
     nombre?: string
     contacto?: string
@@ -402,8 +402,7 @@ export default function PaginaPasaporte() {
                         id="ayuda-necesito-apoyos"
                         className="block text-sm text-court-700 mt-1"
                       >
-                        Opcional. Se guarda solo en este dispositivo. No es un
-                        diagnóstico ni una etiqueta de discapacidad.
+                        Opcional. Se guarda en este dispositivo y, si tienes cuenta, en tu cuenta. No es un diagnóstico ni una etiqueta de discapacidad.
                       </span>
                     </span>
                   </label>

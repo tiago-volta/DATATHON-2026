@@ -89,7 +89,7 @@ type Mensaje = {
 }
 
 /**
- * Pregunta a InclusiveCourt: dudas por texto o voz.
+ * Pregunta a PUENTE: dudas por texto o voz.
  * Respuesta leída con vozNatural (mutex). Sin diagnóstico médico.
  */
 export default function PaginaAyuda() {
@@ -102,7 +102,7 @@ export default function PaginaAyuda() {
       id: 'saludo',
       rol: 'asistente',
       texto:
-        'Hola. Soy InclusiveCourt. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz. Escribe o habla. No pido datos de salud.',
+        'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz. Escribe o habla. No pido datos de salud.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
@@ -111,7 +111,7 @@ export default function PaginaAyuda() {
   const [faqAbierta, setFaqAbierta] = useState<string | null>(null)
   const [anuncio, setAnuncio] = useState('')
   const [ultimaRespuesta, setUltimaRespuesta] = useState(
-    'Hola. Soy InclusiveCourt. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
+    'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
   )
   const cancelarHablaRef = useRef<(() => void) | null>(null)
   const reconocimientoRef = useRef<ControlesReconocimiento | null>(null)
@@ -268,7 +268,7 @@ export default function PaginaAyuda() {
     <main id="contenido-principal" className="page-shell">
       <header className="mb-8">
         <p className="text-sm font-bold tracking-wide text-court-700 mb-2">
-          Pregunta a InclusiveCourt
+          Pregunta a PUENTE
         </p>
         <h1 id={tituloId} className="titulo-pagina">
           Ayuda
@@ -296,7 +296,7 @@ export default function PaginaAyuda() {
             }
           >
             <p className="text-sm font-bold text-court-700 mb-1">
-              {m.rol === 'persona' ? 'Tú' : 'InclusiveCourt'}
+              {m.rol === 'persona' ? 'Tú' : 'PUENTE'}
             </p>
             <p className="text-court-900 leading-relaxed">{m.texto}</p>
           </li>
