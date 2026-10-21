@@ -19,6 +19,7 @@ import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { generarAgendaEventos, type EventoSala } from '@/lib/sala-previa/eventos'
+import { distraccionDeAgenda, type TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import { NarradorAhoraDespues } from '@/components/sala-previa/NarradorAhoraDespues'
 import { HerramientasSensoriales } from '@/components/sala-previa/HerramientasSensoriales'
 import type { IdHerramienta } from '@/lib/perfil/tipos'
@@ -111,7 +112,13 @@ export default function PaginaSalaPrevia() {
 
   const agenda = useMemo(() => generarAgendaEventos(cargarPerfil()), [])
 
+  const [eventoSala, setEventoSala] = useState<{ id: number; tipo: TipoDistraccion } | null>(
+    null
+  )
+
   const alDispararEvento = useCallback((ev: EventoSala) => {
+    const visual = distraccionDeAgenda(ev.id, ev.tipo)
+    if (visual) setEventoSala((prev) => ({ id: (prev?.id ?? 0) + 1, tipo: visual }))
     if (ev.tipo === 'gente') {
       motorRef.current?.reproducirTosMurmullo()
     } else if (ev.tipo === 'puerta') {
@@ -483,6 +490,7 @@ export default function PaginaSalaPrevia() {
                       indice={escenaIndice}
                       onCambiar={cambiarEscena}
                       rol={rolUsuario}
+                      eventoSala={eventoSala}
                       valores={valores}
                       enCalma={enCalma}
                       onChangeEstimulo={onSlider}

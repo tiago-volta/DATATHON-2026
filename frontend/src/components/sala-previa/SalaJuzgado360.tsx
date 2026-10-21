@@ -5,20 +5,27 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useDistracciones } from '@/hooks/useDistracciones'
 import { BarritasEstimulo } from '@/components/sala-previa/BarritasEstimulo'
+import { ControlDistracciones } from '@/components/sala-previa/ControlDistracciones'
 import type { IdEscenaJuzgado, IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import type { NivelDistracciones, TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import {
-  MIRADAS_3D,
+  PAPELES_SALA,
   PITCH_MAX,
   YAW_INICIAL_ESCENA,
+  miradasPapel,
+  numPublicoVisible,
   wrapDeg,
   type MiradaSala,
   type MiradaTarget,
+  type PapelSala,
 } from '@/lib/sala-previa/salaVistasConfig'
 
 const SalaVistas3D = dynamic(
@@ -48,6 +55,32 @@ interface Props {
   deshabilitadoEstimulos?: boolean
   miradaExterna?: MiradaSala | null
   personaEntrando?: boolean
+  papel?: PapelSala
+  /** Evento de la agenda anunciada que también se ve en la sala 3D. */
+  eventoExterno?: { id: number; tipo: TipoDistraccion } | null
+}
+
+const CLAVE_AJUSTES = 'sala-previa-distracciones'
+
+interface AjustesDistraccion {
+  nivel: NivelDistracciones
+  avisar: boolean
+}
+
+function leerAjustes(): AjustesDistraccion {
+  const defecto: AjustesDistraccion = { nivel: 'apagadas', avisar: true }
+  if (typeof window === 'undefined') return defecto
+  try {
+    const raw = window.localStorage.getItem(CLAVE_AJUSTES)
+    if (!raw) return defecto
+    const v = JSON.parse(raw) as Partial<typeof defecto>
+    return {
+      nivel: v.nivel === 'pocas' || v.nivel === 'muchas' ? v.nivel : 'apagadas',
+      avisar: v.avisar !== false,
+    }
+  } catch {
+    return defecto
+  }
 }
 
 function IconoPantallaCompleta({ salir }: { salir?: boolean }) {
@@ -86,6 +119,8 @@ export function SalaJuzgado360({
   deshabilitadoEstimulos,
   miradaExterna,
   personaEntrando,
+  papel = 'publico',
+  eventoExterno,
 }: Props) {
   const reduced = useReducedMotion()
   const labelId = useId()
@@ -98,8 +133,11 @@ export function SalaJuzgado360({
     pitch: number
   } | null>(null)
 
-  const [yaw, setYaw] = useState(() => YAW_INICIAL_ESCENA[escenaId] ?? 0)
-  const [pitch, setPitch] = useState(0)
+  const miradas = useMemo(() => miradasPapel(papel), [papel])
+  const yawInicial = papel === 'publico' ? YAW_INICIAL_ESCENA[escenaId] ?? 0 : miradas.juez.yaw
+  const pitchInicial = papel === 'publico' ? 0 : miradas.juez.pitch
+  const [yaw, setYaw] = useState(yawInicial)
+  const [pitch, setPitch] = useState(pitchInicial)
   const [arrastrando, setArrastrando] = useState(false)
   const [enPantallaCompleta, setEnPantallaCompleta] = useState(false)
   const [enfoque, setEnfoque] = useState<MiradaSala | null>(null)
@@ -107,13 +145,13 @@ export function SalaJuzgado360({
   const [destino, setDestino] = useState<MiradaTarget | null>(null)
 
   useEffect(() => {
-    const y = YAW_INICIAL_ESCENA[escenaId] ?? 0
-    setYaw(y)
-    setPitch(0)
+    setYaw(yawInicial)
+    setPitch(pitchInicial)
     setEnfoque(null)
     setAnimando(false)
     setDestino(null)
-  }, [escenaId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al cambiar de escena o papel
+  }, [escenaId, papel])
 
   useEffect(() => {
     const syncFs = () => {
@@ -140,6 +178,38 @@ export function SalaJuzgado360({
   const luz = enCalma ? Math.min(valores.luz, 12) : valores.luz
   const gente = enCalma ? 0 : valores.gente
   const ruido = enCalma ? 0 : valores.ruido
+
+  const [ajustes, setAjustes] = useState<AjustesDistraccion>({
+    nivel: 'apagadas',
+    avisar: true,
+  })
+  useEffect(() => {
+    setAjustes(leerAjustes())
+  }, [])
+  const cambiarAjustes = (cambio: Partial<AjustesDistraccion>) => {
+    const siguiente = { ...ajustes, ...cambio }
+    setAjustes(siguiente)
+    try {
+      window.localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(siguiente))
+    } catch {
+      // Sin almacenamiento: los ajustes duran solo esta visita.
+    }
+  }
+
+  const { activa, aviso, explicacion, historial, disparar } = useDistracciones({
+    nivel: ajustes.nivel,
+    avisar: ajustes.avisar,
+    enCalma,
+    papel,
+    gente,
+    ruido,
+    numPublico: numPublicoVisible(gente, papel),
+  })
+
+  useEffect(() => {
+    if (eventoExterno) disparar(eventoExterno.tipo, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- un disparo por id
+  }, [eventoExterno?.id])
 
   const onPointerDown = useCallback(
     (e: ReactPointerEvent) => {
@@ -181,7 +251,7 @@ export function SalaJuzgado360({
   }, [miradaExterna])
 
   const mirarHacia = (id: MiradaSala) => {
-    const t = MIRADAS_3D[id]
+    const t = miradas[id]
     setEnfoque(id)
     if (reduced) {
       setYaw(t.yaw)
@@ -257,6 +327,7 @@ export function SalaJuzgado360({
           >
             <p id={labelId} className="sr-only">
               Vista en primera persona de {titulo}, sala de vistas en 3D.{' '}
+              {PAPELES_SALA[papel].descripcion}{' '}
               {reduced
                 ? 'La rotación libre está desactivada. Usa los botones Entrada, Abogados o Juez para mirar.'
                 : 'Arrastra para mirar en todas direcciones: izquierda, derecha, arriba, abajo y detrás.'}{' '}
@@ -278,7 +349,18 @@ export function SalaJuzgado360({
               reduced={reduced}
               arrastrando={arrastrando}
               personaEntrando={personaEntrando}
+              papel={papel}
+              distraccion={activa}
             />
+
+            {aviso && (
+              <p
+                className="absolute top-2 left-2 right-16 sm:right-auto sm:max-w-sm z-[4] text-sm font-bold text-court-800 bg-white px-3 py-2 rounded-suave border-2 border-accent-info pointer-events-none"
+                aria-hidden="true"
+              >
+                Aviso: {aviso}
+              </p>
+            )}
 
             {/* Indicador visual discreto de ruido */}
             <div
@@ -397,6 +479,17 @@ export function SalaJuzgado360({
               </button>
             ))}
           </div>
+
+          <ControlDistracciones
+            nivel={ajustes.nivel}
+            avisar={ajustes.avisar}
+            enCalma={enCalma}
+            aviso={aviso}
+            explicacion={explicacion}
+            historial={historial}
+            onNivel={(nivel) => cambiarAjustes({ nivel })}
+            onAvisar={(avisar) => cambiarAjustes({ avisar })}
+          />
 
           {reduced && (
             <p
