@@ -24,6 +24,7 @@ import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 import { escenaPorIndice } from '@/lib/sala-previa/escenas'
+import { cargarPerfil, guardarPerfil, ROLES_DISPONIBLES, type RolPerfil } from '@/lib/perfil/perfil'
 import {
   ESTIMULOS_VACIOS,
   NIVELES,
@@ -65,6 +66,7 @@ export default function PaginaSalaPrevia() {
   const [fase, setFase] = useState<Fase>('intro')
   const [nivelActual, setNivelActual] = useState(0)
   const [escenaIndice, setEscenaIndice] = useState(0)
+  const [rolUsuario, setRolUsuario] = useState<RolPerfil>('testigo')
   const [valores, setValores] = useState<ValoresEstimulo>(ESTIMULOS_VACIOS)
   const [enCalma, setEnCalma] = useState(false)
   const [audioListo, setAudioListo] = useState(false)
@@ -109,8 +111,15 @@ export default function PaginaSalaPrevia() {
     descartarBienvenida: descartarBienvenidaPractica,
   } = usePractica()
 
+  useEffect(() => {
+    const p = cargarPerfil()
+    if (p?.rol) {
+      setRolUsuario(p.rol)
+    }
+  }, [])
+
   const nivel = NIVELES[nivelActual]
-  const escena = escenaPorIndice(escenaIndice)
+  const escena = escenaPorIndice(escenaIndice, rolUsuario)
 
   const atenuarParaVoz = useCallback((activo: boolean) => {
     motorRef.current?.atenuarParaVoz(activo)
@@ -537,9 +546,42 @@ export default function PaginaSalaPrevia() {
 
                 <div className="grid lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 space-y-4">
+                    {rolUsuario === 'desconocido' && (
+                      <div className="card border-2 border-court-400 bg-court-50 p-5 mb-6" aria-live="polite">
+                        <h3 className="text-xl font-bold text-court-800 mb-2">¿Para qué vas al juzgado?</h3>
+                        <p className="text-court-700 text-sm mb-4">
+                          Elige tu papel para que el recorrido y las explicaciones se adapten a tu situación:
+                        </p>
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          {ROLES_DISPONIBLES.map((r) => (
+                            <button
+                              key={r.id}
+                              type="button"
+                              onClick={() => {
+                                const p = cargarPerfil()
+                                guardarPerfil({
+                                  nombre: p?.nombre || 'Visitante',
+                                  rol: r.id,
+                                  tolerancia: p?.tolerancia ?? 1,
+                                  estimulosSensibles: p?.estimulosSensibles ?? [],
+                                })
+                                setRolUsuario(r.id)
+                                setEscenaIndice(0)
+                              }}
+                              className="p-3 text-left rounded-suave border-2 border-court-300 hover:border-court-600 bg-white transition-colors min-h-[44px]"
+                            >
+                              <span className="text-lg mr-2" aria-hidden="true">{r.icono}</span>
+                              <strong className="text-court-800">{r.nombre}</strong>
+                              <span className="text-xs text-court-700 block mt-1">{r.subtitulo}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <RecorridoEscenas
                       indice={escenaIndice}
                       onCambiar={cambiarEscena}
+                      rol={rolUsuario}
                       valores={valores}
                       enCalma={enCalma}
                       onChangeEstimulo={onSlider}

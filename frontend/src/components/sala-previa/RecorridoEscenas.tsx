@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
 import { DialogoEnsayoSala } from '@/components/sala-previa/DialogoEnsayoSala'
 import type { MiradaSala } from '@/lib/sala-previa/salaVistasConfig'
+import type { RolPerfil } from '@/lib/perfil/tipos'
 import {
-  ESCENAS_JUZGADO,
-  TOTAL_ESCENAS,
+  escenasPorRol,
   etiquetaNivelTipico,
   nivelVisualDesdeEscena,
 } from '@/lib/sala-previa/escenas'
@@ -18,6 +18,7 @@ interface Props {
   onCambiar: (indice: number) => void
   valores: ValoresEstimulo
   enCalma: boolean
+  rol?: RolPerfil
   onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
   onPedirPausa?: () => void
   onNivelCompletado?: (nivelId: number) => void
@@ -29,6 +30,7 @@ export function RecorridoEscenas({
   onCambiar,
   valores,
   enCalma,
+  rol = 'testigo',
   onChangeEstimulo,
   onPedirPausa,
   onNivelCompletado,
@@ -41,8 +43,10 @@ export function RecorridoEscenas({
   const [ensayoAbierto, setEnsayoAbierto] = useState(true)
   const [personaEntrando, setPersonaEntrando] = useState(false)
 
-  const seguro = Math.min(TOTAL_ESCENAS - 1, Math.max(0, indice))
-  const escena = ESCENAS_JUZGADO[seguro]
+  const escenas = escenasPorRol(rol)
+  const total = escenas.length
+  const seguro = Math.min(total - 1, Math.max(0, indice))
+  const escena = escenas[seguro]
   const paso = seguro + 1
   const nivelVisual = nivelVisualDesdeEscena(escena, valores)
   const tipico = etiquetaNivelTipico(escena)
@@ -59,7 +63,7 @@ export function RecorridoEscenas({
   }
 
   const irSiguiente = () => {
-    if (seguro >= TOTAL_ESCENAS - 1) return
+    if (seguro >= total - 1) return
     onCambiar(seguro + 1)
   }
 
@@ -75,13 +79,13 @@ export function RecorridoEscenas({
           aria-live="polite"
           aria-atomic="true"
         >
-          Paso {paso} de {TOTAL_ESCENAS}
+          Paso {paso} de {total}: {escena.titulo}
         </p>
         <ol
           className="flex gap-2"
-          aria-label={`Progreso del recorrido: paso ${paso} de ${TOTAL_ESCENAS}`}
+          aria-label={`Progreso del recorrido: paso ${paso} de ${total}`}
         >
-          {ESCENAS_JUZGADO.map((e, i) => {
+          {escenas.map((e, i) => {
             const actual = i === seguro
             const pasado = i < seguro
             return (
@@ -125,10 +129,10 @@ export function RecorridoEscenas({
           <div className="mb-4">
             <h3 className="font-bold text-court-800 mb-2">Quién está aquí</h3>
             <ul className="space-y-3">
-              {escena.roles.map((rol) => (
-                <li key={rol.nombre} className="text-court-700">
-                  <span className="font-bold text-court-800">{rol.nombre}.</span>{' '}
-                  {rol.explicacion}
+              {escena.roles.map((r) => (
+                <li key={r.nombre} className="text-court-700">
+                  <span className="font-bold text-court-800">{r.nombre}.</span>{' '}
+                  {r.explicacion}
                 </li>
               ))}
             </ul>
@@ -150,91 +154,84 @@ export function RecorridoEscenas({
           escenaId={escena.id}
           valores={valores}
           enCalma={enCalma}
+          personaEntrando={personaEntrando}
+          miradaExterna={miradaEnsayo}
           onChangeEstimulo={onChangeEstimulo}
-          deshabilitadoEstimulos={enCalma}
-          miradaExterna={escena.id === 'sala-vistas' ? miradaEnsayo : null}
-          personaEntrando={escena.id === 'sala-vistas' ? personaEntrando : false}
         />
 
-        {escena.id === 'sala-vistas' && (
-          <div className="space-y-4 pt-2">
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-suave border border-court-200">
-              <div>
-                <p className="font-bold text-court-800 text-sm">Ensayo de declaración en sala</p>
-                <p className="text-xs text-court-600">Simulación interactiva con juez, letrados y estímulos</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setEnsayoAbierto(!ensayoAbierto)}
-                aria-expanded={ensayoAbierto}
-                className={`btn ${ensayoAbierto ? 'btn-secondary' : 'btn-primary'} text-xs py-1.5 px-3 min-h-[38px]`}
-              >
-                {ensayoAbierto ? 'Ocultar preguntas de ensayo' : 'Abrir preguntas de ensayo'}
-              </button>
-            </div>
+        {/* Solo en la sala de vistas abrimos el diálogo de ensayo interactivo */}
+        {(escena.id === 'sala-vistas' ||
+          escena.id === 'sala-investigado' ||
+          escena.id === 'sala-protegida' ||
+          escena.id === 'vista-civil') && (
+          <div className="space-y-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setEnsayoAbierto((v) => !v)}
+              className="btn-secondary w-full text-base py-3 flex items-center justify-between"
+              aria-expanded={ensayoAbierto}
+              aria-controls="bloque-ensayo-declaracion"
+            >
+              <span className="font-bold">
+                {ensayoAbierto
+                  ? '▼ Ocultar ensayo de preguntas'
+                  : '▶ Ensayar preguntas con el juez y el abogado'}
+              </span>
+              <span className="text-sm text-court-700">
+                Paso 3 de 3 · Ensayo
+              </span>
+            </button>
 
             {ensayoAbierto && (
-              <DialogoEnsayoSala
-                enCalma={enCalma}
-                aforoGente={valores.gente}
-                onCambioMirada={(m) => setMiradaEnsayo(m)}
-                onPedirPausa={() => onPedirPausa?.()}
-                onNivelCompletado={(id) => onNivelCompletado?.(id)}
-                onProgresoPreguntas={(n) => onProgresoPreguntas?.(n)}
-                onPersonaEntrando={setPersonaEntrando}
-                onSubirAforoEstimulo={() => {
-                  onChangeEstimulo?.('gente', Math.min(100, Math.max(valores.gente + 20, 25)))
-                  onChangeEstimulo?.('ruido', Math.min(100, Math.max(valores.ruido + 15, 20)))
-                }}
-              />
+              <div id="bloque-ensayo-declaracion" className="space-y-3">
+                <p className="text-xs text-court-700 text-center">
+                  El juez y el abogado te hacen preguntas. Al responder, la cámara se orienta hacia quien habla.
+                </p>
+                <DialogoEnsayoSala
+                  enCalma={enCalma}
+                  onCambioMirada={setMiradaEnsayo}
+                  onPedirPausa={onPedirPausa ?? (() => {})}
+                  onPersonaEntrando={setPersonaEntrando}
+                  onNivelCompletado={onNivelCompletado}
+                  onProgresoPreguntas={onProgresoPreguntas}
+                />
+              </div>
             )}
           </div>
         )}
-      </div>
 
-      <nav
-        className="flex flex-wrap gap-3 items-center justify-between"
-        aria-label="Navegación entre escenas del juzgado"
-      >
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={irAnterior}
-          disabled={seguro <= 0}
-          aria-label={`Escena anterior. Paso ${Math.max(1, paso - 1)} de ${TOTAL_ESCENAS}`}
-        >
-          Anterior
-        </button>
-        <span className="text-court-600 text-sm" aria-hidden="true">
-          {paso} / {TOTAL_ESCENAS}
-        </span>
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={irSiguiente}
-          disabled={seguro >= TOTAL_ESCENAS - 1}
-          aria-label={`Escena siguiente. Paso ${Math.min(TOTAL_ESCENAS, paso + 1)} de ${TOTAL_ESCENAS}`}
-        >
-          Siguiente
-        </button>
-      </nav>
-
-      {seguro >= TOTAL_ESCENAS - 1 && (
-        <div
-          className="rounded-tarjeta border border-court-200 bg-court-50 p-4 space-y-2"
-          aria-live="polite"
-        >
-          <p className="text-sm text-court-800 font-medium">
-            ¿Has terminado de ensayar? Puedes registrar los ajustes que necesitas:
-          </p>
-          <Link
-            href="/pasaporte?ajustes=preguntas-claras,mas-tiempo,pausas"
-            className="btn-secondary inline-flex text-center text-sm"
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <button
+            type="button"
+            onClick={irAnterior}
+            disabled={seguro <= 0}
+            className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Ir a la escena anterior"
           >
-            Guardar ajustes para el juicio en mi Pasaporte
-          </Link>
+            ← Anterior
+          </button>
+          <span className="text-sm text-court-700">
+            Escena {paso} de {total}
+          </span>
+          {seguro < total - 1 ? (
+            <button
+              type="button"
+              onClick={irSiguiente}
+              className="btn-primary"
+              aria-label="Ir a la siguiente escena"
+            >
+              Siguiente →
+            </button>
+          ) : (
+            <Link
+              href="/pasaporte"
+              className="btn-primary inline-flex items-center gap-2"
+            >
+              Crear Pasaporte con tus ajustes →
+            </Link>
+          )}
         </div>
-      )}
+      </div>
     </section>
   )
 }

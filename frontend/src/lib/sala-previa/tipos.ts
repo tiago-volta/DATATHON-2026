@@ -29,6 +29,14 @@ export type IdEscenaJuzgado =
   | 'control-seguridad'
   | 'sala-espera'
   | 'sala-vistas'
+  | 'espera-fuera'
+  | 'llamada'
+  | 'reunion-abogado'
+  | 'sala-investigado'
+  | 'ultima-palabra'
+  | 'espera-separada'
+  | 'sala-protegida'
+  | 'vista-civil'
 
 export interface RolEscena {
   nombre: string
