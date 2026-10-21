@@ -130,3 +130,4 @@ def comparar_legibilidad(texto_original: str, texto_adaptado: str) -> Dict[str, 
             f"{met_adap['palabras_por_frase']} palabras por oración."
         ),
     }
+

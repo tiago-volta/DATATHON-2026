@@ -8,3 +8,4 @@ async def test_suite_evaluacion_precision():
     assert informe["total_casos_evaluados"] == 10
     # Exigir un umbral mínimo de calidad de extracción superior al 90%
     assert informe["precision_global"] >= 90.0
+

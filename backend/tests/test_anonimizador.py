@@ -51,3 +51,4 @@ def test_texto_vacio():
     anon, elementos = anonimizar_documento_judicial("")
     assert anon == ""
     assert elementos == []
+

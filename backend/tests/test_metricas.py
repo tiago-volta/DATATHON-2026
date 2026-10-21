@@ -48,3 +48,4 @@ def test_comparar_legibilidad():
     assert comp["incremento_puntos"] > 0
     assert comp["adaptado"]["score"] > comp["original"]["score"]
     assert comp["cumple_coga_longitud_frase"] is True
+
