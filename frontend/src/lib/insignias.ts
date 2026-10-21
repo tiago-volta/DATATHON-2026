@@ -105,6 +105,41 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
 
 export const TOTAL_INSIGNIAS = INSIGNIAS_UTILES.length
 
+/** Apartados de la app con medallas propias (panel inferior). */
+export type ApartadoInsignias = 'pasaporte' | 'ensaya' | 'sala-previa'
+
+/** Medallas relacionadas con cada sección (el perfil de cabecera muestra todas). */
+export const INSIGNIAS_POR_APARTADO: Record<ApartadoInsignias, IdInsigniaUtil[]> = {
+  pasaporte: ['pedi-ajustes'],
+  ensaya: [
+    'ensaye-1-nivel',
+    'ensaya-nivel-1',
+    'ensaya-nivel-2',
+    'ensaya-nivel-3',
+    'ensaye-con-calma',
+  ],
+  'sala-previa': ['primera-calma', 'ensaye-1-nivel', 'casi-listo', 'testigo-en-forma'],
+}
+
+export const TITULO_INSIGNIAS_APARTADO: Record<ApartadoInsignias, string> = {
+  pasaporte: 'Insignias de este apartado',
+  ensaya: 'Insignias de Ensaya',
+  'sala-previa': 'Insignias de Sala Previa',
+}
+
+export function insigniasDeApartado(apartado: ApartadoInsignias): InsigniaUtil[] {
+  const ids = INSIGNIAS_POR_APARTADO[apartado]
+  return ids.map((id) => metaInsignia(id))
+}
+
+/** Evento en window cuando cambian las medallas (cabecera / otras pestañas). */
+export const EVENTO_INSIGNIAS = 'puente:insignias-cambiadas'
+
+export function avisarCambioInsignias(ids: IdInsigniaUtil[]) {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new CustomEvent(EVENTO_INSIGNIAS, { detail: { ids } }))
+}
+
 const IDS_VALIDOS = new Set<string>(INSIGNIAS_UTILES.map((i) => i.id))
 
 /** Mapa nivel Ensaya (1–3) → medalla concreta. */
@@ -140,11 +175,13 @@ export function cargarInsigniasUtiles(): IdInsigniaUtil[] {
 
 export function guardarInsigniasUtiles(ids: IdInsigniaUtil[]) {
   if (typeof window === 'undefined') return
+  const limpios = sanitizar(ids)
   try {
-    localStorage.setItem(CLAVE_INSIGNIAS, JSON.stringify(sanitizar(ids)))
+    localStorage.setItem(CLAVE_INSIGNIAS, JSON.stringify(limpios))
   } catch {
     /* ignore quota / private mode */
   }
+  avisarCambioInsignias(limpios)
 }
 
 export interface ResultadoDesbloqueo {

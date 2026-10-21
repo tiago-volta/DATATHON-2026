@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
 import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
-import { PerfilMedallasSticky } from '@/components/insignias/PerfilMedallasSticky'
+import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { CheckInConfort } from '@/components/sala-previa/CheckInConfort'
 import { IntroSalaPrevia } from '@/components/sala-previa/IntroSalaPrevia'
@@ -422,10 +422,6 @@ export default function PaginaSalaPrevia() {
         </nav>
 
         <div className="min-w-0">
-          <div className="mb-4">
-            <PerfilMedallasSticky conseguidas={insigniasUtiles} />
-          </div>
-
           <header className="mb-8">
             <h1 className="titulo-pagina mb-2">
               Sala Previa
@@ -606,6 +602,10 @@ export default function PaginaSalaPrevia() {
                 <p className="text-sm text-puente-700 mt-8">{CREDITO_AUDIO}</p>
               </>
             )}
+
+          <div className="mt-12 max-w-2xl">
+            <PanelInsignias conseguidas={insigniasUtiles} apartado="sala-previa" />
+          </div>
         </div>
       </main>
 

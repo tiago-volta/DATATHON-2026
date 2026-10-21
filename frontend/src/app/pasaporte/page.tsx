@@ -620,8 +620,8 @@ export default function PaginaPasaporte() {
           </section>
         )}
 
-        <div className="mt-10 max-w-md mx-auto">
-          <PanelInsignias conseguidas={insigniasUtiles} />
+        <div className="mt-12 max-w-lg mx-auto">
+          <PanelInsignias conseguidas={insigniasUtiles} apartado="pasaporte" />
         </div>
       </main>
 
