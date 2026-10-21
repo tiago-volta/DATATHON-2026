@@ -1,135 +1,110 @@
-# Análisis del Reto 3 vs. Estado Actual de PUENTE
+# Análisis del Reto 3 vs. Estado Actual de PUENTE (Actualizado Mañana Miércoles 21 Oct)
 
-Documento de brecha (*gap analysis*) y hoja de ruta basado en las diapositivas oficiales del **DATAthon Justicia 2026 — Reto 3: Justicia Inteligente para la Neurodiversidad** (Ana Tudela, INECO).
-
----
-
-## 1. Qué tenemos ya construido y funcionando
-
-| Módulo | Ruta | Estado actual | Qué requisitos del Reto 3 cubre |
-|--------|------|---------------|----------------------------------|
-| **Inicio** | `/` | Funcional | Acceso directo sin ruido visual, enlaces a Citación, Pasaporte, Ensaya, Sala Previa, Demos (Luis/Juan) y Panel Profesional. |
-| **Procesador de Citación** | `/citacion` | Funcional (Mock + API) | Transforma citaciones en **Lectura Clara** y **Lectura Fácil (UNE 153101)**, extrae datos clave (rol, fecha, hora, lugar, derechos, qué llevar), muestra **pictogramas ARASAAC**, lee en voz alta y descarga recordatorios `.ics` (7, 2 y 1 día antes). |
-| **Pasaporte de Ajustes** | `/pasaporte` y `/pasaporte/ver` | Funcional | Genera un **código QR escaneable** que abre una vista limpia para el funcionario del juzgado con las adaptaciones solicitadas, **sin revelar diagnóstico** (enfoque no capacitista). |
-| **Simulador de Declaración** | `/ensaya` | Funcional | Práctica en 3 niveles (preguntas claras, de abogados y preguntas capciosas/difíciles) con lectura por voz, alertas de preguntas confusas y pantalla final de recomendaciones. |
-| **Sala Previa** | `/sala-previa` | Funcional | Simulación sensorial progresiva en 6 niveles (0 a 5) con audio sintético Web Audio API (ruido, luz, gente, eco), botón de **Volver a la calma**, check-in emocional, racha/insignias (gamificación) y conexión directa al Pasaporte. |
-| **Mediador "Pregunta Clara"** | `/mediador` | Funcional (Reglas locales) | Semáforo (verde/amarillo/rojo) que detecta doble negación, preguntas compuestas, sugestivas, intimidantes, jerga jurídica y frases > 20 palabras. |
-| **Panel Profesional** | `/profesional` | Funcional (Básico) | 4 pasos de la Guía CGPJ 2025, checklist por perfil (TEA, TDAH, dislexia, ceguera), generación de informe imprimible y lector de códigos/enlaces de Pasaporte. |
-| **Casos de Uso (Luis y Juan)** | `/demo/luis` y `/demo/juan` | Funcional | Recorridos guiados para **Luis** (28 años, TEA nivel 1, testigo) y **Juan** (32 años, TDAH combinado + ceguera, investigado por estafa leve). |
+Documento de brecha (*gap analysis*) y hoja de ruta basado en las diapositivas oficiales del **DATAthon Justicia 2026 — Reto 3: Justicia Inteligente para la Neurodiversidad** (Ana Tudela, INECO) y actualizado tras los **22 commits de la noche (`d5bb800..8fba0c7`)**.
 
 ---
 
-## 2. Qué pide el PDF del Reto 3 que AÚN FALTA o se debe mejorar
+## 1. Lo que se ha añadido de nuevo esta noche (`d5bb800..8fba0c7`)
 
-Al cruzar las diapositivas 29 a 39 del documento oficial con nuestro código actual, aparecen **8 puntos clave** que el jurado y las asociaciones colaboradoras (**ANHIDA Coruña, ASPERGA, Espazo Compartido UDC y Fundación ONCE**) van a buscar en la evaluación del jueves (18:00) y viernes (09:00):
+Se han incorporado **29 archivos de código (+3.717 líneas)**, un script de arranque unificado (`start.sh`) y una carpeta completa de documentación e investigación (`/docs/`):
 
-### A. Cobertura completa de condiciones del Reto 3 (Diapositiva 31)
-El PDF destaca explícitamente 5 condiciones: **TEA, TDAH, Dislexia, Discalculia y Disgrafía**.
-- **Qué falta**:
-  1. **Discalculia**: En `/citacion` y `/profesional` no hay adaptación específica para discalculia (traducir cuantías, porcentajes, multas de `"200 a 5.000 €"` o plazos en días hábiles a fechas exactas en calendario visual y cifras escritas con palabras + comparaciones comprensibles).
-  2. **Disgrafía**: En `/ensaya` y en la línea de tiempo de Juan, el usuario solo puede escribir con teclado. Añadir **dictado por voz (Web Speech API `SpeechRecognition`)** permite responder hablando sin tener que teclear ni escribir.
-  3. **Incluir `lenguaje-literal` y `anticipacion` en el frontend**: Están definidos en `data/ajustes-disponibles.json`, pero faltaban en `AJUSTES_DISPONIBLES` de `frontend/src/lib/contenido.ts`.
+### A. Nuevas funcionalidades en `Sala Previa` (`/sala-previa`)
+1. **Intro guiada con aviso de audio ([`IntroSalaPrevia.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/IntroSalaPrevia.tsx))**: anticipa que va a sonar audio sintético antes de activar nada y recuerda si ya se vio.
+2. **Recorrido por 4 escenas del juzgado ([`RecorridoEscenas.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/RecorridoEscenas.tsx) y [`escenas.ts`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/lib/sala-previa/escenas.ts))**: entrada/control de seguridad, pasillo de espera, puerta de la sala y estrado, enlazadas al nivel sensorial.
+3. **Controles con pictogramas ARASAAC y niveles en palabras ([`ControlesEstimulo.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/ControlesEstimulo.tsx))**: cada estímulo (ruido, luz, gente, eco) incluye pictograma y etiqueta verbal clara.
+4. **Reacciones visuales suaves ([`EscenaSensorial.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/EscenaSensorial.tsx))**: la ilustración de la sala responde de forma gradual al mover cada control y al activar el modo calma.
+5. **Check-in de confort con pictogramas ([`CheckInConfort.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/CheckInConfort.tsx))**: escala con pictogramas ARASAAC y conexión directa al Pasaporte.
+6. **Panel «Lo que te ayuda» ([`PanelLoQueTeAyuda.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/PanelLoQueTeAyuda.tsx) y [`loQueTeAyuda.ts`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/lib/sala-previa/loQueTeAyuda.ts))**: traduce automáticamente lo que el usuario ha probado en la sala en frases en primera persona y ajustes listos para enviar al Pasaporte (`?ajustes=...`).
 
-### B. De la citación a la SENTENCIA y Juicios Telemáticos (Diapositivas 32 y 35)
-- El eslogan de PUENTE es *"De la citación a la sentencia, a tu manera"* y la diapositiva 35 cita expresamente el **caso real de la jueza española que adapta una sentencia a lectura fácil**.
-- La diapositiva 32 pide facilitar la participación en **procesos judiciales presenciales o telemáticos** (como víctimas, testigos o acusados).
-- **Qué falta**:
-  1. **Modo Sentencia / Notificación en `/citacion`**: Permitir elegir o detectar si el documento pegado es una **Citación**, un **Auto/Notificación** o una **Sentencia** (incluir un botón de ejemplo de *Sentencia adaptada* que explique el fallo, qué significa absolución/condena y los plazos para recurrir).
-  2. **Subida de PDF o Foto (OCR / Docling)**: En `/citacion` solo hay un `<textarea>` para pegar texto. Añadir un botón para **subir un PDF o foto de la carta** (aunque en demo parsee el PDF en backend o extraiga el texto) suma muchos puntos en el premio a **Mejor Solución Técnica**.
-  3. **Ajustes para Juicio Telemático (Videollamada)**: Añadir en el Pasaporte y en Sala Previa orientaciones para comparecencia por videoconferencia (cámara, turnos de palabra, entorno sin distracciones).
+### B. Sistema transversal de Gamificación Calmada (Sala Previa + Ensaya + Pasaporte)
+1. **Insignias útiles ([`insignias.ts`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/lib/insignias.ts), [`PanelInsignias.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/insignias/PanelInsignias.tsx), [`AvisoInsignia.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/insignias/AvisoInsignia.tsx))**: premia acciones de autocuidado (usar la calma, pedir ajustes en el Pasaporte, completar un nivel en Ensaya).
+2. **Medidor de confianza sin castigo ([`confianza.ts`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/lib/confianza.ts), [`MedidorConfianza.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/sala-previa/MedidorConfianza.tsx))**: la confianza sube al practicar, parar o pedir ayuda, y **nunca baja**.
+3. **Días de práctica acumulados, sin rachas punitivas ([`practica.ts`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/lib/practica.ts), [`PanelDiasPractica.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/components/practica/PanelDiasPractica.tsx))**: cuenta los días practicados sin penalizar si un día se descansa.
+4. **Cruce bidireccional Ensaya ↔ Sala Previa**: desde la escena de declaración en Sala Previa se puede saltar a `/ensaya?desde=sala-previa` y volver conservando el nivel sensorial.
 
-### C. Requisitos específicos del Caso de Uso de Juan (Diapositiva 37)
-La diapositiva 37 detalla 9 puntos sobre Juan (32 años, TDAH combinado + invidente, acusado de estafa leve del **art. 249 CP** — en `mock_data.py` ponía solo `art. 248 CP`, conviene mencionar `arts. 248 y 249 CP` como en la diapositiva):
-- **Qué falta del caso de Juan**:
-  1. **Constructor interactivo de Línea de Tiempo ("Organizar mi relato")**: En `/demo/juan` la línea de tiempo es estática. El PDF dice: *"Tiene problemas para organizar el relato de los hechos y olvida datos relevantes"* y *"Responde de forma impulsiva"*. Si permitimos **añadir/ordenar hitos por voz o texto** y descargar una **"Chuleta / Guion de apoyo para llevar a la sala"** (ajustado a su derecho a usar notas de apoyo por TDAH), clavamos el caso de uso.
-  2. **Describir pruebas visuales (IA / Accesibilidad para ceguera)**: El PDF dice: *"Tiene dificultades para revisar pruebas documentales o digitales presentadas únicamente en formato visual"*. En `/demo/juan` podemos incluir una sección **"Pruebas del expediente descritas por voz"** (descripción auditiva detallada del pantallazo de Wallapop, el justificante de Bizum y el resguardo de Correos).
-  3. **Acreditación sin grado oficial de discapacidad (Flag / Informes clínicos)**: La diapositiva 34 habla de *"Integración con otros organismos para reconocimientos oficiales de discapacidad o 'de algún modo' flag para identificar a las personas"* y la 37 recalca que Juan *"No tiene reconocido oficialmente un grado de discapacidad por TDAH, pero aporta informes clínicos acreditativos"*. En `/pasaporte` y `/profesional` debemos explicitar las **3 vías de acreditación** (Tarjeta/Grado oficial, Informe clínico/asociativo como ANHIDA/ASPERGA, o Detección de oficio por el juzgado según Guía CGPJ 2025).
+### C. Mejoras en `Ensaya` (`/ensaya`)
+- **Pictogramas ARASAAC en cada pregunta y nivel** ([`ensaya/page.tsx`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/frontend/src/app/ensaya/page.tsx)).
+- Integración con el medidor de confianza, días de práctica e insignias útiles.
 
-### D. Requisitos específicos del Caso de Uso de Luis (Diapositiva 36)
-- **Quién es quién en `/citacion`**: En `/demo/luis` sí aparece el componente `TarjetaRol` ("Quién es quién en la sala"), pero cuando un usuario normal procesa su citación en `/citacion`, **no se muestra la sección "¿Quién estará en la sala?"** ni la figura del **Perito / Médico Forense** (mencionado en la diapositiva 32).
-- **Glosario interactivo de términos literales**: Resaltar expresiones como *"se le apercibe"*, *"diligencias previas"*, *"a los efectos oportunos"* con su traducción literal inmediata.
-
-### E. Suma de varias IAs y Mediador conectado al Backend (Diapositiva 34)
-La diapositiva 34 pide explícitamente:
-- **"Aplicación de IA como mediadores"**
-- **"Suma de varias IAs: lectura fácil, lectura clara..."**
-- **Qué falta**:
-  1. Crear un endpoint en el backend `POST /api/analizar-pregunta` que combine **reglas deterministas + reescritura automática de la pregunta** (convirtiendo cualquier pregunta con doble negación o compuesta en 2-3 preguntas simples y literales listas para leer en sala).
-  2. Mostrar visiblemente en la UI el **Pipeline Multi-IA** de PUENTE:
-     - *Agente 1 (Extractor Procesal)* → extrae plazos, rol, artículos y obligaciones.
-     - *Agente 2 (Adaptador UNE)* → genera Lectura Clara (ISO 24495-1) + Lectura Fácil (UNE 153101) + adaptación numérica (Discalculia).
-     - *Agente 3 (Traductor Visual/Auditivo)* → selecciona pictogramas ARASAAC y genera guion de voz pausado.
-     - *Agente 4 (Mediador de Interrogatorio)* → reformula preguntas capciosas en tiempo real.
-
-### F. Asociaciones Colaboradoras y Colegios Profesionales (Diapositivas 34, 38 y 39)
-- Añadir **Espazo Compartido (Universidade da Coruña - UDC)** junto a **ANHIDA Coruña**, **ASPERGA** y **Fundación ONCE** en `/profesional` y en el pie/créditos, además de incluir la derivación a colegios profesionales / turno de oficio especializado y facilitadores.
+### D. Documentación Legal, Investigación y Guion de Demo (`/docs/`)
+- [`docs/DEMO-3-MINUTOS.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/DEMO-3-MINUTOS.md): guion cronometrado minuto a minuto + Plan B ante fallos.
+- [`docs/investigacion/RESUMEN-NOCHE.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/investigacion/RESUMEN-NOCHE.md): resumen ejecutivo con estadísticas clave (67 % de sobreseimiento sin facilitador según UAVDI; solo el 31 % de procedimientos considera la DI según *A Cada Lado*).
+- [`docs/investigacion/marco-legal.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/investigacion/marco-legal.md): Art. 24 y 49 CE, Art. 7 bis LEC, Art. 109/118/143.2 LECrim, **RD 707/2026** (accesibilidad cognitiva), precisión penal sobre estafa leve (**art. 248 CP** vs. art. 249 CP tras LO 14/2022 y LO 1/2026).
+- [`docs/investigacion/neurodiversidad-ajustes.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/investigacion/neurodiversidad-ajustes.md): TEA, TDAH, Dislexia/Discalculia/Disgrafía, Discapacidad Intelectual (datos ENABLE y *A Cada Lado*), Sordera (CNSE) y Ceguera (Convenio ONCE-MJ 2025).
+- [`docs/investigacion/mejoras-producto.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/investigacion/mejoras-producto.md): backlog P0/P1/P2 por pantalla.
 
 ---
 
-## 3. División del Trabajo entre las 3 Personas
+## 2. Qué queda por hacer hoy (Foco en P0 y P1 para Jueves/Viernes)
 
-Reparto diseñado para que **una persona se dedique al 100 % a UI/UX** y las otras dos se repartan **IA/Backend/Documentos** y **Casos de Uso/Voz/Profesional**, tocando archivos distintos para evitar conflictos de Git:
+Con `Sala Previa` y la gamificación calmada ya terminadas, esto es lo que falta implementar en código hoy para cubrir al 100 % el PDF del Reto 3 y el documento [`mejoras-producto.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/investigacion/mejoras-producto.md):
 
-| Persona | Rol en el equipo | Archivos principales que toca |
-|---------|------------------|-------------------------------|
-| **Persona 1** | **UI/UX, Diseño Visual y Accesibilidad** | `globals.css`, `tailwind.config.js`, `page.tsx` (Inicio), `components/*`, `sala-previa/*`, `pasaporte/*` (diseño visual e impresión) |
-| **Persona 2** | **IA, Backend, Procesador de Documentos y Mediador** | `backend/app/*`, `citacion/page.tsx`, `mediador/page.tsx`, `lib/api.ts` |
-| **Persona 3** | **Casos de Uso (Juan/Luis), Voz, Panel Profesional y Pitch** | `demo/juan/page.tsx`, `demo/luis/page.tsx`, `ensaya/page.tsx`, `profesional/page.tsx`, `lib/contenido.ts`, Pitch Deck |
+1. **Base legal visible en cada ajuste y exportación limpia en PDF del Pasaporte (`P01`, `P02`, `P03`)**:
+   - En `lib/contenido.ts` faltan los ajustes adicionales de `data/ajustes-disponibles.json` (`lenguaje-literal`, `anticipacion`) y los detectados en investigación (`lector-pantalla`, `audiodescripcion`, `horario-preferente`, `lectura-facil-sentencia`), además de mostrar su `base_legal` (ej. *Art. 7 bis.2.c LEC*, *Guía CGPJ 2025*) tanto en `/pasaporte` como en `/pasaporte/ver`.
+   - Añadir estilos `@media print` para que **"Imprimir o guardar"** genere un PDF limpio de 1 página con el QR y la fundamentación jurídica.
+2. **Modo Voz completo (Speech-to-Text) y alerta de respuesta impulsiva en `/ensaya` (`E01`, `E02`, Disgrafía + TDAH + Ceguera)**:
+   - Añadir botón **"Responder hablando"** (`SpeechRecognition`) para que Juan (ciego) o una persona con disgrafía no tenga que teclear.
+   - Añadir aviso amable para TDAH si pulsa siguiente en menos de 3 segundos en preguntas difíciles (*"¿Quieres revisar tu respuesta o tomarte unos segundos más?"*).
+3. **Completar `/citacion`: Sentencias en lectura fácil, Discalculia, Quién es quién y Subida de archivo (`C01`–`C07`)**:
+   - Añadir ejemplo de **Sentencia en lectura fácil** (caso real de la diapositiva 35).
+   - Añadir bloque de **Discalculia** (importes en letra y cuenta atrás clara de plazos) y bloque **"¿Qué pasa si no voy?"** sin generar pánico.
+   - Mostrar las tarjetas de roles (`TarjetaRol`) y permitir subir un PDF/TXT de citación.
+4. **Reescritura real de preguntas en `/mediador` + modo voz (`M01`, `M02`, `M03`)**:
+   - Endpoint `/api/analizar-pregunta` o motor de reformulación que devuelva la pregunta ya dividida y en lectura fácil, más botones de preguntas frecuentes y dictado por voz.
+5. **Actualizar `/profesional` y `/demo/juan` con los datos de investigación de esta noche**:
+   - En `/profesional`: incluir **Espazo Compartido (UDC)**, **FADEMGA**, **FAXPG**, perfiles de **Discalculia/Disgrafía (DEA)** y **Discapacidad Intelectual**, las estadísticas de impacto (67 % a 24 % sobreseimiento con facilitador) y las 3 vías de detección (*flag* procesal con o sin certificado del 33 %).
+   - En `/demo/juan`: añadir descripción por voz de las **pruebas visuales del caso** (pantallazo Wallapop, Bizum, Correos) y permitir añadir notas a su línea de tiempo.
 
 ---
 
-### Persona 1 — UI/UX, Diseño Visual y Accesibilidad (100 % dedicada a interfaz)
+## 3. División del Trabajo Actualizada entre las 3 Personas (Sin conflictos de Git)
 
-**Objetivo**: Que la aplicación se vea impecable en móvil y escritorio, cumpla WCAG 2.2 AA / COGA y gane el premio por experiencia de usuario.
+| Persona | Rol en el equipo | Archivos exclusivos que toca hoy |
+|---------|------------------|----------------------------------|
+| **Persona 1** | **100 % UI/UX, Diseño Visual, Impresión PDF y Accesibilidad** | `globals.css`, `Cabecera.tsx`, `page.tsx` (Inicio), `pasaporte/page.tsx`, `pasaporte/ver/page.tsx`, `components/TarjetaRol.tsx`, `components/LineaTiempo.tsx` |
+| **Persona 2** | **IA, Backend, Citación/Sentencia y Mediador** | `backend/app/*`, `citacion/page.tsx`, `mediador/page.tsx`, `lib/api.ts` |
+| **Persona 3** | **Casos de Uso (Juan/Luis), Voz en Ensaya, Panel Profesional y Pitch** | `demo/juan/page.tsx`, `demo/luis/page.tsx`, `ensaya/page.tsx`, `profesional/page.tsx`, `lib/contenido.ts`, Pitch Deck |
 
-- [ ] **1. Barra / Selector de Modo Sensorial y Accesibilidad en `Cabecera.tsx`**:
-  - Añadir controles rápidos persistentes: tamaño de letra (`A` / `A+`), modo de **baja estimulación** (reduce contrastes bruscos y desactiva animaciones) y tipografía espaciada para dislexia (`.espaciado-lectura`).
-- [ ] **2. Pulido visual de Inicio (`page.tsx`) y navegación coherente**:
-  - Unificar el estilo visual de todas las tarjetas, botones de retorno (`← Volver al inicio`) y migas de pan (`.pasos-nav`) en todas las pantallas.
-  - Añadir en el `footer` los logos/menciones de las 4 entidades colaboradoras del Reto 3 (**ANHIDA Coruña, ASPERGA, Espazo Compartido UDC, Fundación ONCE**).
-- [ ] **3. Diseño de Tarjeta Física / Impresión del Pasaporte (`pasaporte/page.tsx` y `pasaporte/ver/page.tsx`)**:
-  - Mejorar el diseño visual del Pasaporte generado y de la vista escaneable `/pasaporte/ver` para que parezca un documento oficial acreditativo limpio en móvil.
-  - Añadir estilos `@media print` en `globals.css` para que al pulsar **"Imprimir o guardar"** salga solo la tarjeta del Pasaporte con el QR o el Informe CGPJ limpio en 1 página A4.
-- [ ] **4. Pulido visual de `Sala Previa` (`components/sala-previa/*`)**:
-  - Mejorar la ilustración/escena vectorial de `EscenaSensorial.tsx` para que los cambios de luz, siluetas de gente y ondas de sonido se perciban con claridad y suavidad.
-- [ ] **5. Auditoría final de Teclado, Contraste y Móvil**:
-  - Probar el recorrido completo en vista móvil (375px) y solo con tecla `Tab` + lector de pantalla, asegurando que ningún foco quede oculto y todos los botones cumplan el área táctil mínima de 44x44px (`56px` en nuestro sistema).
+---
+
+### Persona 1 — 100 % UI/UX, Diseño Visual y Accesibilidad
+
+- [ ] **1. Exportación PDF / Impresión impecable del Pasaporte (`P01`, `P02` en `globals.css`, `pasaporte/page.tsx`, `pasaporte/ver/page.tsx`)**:
+  - Mostrar la **base legal** debajo de cada ajuste en el Pasaporte y en la vista escaneable `/pasaporte/ver` (ej. *Art. 7 bis.2.c LEC · Guía CGPJ 2025*).
+  - Añadir reglas `@media print` en `globals.css` para ocultar cabecera/botones al imprimir y dejar una credencial A4 lista para entregar en el decanato o mostrar en PDF.
+- [ ] **2. Barra de Preferencias Cognitivas en `Cabecera.tsx`**:
+  - Controles rápidos persistentes: tamaño de texto (`A` / `A+`), espaciado de lectura para dislexia (`.espaciado-lectura`) y modo calma visual.
+- [ ] **3. Unificación visual de Inicio (`page.tsx`) y Pie con Asociaciones Colaboradoras**:
+  - Incluir en el `footer` de inicio las entidades colaboradoras del Reto 3 (**ANHIDA Coruña, ASPERGA, Espazo Compartido UDC, Fundación ONCE**) y la mención al **RD 707/2026**.
+- [ ] **4. Repaso responsive móvil (375px) y foco de teclado**:
+  - Revisar que el recorrido completo del guion [`docs/DEMO-3-MINUTOS.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/DEMO-3-MINUTOS.md) no tenga saltos de layout ni en móvil ni en proyector.
 
 ---
 
 ### Persona 2 — IA, Backend, Citación/Sentencia y Mediador
 
-**Objetivo**: Cubrir los requisitos técnicos del Reto 3 ("Suma de varias IAs", adaptación de sentencias, discalculia, subida de documentos y mediador inteligente) para ganar el premio a **Mejor Solución Técnica**.
-
-- [ ] **1. Pipeline "Suma de varias IAs" visible en `/citacion` y `backend/app/`**:
-  - Mostrar durante y después del procesado qué hace cada módulo de IA (Extractor Procesal → Adaptador UNE Lectura Fácil/Clara → Adaptador Numérico para Discalculia → Selector ARASAAC).
-- [ ] **2. Modo Sentencia adaptada en `/citacion` y `mock_data.py` (Diapositiva 35)**:
-  - Añadir un tercer botón de ejemplo: **"Ejemplo Sentencia (lectura fácil)"** inspirado en el caso real de la diapositiva 35, explicando qué ha decidido el juez, qué significa cada parte del fallo y qué plazo hay para recurrir.
-- [ ] **3. Subida de archivo PDF / Imagen en `/citacion`**:
-  - Añadir un input accesible para subir un PDF o archivo de texto de la citación (`POST /api/procesar-archivo` o extracción en cliente/servidor) además de pegar texto.
-- [ ] **4. Bloque de adaptación para Discalculia en `/citacion` (Diapositiva 31)**:
-  - Añadir en el resultado de `/citacion` un bloque específico para números y plazos: cantidades escritas en letra + equivalencia cotidiana, y cuenta atrás visual de fechas.
-- [ ] **5. Reescritura automática en `/mediador` (`POST /api/analizar-pregunta`)**:
-  - Crear endpoint en FastAPI que no solo detecte los problemas (doble negación, compuesta, sugestiva, intimidante, jerga), sino que **devuelva la pregunta ya reformulada** lista para que el juez o abogado la lea en sala.
+- [ ] **1. Modo Sentencia en lectura fácil y Subida de documento en `/citacion` y `backend/app/`**:
+  - Añadir botón **"Ejemplo Sentencia (lectura fácil)"** (diapositiva 35) y opción de subir archivo `.txt`/`.pdf` de citación.
+  - Mostrar visualmente los pasos del pipeline *"Suma de varias IAs"* (diapositiva 34).
+- [ ] **2. Mejoras `C01`–`C07` en `/citacion`**:
+  - Bloque especial para **Discalculia** (importes en palabras, plazos con cuenta atrás visual `C04`).
+  - Bloque claro **"¿Qué pasa si no voy o no puedo ir ese día?"** (`C07`).
+  - Mostrar la sección **"¿Quién estará en la sala?"** en el resultado de la citación.
+- [ ] **3. Reformulación automática y voz en `/mediador` (`M01`, `M02`, `M03`)**:
+  - Endpoint `POST /api/analizar-pregunta` (y fallback local enriquecido) que devuelva la **pregunta ya reescrita en lectura fácil**, dividida frase por frase, con botón `BotonLeerEnVoz` para escuchar la sugerencia.
 
 ---
 
-### Persona 3 — Casos de Uso (Juan y Luis), Voz, Panel Profesional y Pitch
+### Persona 3 — Casos de Uso (Juan y Luis), Voz en Ensaya, Panel Profesional y Pitch
 
-**Objetivo**: Clavar punto por punto los casos de uso de las diapositivas 31 a 39 y preparar la defensa ante el jurado y las asociaciones colaboradoras.
-
-- [ ] **1. Completar el Caso de Uso de Juan en `/demo/juan` (Diapositiva 37)**:
-  - **Constructor interactivo de Línea de Tiempo**: permitir a Juan añadir nuevos hechos (por texto o voz) para no olvidar datos relevantes y botón para descargar/imprimir su **Guion de apoyo para la declaración**.
-  - **Descripción por voz de pruebas visuales**: añadir tarjeta con las 3 pruebas del caso de estafa online (anuncio de Wallapop, captura de Bizum de 350 € y resguardo de Correos) con su descripción textual y botón de lectura en voz alta para personas ciegas.
-  - Actualizar referencia legal a **arts. 248 y 249 CP** y destacar que **no tiene grado oficial de discapacidad por TDAH, sino informe clínico acreditativo**.
-- [ ] **2. Completar el Caso de Uso de Luis y Roles en `/demo/luis` y `lib/contenido.ts` (Diapositivas 32 y 36)**:
-  - Añadir los ajustes `lenguaje-literal`, `anticipacion` y `juicio-telematico` en `AJUSTES_DISPONIBLES` (`lib/contenido.ts`).
-  - Añadir el rol de **Perito / Médico Forense** en `ROLES` (`lib/contenido.ts`) y mostrar también las tarjetas de roles ("¿Quién estará en la sala?") dentro de `/citacion`.
-- [ ] **3. Respuesta por Voz (Micrófono / Disgrafía y Ceguera) en `/ensaya` (Diapositiva 31)**:
-  - Añadir un botón **"Responder hablando"** usando `webkitSpeechRecognition` / `SpeechRecognition` del navegador para transcribir la respuesta del usuario sin necesidad de usar el teclado (cubre disgrafía y ceguera).
-- [ ] **4. Actualizar Panel Profesional (`/profesional`) con requisitos de las Diapositivas 34, 38 y 39**:
-  - Añadir **Espazo Compartido (Universidade da Coruña - UDC)** junto a **ANHIDA Coruña**, **ASPERGA** y **Fundación ONCE**.
-  - Añadir perfiles de **Discalculia** y **Disgrafía** en `AJUSTES_POR_PERFIL`.
-  - Añadir el selector de **Vía de identificación / Flag procesal** (1. Reconocimiento oficial de discapacidad, 2. Informe clínico o de asociación colaboradora sin grado oficial —caso de Juan—, 3. Detección de oficio según Guía CGPJ 2025) y derivación a colegios profesionales / facilitadores.
-- [ ] **5. Preparar el Pitch Deck y Guion de Demo (Jueves 18:00 y Viernes 09:00)**:
-  - Estructurar la presentación de 3-5 minutos conectando cada pantalla de PUENTE con las diapositivas del reto y hacer prueba de escaneo del QR en vivo desde el móvil.
+- [ ] **1. Completar `lib/contenido.ts` con todos los ajustes y base legal**:
+  - Sincronizar `AJUSTES_DISPONIBLES` con `data/ajustes-disponibles.json` y `mejoras-producto.md` (`lenguaje-literal`, `anticipacion`, `lector-pantalla`, `audiodescripcion`, `horario-preferente`, `lectura-facil-sentencia`) incluyendo el campo `baseLegal`, y añadir el rol de **Perito / Médico Forense** en `ROLES`.
+- [ ] **2. Modo Voz (Speech-to-Text) y detector de impulsividad TDAH en `/ensaya` (`E01`, `E02`)**:
+  - Botón **"Responder hablando"** con `SpeechRecognition` del navegador (cubre ceguera de Juan y disgrafía).
+  - Si el usuario responde o avanza en menos de 3 segundos en el nivel 3, mostrar recordatorio amable para TDAH: *"Tómate tu tiempo antes de contestar"*.
+- [ ] **3. Completar `/demo/juan` (Diapositiva 37)**:
+  - Añadir sección **"Pruebas visuales descritas en voz"** (anuncio de Wallapop, captura de Bizum y resguardo de Correos leídos en voz alta).
+  - Permitir añadir hitos a su línea de tiempo e imprimir su guion de apoyo para la declaración, explicando que acredita el TDAH mediante **informe clínico sin necesidad de certificado del 33 %**.
+- [ ] **4. Actualizar `/profesional` (`PR01`–`PR05`)**:
+  - Añadir **Espazo Compartido (UDC)** y **FADEMGA**, perfiles de **DEA (Dislexia, Discalculia, Disgrafía)** y **Discapacidad Intelectual**, datos de impacto (UAVDI / *A Cada Lado* / RD 707/2026) y las 3 vías de activación de ajustes (de oficio, informe clínico o grado oficial).
+- [ ] **5. Ensayo del Pitch con [`docs/DEMO-3-MINUTOS.md`](file:///c:/Users/tiagu/OneDrive/Documentos/Projects/DATATHON-2026/docs/DEMO-3-MINUTOS.md)**.
