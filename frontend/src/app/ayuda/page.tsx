@@ -16,6 +16,72 @@ import {
   vozNaturalDisponible,
 } from '@/lib/vozNatural'
 
+interface FaqItem {
+  id: string
+  pregunta: string
+  categoria: string
+  respuesta: string
+  fundamentoLegal?: string
+  icono: string
+}
+
+const FAQS_RECURRENTES: FaqItem[] = [
+  {
+    id: 'pausas',
+    categoria: 'Sobrecarga y nervios',
+    icono: '⏸️',
+    pregunta: '¿Qué pasa si me bloqueo o me pongo muy nervioso durante el juicio?',
+    respuesta:
+      'Tienes derecho a pedir una pausa de tranquilidad en cualquier momento. El tribunal detendrá la sesión unos minutos para que puedas respirar, beber agua o serenarte.',
+    fundamentoLegal: 'Artículo 7 bis de la Ley de Enjuiciamiento Civil',
+  },
+  {
+    id: 'memoria',
+    categoria: 'Tu declaración',
+    icono: '🧠',
+    pregunta: '¿Tengo que acordarme de todo al detalle o saber horas exactas?',
+    respuesta:
+      'No. Tu única obligación como testigo es decir con sinceridad lo que viviste. Si no recuerdas una fecha, una hora o un detalle concreto, puedes decir con total tranquilidad: "No lo recuerdo con seguridad". Nunca estás obligado a adivinar.',
+    fundamentoLegal: 'Artículo 433 de la Ley de Enjuiciamiento Criminal',
+  },
+  {
+    id: 'preguntas-claras',
+    categoria: 'Comprensión',
+    icono: '💬',
+    pregunta: '¿Puedo pedir que me repitan una pregunta o que usen palabras más sencillas?',
+    respuesta:
+      'Sí. Si una pregunta tiene dobles negaciones, es muy larga o junta varias cosas a la vez, tienes derecho a pedir que te la separen en partes y te la formulen en lenguaje claro.',
+    fundamentoLegal: 'Guía de Buenas Prácticas del CGPJ y Art. 7 bis LEC',
+  },
+  {
+    id: 'acompanamiento',
+    categoria: 'Apoyo en sala',
+    icono: '🤝',
+    pregunta: '¿Puedo acudir acompañado de una persona de confianza o facilitador?',
+    respuesta:
+      'Sí. Puedes solicitar la presencia de un facilitador judicial o de una persona de apoyo para que esté a tu lado durante la vista, ayudándote a entender y reduciendo el estrés.',
+    fundamentoLegal: 'Estatuto de la Víctima y Art. 7 bis LEC',
+  },
+  {
+    id: 'privacidad',
+    categoria: 'Privacidad y salud',
+    icono: '🛡️',
+    pregunta: '¿Tengo que enseñar mi informe médico o decir mi diagnóstico en público?',
+    respuesta:
+      'No. Tu diagnóstico médico es un dato confidencial protegido. Con el Pasaporte de Ajustes solo comunicas las medidas de accesibilidad prácticas que necesitas (pausas, luz tenue, preguntas directas), sin compartir tu historial clínico.',
+    fundamentoLegal: 'Reglamento General de Protección de Datos (RGPD) Art. 9',
+  },
+  {
+    id: 'simulador',
+    categoria: 'Preparación',
+    icono: '🏛️',
+    pregunta: '¿Cómo me ayuda el simulador de la sala antes de ir al juzgado?',
+    respuesta:
+      'El simulador te permite ver la sala de vistas en 3D, escuchar el sonido ambiental, graduar el aforo y ensayar las preguntas habituales de jueces y abogados, para que el día del juicio nada te resulte desconocido.',
+    fundamentoLegal: 'Anticipación cognitiva y desensibilización sensorial',
+  },
+]
+
 type Mensaje = {
   id: string
   rol: 'persona' | 'asistente'
@@ -42,6 +108,7 @@ export default function PaginaAyuda() {
   const [enviando, setEnviando] = useState(false)
   const [escuchando, setEscuchando] = useState(false)
   const [hablando, setHablando] = useState(false)
+  const [faqAbierta, setFaqAbierta] = useState<string | null>(null)
   const [anuncio, setAnuncio] = useState('')
   const [ultimaRespuesta, setUltimaRespuesta] = useState(
     'Hola. Soy InclusiveCourt. Puedes preguntarme por la citación, el Pasaporte, Ensaya, la Sala Previa o el modo con voz.'
@@ -309,6 +376,95 @@ export default function PaginaAyuda() {
         </div>
       </form>
 
+      <section className="mb-8 space-y-4" aria-labelledby="seccion-faqs">
+        <div className="border-t border-court-200 pt-6">
+          <h2 id="seccion-faqs" className="text-2xl font-bold text-court-800 mb-1">
+            Preguntas frecuentes sobre el juzgado
+          </h2>
+          <p className="text-court-700 text-sm">
+            Dudas recurrentes para personas en procesos judiciales. Pulsa en cualquier tarjeta para ver la respuesta o escucharla en voz alta.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          {FAQS_RECURRENTES.map((faq) => {
+            const abierta = faqAbierta === faq.id
+            return (
+              <div
+                key={faq.id}
+                className="card border-2 border-court-200 hover:border-court-400 transition-colors p-4 space-y-2 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-court-600">
+                      {faq.icono} {faq.categoria}
+                    </span>
+                    {faq.fundamentoLegal && (
+                      <span className="text-[11px] bg-court-100 text-court-700 px-2 py-0.5 rounded font-medium">
+                        Legal
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-bold text-court-900 text-base mb-2">
+                    {faq.pregunta}
+                  </h3>
+                </div>
+
+                {abierta ? (
+                  <div className="space-y-3 pt-2 border-t border-court-100" aria-live="polite">
+                    <p className="text-sm text-court-800 leading-relaxed">
+                      {faq.respuesta}
+                    </p>
+                    {faq.fundamentoLegal && (
+                      <p className="text-xs text-court-600 font-medium">
+                        Norma aplicable: {faq.fundamentoLegal}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => leerTexto(faq.respuesta)}
+                        className="btn-ghost text-xs py-1 px-2.5 min-h-[36px]"
+                      >
+                        Escuchar respuesta
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFaqAbierta(null)}
+                        className="btn-ghost text-xs py-1 px-2.5 min-h-[36px] text-court-600"
+                      >
+                        Cerrar ▲
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setFaqAbierta(faq.id)}
+                      className="btn-secondary text-xs py-1.5 px-3 min-h-[38px]"
+                      aria-expanded={false}
+                    >
+                      Ver respuesta ▼
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPregunta(faq.pregunta)
+                        window.scrollTo({ top: 250, behavior: 'smooth' })
+                      }}
+                      className="text-xs text-court-600 hover:text-court-900 underline font-medium min-h-[38px] inline-flex items-center"
+                    >
+                      Usar en mi pregunta
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
       <nav aria-label="Atajos de ayuda" className="flex flex-wrap gap-4 text-court-800">
         <Link href="/citacion" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
           Citación
@@ -316,11 +472,8 @@ export default function PaginaAyuda() {
         <Link href="/pasaporte" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
           Pasaporte
         </Link>
-        <Link href="/ensaya" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
-          Ensaya
-        </Link>
         <Link href="/sala-previa" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
-          Sala Previa
+          Sala y ensayo
         </Link>
         <Link href="/" className="underline underline-offset-4 min-h-[44px] inline-flex items-center">
           Inicio
