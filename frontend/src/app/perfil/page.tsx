@@ -43,8 +43,8 @@ export default function PaginaPerfil() {
     if (guardado) {
       setNombre(guardado.nombre)
       setRol(guardado.rol ?? 'testigo')
-      setTolerancia(guardado.tolerancia)
-      setEstimulos(guardado.estimulosSensibles)
+      setTolerancia(guardado.tolerancia ?? 1)
+      setEstimulos(guardado.estimulosSensibles ?? [])
       setYaExiste(true)
     } else if (sesion.perfil?.nombre) {
       setNombre(sesion.perfil.nombre)

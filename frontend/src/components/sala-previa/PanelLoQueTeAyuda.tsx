@@ -14,7 +14,7 @@ import {
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
 
 /** IDs ARASAAC fijos (CC BY-NC-SA), alineados con BarritasEstimulo. */
-const PICTO_ESTIMULO: Record<IdEstimulo, number> = {
+const PICTO_ESTIMULO: Partial<Record<IdEstimulo, number>> = {
   ruido: 37857,
   luz: 8619,
   gente: 7117,
@@ -168,7 +168,7 @@ export function PanelLoQueTeAyuda({ dato }: Props) {
                   className="flex items-center gap-3 p-3 rounded-suave bg-calma-mist/70 border border-court-100"
                 >
                   <PictoCalmado
-                    id={PICTO_ESTIMULO[m.id]}
+                    id={PICTO_ESTIMULO[m.id] ?? 37857}
                     alt={`Pictograma: ${meta.etiqueta}`}
                     etiqueta={meta.etiqueta}
                   />

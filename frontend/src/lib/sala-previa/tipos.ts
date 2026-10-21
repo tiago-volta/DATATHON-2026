@@ -1,10 +1,19 @@
-export type IdEstimulo = 'ruido' | 'luz' | 'gente'
+export type IdEstimulo =
+  | 'ruido'
+  | 'luz'
+  | 'gente'
+  | 'voces'
+  | 'puerta'
+  | 'movil'
+  | 'nombre-en-alto'
+  | 'control-seguridad'
+  | 'toga'
 
-export interface ValoresEstimulo {
+export type ValoresEstimulo = {
   ruido: number
   luz: number
   gente: number
-}
+} & { [K in IdEstimulo]?: number }
 
 export interface NivelSala {
   id: number

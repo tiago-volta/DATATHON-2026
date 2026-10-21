@@ -7,7 +7,7 @@ import type { IdEstimulo, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 const ORDEN: IdEstimulo[] = ['ruido', 'luz', 'gente']
 
 /** IDs ARASAAC fijos (CC BY-NC-SA). Antes en ControlesEstimulo. */
-const PICTO_ID: Record<IdEstimulo, number> = {
+const PICTO_ID: Partial<Record<IdEstimulo, number>> = {
   ruido: 37857,
   luz: 8619,
   gente: 7117,
@@ -99,7 +99,7 @@ export function BarritasEstimulo({
           return (
             <li key={id}>
               <div className="flex items-center gap-2 mb-0.5">
-                <PictoEstimulo id={PICTO_ID[id]} etiqueta={meta.etiqueta} />
+                <PictoEstimulo id={PICTO_ID[id] ?? 37857} etiqueta={meta.etiqueta} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-1">
                     <label
