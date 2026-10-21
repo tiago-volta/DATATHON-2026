@@ -96,7 +96,7 @@ export default function Inicio() {
         </Link>
       </div>
 
-      <p className="mb-10">
+      <p className="mb-8">
         <Link
           href="/ayuda"
           className="inline-flex items-center gap-3 min-h-[44px] text-court-900 font-bold underline decoration-court-400 underline-offset-4 hover:decoration-court-900"
@@ -105,16 +105,6 @@ export default function Inicio() {
           Preguntas frecuentes y ayuda sobre el juzgado
         </Link>
       </p>
-
-      <section className="border-t border-court-200 pt-8">
-        <h2 className="text-xl text-court-900 mb-2">Si trabajas en el juzgado</h2>
-        <p className="text-court-700 mb-4 max-w-[42ch]">
-          Abre la ficha de ajustes procesales de la persona a través de su código corto de consulta, sin diagnósticos clínicos.
-        </p>
-        <Link href="/profesional" className="btn-secondary">
-          Abrir el panel profesional
-        </Link>
-      </section>
     </main>
   )
 }
