@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="marco flex min-h-screen flex-col">
         <a
           href="#contenido-principal"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 btn-primary"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[80] btn-primary"
         >
           Ir al contenido principal
         </a>

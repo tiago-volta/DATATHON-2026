@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Marca } from '@/components/Marca'
 import { IndicadorModoVoz } from '@/components/voz/IndicadorModoVoz'
+import { useCabeceraFlotante } from '@/hooks/useCabeceraFlotante'
 
 const ENLACES = [
   { href: '/', etiqueta: 'Inicio' },
@@ -21,10 +22,12 @@ function estaActivo(pathname: string, href: string) {
 export function Cabecera() {
   const pathname = usePathname()
   const panelActivo = estaActivo(pathname, '/profesional')
+  const flotante = useCabeceraFlotante()
 
   return (
-    <header className="border-b border-puente-200 bg-white">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
+    <div className="cabecera-capa">
+      <header className={`cabecera ${flotante ? 'cabecera--flotante' : ''}`}>
+        <div className="cabecera-interior">
         <Link
           href="/"
           className="flex items-center gap-3 text-puente-900 min-h-[44px] min-w-0 shrink-0 rounded-suave px-2 -mx-2 transition-colors duration-200 hover:bg-puente-50"
@@ -68,7 +71,8 @@ export function Cabecera() {
             </Link>
           </div>
         </nav>
-      </div>
-    </header>
+        </div>
+      </header>
+    </div>
   )
 }
