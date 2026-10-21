@@ -326,12 +326,46 @@ function Mobiliario() {
   )
 }
 
+function PersonaQueEntra({ activo, reduced }: { activo?: boolean; reduced?: boolean }) {
+  const meshRef = useRef<THREE.Group>(null)
+  const zPos = useRef(7.2)
+
+  useFrame((state, dt) => {
+    if (!meshRef.current) return
+    if (!activo) {
+      meshRef.current.visible = false
+      zPos.current = 7.2
+      return
+    }
+    meshRef.current.visible = true
+    if (zPos.current > 3.4) {
+      zPos.current -= dt * 1.1
+      meshRef.current.position.z = zPos.current
+      meshRef.current.position.y = reduced ? 1.15 : 1.15 + Math.sin(state.clock.elapsedTime * 7) * 0.03
+    }
+  })
+
+  return (
+    <group ref={meshRef} position={[0.3, 1.15, 7.2]}>
+      <PersonaCutout
+        url={PERSONA.p4}
+        position={[0, 0, 0]}
+        rotationY={Math.PI}
+        height={1.35}
+        visible={activo ? 1 : 0}
+      />
+    </group>
+  )
+}
+
 function PersonasEscena({
   gente,
   enfoque,
+  personaEntrando,
 }: {
   gente: number
   enfoque: MiradaSala | null
+  personaEntrando?: boolean
 }) {
   const juezVis = enfoque === 'juez' || enfoque === null ? 1 : 0.55
   const aboVis = enfoque === 'abogados' || enfoque === null ? 1 : 0.5
@@ -359,6 +393,8 @@ function PersonasEscena({
 
   return (
     <group>
+      <PersonaQueEntra activo={personaEntrando} />
+
       {/* Juez: plano frente a la sala (+Z) */}
       <PersonaCutout
         url={PERSONA.juez}
@@ -558,6 +594,7 @@ interface EscenaProps {
   destino: MiradaTarget | null
   onAnimFin: (yaw: number, pitch: number) => void
   reduced: boolean
+  personaEntrando?: boolean
 }
 
 function EscenaInterior(props: EscenaProps) {
@@ -588,7 +625,7 @@ function EscenaInterior(props: EscenaProps) {
       <Suspense fallback={null}>
         <Environment files={HDRI} environmentIntensity={0.32} />
         <Mobiliario />
-        <PersonasEscena gente={props.gente} enfoque={props.enfoque} />
+        <PersonasEscena gente={props.gente} enfoque={props.enfoque} personaEntrando={props.personaEntrando} />
       </Suspense>
     </>
   )

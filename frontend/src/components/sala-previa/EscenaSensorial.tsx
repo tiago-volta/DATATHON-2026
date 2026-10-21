@@ -19,6 +19,7 @@ interface Props {
   onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
   deshabilitadoEstimulos?: boolean
   miradaExterna?: MiradaSala | null
+  personaEntrando?: boolean
 }
 
 function nivelPalabra(valor: number): 'Bajo' | 'Medio' | 'Alto' {
@@ -35,6 +36,7 @@ export function EscenaSensorial({
   onChangeEstimulo,
   deshabilitadoEstimulos,
   miradaExterna,
+  personaEntrando,
 }: Props) {
   const reduced = useReducedMotion()
 
@@ -76,6 +78,7 @@ export function EscenaSensorial({
         onChangeEstimulo={onChangeEstimulo}
         deshabilitadoEstimulos={deshabilitadoEstimulos}
         miradaExterna={miradaExterna}
+        personaEntrando={personaEntrando}
       />
 
       <div className="rounded-suave border border-court-200 bg-white px-4 py-3">

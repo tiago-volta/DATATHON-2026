@@ -47,6 +47,7 @@ interface Props {
   onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
   deshabilitadoEstimulos?: boolean
   miradaExterna?: MiradaSala | null
+  personaEntrando?: boolean
 }
 
 function IconoPantallaCompleta({ salir }: { salir?: boolean }) {
@@ -84,6 +85,7 @@ export function SalaJuzgado360({
   onChangeEstimulo,
   deshabilitadoEstimulos,
   miradaExterna,
+  personaEntrando,
 }: Props) {
   const reduced = useReducedMotion()
   const labelId = useId()
@@ -273,6 +275,7 @@ export function SalaJuzgado360({
               onAnimFin={onAnimFin}
               reduced={reduced}
               arrastrando={arrastrando}
+              personaEntrando={personaEntrando}
             />
 
             {/* Indicador visual discreto de ruido */}

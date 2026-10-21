@@ -39,6 +39,7 @@ export function RecorridoEscenas({
   const prevIndice = useRef(indice)
   const [miradaEnsayo, setMiradaEnsayo] = useState<MiradaSala | null>(null)
   const [ensayoAbierto, setEnsayoAbierto] = useState(true)
+  const [personaEntrando, setPersonaEntrando] = useState(false)
 
   const seguro = Math.min(TOTAL_ESCENAS - 1, Math.max(0, indice))
   const escena = ESCENAS_JUZGADO[seguro]
@@ -49,7 +50,6 @@ export function RecorridoEscenas({
   useEffect(() => {
     if (prevIndice.current === seguro) return
     prevIndice.current = seguro
-    // Al cambiar de escena, lleva el foco al título para lector de pantalla y teclado.
     tituloRef.current?.focus()
   }, [seguro])
 
@@ -153,6 +153,7 @@ export function RecorridoEscenas({
           onChangeEstimulo={onChangeEstimulo}
           deshabilitadoEstimulos={enCalma}
           miradaExterna={escena.id === 'sala-vistas' ? miradaEnsayo : null}
+          personaEntrando={escena.id === 'sala-vistas' ? personaEntrando : false}
         />
 
         {escena.id === 'sala-vistas' && (
@@ -160,7 +161,7 @@ export function RecorridoEscenas({
             <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-suave border border-court-200">
               <div>
                 <p className="font-bold text-court-800 text-sm">Ensayo de declaración en sala</p>
-                <p className="text-xs text-court-600">Simulación con juez, letrados y derechos del testigo</p>
+                <p className="text-xs text-court-600">Simulación interactiva con juez, letrados y estímulos</p>
               </div>
               <button
                 type="button"
@@ -175,10 +176,16 @@ export function RecorridoEscenas({
             {ensayoAbierto && (
               <DialogoEnsayoSala
                 enCalma={enCalma}
+                aforoGente={valores.gente}
                 onCambioMirada={(m) => setMiradaEnsayo(m)}
                 onPedirPausa={() => onPedirPausa?.()}
                 onNivelCompletado={(id) => onNivelCompletado?.(id)}
                 onProgresoPreguntas={(n) => onProgresoPreguntas?.(n)}
+                onPersonaEntrando={setPersonaEntrando}
+                onSubirAforoEstimulo={() => {
+                  onChangeEstimulo?.('gente', Math.min(100, Math.max(valores.gente + 20, 25)))
+                  onChangeEstimulo?.('ruido', Math.min(100, Math.max(valores.ruido + 15, 20)))
+                }}
               />
             )}
           </div>

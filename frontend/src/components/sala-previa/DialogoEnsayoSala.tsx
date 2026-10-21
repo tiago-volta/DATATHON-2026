@@ -384,18 +384,24 @@ export const BLOQUES_ENSAYO_SALA: NivelJuicio[] = [
 
 interface Props {
   enCalma: boolean
+  aforoGente?: number
   onCambioMirada?: (mirada: MiradaSala) => void
   onPedirPausa: () => void
   onNivelCompletado?: (nivelId: number) => void
   onProgresoPreguntas?: (totalRespondidas: number) => void
+  onSubirAforoEstimulo?: () => void
+  onPersonaEntrando?: (activo: boolean) => void
 }
 
 export function DialogoEnsayoSala({
   enCalma,
+  aforoGente = 0,
   onCambioMirada,
   onPedirPausa,
   onNivelCompletado,
   onProgresoPreguntas,
+  onSubirAforoEstimulo,
+  onPersonaEntrando,
 }: Props) {
   const [nivelIndex, setNivelIndex] = useState(0)
   const [preguntaIndex, setPreguntaIndex] = useState(0)
@@ -405,6 +411,10 @@ export function DialogoEnsayoSala({
   const [mostrarFaq, setMostrarFaq] = useState(false)
   const [bloqueCompletado, setBloqueCompletado] = useState(false)
   const [totalRespondidas, setTotalRespondidas] = useState(0)
+
+  // Estado del evento sensorial de distracción y reconducción de atención
+  const [distraccionActiva, setDistraccionActiva] = useState(false)
+  const [atencionRecuperada, setAtencionRecuperada] = useState(false)
 
   const liveAnuncioId = useId()
   const textareaId = useId()
@@ -434,6 +444,24 @@ export function DialogoEnsayoSala({
     onPedirPausa()
   }, [onPedirPausa])
 
+  // Disparar evento de distracción sensorial (entra una persona por la puerta)
+  const activarDistraccion = useCallback(() => {
+    setDistraccionActiva(true)
+    setAtencionRecuperada(false)
+    onPersonaEntrando?.(true)
+  }, [onPersonaEntrando])
+
+  // Reconducir la atención de nuevo al Juez
+  const reconducirAtencionAlJuez = useCallback(() => {
+    onCambioMirada?.('juez')
+    setDistraccionActiva(false)
+    setAtencionRecuperada(true)
+    setTimeout(() => {
+      onPersonaEntrando?.(false)
+      setAtencionRecuperada(false)
+    }, 4000)
+  }, [onCambioMirada, onPersonaEntrando])
+
   const siguientePregunta = () => {
     const nuevoTotal = totalRespondidas + 1
     setTotalRespondidas(nuevoTotal)
@@ -442,6 +470,9 @@ export function DialogoEnsayoSala({
     setRepetidaMensaje(null)
     setPausaPedidaMensaje(null)
     setMostrarFaq(false)
+    setDistraccionActiva(false)
+    setAtencionRecuperada(false)
+    onPersonaEntrando?.(false)
 
     if (preguntaIndex < nivelActual.preguntas.length - 1) {
       setPreguntaIndex((prev) => prev + 1)
@@ -456,6 +487,9 @@ export function DialogoEnsayoSala({
     setRepetidaMensaje(null)
     setPausaPedidaMensaje(null)
     setMostrarFaq(false)
+    setDistraccionActiva(false)
+    setAtencionRecuperada(false)
+    onPersonaEntrando?.(false)
 
     if (preguntaIndex > 0) {
       setPreguntaIndex((prev) => prev - 1)
@@ -475,6 +509,9 @@ export function DialogoEnsayoSala({
       setRepetidaMensaje(null)
       setPausaPedidaMensaje(null)
       setMostrarFaq(false)
+      setDistraccionActiva(false)
+      setAtencionRecuperada(false)
+      onPersonaEntrando?.(false)
     }
   }
 
@@ -485,6 +522,9 @@ export function DialogoEnsayoSala({
     setRepetidaMensaje(null)
     setPausaPedidaMensaje(null)
     setMostrarFaq(false)
+    setDistraccionActiva(false)
+    setAtencionRecuperada(false)
+    onPersonaEntrando?.(false)
   }
 
   const esPrimeraPregunta = nivelIndex === 0 && preguntaIndex === 0
@@ -541,7 +581,7 @@ export function DialogoEnsayoSala({
                 ¡Nivel {nivelActual.id} superado con éxito!
               </h4>
               <p className="text-court-700 text-sm">
-                Has ensayado todas las preguntas de este bloque y aplicado tus derechos procesales.
+                Has completado todas las preguntas de este bloque y ejercido tus derechos de forma serena.
               </p>
             </div>
           </div>
@@ -561,6 +601,36 @@ export function DialogoEnsayoSala({
               <p className="text-2xl font-bold text-court-800">+10</p>
               <p className="text-xs text-court-600 font-medium">Confianza acumulada</p>
             </div>
+          </div>
+
+          {/* ================= PROGRESIÓN DE TOLERANCIA ================= */}
+          <div className="rounded-tarjeta bg-amber-50/90 border-2 border-amber-300 p-4 space-y-2">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">📈</span>
+              <div className="space-y-1">
+                <p className="font-bold text-sm text-court-900">
+                  Progresión de tolerancia conseguida ({Math.round(aforoGente)}% aforo de sala)
+                </p>
+                <p className="text-xs text-court-700">
+                  Has ensayado en este nivel tolerando el estímulo de la sala sin desregularte.
+                  {aforoGente < 60
+                    ? ' Puedes aumentar el aforo para entrenar con más asistentes de público.'
+                    : ' Tienes un nivel de tolerancia muy sólido ante una sala con público real.'}
+                </p>
+              </div>
+            </div>
+
+            {onSubirAforoEstimulo && aforoGente < 80 && (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={onSubirAforoEstimulo}
+                  className="btn-secondary text-xs py-1.5 px-3 min-h-[38px] bg-white border-amber-300"
+                >
+                  Subir aforo de la sala (+20 personas)
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="bg-white p-4 rounded-suave border border-court-200 space-y-2">
@@ -667,16 +737,75 @@ export function DialogoEnsayoSala({
             )}
           </div>
 
+          {/* ================= ALERTA DE DISTRACCIÓN / ATENCIÓN ================= */}
+          {distraccionActiva && (
+            <div
+              className="rounded-tarjeta bg-amber-50 border-2 border-amber-400 p-4 space-y-3 shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl" aria-hidden="true">🚪</span>
+                <div className="space-y-1 flex-1">
+                  <p className="font-bold text-sm sm:text-base text-court-900">
+                    Entrenamiento atencional: Alguien entra por la puerta del fondo
+                  </p>
+                  <p className="text-xs sm:text-sm text-court-700">
+                    En los juicios es habitual que entren funcionarios o abogados. Tienes derecho a desviar la mirada unos instantes y volver al juez con serenidad.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => onCambioMirada?.('entrada')}
+                  className="btn-ghost text-xs py-1.5 px-3 min-h-[38px] border border-amber-300 bg-white"
+                >
+                  Mirar hacia la puerta
+                </button>
+                <button
+                  type="button"
+                  onClick={reconducirAtencionAlJuez}
+                  className="btn-primary text-xs py-1.5 px-4 min-h-[38px]"
+                >
+                  Reconducir atención al Juez
+                </button>
+              </div>
+            </div>
+          )}
+
+          {atencionRecuperada && (
+            <div
+              className="rounded-suave bg-calma-sage border border-accent-success p-3 text-xs sm:text-sm text-court-900 flex items-center gap-2"
+              role="status"
+              aria-live="polite"
+            >
+              <span className="text-accent-success font-bold text-base">✓</span>
+              <span>
+                <strong>Atención recuperada:</strong> Tu mirada vuelve a centrarse en el interrogatorio.
+              </span>
+            </div>
+          )}
+
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2 items-center justify-between">
               <span className="text-sm font-bold text-court-800">
                 Tus derechos como testigo (puedes activar cualquiera):
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={activarDistraccion}
+                  className="btn-ghost text-xs py-1.5 px-2.5 min-h-[38px] border border-amber-300 bg-amber-50/50 text-court-800"
+                  title="Simula un evento de distracción en la sala para entrenar el foco"
+                >
+                  <span aria-hidden="true">🚪</span>
+                  Simular distracción
+                </button>
                 <button
                   type="button"
                   onClick={manejarPedirRepeticion}
-                  className="btn-ghost text-xs py-1.5 px-3 min-h-[38px] border border-court-300 bg-white"
+                  className="btn-ghost text-xs py-1.5 px-2.5 min-h-[38px] border border-court-300 bg-white"
                 >
                   <Icono nombre="↺" />
                   Pedir que repitan
@@ -684,7 +813,7 @@ export function DialogoEnsayoSala({
                 <button
                   type="button"
                   onClick={manejarPedirPausa}
-                  className="btn-ghost text-xs py-1.5 px-3 min-h-[38px] border border-court-300 bg-white text-court-800"
+                  className="btn-ghost text-xs py-1.5 px-2.5 min-h-[38px] border border-court-300 bg-white text-court-800"
                   aria-pressed={enCalma}
                 >
                   <Icono nombre="⏸" />
