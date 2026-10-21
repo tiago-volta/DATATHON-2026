@@ -1,4 +1,5 @@
 import type { ValoresEstimulo } from './tipos'
+import { bancoSonidos } from './bancoSonidos'
 
 const FADE_NORMAL = 2.2
 const FADE_CALMA = 0.9
@@ -313,115 +314,28 @@ export class MotorAudioSala {
     source.start(now)
   }
 
+  /** Sonidos de la agenda anunciada: grabaciones reales (bancoSonidos), fuera del ducking. */
   reproducirPuerta() {
-    if (!this.ctx || !this.impulsosGain) return
-    const now = this.ctx.currentTime
-    // Apertura (creak) + cierre suave
-    const osc = this.ctx.createOscillator()
-    const gain = this.ctx.createGain()
-    const filtro = this.ctx.createBiquadFilter()
-    osc.type = 'sawtooth'
-    osc.frequency.setValueAtTime(150, now)
-    osc.frequency.linearRampToValueAtTime(90, now + 0.55)
-    filtro.type = 'bandpass'
-    filtro.frequency.value = 500
-    filtro.Q.value = 5
-    gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.linearRampToValueAtTime(0.07, now + 0.12)
-    gain.gain.linearRampToValueAtTime(0.0001, now + 0.7)
-    osc.connect(filtro)
-    filtro.connect(gain)
-    gain.connect(this.impulsosGain)
-    osc.start(now)
-    osc.stop(now + 0.75)
-    this.dispararPuerta()
+    bancoSonidos().tocar('puertaAbreCierra', { pan: -0.5 })
   }
 
-  /** Vibración corta de móvil (buzz). */
+  reproducirPersonaEntra() {
+    const pan = Math.random() < 0.5 ? -0.55 : 0.55
+    bancoSonidos().tocar('puertaAbre', { pan })
+    bancoSonidos().tocar('pasos', { en: 1, volumen: 0.8, pan: pan * 0.7 })
+    bancoSonidos().tocar('portazo', { en: 7.6, volumen: 0.55, pan, variante: 1 })
+  }
+
   reproducirMovil() {
-    if (!this.ctx || !this.impulsosGain) return
-    const now = this.ctx.currentTime
-    for (const offset of [0, 0.28, 1.4, 1.68]) {
-      const osc = this.ctx.createOscillator()
-      const gain = this.ctx.createGain()
-      const filtro = this.ctx.createBiquadFilter()
-      osc.type = 'square'
-      osc.frequency.value = 155
-      filtro.type = 'lowpass'
-      filtro.frequency.value = 420
-      gain.gain.setValueAtTime(0.0001, now + offset)
-      gain.gain.linearRampToValueAtTime(0.18, now + offset + 0.03)
-      gain.gain.linearRampToValueAtTime(0.0001, now + offset + 0.2)
-      osc.connect(filtro)
-      filtro.connect(gain)
-      gain.connect(this.impulsosGain)
-      osc.start(now + offset)
-      osc.stop(now + offset + 0.22)
-    }
+    bancoSonidos().tocar('vibracion')
   }
 
-  /** Timbre de móvil (dos tonos), distinto de la vibración. */
   reproducirTimbreMovil() {
-    if (!this.ctx || !this.impulsosGain) return
-    const now = this.ctx.currentTime
-    for (let i = 0; i < 4; i++) {
-      const t0 = now + i * 0.55
-      for (const freq of [880, 988]) {
-        const osc = this.ctx.createOscillator()
-        const gain = this.ctx.createGain()
-        osc.type = 'sine'
-        osc.frequency.value = freq
-        gain.gain.setValueAtTime(0.0001, t0)
-        gain.gain.linearRampToValueAtTime(0.16, t0 + 0.02)
-        gain.gain.linearRampToValueAtTime(0.0001, t0 + 0.3)
-        osc.connect(gain)
-        gain.connect(this.impulsosGain)
-        osc.start(t0)
-        osc.stop(t0 + 0.32)
-      }
-    }
+    bancoSonidos().tocar('telefono', { en: 0.2 })
   }
 
-  /** Dos golpes de martillo del juez. */
   reproducirMartillo() {
-    if (!this.ctx || !this.impulsosGain) return
-    const now = this.ctx.currentTime
-    for (const offset of [0, 0.36]) {
-      const t0 = now + offset
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.12)
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
-      const data = buffer.getChannelData(0)
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
-      }
-      const source = this.ctx.createBufferSource()
-      source.buffer = buffer
-      const filtro = this.ctx.createBiquadFilter()
-      filtro.type = 'lowpass'
-      filtro.frequency.value = 280
-      const gain = this.ctx.createGain()
-      gain.gain.setValueAtTime(0.0001, t0)
-      gain.gain.linearRampToValueAtTime(0.14, t0 + 0.008)
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.28)
-      source.connect(filtro)
-      filtro.connect(gain)
-      gain.connect(this.impulsosGain)
-      source.start(t0)
-      source.stop(t0 + 0.3)
-
-      const osc = this.ctx.createOscillator()
-      const og = this.ctx.createGain()
-      osc.type = 'triangle'
-      osc.frequency.setValueAtTime(170, t0)
-      osc.frequency.exponentialRampToValueAtTime(50, t0 + 0.2)
-      og.gain.setValueAtTime(0.0001, t0)
-      og.gain.linearRampToValueAtTime(0.09, t0 + 0.005)
-      og.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22)
-      osc.connect(og)
-      og.connect(this.impulsosGain)
-      osc.start(t0)
-      osc.stop(t0 + 0.25)
-    }
+    bancoSonidos().tocar('martillo', { en: 0.25, volumen: 1.15, pan: 0 })
   }
 
   /** Aviso sonoro breve (sin síntesis de voz): el nombre se muestra en pantalla. */
@@ -430,38 +344,10 @@ export class MotorAudioSala {
   }
 
   reproducirTosMurmullo() {
-    if (!this.ctx || !this.impulsosGain) return
-    const now = this.ctx.currentTime
-    for (const [off, freq, pico] of [
-      [0, 720, 0.28],
-      [0.3, 600, 0.24],
-      [0.55, 680, 0.18],
-    ] as const) {
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.22)
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate)
-      const data = buffer.getChannelData(0)
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize)
-      }
-      const source = this.ctx.createBufferSource()
-      source.buffer = buffer
-      const filtro = this.ctx.createBiquadFilter()
-      filtro.type = 'bandpass'
-      filtro.frequency.value = freq
-      filtro.Q.value = 1.3
-      const gain = this.ctx.createGain()
-      const t0 = now + off
-      gain.gain.setValueAtTime(0.0001, t0)
-      gain.gain.linearRampToValueAtTime(pico, t0 + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2)
-      source.connect(filtro)
-      filtro.connect(gain)
-      gain.connect(this.impulsosGain)
-      source.start(t0)
-      source.stop(t0 + 0.22)
-    }
+    bancoSonidos().tocar('tos', { en: 0.35 })
+    if (Math.random() < 0.5) bancoSonidos().tocar('carraspeo', { en: 1.6, volumen: 0.8 })
   }
 }
 
 export const CREDITO_AUDIO =
-  'Sonido: ambientación y murmullos CC0 (Freesound: callmethefoo, Breviceps, craigsmith).'
+  'Sonido: ambientación, murmullos y ruidos de sala grabados CC0 (Freesound; ver CREDITOS en /sala-previa/).'

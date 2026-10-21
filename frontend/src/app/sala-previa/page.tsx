@@ -18,6 +18,7 @@ import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { usePractica } from '@/hooks/usePractica'
 import { PanelDiasPractica } from '@/components/practica/PanelDiasPractica'
 import { MotorAudioSala, CREDITO_AUDIO } from '@/lib/sala-previa/audio'
+import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
 import { generarAgendaEventos, type EventoSala } from '@/lib/sala-previa/eventos'
 import { distraccionDeAgenda, type TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import { NarradorAhoraDespues } from '@/components/sala-previa/NarradorAhoraDespues'
@@ -70,6 +71,8 @@ export default function PaginaSalaPrevia() {
   const [herramientasActivas, setHerramientasActivas] = useState<IdHerramienta[]>([])
   const [valores, setValores] = useState<ValoresEstimulo>(ESTIMULOS_VACIOS)
   const [enCalma, setEnCalma] = useState(false)
+  const enCalmaRef = useRef(false)
+  enCalmaRef.current = enCalma
   const [audioListo, setAudioListo] = useState(false)
   const [progreso, setProgreso] = useState<ProgresoSala>(PROGRESO_INICIAL)
   const [progresoListo, setProgresoListo] = useState(false)
@@ -118,9 +121,12 @@ export default function PaginaSalaPrevia() {
   )
 
   const alDispararEvento = useCallback((ev: EventoSala) => {
+    if (enCalmaRef.current) return
     const visual = distraccionDeAgenda(ev.id, ev.tipo)
     if (visual) setEventoSala((prev) => ({ id: (prev?.id ?? 0) + 1, tipo: visual }))
-    if (ev.tipo === 'gente') {
+    if (visual === 'entra-persona') {
+      motorRef.current?.reproducirPersonaEntra()
+    } else if (ev.tipo === 'gente') {
       motorRef.current?.reproducirTosMurmullo()
     } else if (ev.tipo === 'puerta') {
       motorRef.current?.reproducirPuerta()
@@ -269,7 +275,8 @@ export default function PaginaSalaPrevia() {
   )
 
   const empezarNivel0 = async () => {
-    // El audio solo arranca aquí, tras el aviso de la intro.
+    // El audio solo arranca aquí, tras el aviso de la intro (gesto del usuario).
+    bancoSonidos().precargar()
     await motorRef.current?.iniciar()
     setAudioListo(true)
     setEnCalma(false)
@@ -288,8 +295,8 @@ export default function PaginaSalaPrevia() {
     registrarConfianza('nivel-probado', destino)
     setMensaje(
       destino === 0
-        ? 'Nivel 0. Ambiente estable. Activa Pocas o Muchas distracciones si quieres practicar interrupciones.'
-        : `Nivel ${destino}. Ambiente estable. Activa Pocas o Muchas distracciones si quieres practicar interrupciones.`
+        ? 'Nivel 0. Ambiente estable. Habrá distracciones de vez en cuando (Pocas); puedes cambiarlas a Muchas o Apagadas.'
+        : `Nivel ${destino}. Ambiente estable. Habrá distracciones de vez en cuando (Pocas); puedes cambiarlas a Muchas o Apagadas.`
     )
   }
 
@@ -300,6 +307,7 @@ export default function PaginaSalaPrevia() {
 
   const volverAIntro = () => {
     motorRef.current?.detener(true)
+    bancoSonidos().cancelar()
     setAudioListo(false)
     setEnCalma(false)
     setValores(ESTIMULOS_VACIOS)
@@ -309,7 +317,9 @@ export default function PaginaSalaPrevia() {
 
   const pausarCalma = () => {
     setEnCalma(true)
+    enCalmaRef.current = true
     motorRef.current?.volverACalma()
+    bancoSonidos().cancelar()
     setValores((v) => ({
       ruido: 0,
       luz: Math.min(v.luz, 12),

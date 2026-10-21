@@ -13,6 +13,7 @@ import {
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { useDistracciones } from '@/hooks/useDistracciones'
 import { ControlDistracciones } from '@/components/sala-previa/ControlDistracciones'
+import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
 import type { IdEscenaJuzgado, ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import type { NivelDistracciones, TipoDistraccion } from '@/lib/sala-previa/distracciones'
 import {
@@ -57,7 +58,7 @@ interface Props {
   eventoExterno?: { id: number; tipo: TipoDistraccion } | null
 }
 
-const CLAVE_AJUSTES = 'sala-previa-distracciones'
+const CLAVE_AJUSTES = 'sala-previa-distracciones-v2'
 
 interface AjustesDistraccion {
   nivel: NivelDistracciones
@@ -65,14 +66,14 @@ interface AjustesDistraccion {
 }
 
 function leerAjustes(): AjustesDistraccion {
-  const defecto: AjustesDistraccion = { nivel: 'apagadas', avisar: true }
+  const defecto: AjustesDistraccion = { nivel: 'pocas', avisar: true }
   if (typeof window === 'undefined') return defecto
   try {
     const raw = window.localStorage.getItem(CLAVE_AJUSTES)
     if (!raw) return defecto
     const v = JSON.parse(raw) as Partial<typeof defecto>
     return {
-      nivel: v.nivel === 'pocas' || v.nivel === 'muchas' ? v.nivel : 'apagadas',
+      nivel: v.nivel === 'apagadas' || v.nivel === 'muchas' ? v.nivel : 'pocas',
       avisar: v.avisar !== false,
     }
   } catch {
@@ -175,13 +176,14 @@ export function SalaJuzgado360({
   const ruido = enCalma ? 0 : valores.ruido
 
   const [ajustes, setAjustes] = useState<AjustesDistraccion>({
-    nivel: 'apagadas',
+    nivel: 'pocas',
     avisar: true,
   })
   useEffect(() => {
     setAjustes(leerAjustes())
   }, [])
   const cambiarAjustes = (cambio: Partial<AjustesDistraccion>) => {
+    bancoSonidos().desbloquear()
     const siguiente = { ...ajustes, ...cambio }
     setAjustes(siguiente)
     try {
@@ -196,8 +198,6 @@ export function SalaJuzgado360({
     avisar: ajustes.avisar,
     enCalma,
     papel,
-    gente,
-    ruido,
     numPublico: numPublicoVisible(gente, papel),
   })
 

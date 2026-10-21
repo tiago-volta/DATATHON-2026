@@ -865,8 +865,13 @@ const GESTO_PUBLICO: Partial<Record<TipoDistraccion, Gesto>> = {
   movil: 'movil',
   'timbre-movil': 'movil',
   tos: 'tos',
+  carraspeo: 'tos',
+  estornudo: 'tos',
   'levanta-sienta': 'levanta',
   'silla-cruje': 'postura',
+  'silla-arrastra': 'postura',
+  'llaves-caen': 'postura',
+  cremallera: 'postura',
   shh: 'susurra',
 }
 
@@ -1005,7 +1010,7 @@ function PapelesMesa({ d, x, reduced }: { d: Distraccion | null; x: number; redu
   const hoja = useRef<THREE.Mesh>(null)
   const boli = useRef<THREE.Mesh>(null)
   const progreso = useProgreso(
-    d && (d.tipo === 'papeles' || d.tipo === 'boligrafo') ? d : null
+    d && (d.tipo === 'papeles' || d.tipo === 'boli-cae') ? d : null
   )
 
   useFrame((state) => {
@@ -1016,9 +1021,10 @@ function PapelesMesa({ d, x, reduced }: { d: Distraccion | null; x: number; redu
       hoja.current.rotation.set(0, 0.2 + 0.5 * e, -0.25 * e)
     }
     if (boli.current) {
-      const activo = d?.tipo === 'boligrafo' && t >= 0 && t < 0.85
-      const golpe = activo && !reduced ? Math.abs(Math.sin(state.clock.elapsedTime * 10)) * 0.02 : 0
-      boli.current.position.set(x - 0.2, 0.86 + golpe + (activo ? 0.04 : 0), -3.0)
+      const enSuelo = d?.tipo === 'boli-cae' && t >= 0 && t < 0.85
+      // Cae justo antes de que suene el golpe (0,3 s de 2,4 s ≈ t 0,125).
+      const caida = enSuelo && !reduced ? Math.min(1, Math.max(0, (t - 0.03) / 0.095)) : enSuelo ? 1 : 0
+      boli.current.position.set(x - 0.2 - 0.12 * caida, 0.86 - 0.84 * caida * caida, -3.0 + 0.18 * caida)
     }
   })
 

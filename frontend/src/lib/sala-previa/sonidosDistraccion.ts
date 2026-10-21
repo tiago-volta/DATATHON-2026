@@ -1,110 +1,123 @@
 import type { Distraccion } from './distracciones'
-
-const MAX_GAIN = 0.5
+import { bancoSonidos, type GrupoSonido, type OpcionesToque } from './bancoSonidos'
 
 /**
- * Sonidos cortos sintetizados (WebAudio) para las distracciones de la sala 3D.
- * Contexto propio para no tocar la mezcla del ambiente; se crea tras un gesto.
+ * Sonidos de las distracciones de la sala 3D con grabaciones reales CC0.
+ * Los tiempos cuadran con las animaciones de SalaVistas3D (progreso 0..1 de `duracion`).
  */
 export class SonidosDistraccion {
-  private ctx: AudioContext | null = null
-  private salida: GainNode | null = null
   private timers: number[] = []
+  private hablando = false
 
   preparar() {
-    if (typeof window === 'undefined') return
-    if (!this.ctx) {
-      const Ctor =
-        window.AudioContext ??
-        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-      if (!Ctor) return
-      this.ctx = new Ctor()
-      this.salida = this.ctx.createGain()
-      this.salida.gain.value = MAX_GAIN
-      this.salida.connect(this.ctx.destination)
-    }
-    if (this.ctx.state === 'suspended') void this.ctx.resume()
+    bancoSonidos().precargar()
   }
 
   cancelar() {
     for (const t of this.timers) window.clearTimeout(t)
     this.timers = []
+    bancoSonidos().cancelar()
+    const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
+    if (synth?.speaking && this.hablando) synth.cancel()
+    this.hablando = false
   }
 
   cerrar() {
     this.cancelar()
-    void this.ctx?.close()
-    this.ctx = null
-    this.salida = null
   }
 
   reproducir(d: Distraccion, volumen: number) {
     if (d.silenciosa) return
-    const v = Math.max(0.05, Math.min(1, volumen))
+    const v = Math.max(0.1, Math.min(1.2, volumen))
     const dur = d.duracion
+    const lado = Math.random() < 0.5 ? -1 : 1
+    const t = (grupo: GrupoSonido, en: number, vol = 1, extra: OpcionesToque = {}) =>
+      bancoSonidos().tocar(grupo, { en, volumen: v * vol, ...extra })
+
     switch (d.tipo) {
-      case 'entra-persona':
-        this.puerta(0, v * 0.75)
-        this.pasos(0.9, 6, 0.5, v * 0.6)
-        this.puerta(dur - 1.4, v * 0.55)
-        if (d.variante === 0) this.crujido(dur - 2.6, v * 0.5)
+      case 'entra-persona': {
+        const pan = 0.55 * lado
+        t('puertaAbre', 0, 1, { pan })
+        t('pasos', 1, 0.8, { pan: pan * 0.8 })
+        t('pasos', 4.6, 0.7, { pan: pan * 0.4 })
+        t('portazo', dur - 1.4, 0.55, { pan, variante: 1 })
+        if (d.variante === 0) t('sillaCruje', dur - 2.6, 0.8)
         break
+      }
       case 'habla-fondo':
-        this.voz(0.5, d.frase ?? 'Ya queda poco.', v * 0.35, 1.05)
+        t('susurros', 0.4, 0.95)
         break
       case 'movil':
-        this.vibracion(0.3, v)
-        this.vibracion(1.5, v)
-        this.vibracion(2.7, v * 0.85)
+        t('vibracion', 0.3, 1)
         break
       case 'timbre-movil':
-        this.timbre(0.2, v)
+        t('telefono', 0.2, 1)
         break
       case 'tos':
-        this.tos(0.35, v)
-        if (d.variante === 1) this.tos(1.1, v * 0.75)
+        t('tos', 0.35, 1)
+        if (d.variante === 1) t('tos', 1.3, 0.75)
         break
-      case 'boligrafo':
-        for (let i = 0; i < 5; i++) this.clic(0.3 + i * 0.32 + Math.random() * 0.08, v)
+      case 'carraspeo':
+        t('carraspeo', 0.3, 1)
+        break
+      case 'estornudo':
+        t('estornudo', 0.3, 1)
+        break
+      case 'boli-cae':
+        t('boli', 0.3, 1.1)
+        break
+      case 'llaves-caen':
+        t('llaves', 0.3, 1)
+        break
+      case 'silla-arrastra':
+        t('sillaArrastra', 0.2, 1)
+        break
+      case 'cremallera':
+        t('cremallera', 0.3, 1)
+        break
+      case 'botella':
+        t('botella', 0.3, 1)
         break
       case 'papeles':
-        this.papeles(0.3, v)
-        this.papeles(1.4, v * 0.8)
+        t('papeles', 0.2, 1)
+        if (d.variante === 1) t('papeles', 1.6, 0.7)
         break
       case 'levanta-sienta':
-        this.crujido(0.3, v * 0.7)
-        this.crujido(dur - 1, v * 0.6)
+        t('sillaArrastra', 0.6, 0.9)
+        t('sillaCruje', dur - 1.2, 0.8)
         break
-      case 'cruza-agente':
-        this.pasos(0.2, 11, 0.55, v * 0.55)
+      case 'cruza-agente': {
+        const pan = 0.6 * lado
+        t('pasos', 0.3, 0.9, { pan })
+        t('pasos', 3.9, 0.9, { pan: -pan })
         break
+      }
       case 'silla-cruje':
-        this.crujido(0.2, v)
+        t('sillaCruje', 0.2, 1)
         break
       case 'portazo':
-        this.puerta(0.15, v * 0.55)
-        this.golpe(0.85, v)
+        t('portazo', 0.6, 1.1, { pan: 0.55 * lado, variante: 0 })
         break
       case 'agente-postura':
-        this.pasos(0.6, 2, 0.5, v * 0.45)
+        t('sillaCruje', 0.5, 0.75, { pan: 0.3 * lado })
         break
       case 'acompanante-susurra':
-        this.voz(0.4, d.frase ?? 'Estoy aquí contigo.', v * 0.3, 0.9)
+        this.voz(0.4, d.frase ?? 'Estoy aquí contigo.', 0.85 * v, 0.9)
         break
       case 'abogado-susurra':
-        this.voz(0.4, d.frase ?? 'Vamos bien.', v * 0.3, 0.95)
+        this.voz(0.4, d.frase ?? 'Vamos bien.', 0.85 * v, 0.95)
         break
       case 'martillo':
-        this.martillo(0.25, v)
+        t('martillo', 0.25, 1.15, { pan: 0 })
         break
       case 'shh':
-        this.shh(0.3, v)
+        t('shh', 0.3, 1)
         break
       case 'pasos-lejanos':
-        this.pasos(0.2, 8, 0.42, v * 0.4)
+        t('pasos', 0.2, 0.6, { pan: 0.8 * lado })
         break
       case 'nombre-llamado':
-        this.voz(0.35, d.frase ?? 'García López, a la sala tres.', v * 0.45, 0.85)
+        this.voz(0.35, d.frase ?? 'García López, a la sala tres.', v, 0.85)
         break
       default:
         break
@@ -115,240 +128,28 @@ export class SonidosDistraccion {
     this.timers.push(window.setTimeout(fn, Math.max(0, seg * 1000)))
   }
 
-  private ruido(segundos: number): AudioBufferSourceNode | null {
-    if (!this.ctx) return null
-    const n = Math.max(1, Math.floor(this.ctx.sampleRate * segundos))
-    const buffer = this.ctx.createBuffer(1, n, this.ctx.sampleRate)
-    const data = buffer.getChannelData(0)
-    for (let i = 0; i < n; i++) data[i] = Math.random() * 2 - 1
-    const src = this.ctx.createBufferSource()
-    src.buffer = buffer
-    return src
-  }
-
-  private envolvente(
-    t0: number,
-    pico: number,
-    ataque: number,
-    caida: number
-  ): GainNode | null {
-    if (!this.ctx || !this.salida) return null
-    const g = this.ctx.createGain()
-    g.gain.setValueAtTime(0.0001, t0)
-    g.gain.linearRampToValueAtTime(Math.max(0.0002, pico), t0 + ataque)
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + ataque + caida)
-    g.connect(this.salida)
-    return g
-  }
-
-  private ruidoFiltrado(
-    seg: number,
-    tipo: BiquadFilterType,
-    freq: number,
-    q: number,
-    pico: number,
-    ataque: number,
-    caida: number
-  ) {
-    if (!this.ctx) return
-    const t0 = this.ctx.currentTime + seg
-    const src = this.ruido(ataque + caida + 0.05)
-    const g = this.envolvente(t0, pico, ataque, caida)
-    if (!src || !g) return
-    const f = this.ctx.createBiquadFilter()
-    f.type = tipo
-    f.frequency.value = freq
-    f.Q.value = q
-    src.connect(f)
-    f.connect(g)
-    src.start(t0)
-    src.stop(t0 + ataque + caida + 0.05)
-  }
-
-  private puerta(seg: number, v: number) {
-    if (!this.ctx) return
-    const t0 = this.ctx.currentTime + seg
-    const osc = this.ctx.createOscillator()
-    osc.type = 'sawtooth'
-    osc.frequency.setValueAtTime(140, t0)
-    osc.frequency.linearRampToValueAtTime(95, t0 + 0.7)
-    const f = this.ctx.createBiquadFilter()
-    f.type = 'bandpass'
-    f.frequency.value = 520
-    f.Q.value = 6
-    const g = this.envolvente(t0, 0.05 * v, 0.15, 0.6)
-    if (!g) return
-    osc.connect(f)
-    f.connect(g)
-    osc.start(t0)
-    osc.stop(t0 + 0.8)
-    this.ruidoFiltrado(seg + 0.75, 'lowpass', 380, 1, 0.12 * v, 0.01, 0.18)
-  }
-
-  private golpe(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'lowpass', 260, 0.8, 0.32 * v, 0.005, 0.45)
-    this.ruidoFiltrado(seg + 0.02, 'bandpass', 900, 2, 0.08 * v, 0.005, 0.2)
-  }
-
-  private pasos(seg: number, n: number, cada: number, v: number) {
-    for (let i = 0; i < n; i++) {
-      this.ruidoFiltrado(
-        seg + i * cada + Math.random() * 0.05,
-        'lowpass',
-        320 + Math.random() * 80,
-        1,
-        0.1 * v,
-        0.008,
-        0.12
-      )
-    }
-  }
-
-  private vibracion(seg: number, v: number) {
-    if (!this.ctx) return
-    for (const off of [0, 0.28]) {
-      const t0 = this.ctx.currentTime + seg + off
-      const osc = this.ctx.createOscillator()
-      osc.type = 'square'
-      osc.frequency.value = 160
-      const f = this.ctx.createBiquadFilter()
-      f.type = 'lowpass'
-      f.frequency.value = 400
-      const g = this.envolvente(t0, 0.12 * v, 0.03, 0.2)
-      if (!g) return
-      osc.connect(f)
-      f.connect(g)
-      osc.start(t0)
-      osc.stop(t0 + 0.25)
-    }
-  }
-
-  /** Timbre de móvil (dos tonos), distinto de la vibración corta. */
-  private timbre(seg: number, v: number) {
-    if (!this.ctx || !this.salida) return
-    for (let i = 0; i < 4; i++) {
-      const t0 = this.ctx.currentTime + seg + i * 0.58
-      for (const freq of [880, 988]) {
-        const osc = this.ctx.createOscillator()
-        osc.type = 'sine'
-        osc.frequency.value = freq
-        const g = this.envolvente(t0, 0.14 * v, 0.02, 0.28)
-        if (!g) return
-        osc.connect(g)
-        osc.start(t0)
-        osc.stop(t0 + 0.32)
-      }
-    }
-  }
-
-  /** Golpes del martillo del juez (madera). */
-  private martillo(seg: number, v: number) {
-    const golpes = [0, 0.38]
-    for (const off of golpes) {
-      this.ruidoFiltrado(seg + off, 'lowpass', 220, 0.9, 0.38 * v, 0.004, 0.28)
-      this.ruidoFiltrado(seg + off + 0.01, 'bandpass', 1100, 3, 0.12 * v, 0.003, 0.12)
-      if (!this.ctx) continue
-      const t0 = this.ctx.currentTime + seg + off
-      const osc = this.ctx.createOscillator()
-      osc.type = 'triangle'
-      osc.frequency.setValueAtTime(180, t0)
-      osc.frequency.exponentialRampToValueAtTime(55, t0 + 0.22)
-      const g = this.envolvente(t0, 0.1 * v, 0.005, 0.25)
-      if (!g) continue
-      osc.connect(g)
-      osc.start(t0)
-      osc.stop(t0 + 0.28)
-    }
-  }
-
-  private shh(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'highpass', 2800, 0.6, 0.09 * v, 0.08, 0.55)
-    this.ruidoFiltrado(seg + 0.35, 'highpass', 3200, 0.7, 0.06 * v, 0.05, 0.4)
-  }
-
-  private tos(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'bandpass', 700, 1.2, 0.58 * v, 0.012, 0.22)
-    this.ruidoFiltrado(seg + 0.28, 'bandpass', 580, 1.4, 0.48 * v, 0.012, 0.24)
-    this.ruidoFiltrado(seg + 0.08, 'lowpass', 400, 1, 0.22 * v, 0.01, 0.16)
-    this.ruidoFiltrado(seg + 0.05, 'bandpass', 1400, 2, 0.18 * v, 0.008, 0.12)
-  }
-
-  private clic(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'highpass', 3200, 1, 0.12 * v, 0.001, 0.025)
-  }
-
-  private papeles(seg: number, v: number) {
-    this.ruidoFiltrado(seg, 'highpass', 2400, 0.7, 0.2 * v, 0.1, 0.55)
-    this.ruidoFiltrado(seg + 0.15, 'bandpass', 1800, 1.1, 0.14 * v, 0.08, 0.4)
-    this.ruidoFiltrado(seg + 0.4, 'highpass', 3200, 0.8, 0.1 * v, 0.06, 0.35)
-  }
-
-  private crujido(seg: number, v: number) {
-    if (!this.ctx) return
-    const t0 = this.ctx.currentTime + seg
-    const osc = this.ctx.createOscillator()
-    osc.type = 'sawtooth'
-    osc.frequency.setValueAtTime(70, t0)
-    osc.frequency.linearRampToValueAtTime(120, t0 + 0.35)
-    const f = this.ctx.createBiquadFilter()
-    f.type = 'bandpass'
-    f.frequency.value = 900
-    f.Q.value = 9
-    const g = this.envolvente(t0, 0.06 * v, 0.05, 0.35)
-    if (!g) return
-    osc.connect(f)
-    f.connect(g)
-    osc.start(t0)
-    osc.stop(t0 + 0.45)
-  }
-
-  private murmullo(seg: number, v: number) {
-    if (!this.ctx) return
-    const t0 = this.ctx.currentTime + seg
-    const src = this.ruido(1.8)
-    const g = this.envolvente(t0, 0.07 * v, 0.25, 1.4)
-    if (!src || !g) return
-    const f = this.ctx.createBiquadFilter()
-    f.type = 'bandpass'
-    f.frequency.value = 480
-    f.Q.value = 3
-    const lfo = this.ctx.createOscillator()
-    const lfoG = this.ctx.createGain()
-    lfo.frequency.value = 4.5
-    lfoG.gain.value = 0.5
-    const mod = this.ctx.createGain()
-    mod.gain.value = 0.5
-    lfo.connect(lfoG)
-    lfoG.connect(mod.gain)
-    src.connect(f)
-    f.connect(mod)
-    mod.connect(g)
-    src.start(t0)
-    lfo.start(t0)
-    src.stop(t0 + 1.8)
-    lfo.stop(t0 + 1.8)
-  }
-
+  /** Frases con sentido (acompañante, nombre en el pasillo); si la voz está ocupada, susurros grabados. */
   private voz(seg: number, frase: string, v: number, tono: number) {
     const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
-    if (!synth || synth.speaking || synth.pending) {
-      this.murmullo(seg, v * 2)
-      return
-    }
+    const respaldo = () => bancoSonidos().tocar('susurros', { volumen: v })
     this.en(seg, () => {
-      if (synth.speaking || synth.pending) {
-        this.murmullo(0, v * 2)
+      if (!synth || synth.speaking || synth.pending) {
+        respaldo()
         return
       }
       try {
         const u = new SpeechSynthesisUtterance(frase)
         u.lang = 'es-ES'
-        u.volume = Math.max(0.08, Math.min(0.4, v))
+        u.volume = Math.max(0.3, Math.min(1, v))
         u.rate = 0.95
         u.pitch = tono
+        u.onend = () => {
+          this.hablando = false
+        }
+        this.hablando = true
         synth.speak(u)
       } catch {
-        this.murmullo(0, v * 2)
+        respaldo()
       }
     })
   }
