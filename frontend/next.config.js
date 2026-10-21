@@ -8,9 +8,12 @@ const nextConfig = {
       },
     ],
   },
-  // Proxy /api → backend para que el túnel (solo :3000) también sirva TTS y el resto.
+  // Proxy /api → backend (local, túnel o Vercel con BACKEND_URL=https://…onrender.com).
   async rewrites() {
-    const backend = process.env.BACKEND_URL || 'http://127.0.0.1:8000'
+    const backend = (process.env.BACKEND_URL || 'http://127.0.0.1:8000').replace(
+      /\/$/,
+      ''
+    )
     return [
       {
         source: '/api/:path*',
