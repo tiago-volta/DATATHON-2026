@@ -46,6 +46,7 @@ interface Props {
   enCalma: boolean
   onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
   deshabilitadoEstimulos?: boolean
+  miradaExterna?: MiradaSala | null
 }
 
 function IconoPantallaCompleta({ salir }: { salir?: boolean }) {
@@ -82,6 +83,7 @@ export function SalaJuzgado360({
   enCalma,
   onChangeEstimulo,
   deshabilitadoEstimulos,
+  miradaExterna,
 }: Props) {
   const reduced = useReducedMotion()
   const labelId = useId()
@@ -169,6 +171,12 @@ export function SalaJuzgado360({
     if (arrastre.current) arrastre.current.activo = false
     setArrastrando(false)
   }, [])
+
+  useEffect(() => {
+    if (miradaExterna) {
+      mirarHacia(miradaExterna)
+    }
+  }, [miradaExterna])
 
   const mirarHacia = (id: MiradaSala) => {
     const t = MIRADAS_3D[id]

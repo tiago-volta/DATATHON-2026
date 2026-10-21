@@ -238,6 +238,12 @@ export default function PaginaSalaPrevia() {
     if (typeof window === 'undefined') return
 
     const params = new URLSearchParams(window.location.search)
+    if (params.get('ensayo') === '1' || params.get('modo') === 'ensayo') {
+      deepLinkAplicado.current = true
+      setEscenaIndice(3)
+      setFase('simulacion')
+      return
+    }
     if (params.get('desde') !== 'ensaya') return
     deepLinkAplicado.current = true
 
@@ -537,6 +543,16 @@ export default function PaginaSalaPrevia() {
                       valores={valores}
                       enCalma={enCalma}
                       onChangeEstimulo={onSlider}
+                      onPedirPausa={pausarCalma}
+                      onNivelCompletado={(id) => {
+                        desbloquear('ensaye-1-nivel')
+                        registrarConfianza('ensaya-nivel', id)
+                        setProgreso((p) => registrarPractica(p))
+                        registrarDiaPractica()
+                      }}
+                      onProgresoPreguntas={() => {
+                        registrarDiaPractica()
+                      }}
                     />
 
                     <p className="text-sm text-court-700">

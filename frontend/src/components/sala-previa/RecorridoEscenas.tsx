@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { EscenaSensorial } from '@/components/sala-previa/EscenaSensorial'
+import { DialogoEnsayoSala } from '@/components/sala-previa/DialogoEnsayoSala'
+import type { MiradaSala } from '@/lib/sala-previa/salaVistasConfig'
 import {
   ESCENAS_JUZGADO,
   TOTAL_ESCENAS,
@@ -17,6 +19,9 @@ interface Props {
   valores: ValoresEstimulo
   enCalma: boolean
   onChangeEstimulo?: (id: IdEstimulo, valor: number) => void
+  onPedirPausa?: () => void
+  onNivelCompletado?: (nivelId: number) => void
+  onProgresoPreguntas?: (total: number) => void
 }
 
 export function RecorridoEscenas({
@@ -25,10 +30,15 @@ export function RecorridoEscenas({
   valores,
   enCalma,
   onChangeEstimulo,
+  onPedirPausa,
+  onNivelCompletado,
+  onProgresoPreguntas,
 }: Props) {
   const tituloId = useId()
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const prevIndice = useRef(indice)
+  const [miradaEnsayo, setMiradaEnsayo] = useState<MiradaSala | null>(null)
+  const [ensayoAbierto, setEnsayoAbierto] = useState(true)
 
   const seguro = Math.min(TOTAL_ESCENAS - 1, Math.max(0, indice))
   const escena = ESCENAS_JUZGADO[seguro]
@@ -142,7 +152,37 @@ export function RecorridoEscenas({
           enCalma={enCalma}
           onChangeEstimulo={onChangeEstimulo}
           deshabilitadoEstimulos={enCalma}
+          miradaExterna={escena.id === 'sala-vistas' ? miradaEnsayo : null}
         />
+
+        {escena.id === 'sala-vistas' && (
+          <div className="space-y-4 pt-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-suave border border-court-200">
+              <div>
+                <p className="font-bold text-court-800 text-sm">Ensayo de declaración en sala</p>
+                <p className="text-xs text-court-600">Simulación con juez, letrados y derechos del testigo</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEnsayoAbierto(!ensayoAbierto)}
+                aria-expanded={ensayoAbierto}
+                className={`btn ${ensayoAbierto ? 'btn-secondary' : 'btn-primary'} text-xs py-1.5 px-3 min-h-[38px]`}
+              >
+                {ensayoAbierto ? 'Ocultar preguntas de ensayo' : 'Abrir preguntas de ensayo'}
+              </button>
+            </div>
+
+            {ensayoAbierto && (
+              <DialogoEnsayoSala
+                enCalma={enCalma}
+                onCambioMirada={(m) => setMiradaEnsayo(m)}
+                onPedirPausa={() => onPedirPausa?.()}
+                onNivelCompletado={(id) => onNivelCompletado?.(id)}
+                onProgresoPreguntas={(n) => onProgresoPreguntas?.(n)}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <nav
@@ -174,18 +214,17 @@ export function RecorridoEscenas({
 
       {seguro >= TOTAL_ESCENAS - 1 && (
         <div
-          className="rounded-tarjeta border-2 border-court-200 bg-calma-sage p-4 space-y-3"
+          className="rounded-tarjeta border border-court-200 bg-court-50 p-4 space-y-2"
           aria-live="polite"
         >
-          <p className="text-court-800">
-            Has llegado a la sala de vistas. Si quieres, puedes ensayar las
-            preguntas que te pueden hacer, a tu ritmo.
+          <p className="text-sm text-court-800 font-medium">
+            ¿Has terminado de ensayar? Puedes registrar los ajustes que necesitas:
           </p>
           <Link
-            href="/ensaya?desde=sala-previa"
-            className="btn-primary inline-flex text-center"
+            href="/pasaporte?ajustes=preguntas-claras,mas-tiempo,pausas"
+            className="btn-secondary inline-flex text-center text-sm"
           >
-            Ensayar lo que te van a preguntar
+            Guardar ajustes para el juicio en mi Pasaporte
           </Link>
         </div>
       )}
