@@ -21,17 +21,7 @@ const TEX = {
   marmolRough: '/sala-previa/texturas/marmol-rough.jpg',
 } as const
 
-const PERSONA = {
-  juez: '/sala-previa/personas/juez.webp',
-  abogadoA: '/sala-previa/personas/abogado-a.webp',
-  abogadoB: '/sala-previa/personas/abogado-b.webp',
-  abogadoC: '/sala-previa/personas/abogado-c.webp',
-  p1: '/sala-previa/personas/publico-1.webp',
-  p2: '/sala-previa/personas/publico-2.webp',
-  p3: '/sala-previa/personas/publico-3.webp',
-  p4: '/sala-previa/personas/publico-4.webp',
-  p5: '/sala-previa/personas/publico-5.webp',
-} as const
+// Muñecos 3D geométricos estilizados para máxima fluidez y accesibilidad
 
 const HDRI = '/sala-previa/hdri/sala-interior.hdr'
 
@@ -52,38 +42,31 @@ function configurarMapa(
   return map
 }
 
-/** Cutout fotográfico en plano (alpha limpio). */
-function PersonaCutout({
-  url,
+/** Muñeco 3D estilizado (cápsulas y geometrías puras, 60+ FPS sin texturas pesadas). */
+function FiguraPersona({
   position,
   rotationY = 0,
-  height = 1.55,
+  scale = 1,
+  tonoPiel = '#c6866a',
+  ropa = '#1a1a1e',
   visible = 1,
+  sentada = false,
+  toga = false,
 }: {
-  url: string
   position: [number, number, number]
   rotationY?: number
-  height?: number
+  scale?: number
+  tonoPiel?: string
+  ropa?: string
   visible?: number
+  sentada?: boolean
+  toga?: boolean
 }) {
-  const tex = useTexture(url)
-  const matRef = useRef<THREE.MeshBasicMaterial>(null)
-  const meshRef = useRef<THREE.Mesh>(null)
+  const group = useRef<THREE.Group>(null)
   const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
 
-  useEffect(() => {
-    tex.colorSpace = THREE.SRGBColorSpace
-    tex.anisotropy = 2
-  }, [tex])
-
-  const aspect = tex.image
-    ? (tex.image as HTMLImageElement).width /
-      Math.max(1, (tex.image as HTMLImageElement).height)
-    : 0.55
-  const width = height * aspect
-
   useFrame((_, dt) => {
-    if (!meshRef.current || !matRef.current) return
+    if (!group.current) return
     const objetivo = Math.max(0, Math.min(1, visible))
     opacidad.current = THREE.MathUtils.damp(
       opacidad.current,
@@ -91,29 +74,89 @@ function PersonaCutout({
       5,
       dt
     )
-    meshRef.current.visible = objetivo > 0.02 || opacidad.current > 0.04
-    matRef.current.opacity = opacidad.current
+    group.current.visible = objetivo > 0.02 || opacidad.current > 0.04
+    const s = THREE.MathUtils.damp(
+      group.current.scale.x,
+      scale * (0.88 + objetivo * 0.12),
+      6,
+      dt
+    )
+    group.current.scale.setScalar(s)
+    group.current.traverse((child) => {
+      const mesh = child as THREE.Mesh
+      if (mesh.isMesh && mesh.material && 'opacity' in (mesh.material as object)) {
+        const mat = mesh.material as THREE.MeshStandardMaterial
+        const o = opacidad.current
+        const semi = o < 0.98
+        mat.transparent = semi
+        mat.depthWrite = !semi
+        mat.opacity = semi ? o : 1
+      }
+    })
   })
 
+  const torsoY = sentada ? 0.58 : 0.92
+  const headY = sentada ? 1.22 : 1.62
+  const ancho = toga ? 0.28 : 0.2
+
   return (
-    <mesh
-      ref={meshRef}
-      position={position}
-      rotation={[0, rotationY, 0]}
-      castShadow={false}
-      receiveShadow={false}
-    >
-      <planeGeometry args={[width, height]} />
-      <meshBasicMaterial
-        ref={matRef}
-        map={tex}
-        transparent
-        alphaTest={0.35}
-        depthWrite={false}
-        side={THREE.DoubleSide}
-        toneMapped
-      />
-    </mesh>
+    <group ref={group} position={position} rotation={[0, rotationY, 0]} scale={scale}>
+      {!sentada && (
+        <>
+          <mesh position={[-0.11, 0.38, 0]}>
+            <capsuleGeometry args={[0.08, 0.5, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+          <mesh position={[0.11, 0.38, 0]}>
+            <capsuleGeometry args={[0.08, 0.5, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+        </>
+      )}
+      {sentada && (
+        <>
+          <mesh position={[-0.12, 0.22, 0.12]}>
+            <capsuleGeometry args={[0.08, 0.35, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+          <mesh position={[0.12, 0.22, 0.12]}>
+            <capsuleGeometry args={[0.08, 0.35, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+        </>
+      )}
+      {/* Torso */}
+      <mesh position={[0, torsoY, 0]}>
+        <capsuleGeometry args={[ancho, sentada ? 0.38 : 0.58, 6, 12]} />
+        <meshStandardMaterial color={ropa} roughness={0.72} metalness={0.04} />
+      </mesh>
+      {/* Falda de toga si procede */}
+      {toga && (
+        <mesh position={[0, sentada ? 0.42 : 0.55, 0]}>
+          <cylinderGeometry args={[0.32, 0.38, sentada ? 0.55 : 0.85, 12]} />
+          <meshStandardMaterial color={ropa} roughness={0.78} />
+        </mesh>
+      )}
+      {/* Hombros */}
+      <mesh position={[0, torsoY + (sentada ? 0.2 : 0.26), 0]}>
+        <boxGeometry args={[toga ? 0.62 : 0.5, 0.14, 0.26]} />
+        <meshStandardMaterial color={ropa} roughness={0.75} />
+      </mesh>
+      {/* Cuello + cabeza */}
+      <mesh position={[0, headY - 0.14, 0]}>
+        <cylinderGeometry args={[0.07, 0.08, 0.12, 10]} />
+        <meshStandardMaterial color={tonoPiel} roughness={0.7} />
+      </mesh>
+      <mesh position={[0, headY, 0]}>
+        <sphereGeometry args={[0.155, 18, 18]} />
+        <meshStandardMaterial color={tonoPiel} roughness={0.65} />
+      </mesh>
+      {/* Cabello */}
+      <mesh position={[0, headY + 0.06, -0.02]}>
+        <sphereGeometry args={[0.14, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+        <meshStandardMaterial color="#2c241c" roughness={0.9} />
+      </mesh>
+    </group>
   )
 }
 
@@ -327,31 +370,31 @@ function Mobiliario() {
 }
 
 function PersonaQueEntra({ activo, reduced }: { activo?: boolean; reduced?: boolean }) {
-  const meshRef = useRef<THREE.Group>(null)
+  const group = useRef<THREE.Group>(null)
   const zPos = useRef(7.2)
 
   useFrame((state, dt) => {
-    if (!meshRef.current) return
+    if (!group.current) return
     if (!activo) {
-      meshRef.current.visible = false
+      group.current.visible = false
       zPos.current = 7.2
       return
     }
-    meshRef.current.visible = true
+    group.current.visible = true
     if (zPos.current > 3.4) {
       zPos.current -= dt * 1.1
-      meshRef.current.position.z = zPos.current
-      meshRef.current.position.y = reduced ? 1.15 : 1.15 + Math.sin(state.clock.elapsedTime * 7) * 0.03
+      group.current.position.z = zPos.current
+      group.current.position.y = reduced ? 0 : Math.sin(state.clock.elapsedTime * 8) * 0.04
     }
   })
 
   return (
-    <group ref={meshRef} position={[0.3, 1.15, 7.2]}>
-      <PersonaCutout
-        url={PERSONA.p4}
+    <group ref={group} position={[0.4, 0, 7.2]}>
+      <FiguraPersona
         position={[0, 0, 0]}
         rotationY={Math.PI}
-        height={1.35}
+        tonoPiel="#d4a574"
+        ropa="#3d4f5c"
         visible={activo ? 1 : 0}
       />
     </group>
@@ -373,18 +416,21 @@ function PersonasEscena({
 
   const publico = useMemo(
     () => [
-      { url: PERSONA.p1, x: -3.6, z: -0.2, rot: Math.PI * 0.12, h: 1.35 },
-      { url: PERSONA.p2, x: 3.6, z: -0.2, rot: -Math.PI * 0.12, h: 1.35 },
-      { url: PERSONA.p3, x: -2.8, z: 1.85, rot: Math.PI, h: 1.28 },
-      { url: PERSONA.p4, x: -0.8, z: 1.85, rot: Math.PI, h: 1.28 },
-      { url: PERSONA.p5, x: 1.2, z: 1.85, rot: Math.PI, h: 1.28 },
-      { url: PERSONA.p1, x: 2.8, z: 1.85, rot: Math.PI, h: 1.28 },
-      { url: PERSONA.p2, x: -2.2, z: 3.45, rot: Math.PI, h: 1.26 },
-      { url: PERSONA.p3, x: 0.2, z: 3.45, rot: Math.PI, h: 1.26 },
-      { url: PERSONA.p4, x: 2.4, z: 3.45, rot: Math.PI, h: 1.26 },
-      { url: PERSONA.p5, x: -1.6, z: 5.05, rot: Math.PI, h: 1.24 },
-      { url: PERSONA.p1, x: 0.6, z: 5.05, rot: Math.PI, h: 1.24 },
-      { url: PERSONA.p2, x: 2.2, z: 5.05, rot: Math.PI, h: 1.24 },
+      { x: -3.6, z: -0.2, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI * 0.15 },
+      { x: 3.6, z: -0.2, piel: '#8d5524', ropa: '#4a5560', rot: -Math.PI * 0.15 },
+      { x: -3.4, z: 0.9, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI * 0.1 },
+      { x: 3.4, z: 0.9, piel: '#e0b089', ropa: '#5c4a3a', rot: -Math.PI * 0.1 },
+      { x: -2.8, z: 1.85, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI },
+      { x: -1.4, z: 1.85, piel: '#8d5524', ropa: '#4a5560', rot: Math.PI },
+      { x: 0.2, z: 1.85, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI },
+      { x: 1.6, z: 1.85, piel: '#e0b089', ropa: '#5c4a3a', rot: Math.PI },
+      { x: -2.2, z: 3.45, piel: '#a0674b', ropa: '#34495e', rot: Math.PI },
+      { x: -0.6, z: 3.45, piel: '#c6866a', ropa: '#3a3a42', rot: Math.PI },
+      { x: 1.0, z: 3.45, piel: '#8d5524', ropa: '#4b6584', rot: Math.PI },
+      { x: 2.6, z: 3.45, piel: '#d4a574', ropa: '#2f3640', rot: Math.PI },
+      { x: -1.8, z: 5.05, piel: '#b57a50', ropa: '#57606f', rot: Math.PI },
+      { x: 0.4, z: 5.05, piel: '#c6866a', ropa: '#2c2c34', rot: Math.PI },
+      { x: 2.0, z: 5.05, piel: '#8d5524', ropa: '#485460', rot: Math.PI },
     ],
     []
   )
@@ -395,49 +441,61 @@ function PersonasEscena({
     <group>
       <PersonaQueEntra activo={personaEntrando} />
 
-      {/* Juez: plano frente a la sala (+Z) */}
-      <PersonaCutout
-        url={PERSONA.juez}
-        position={[0, 1.55, -6.35]}
+      {/* Juez en el estrado con toga mirando hacia la sala (+Z) */}
+      <FiguraPersona
+        position={[0, 0.7, -6.5]}
         rotationY={0}
-        height={enfoque === 'juez' ? 1.75 : 1.65}
+        tonoPiel="#c6866a"
+        ropa="#121218"
         visible={juezVis}
+        scale={enfoque === 'juez' ? 1.15 : 1.05}
+        toga
       />
 
-      <PersonaCutout
-        url={PERSONA.abogadoA}
-        position={[-2.4, 1.15, -2.55]}
+      {/* Abogados en mesas */}
+      <FiguraPersona
+        position={[-2.4, 0, -2.55]}
         rotationY={Math.PI}
-        height={enfoque === 'abogados' ? 1.45 : 1.35}
+        tonoPiel="#8d5524"
+        ropa="#15151a"
         visible={aboVis}
+        scale={enfoque === 'abogados' ? 1.08 : 1}
+        sentada
+        toga
       />
-      <PersonaCutout
-        url={PERSONA.abogadoB}
-        position={[2.4, 1.15, -2.55]}
+      <FiguraPersona
+        position={[2.4, 0, -2.55]}
         rotationY={Math.PI}
-        height={enfoque === 'abogados' ? 1.45 : 1.35}
+        tonoPiel="#d4a574"
+        ropa="#15151a"
         visible={aboVis}
+        scale={enfoque === 'abogados' ? 1.08 : 1}
+        sentada
+        toga
       />
-      <PersonaCutout
-        url={PERSONA.abogadoC}
-        position={[-3.45, 1.35, -2.85]}
+      <FiguraPersona
+        position={[-3.5, 0, -2.8]}
         rotationY={Math.PI * 0.85}
-        height={1.5}
+        tonoPiel="#c6866a"
+        ropa="#1a1a22"
         visible={aboVis * (enfoque === 'abogados' ? 1 : 0.9)}
+        toga
       />
 
+      {/* Asistentes de público en bancos */}
       {publico.map((p, i) => {
         if (i >= n) return null
         const fuerza =
           i < n - 1 ? 1 : Math.max(0.2, pubBase * publico.length - (n - 1))
         return (
-          <PersonaCutout
+          <FiguraPersona
             key={`${p.x}-${p.z}-${i}`}
-            url={p.url}
-            position={[p.x, p.h * 0.48, p.z]}
+            position={[p.x, 0, p.z]}
             rotationY={p.rot}
-            height={p.h}
+            tonoPiel={p.piel}
+            ropa={p.ropa}
             visible={Math.min(1, fuerza)}
+            sentada
           />
         )
       })}
