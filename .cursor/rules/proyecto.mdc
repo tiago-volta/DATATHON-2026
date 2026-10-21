@@ -6,13 +6,18 @@ PUENTE es una aplicación de accesibilidad cognitiva para la justicia, desarroll
 DATAthon Justicia 2026 (A Coruña). Ayuda a personas neurodivergentes a entender y prepararse
 para procesos judiciales.
 
+## Regla estricta sobre Demos y Presentaciones
+
+- **Prohibido sugerir ideas de demo, guiones de presentación o pitch decks** por iniciativa propia.
+- Céntrate exclusivamente en el producto y en el código. Solo genera o modifica material de demo cuando el usuario lo pida de forma explícita.
+
 ## Stack técnico
 
 - Frontend: Next.js 14 + TypeScript + Tailwind CSS
 - Backend: FastAPI (Python)
-- Sin base de datos (estado en cliente para la demo)
+- Sin base de datos (estado en cliente)
 
-## Usuarios de demo
+## Perfiles de usuario de referencia
 
 - **Luis**: 28 años, TEA nivel 1, testigo en proceso penal
 - **Juan**: 32 años, TDAH + ceguera, investigado por delito leve
@@ -51,4 +56,4 @@ para procesos judiciales.
 
 - **Persona A (IA/backend)**: endpoints de procesamiento, integración LLM, mediador
 - **Persona B (frontend persona)**: flujo de citación, Pasaporte, Ensaya, calendario
-- **Persona C (profesional + contenido)**: panel profesional, Sala Previa 360, contenido legal, pitch
+- **Persona C (profesional + contenido)**: panel profesional, Sala Previa, contenido legal

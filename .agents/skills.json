@@ -1,0 +1,11 @@
+{
+  "entries": [
+    {
+      "path": ".claude/skills",
+      "exclude": ["vendor"]
+    },
+    {
+      "path": ".claude/skills/vendor"
+    }
+  ]
+}

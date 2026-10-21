@@ -1,3 +1,12 @@
+---
+name: puente-lectura-facil
+description: >-
+  Pautas para generar textos accesibles en español según las normas UNE 153101
+  (Lectura fácil) y UNE-ISO 24495-1 (Lenguaje claro) adaptados por perfil
+  neurodivergente (TEA, TDAH, dislexia, discalculia). Usar al transformar documentos
+  judiciales o redactar textos de usuario.
+---
+
 # Skill: Lectura fácil y lectura clara para PUENTE
 
 Pautas para generar textos accesibles en español según las normas UNE.

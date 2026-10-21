@@ -10,13 +10,19 @@ de desarrollo.
 
 **Prioridad**: UI/UX > funcionalidad > código perfecto.
 
+## Regla estricta sobre Demos y Presentaciones
+
+- **NO propongas ideas de demo, guiones de presentación, pitch decks ni flujos de demostración** por iniciativa propia.
+- Céntrate exclusivamente en desarrollar y mejorar el producto (UI/UX, accesibilidad, frontend y backend).
+- Solo trabaja en material de demo o presentación cuando el usuario lo pida de forma explícita.
+
 ## Antes de escribir código
 
 1. Leer CLAUDE.md para entender la estructura
 2. Consultar la skill relevante:
    - Cambios en UI → `.claude/skills/puente-accesibilidad/SKILL.md`
    - Textos de usuario → `.claude/skills/puente-lectura-facil/SKILL.md`
-   - Frontend → `.claude/skills/vendor/anthropics-frontend-design/SKILL.md`
+   - Frontend → skill `frontend-design` (instalada a nivel de usuario)
 
 ## Reglas de estilo
 
@@ -62,7 +68,7 @@ de desarrollo.
 | `/citacion` | Procesar citación | B |
 | `/pasaporte` | Pasaporte de Ajustes | B |
 | `/ensaya` | Simulador de declaración | B |
-| `/sala-previa` | Vista previa 360° | C |
+| `/sala-previa` | Vista previa sensorial | C |
 | `/profesional` | Panel profesional | C |
 | `/mediador` | Pregunta Clara | A |
 | `backend/` | API y LLM | A |

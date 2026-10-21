@@ -39,7 +39,7 @@ npm run dev
 
 Abrir http://localhost:3000
 
-## Usuarios de demo
+## Perfiles de usuario de referencia
 
 - **Luis** (TEA, testigo): necesita lenguaje literal, anticipación, ambiente tranquilo
 - **Juan** (TDAH + ceguera, investigado): necesita voz, pausas, descripción de pruebas
@@ -48,7 +48,8 @@ Abrir http://localhost:3000
 
 - `puente-lectura-facil`: pautas UNE para textos accesibles
 - `puente-accesibilidad`: checklist WCAG/COGA
-- `vendor/anthropics-*`: frontend-design, pdf, pptx, skill-creator, webapp-testing
+- `vendor/anthropics-skill-creator`: crear y mejorar skills
+- `vendor/stop-slop`: textos que no suenen a plantilla
 - `vendor/superpowers-*`: brainstorming, writing-plans, systematic-debugging
 
 ## División del trabajo (3 personas)
@@ -57,14 +58,15 @@ Abrir http://localhost:3000
 |---------|-----------------|---------|
 | A | IA y backend | Procesamiento citación, mediador, integración LLM |
 | B | Frontend persona | Citación, Pasaporte, Ensaya, calendario, voz |
-| C | Profesional + contenido | Panel, Sala Previa, contenido legal, pitch |
+| C | Profesional + contenido | Panel profesional, Sala Previa, contenido legal |
 
 ## Reglas importantes
 
 1. **Accesibilidad obligatoria**: todo debe funcionar con lector de pantalla
 2. **Lectura fácil**: seguir UNE 153101 para textos de usuario
 3. **Sin diagnóstico visible**: el Pasaporte muestra necesidades, no condiciones
-4. **Mobile first**: la demo se hace en móvil
+4. **Mobile first**: diseño adaptable a móvil y escritorio
+5. **No sugerir demos ni guiones**: no propongas ideas para demos, guiones de pitch ni presentaciones salvo que el usuario lo solicite explícitamente.
 
 ## MCPs configurados
 

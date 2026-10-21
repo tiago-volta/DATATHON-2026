@@ -1,3 +1,11 @@
+---
+name: puente-accesibilidad
+description: >-
+  Checklist y pautas para garantizar que la interfaz de PUENTE sea accesible
+  según WCAG 2.2 y COGA (screen-reader first, teclado, contraste, baja estimulación).
+  Usar siempre antes de hacer cambios en UI o componentes frontend.
+---
+
 # Skill: Accesibilidad web para PUENTE
 
 Checklist y pautas para garantizar que la interfaz sea accesible según WCAG 2.2 y COGA.

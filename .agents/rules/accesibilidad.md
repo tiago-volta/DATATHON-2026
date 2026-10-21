@@ -1,0 +1,68 @@
+---
+trigger: always_on
+description: Reglas de accesibilidad web (screen-reader first, teclado, ARIA) para PUENTE
+---
+
+# Accesibilidad en PUENTE
+
+Reglas específicas para garantizar que la aplicación funcione para Juan (ciego + TDAH).
+
+## Screen reader first
+
+1. Toda información visual debe tener equivalente textual
+2. Iconos decorativos: `aria-hidden="true"`
+3. Iconos informativos: incluir `aria-label` o texto visible
+4. Imágenes informativas: `alt` descriptivo
+5. Pictogramas ARASAAC: el keyword es el alt text
+
+## Estructura de página
+
+```tsx
+<main id="contenido-principal">
+  <h1>Título de la página</h1>
+  {/* contenido */}
+</main>
+```
+
+- Enlace de salto al principio del body
+- Encabezados jerárquicos sin saltos
+- Usar `<nav>`, `<section>`, `<article>` semánticamente
+
+## Formularios
+
+```tsx
+<label htmlFor="campo">Texto descriptivo</label>
+<input id="campo" aria-describedby="campo-ayuda" />
+<p id="campo-ayuda">Texto de ayuda</p>
+```
+
+## Botones
+
+```tsx
+// Con texto
+<button className="btn-primary">Procesar citación</button>
+
+// Solo icono
+<button aria-label="Leer en voz alta">
+  <svg aria-hidden="true">...</svg>
+</button>
+```
+
+## Contenido dinámico
+
+```tsx
+// Anunciar cambios
+<div aria-live="polite">
+  {mensaje && <p>{mensaje}</p>}
+</div>
+
+// Estados de carga
+<p aria-live="polite">Procesando tu citación...</p>
+```
+
+## Testing manual requerido
+
+Antes de PR:
+1. Navegar toda la página solo con Tab
+2. Activar VoiceOver/NVDA y recorrer el flujo
+3. Verificar que todo el contenido se anuncia correctamente

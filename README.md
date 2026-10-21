@@ -54,7 +54,7 @@ graph TB
 
 ## Ejecutar
 
-### Un solo comando (recomendado)
+### Un solo comando en Mac / Linux (recomendado)
 
 ```bash
 chmod +x start.sh   # solo la primera vez
@@ -70,13 +70,47 @@ Instala dependencias si faltan, arranca API (:8000) y web (:3000), y abre el nav
 - Node.js 18+
 - npm
 
-### A mano (si prefieres)
+### En Windows (PowerShell)
+
+**Primera vez (instalar dependencias):**
+
+```powershell
+# 1. Backend
+cd backend
+python -m venv .venv
+.\.venv\Scripts\pip install -r requirements.txt
+Copy-Item .env.example .env
+
+# 2. Frontend
+cd ..\frontend
+npm install
+```
+
+**Arrancar en el día a día (dos terminales):**
+
+```powershell
+# Terminal 1 — Backend (http://localhost:8000)
+cd backend
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+
+# O si tu PowerShell permite ejecutar scripts (.ps1), puedes activar antes:
+# .\.venv\Scripts\activate
+# uvicorn app.main:app --reload
+```
+
+```powershell
+# Terminal 2 — Frontend (http://localhost:3000)
+cd frontend
+npm run dev
+```
+
+### A mano en Mac / Linux
 
 ```bash
 # Backend
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 uvicorn app.main:app --reload --port 8000
@@ -105,7 +139,7 @@ ANTHROPIC_API_KEY=
 |---------|-----------------|-------------------|
 | **A** | IA y backend | Procesamiento de citación, mediador, integración LLM |
 | **B** | Frontend persona | Citación, Pasaporte, Ensaya, calendario, voz |
-| **C** | Profesional + contenido | Panel, Sala Previa, contenido legal, pitch |
+| **C** | Profesional + contenido | Panel profesional, Sala Previa, contenido legal |
 
 ### Checklist por persona
 
@@ -124,14 +158,15 @@ ANTHROPIC_API_KEY=
 - [ ] Descarga de calendario .ics
 - [ ] Pasaporte: formulario → selección ajustes → QR
 - [ ] Ensaya: 3 niveles de preguntas
-- [ ] Demo Luis completa
 
 #### Persona C (profesional + contenido)
 - [ ] Panel profesional: perfil CGPJ en 4 pasos
 - [ ] Sala Previa: navegación por escenas, sliders de estímulos
 - [ ] Contenido: fases judiciales, roles, ajustes (revisar JSON en `/data`)
-- [ ] Demo Juan completa con modo voz
-- [ ] Deck de pitch (usar skill pptx)
+
+## Nota para agentes de IA
+
+No proponer ideas de demos, guiones de presentación ni pitch decks salvo que se solicite explícitamente.
 
 ## Skills y MCPs
 
@@ -144,7 +179,6 @@ Lee las skills antes de trabajar en cada área:
 | `puente-lectura-facil` | Escribir textos de usuario |
 | `puente-accesibilidad` | Cambios en UI |
 | `anthropics-frontend-design` | Diseño de componentes |
-| `anthropics-pptx` | Crear el pitch deck |
 | `superpowers-brainstorming` | Sesiones de ideación |
 
 ### MCPs configurados
