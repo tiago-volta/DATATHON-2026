@@ -416,8 +416,8 @@ export function SalaJuzgado360({
               enPantallaCompleta ? '!text-white' : 'text-court-600'
             }`}
           >
-            Sala de vistas en 3D (Three.js): texturas PBR CC0, HDRI de interior y
-            figuras 3D. Ver CREDITOS en /sala-previa/.
+            Sala de vistas en 3D (Three.js): muebles CC0 de Poly Haven, texturas
+            PBR CC0, HDRI de interior y figuras 3D. Ver CREDITOS en /sala-previa/.
           </p>
         </div>
       </div>
