@@ -1,0 +1,23 @@
+---
+description: "Qué skill usar en PUENTE y cuál gana si dos se contradicen"
+alwaysApply: true
+---
+
+# Skills de PUENTE
+
+Las skills de ingeniería viven en `.cursor/skills/` y salen de ECC, recortadas a Next.js 14, TypeScript, Tailwind y FastAPI. Las de diseño son `ui-ux-pro-max`, `design-taste-frontend` y `apple-design`, cada una con un límite escrito al inicio. Las de producto siguen en `.claude/skills/`: `puente-accesibilidad` y `puente-lectura-facil`.
+
+## Orden
+
+1. Estas reglas, `proyecto`, `accesibilidad` y `stop-slop`.
+2. `puente-accesibilidad` y `puente-lectura-facil`.
+3. Diseño, sin saltarse su límite: calma, contraste, sin neón, sin liquid glass, sin motion decorativo.
+4. Skills, agentes y hooks de ECC para código, tests y API.
+
+Las reglas `common-*` no obligan inmutabilidad total ni una cobertura del 80% si el código del repo ya va por otro camino. Los agentes están en `.cursor/agents/` y los comandos en `.cursor/commands/`. Los hooks están en `.cursor/hooks.json`.
+
+No propongas demos ni presentaciones. No muestres diagnósticos. No cambies los MCP `docling` y `context7`. El frontend es Next.js 14.
+
+## Fuentes
+
+ECC (MIT, affaan-m/ECC), tasteskill, ui-ux-pro-max y la guía HIG usada por apple-design. El texto de Apple no se republica como diseño de PUENTE: solo como criterio de claridad y accesibilidad.

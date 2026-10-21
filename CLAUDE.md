@@ -20,7 +20,8 @@ un Pasaporte de Ajustes sin revelar diagnóstico, y permite ensayar la declaraci
 ├── backend/           # FastAPI
 │   └── app/           # main.py, llm.py, arasaac.py, mock_data.py
 ├── data/              # JSON de fases, roles, ajustes
-└── .claude/skills/    # Skills para el agente
+├── .claude/skills/    # Skills de producto (accesibilidad, lectura fácil)
+└── .cursor/skills/    # Skills de ingeniería (ECC) y de diseño, con límite PUENTE
 ```
 
 ## Ejecutar el proyecto
@@ -46,11 +47,12 @@ Abrir http://localhost:3000
 
 ## Skills disponibles
 
+- `puente-mapa`: qué skill abrir y cuál manda
 - `puente-lectura-facil`: pautas UNE para textos accesibles
 - `puente-accesibilidad`: checklist WCAG/COGA
-- `vendor/anthropics-skill-creator`: crear y mejorar skills
-- `vendor/stop-slop`: textos que no suenen a plantilla
-- `vendor/superpowers-*`: brainstorming, writing-plans, systematic-debugging
+- `ui-ux-pro-max`, `design-taste-frontend`, `apple-design`: diseño, con límite de calma
+- `.cursor/skills/`: FastAPI, React, tests, seguridad y Context7 (base ECC)
+- `vendor/stop-slop` y `vendor/superpowers-*`: escritura y método de trabajo
 
 ## División del trabajo (3 personas)
 

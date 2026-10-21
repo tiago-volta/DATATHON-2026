@@ -1,0 +1,32 @@
+---
+description: "Development workflow: plan, TDD, review, commit pipeline"
+alwaysApply: true
+---
+# Development Workflow
+
+> This rule extends the git workflow rule with the full feature development process that happens before git operations.
+
+The Feature Implementation Workflow describes the development pipeline: planning, TDD, code review, and then committing to git.
+
+## Feature Implementation Workflow
+
+1. **Plan First**
+   - Use **planner** agent to create implementation plan
+   - Identify dependencies and risks
+   - Break down into phases
+
+2. **TDD Approach**
+   - Use **tdd-guide** agent
+   - Write tests first (RED)
+   - Implement to pass tests (GREEN)
+   - Refactor (IMPROVE)
+   - Cubre el comportamiento nuevo. En un cambio de interfaz, prueba el flujo a mano si no hay tests.
+
+3. **Code Review**
+   - Use **code-reviewer** agent immediately after writing code
+   - Address CRITICAL and HIGH issues
+   - Fix MEDIUM issues when possible
+
+4. **Commit & Push**
+   - `tipo(módulo): descripción en español`, como en `CONTRIBUTING.md`
+   - Tipos: feat, fix, refactor, docs, test, chore, perf, ci

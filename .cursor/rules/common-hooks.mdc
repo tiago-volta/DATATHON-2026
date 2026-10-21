@@ -1,0 +1,34 @@
+---
+description: "Hooks system: types, auto-accept permissions, TodoWrite best practices"
+alwaysApply: true
+---
+# Hooks System
+
+## Hook Types
+
+En este repo los hooks están en `.cursor/hooks.json` y delegan en `.cursor/scripts/hooks/`.
+La memoria de sesión va a `~/.cursor/ecc`, no a `~/.claude`.
+
+- **beforeShellExecution**: bloquea `--no-verify`
+- **beforeSubmitPrompt** y **beforeTabFileRead**: secretos y `.env`
+- **Stop**: aviso de `console.log` y resumen de sesión
+
+## Auto-Accept Permissions
+
+- Actívalo solo con un plan concreto
+- No uses flags que se salten los hooks de git
+
+## TodoWrite Best Practices
+
+Use TodoWrite tool to:
+- Track progress on multi-step tasks
+- Verify understanding of instructions
+- Enable real-time steering
+- Show granular implementation steps
+
+Todo list reveals:
+- Out of order steps
+- Missing items
+- Extra unnecessary items
+- Wrong granularity
+- Misinterpreted requirements
