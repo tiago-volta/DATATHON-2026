@@ -41,13 +41,13 @@ Perfil → Citación (en flujo) → Sala + Ensayo → Ficha de ajustes → (vuel
 
 **Objetivo:** que el jurado se quede con la sala unificada.
 
-- [ ] Fusionar `/ensaya` dentro de `/sala-previa`: preguntas y diálogos en la escena.
-- [ ] Gente en movimiento; personas que entran; momento de distracción (atención a otro sitio).
-- [ ] Progresión de tolerancia: superar diálogos + confort con más gente → subir nivel / más estímulos.
-- [ ] Roles claros en juicio (quién habla, qué hace el testigo frente al juez/abogado).
-- [ ] Tarjetas FAQ en cada bloque de preguntas difíciles.
-- [ ] Criterio visible de “nivel superado”.
-- [ ] Home/demo solo Luis; quitar protagonismo a Juan y al modo bot/voz.
+- [x] Fusionar `/ensaya` dentro de `/sala-previa`: preguntas y diálogos en la escena.
+- [x] Gente en movimiento; personas que entran; momento de distracción (atención a otro sitio).
+- [x] Progresión de tolerancia: superar diálogos + confort con más gente → subir nivel / más estímulos.
+- [x] Roles claros en juicio (quién habla, qué hace el testigo frente al juez/abogado).
+- [x] Tarjetas FAQ en cada bloque de preguntas difíciles.
+- [x] Criterio visible de “nivel superado”.
+- [x] Home/demo solo Luis; quitar protagonismo a Juan y al modo bot/voz.
 
 **Archivos base:** `frontend/src/app/sala-previa/`, `frontend/src/app/ensaya/`, componentes `sala-previa/*`, `frontend/src/app/page.tsx`.
 
