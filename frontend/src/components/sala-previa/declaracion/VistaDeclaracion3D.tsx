@@ -20,7 +20,6 @@ import {
   type PuntoVista,
 } from '@/lib/sala-previa/declaracion'
 import { PITCH_MAX, wrapDeg, type MiradaSala, type MiradaTarget } from '@/lib/sala-previa/salaVistasConfig'
-import { VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
 
 const SalaVistas3D = dynamic(
   () => import('@/components/sala-previa/SalaVistas3D').then((m) => m.SalaVistas3D),
@@ -50,9 +49,10 @@ interface Props {
   reduced: boolean
   pausa: boolean
   distraccion: Distraccion | null
-  aviso: string | null
   /** Quién habla y la frase actual, encima de la sala enfocada. */
   rotulo: RotuloEnfoque | null
+  luz: number
+  gente: number
 }
 
 export function VistaDeclaracion3D({
@@ -61,8 +61,9 @@ export function VistaDeclaracion3D({
   reduced,
   pausa,
   distraccion,
-  aviso,
   rotulo,
+  luz,
+  gente,
 }: Props) {
   const labelId = useId()
   const inicial = miradaTurno(puntoVista, 'jueza')
@@ -130,7 +131,7 @@ export function VistaDeclaracion3D({
   return (
     <div className="space-y-2">
       <div
-        className={`relative aspect-[4/3] sm:aspect-video max-h-[62vh] w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
+        className={`relative h-[calc(100dvh-9rem)] min-h-[320px] w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
           reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         role="img"
@@ -142,14 +143,15 @@ export function VistaDeclaracion3D({
         onPointerLeave={finArrastre}
       >
         <p id={labelId} className="sr-only">
-          Sala de vistas en 3D, en primera persona. {PUNTOS_VISTA[puntoVista].dondeEstas} Ahora
-          miras hacia {nombreObjetivo}.
+          Sala de vistas en 3D, en primera persona. {PUNTOS_VISTA[puntoVista].dondeEstas}{' '}
+          Encima de cada persona está su nombre: juez, abogada, fiscal, abogado, persona acusada
+          y agente. Ahora miras hacia {nombreObjetivo}.
         </p>
         <SalaVistas3D
           yaw={yaw}
           pitch={pitch}
-          luz={pausa ? 12 : VALORES_AMBIENTE_SALA.luz}
-          gente={pausa ? 0 : VALORES_AMBIENTE_SALA.gente}
+          luz={pausa ? 12 : luz}
+          gente={pausa ? 0 : gente}
           enfoque={enfoque}
           animando={animando}
           destino={destino}
@@ -160,14 +162,6 @@ export function VistaDeclaracion3D({
           distraccion={pausa ? null : distraccion}
           enCalma={pausa}
         />
-        {aviso && !pausa && (
-          <p
-            className="absolute top-2 left-2 z-[4] max-w-[70%] text-sm font-bold text-court-800 bg-white px-3 py-2 rounded-suave border-2 border-accent-info pointer-events-none"
-            aria-hidden="true"
-          >
-            Aviso: {aviso}
-          </p>
-        )}
         {rotulo && (
           <div
             className="absolute bottom-0 inset-x-0 z-[4] px-4 py-3 bg-court-900/95 text-white pointer-events-none"

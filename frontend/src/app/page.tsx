@@ -96,7 +96,6 @@ export default function Inicio() {
             </span>
           </Link>
 
-          {/* 3. Sala Previa 3D */}
           <Link
             href="/sala-previa"
             className="card border border-accent-info/20 hover:border-accent-info p-3.5 flex flex-col justify-between transition-colors duration-200"
@@ -105,36 +104,35 @@ export default function Inicio() {
               <div className="flex items-center gap-2 mb-1.5">
                 <IconoInicio icono={Compass} className="text-accent-navy" />
                 <h3 className="text-sm font-bold text-court-900">
-                  Sala 3D
+                  La sala
                 </h3>
               </div>
               <p className="text-xs text-court-700 leading-snug">
-                Vista 3D y modulación de ruido y luz.
+                Quién hay en el juzgado y qué se oye.
               </p>
             </div>
             <span className="text-[11px] text-accent-navy font-bold underline decoration-accent-info/40 mt-2 inline-block">
-              Entrar →
+              Ver la sala →
             </span>
           </Link>
 
-          {/* 4. Ensayo de declaración */}
           <Link
-            href="/ensaya"
+            href="/sala-previa/declaracion"
             className="card border border-accent-warm/20 hover:border-accent-warm p-3.5 flex flex-col justify-between transition-colors duration-200"
           >
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <IconoInicio icono={MessageSquareQuote} className="text-accent-warm" />
                 <h3 className="text-sm font-bold text-court-900">
-                  Banco preguntas
+                  Simulación
                 </h3>
               </div>
               <p className="text-xs text-court-700 leading-snug">
-                Entrena preguntas capciosas o dobles.
+                Preguntas y respuestas de un juicio.
               </p>
             </div>
             <span className="text-[11px] text-accent-navy font-bold underline decoration-accent-warm/40 mt-2 inline-block">
-              Practicar →
+              Simular →
             </span>
           </Link>
         </div>

@@ -17,7 +17,8 @@ import {
 import type { RolPerfil } from '@/lib/perfil/tipos'
 import { sanitizarNombre, validarNombre } from '@/lib/pasaporte'
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
-import { MedallasPerfil } from '@/components/perfil/MedallasPerfil'
+import { BarraPreparacion } from '@/components/preparacion/BarraPreparacion'
+import { FraseTolerancia } from '@/components/perfil/FraseTolerancia'
 
 const ROLES_OPCIONES: { valor: RolPerfil; etiqueta: string; ayuda: string }[] = [
   { valor: 'testigo', etiqueta: 'Testigo', ayuda: 'Vas a contar lo que sabes o viste. No te acusan de nada.' },
@@ -87,7 +88,7 @@ export default function PaginaPerfil() {
     }
     setErrorGuardar(undefined)
     if (!yaExiste) {
-      router.push('/sala-previa?ensayo=1')
+      router.push('/sala-previa')
       return
     }
     setGuardado(true)
@@ -118,6 +119,7 @@ export default function PaginaPerfil() {
       <p className="entradilla max-w-[42ch]">
         Elige tu papel en el juicio y cómo quieres adaptar el entorno de la sala.
       </p>
+      <FraseTolerancia />
       {sesion?.email ? (
         <p className="text-court-700 mb-6 text-sm">{sesion.email}</p>
       ) : (
@@ -331,8 +333,8 @@ export default function PaginaPerfil() {
         </section>
       )}
 
-      <div className="mt-8">
-        <MedallasPerfil />
+      <div className="mt-8 max-w-xl">
+        <BarraPreparacion />
       </div>
     </main>
   )

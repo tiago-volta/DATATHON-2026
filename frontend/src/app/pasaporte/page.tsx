@@ -2,11 +2,8 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import { Icono } from '@/components/Icono'
-import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
-import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { FichaAjustes } from '@/components/pasaporte/FichaAjustes'
 import { useConfianza } from '@/hooks/useConfianza'
-import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
   buildPasaporteUrl,
@@ -45,12 +42,6 @@ export default function PaginaPasaporte() {
   const [avisoCopia, setAvisoCopia] = useState('')
   /** Apoyo local opcional (no va al QR). Ver preferencias.ts — integración organismos [PENDIENTE]. */
   const [necesitoApoyos, setNecesitoApoyos] = useState(false)
-  const {
-    conseguidas: insigniasUtiles,
-    aviso: avisoInsignia,
-    desbloquear,
-    descartarAviso,
-  } = useInsigniasUtiles()
   const { registrar: registrarConfianza } = useConfianza()
 
   useEffect(() => {
@@ -113,11 +104,7 @@ export default function PaginaPasaporte() {
       setPaso('ajustes')
     }
 
-    // Abrir Pasaporte con ajustes (query o ya guardados) → insignia útil.
-    if (idsUrl.length > 0 || ajustesGuardados.length > 0) {
-      desbloquear('pedi-ajustes')
-    }
-  }, [desbloquear])
+  }, [])
 
   const handleNombreChange = (raw: string) => {
     const limpio = sanitizarNombre(raw)
@@ -197,8 +184,6 @@ export default function PaginaPasaporte() {
     setPasaporteId(id)
     setQrUrl(url)
     setPaso('resultado')
-    desbloquear('pedi-ajustes')
-    // Confianza en paralelo: generar Pasaporte (con ajustes) suma una vez.
     registrarConfianza('pasaporte')
     try {
       localStorage.setItem(
@@ -562,12 +547,7 @@ export default function PaginaPasaporte() {
           />
         )}
 
-        <div className="no-imprimir mt-12 max-w-lg mx-auto">
-          <PanelInsignias conseguidas={insigniasUtiles} apartado="pasaporte" />
-        </div>
       </main>
-
-      <AvisoInsignia insignia={avisoInsignia} onDescartar={descartarAviso} />
     </>
   )
 }

@@ -10,12 +10,19 @@ import {
   leerVistaPerfil,
   type PerfilVista,
 } from '@/lib/perfil/perfil'
-import { cargarProgreso } from '@/lib/sala-previa/progreso'
+import {
+  EVENTO_PREPARACION,
+  cargarPreparacion,
+  hechosPreparacion,
+  textoPreparacion,
+} from '@/lib/preparacion'
+import { FraseTolerancia } from '@/components/perfil/FraseTolerancia'
 
 export function ResumenPerfil() {
   const { sesion, cargando } = useAuth()
   const [vista, setVista] = useState<PerfilVista | null>(null)
-  const [nivelesHechos, setNivelesHechos] = useState<number>(0)
+  const [hechos, setHechos] = useState(0)
+  const [textoPaso, setTextoPaso] = useState('Aún no has visto la sala ni simulado el juicio.')
   const [idCitacionProxima, setIdCitacionProxima] = useState<string | null>(null)
 
   useEffect(() => {
@@ -23,22 +30,20 @@ export function ResumenPerfil() {
       setVista(leerVistaPerfil())
       const proxima = resumirCitaciones(leerCitaciones())[0]
       setIdCitacionProxima(proxima?.id ?? null)
-      try {
-        const prog = cargarProgreso()
-        const n = prog.nivelMaximo === 0 && prog.sesionesCompletadas === 0 ? 0 : Math.min(5, prog.nivelMaximo + 1)
-        setNivelesHechos(n)
-      } catch {
-        setNivelesHechos(0)
-      }
+      const prep = cargarPreparacion()
+      setHechos(hechosPreparacion(prep))
+      setTextoPaso(textoPreparacion(prep))
     }
 
     refrescar()
     window.addEventListener(EVENTO_PERFIL, refrescar)
     window.addEventListener(EVENTO_CITACIONES, refrescar)
+    window.addEventListener(EVENTO_PREPARACION, refrescar)
     window.addEventListener('storage', refrescar)
     return () => {
       window.removeEventListener(EVENTO_PERFIL, refrescar)
       window.removeEventListener(EVENTO_CITACIONES, refrescar)
+      window.removeEventListener(EVENTO_PREPARACION, refrescar)
       window.removeEventListener('storage', refrescar)
     }
   }, [sesion])
@@ -121,48 +126,49 @@ export function ResumenPerfil() {
         Hola{vista.nombre ? `, ${vista.nombre}` : ''}
       </h2>
       <p className="text-court-800 text-base mb-4 max-w-[48ch]">
-        {idCitacionProxima
-          ? 'Continúa preparando tu declaración en la sala 3D con tus ajustes de accesibilidad.'
-          : 'Ensayar en la sala 3D te permite anticipar las preguntas y regular los estímulos.'}
+        Primero ves la sala. Luego simulas el juicio.
       </p>
 
       {/* Progreso del simulador */}
       <div className="bg-calma-mist rounded-suave p-3.5 border border-accent-info/20 mb-5">
         <div className="flex items-center justify-between text-sm mb-1.5">
           <span className="font-semibold text-court-800">
-            Progreso en el simulador de sala
+            Preparación para el juicio
           </span>
           <span className="font-bold text-accent-navy numeros">
-            {nivelesHechos} de 5 niveles
+            {hechos} de 2
           </span>
         </div>
         <div
           className="w-full bg-white rounded-full h-2.5 overflow-hidden border border-court-200"
           role="progressbar"
-          aria-valuenow={nivelesHechos}
+          aria-valuenow={hechos}
           aria-valuemin={0}
-          aria-valuemax={5}
-          aria-label={`Progreso: ${nivelesHechos} de 5 niveles del simulador completados`}
+          aria-valuemax={2}
+          aria-label={textoPaso}
         >
           <div
             className="bg-accent-info h-2.5 rounded-full transition-all duration-200"
-            style={{ width: `${(nivelesHechos / 5) * 100}%` }}
+            style={{ width: hechos === 0 ? '0%' : hechos === 1 ? '50%' : '100%' }}
           />
         </div>
-        {vista.nivelSalaNombre && (
-          <p className="text-xs text-court-600 mt-2">
-            Nivel alcanzado: <strong>{vista.nivelSalaNombre}</strong>
-            {vista.sesionesSala > 0 ? ` (${vista.sesionesSala} sesiones)` : ''}.
-          </p>
-        )}
+        <p className="text-sm text-court-800 mt-2">{textoPaso}</p>
       </div>
+
+      <FraseTolerancia nivel="h3" />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
         <Link
-          href="/sala-previa?ensayo=1"
+          href="/sala-previa/declaracion"
           className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
         >
-          Sigue tu ensayo
+          Simular el juicio
+        </Link>
+        <Link
+          href="/sala-previa"
+          className="btn-secondary text-base min-h-[44px] inline-flex items-center justify-center"
+        >
+          Ver la sala
         </Link>
         <Link
           href="/pasaporte"

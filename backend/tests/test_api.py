@@ -108,8 +108,53 @@ def test_ayuda_preguntar():
     )
     assert res.status_code == 200
     data = res.json()
-    assert "respuesta" in data
-    assert "Pasaporte" in data["respuesta"]
+    assert data["respuesta"] == "Solo contesto dudas legales."
+
+
+def test_ayuda_preguntar_fuente_boe(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    res = client.post(
+        "/api/ayuda/preguntar",
+        json={"pregunta": "¿De dónde sacas las leyes? ¿Vas al BOE?"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    texto = data["respuesta"]
+    assert "art. 420 LECrim" in texto
+    assert "boe.es" in texto
+    assert "No es asesoramiento" in texto
+    assert "Solo contesto dudas legales" not in texto
+
+
+def test_ayuda_abogado_no_es_gratis(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    res = client.post(
+        "/api/ayuda/preguntar",
+        json={"pregunta": "¿Tengo abogado gratis en un delito leve?"},
+    )
+    assert res.status_code == 200
+    texto = res.json()["respuesta"]
+    assert "abogado gratis" not in texto.lower()
+    assert "967.1" in texto
+    assert "6.3.b" in texto
+    assert "decide" in texto.lower()
+    assert "No es asesoramiento" in texto
+
+
+def test_ayuda_falso_testimonio_458(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    res = client.post(
+        "/api/ayuda/preguntar",
+        json={"pregunta": "¿Qué pasa si miento como testigo?"},
+    )
+    assert res.status_code == 200
+    texto = res.json()["respuesta"]
+    assert "458" in texto
+    assert "433" in texto
+    assert "boe.es" in texto
 
 def test_obtener_roles_todos():
     res = client.get("/api/roles")
@@ -138,13 +183,4 @@ def test_obtener_rol_especifico():
 def test_obtener_rol_inexistente():
     res = client.get("/api/roles?rol=desconocido")
     assert res.status_code == 404
-
-def test_ayuda_preguntar_fuente_boe():
-    res = client.post(
-        "/api/ayuda/preguntar",
-        json={"pregunta": "¿De dónde sacas las leyes? ¿Vas al BOE?"},
-    )
-    assert res.status_code == 200
-    data = res.json()
-    assert "Boletín Oficial" in data["respuesta"] or "BOE" in data["respuesta"]
 

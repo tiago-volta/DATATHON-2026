@@ -14,7 +14,7 @@ export default function PaginaEnsaya() {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace('/sala-previa?ensayo=1')
+    router.replace('/sala-previa/declaracion')
   }, [router])
 
   return (
@@ -38,24 +38,24 @@ export default function PaginaEnsaya() {
 
         <div>
           <h1 className="text-3xl font-bold text-court-800 mb-2">
-            Ensayo integrado en la sala del juzgado
+            Simulación del juicio
           </h1>
           <p className="text-lg text-court-700">
-            Ahora las preguntas del juicio se ensayan directamente dentro del simulador de la sala de vistas, con el juez y los letrados.
+            Abriendo la simulación del juicio.
           </p>
         </div>
 
         <div>
           <Link
-            href="/sala-previa?ensayo=1"
+            href="/sala-previa/declaracion"
             className="btn-primary inline-flex text-lg px-6 py-3 min-h-[44px]"
           >
-            Entrar a la sala y ensayar declaración
+            Ir a la simulación
           </Link>
         </div>
 
         <p className="text-sm text-court-600">
-          Redirigiendo automáticamente a la sala…
+          Redirigiendo a la simulación…
         </p>
       </section>
     </main>

@@ -67,7 +67,7 @@ const FAQS_RECURRENTES: FaqItem[] = [
     icono: '🏛️',
     pregunta: '¿Cómo me ayuda el simulador de la sala antes de ir al juzgado?',
     respuesta:
-      'El simulador te permite ver la sala de vistas en 3D, graduar el ruido, la luz y el aforo, y ensayar las preguntas habituales de jueces y abogados, para que el día del juicio nada te resulte desconocido.',
+      'Primero ves la sala: quién hay y qué se oye. Después simulas un juicio con preguntas. Puedes parar cuando quieras.',
     fundamentoLegal: 'Anticipación cognitiva y desensibilización sensorial',
   },
 ]
@@ -92,7 +92,7 @@ export default function PaginaAyuda() {
       id: 'saludo',
       rol: 'asistente',
       texto:
-        'Hola. Soy el asistente de TribunalInclusivo. Puedes preguntarme por la citación, el Pasaporte o la Sala Previa. Escribe tu duda. No pido datos de salud.',
+        'Hola. Solo contesto dudas legales. Cito la ley y el artículo, en boe.es. Esto es información. No es asesoramiento.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
@@ -133,7 +133,7 @@ export default function PaginaAyuda() {
       setAnuncio('Respuesta lista.')
     } catch {
       const fallback =
-        'Ahora mismo no puedo responder. Prueba otra vez en unos segundos, o mira Citación, Pasaporte o Sala en el menú.'
+        'Ahora mismo no puedo responder. Prueba otra vez en unos segundos.'
       setMensajes((prev) => [
         ...prev,
         { id: `e-${Date.now()}`, rol: 'asistente', texto: fallback },
@@ -167,8 +167,8 @@ export default function PaginaAyuda() {
           Ayuda
         </h1>
         <p className="entradilla max-w-[40ch]">
-          Escribe tu duda. Te respondo con frases cortas. No hago diagnósticos ni
-          pido datos de salud.
+          Escribe una duda legal. Te cito la ley y el artículo.
+          Esto es información. No es asesoramiento.
         </p>
       </header>
 
@@ -219,7 +219,7 @@ export default function PaginaAyuda() {
           value={pregunta}
           onChange={(e) => setPregunta(e.target.value.slice(0, 800))}
           className="textarea-accesible min-h-[120px] mb-4"
-          placeholder="Ejemplo: ¿Qué es el Pasaporte de ajustes?"
+          placeholder="Ejemplo: ¿Puedo pedir una pausa en el juicio?"
           maxLength={800}
           disabled={enviando}
           aria-describedby="ayuda-pregunta-hint"

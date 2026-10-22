@@ -1,14 +1,15 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ControlDistracciones } from '@/components/sala-previa/ControlDistracciones'
+import { guardarUltimaTolerancia } from '@/lib/perfil/ultimaTolerancia'
 import { BotonCalma } from '@/components/sala-previa/BotonCalma'
 import { useDistracciones } from '@/hooks/useDistracciones'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { MotorAudioSala } from '@/lib/sala-previa/audio'
 import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
 import type { NivelDistracciones } from '@/lib/sala-previa/distracciones'
-import { VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
+import { leerValoresSala, VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
+import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import { numPublicoVisible } from '@/lib/sala-previa/salaVistasConfig'
 import {
   HABLANTES,
@@ -28,8 +29,13 @@ import {
 } from '@/lib/sala-previa/respuestaDeclaracion'
 import { callar, hablar, precargarVoces } from '@/lib/sala-previa/vozSala'
 import { PanelTurno } from './PanelTurno'
-import { Subtitulos, type LineaSubtitulo } from './Subtitulos'
 import { VistaDeclaracion3D, type ObjetivoCamara } from './VistaDeclaracion3D'
+
+interface LineaSubtitulo {
+  id: string
+  quien: string
+  texto: string
+}
 import type { ContadoresAyuda, RegistroTurno } from './ResumenDeclaracion'
 
 const CLAVE_AJUSTES = 'sala-previa-distracciones-v2'
@@ -51,15 +57,14 @@ interface LineaVoz {
   texto: string
 }
 
-function leerAjustes(): { nivel: NivelDistracciones; avisar: boolean } {
+function leerAjustes(): { nivel: NivelDistracciones } {
   try {
     const v = JSON.parse(window.localStorage.getItem(CLAVE_AJUSTES) ?? '{}')
     return {
       nivel: v.nivel === 'apagadas' || v.nivel === 'muchas' ? v.nivel : 'pocas',
-      avisar: v.avisar !== false,
     }
   } catch {
-    return { nivel: 'pocas', avisar: true }
+    return { nivel: 'pocas' }
   }
 }
 
@@ -88,8 +93,12 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   const [lineas, setLineas] = useState<LineaSubtitulo[]>([])
   const [anuncio, setAnuncio] = useState('')
   const [objetivo, setObjetivo] = useState<ObjetivoCamara>({ id: 0, destino: 'jueza' })
-  const [ajustes, setAjustes] = useState({ nivel: 'pocas' as NivelDistracciones, avisar: true })
+  const [ajustes, setAjustes] = useState<{ nivel: NivelDistracciones }>({ nivel: 'pocas' })
   const [esperandoListo, setEsperandoListo] = useState(false)
+  const [iniciada, setIniciada] = useState(false)
+  const [ruidoQuitado, setRuidoQuitado] = useState(false)
+  const [valores, setValores] = useState<ValoresEstimulo>(VALORES_AMBIENTE_SALA)
+  const nivelSonido: NivelDistracciones = iniciada && !ruidoQuitado ? ajustes.nivel : 'apagadas'
 
   const gen = useRef(0)
   const timers = useRef<number[]>([])
@@ -99,17 +108,22 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   const pendienteRef = useRef<PendienteAvance | null>(null)
   const turno = guion.turnos[indice]
 
-  const { activa, aviso, explicacion, historial, disparar } = useDistracciones({
-    nivel: ajustes.nivel,
-    avisar: ajustes.avisar,
-    enCalma: pausa !== null,
+  const { activa, disparar } = useDistracciones({
+    nivel: nivelSonido,
+    avisar: false,
+    enCalma: pausa !== null || !iniciada,
     papel,
-    numPublico: numPublicoVisible(VALORES_AMBIENTE_SALA.gente, papel),
+    numPublico: numPublicoVisible(valores.gente, papel),
   })
   const activaRef = useRef(activa)
   activaRef.current = activa
-  const nivelRef = useRef(ajustes.nivel)
-  nivelRef.current = ajustes.nivel
+  const nivelRef = useRef(nivelSonido)
+  nivelRef.current = nivelSonido
+  const ruidoQuitadoRef = useRef(ruidoQuitado)
+  ruidoQuitadoRef.current = ruidoQuitado
+  const valoresRef = useRef(valores)
+  valoresRef.current = valores
+  const perfilSubido = useRef(false)
 
   const limpiarTimers = () => {
     timers.current.forEach((t) => window.clearTimeout(t))
@@ -149,7 +163,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
       if (g !== gen.current || i >= secuencia.length) return
       const l = secuencia[i]
       const nombreH = HABLANTES[l.hablante].nombre
-      setLineas((prev) => [...prev, { id: `${g}-${i}`, tipo: 'voz', quien: nombreH, texto: l.texto }])
+      setLineas((prev) => [...prev, { id: `${g}-${i}`, quien: nombreH, texto: l.texto }])
       setAnuncio(`${nombreH}: ${l.texto}`)
       mirarA(l.hablante)
       decir(l, g, () => paso(i + 1))
@@ -164,7 +178,6 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
       return
     }
     disparar(intr.tipo)
-    setLineas((prev) => [...prev, { id: `${g}-ruido`, tipo: 'ruido', texto: intr.descripcion }])
   }
 
   const reproducirTurno = (
@@ -187,11 +200,10 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
 
   useEffect(() => {
     setAjustes(leerAjustes())
+    setValores(leerValoresSala())
     precargarVoces()
     const m = new MotorAudioSala()
     motor.current = m
-    bancoSonidos().desbloquear()
-    void m.iniciar().then(() => m.actualizar(VALORES_AMBIENTE_SALA))
     return () => {
       cortarTodo()
       m.detener(false)
@@ -199,21 +211,10 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   }, [cortarTodo])
 
   useEffect(() => {
-    if (pausa || esperandoListo) return
-    reproducirTurno(turno, { conInterrupcion: true })
+    if (!iniciada || pausa || esperandoListo) return
+    reproducirTurno(turno, { conInterrupcion: !ruidoQuitadoRef.current })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- un arranque por turno nuevo
-  }, [indice])
-
-  const cambiarAjustes = (cambio: Partial<typeof ajustes>) => {
-    bancoSonidos().desbloquear()
-    const siguiente = { ...ajustes, ...cambio }
-    setAjustes(siguiente)
-    try {
-      window.localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(siguiente))
-    } catch {
-      // Sin almacenamiento: los ajustes duran solo esta visita.
-    }
-  }
+  }, [indice, iniciada])
 
   const resolverIndiceSiguiente = (r: Respuesta) => {
     const salto = r.saltaA ? guion.turnos.findIndex((t) => t.id === r.saltaA) : -1
@@ -226,6 +227,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     setRegistro(nuevoRegistro)
     setAyudas(ayudasActuales)
     if (siguiente >= guion.turnos.length) {
+      anotarTolerancia(!ruidoQuitadoRef.current)
       onTerminar(nuevoRegistro, ayudasActuales)
       return
     }
@@ -233,7 +235,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   }
 
   const decirReplicaJueza = (texto: string, g: number, onFin: () => void) => {
-    setLineas([{ id: `${g}-replica`, tipo: 'voz', quien: HABLANTES.jueza.nombre, texto }])
+    setLineas([{ id: `${g}-replica`, quien: HABLANTES.jueza.nombre, texto }])
     setAnuncio(`${HABLANTES.jueza.nombre}: ${texto}`)
     mirarA('jueza')
     decir({ hablante: 'jueza', texto }, g, onFin)
@@ -319,7 +321,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     setPausa(origen)
     if (origen === 'jueza') {
       setAyudas((a) => ({ ...a, pausas: a.pausas + 1 }))
-      setLineas([{ id: 'pausa', tipo: 'voz', quien: HABLANTES.jueza.nombre, texto: FRASE_PAUSA }])
+      setLineas([{ id: 'pausa', quien: HABLANTES.jueza.nombre, texto: FRASE_PAUSA }])
       setAnuncio(`${HABLANTES.jueza.nombre}: ${FRASE_PAUSA}`)
       mirarA('jueza')
       if (vozRef.current) hablar(FRASE_PAUSA, { rol: 'jueza' })
@@ -329,9 +331,54 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     }
   }
 
+  const aplicarAmbiente = () => {
+    const actual = valoresRef.current
+    if (ruidoQuitadoRef.current) {
+      motor.current?.actualizar({ ruido: 0, luz: actual.luz, gente: 0 })
+      return
+    }
+    motor.current?.actualizar(actual)
+    void motor.current?.iniciar()
+  }
+
+  const anotarTolerancia = (subirPerfil: boolean) => {
+    const sube = subirPerfil && !perfilSubido.current
+    if (sube) perfilSubido.current = true
+    guardarUltimaTolerancia({
+      gente: valoresRef.current.gente,
+      ruido: valoresRef.current.ruido,
+      luz: valoresRef.current.luz,
+      herramientas: [],
+      subirPerfil: sube,
+    })
+  }
+
+  const iniciarSimulacion = () => {
+    bancoSonidos().desbloquear()
+    setIniciada(true)
+    setAnuncio('Empieza la simulación. Suena la sala.')
+    aplicarAmbiente()
+    anotarTolerancia(false)
+  }
+
+  const alternarRuido = () => {
+    if (ruidoQuitadoRef.current) {
+      ruidoQuitadoRef.current = false
+      setRuidoQuitado(false)
+      setAnuncio('El ruido de la sala vuelve.')
+      aplicarAmbiente()
+      return
+    }
+    ruidoQuitadoRef.current = true
+    setRuidoQuitado(true)
+    bancoSonidos().cancelar()
+    motor.current?.actualizar({ ruido: 0, luz: valoresRef.current.luz, gente: 0 })
+    setAnuncio('El ruido está quitado. Sigues en la simulación.')
+  }
+
   const salirDePausa = () => {
     setPausa(null)
-    void motor.current?.iniciar()
+    if (!ruidoQuitadoRef.current) aplicarAmbiente()
     reproducirTurno(turno, { prefacio: { hablante: 'jueza', texto: FRASE_SEGUIMOS } })
   }
 
@@ -351,16 +398,40 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     onVoz(!voz)
   }
 
-  const lineaEnFoco = [...lineas].reverse().find((l) => l.tipo === 'voz' && l.quien)
+  const lineaEnFoco = lineas[lineas.length - 1]
   const rotuloVisible = lineaEnFoco?.quien
     ? { quien: lineaEnFoco.quien, texto: lineaEnFoco.texto }
     : null
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {anuncio}
       </p>
+
+      <div className="sticky top-20 z-40 flex flex-wrap items-center gap-3 rounded-suave border border-court-200 bg-white p-3">
+        {!iniciada ? (
+          <button type="button" className="btn-primary min-h-[44px]" onClick={iniciarSimulacion}>
+            Iniciar simulación
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn-secondary min-h-[44px]"
+            onClick={alternarRuido}
+            aria-pressed={ruidoQuitado}
+          >
+            {ruidoQuitado ? 'Poner el ruido' : 'Quitar el ruido'}
+          </button>
+        )}
+        <p className="text-court-800">
+          {iniciada
+            ? ruidoQuitado
+              ? 'El ruido está quitado. Sigues en la simulación.'
+              : 'Suena la sala, con tus ajustes de gente y ruido.'
+            : 'La sala está en silencio. El ruido empieza cuando pulses iniciar.'}
+        </p>
+      </div>
 
       <VistaDeclaracion3D
         key={puntoVista}
@@ -369,12 +440,12 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
         reduced={reduced}
         pausa={pausa !== null}
         distraccion={activa}
-        aviso={aviso}
         rotulo={rotuloVisible}
+        luz={valores.luz}
+        gente={valores.gente}
       />
 
-      <Subtitulos lineas={lineas} />
-
+      {iniciada && (
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {pausa ? (
@@ -431,24 +502,17 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
               {voz ? 'Voz activada' : 'Voz apagada (solo texto)'}
             </button>
           </div>
-          <ControlDistracciones
-            nivel={ajustes.nivel}
-            avisar={ajustes.avisar}
-            enCalma={pausa !== null}
-            aviso={aviso}
-            explicacion={explicacion}
-            historial={historial}
-            onNivel={(nivel) => cambiarAjustes({ nivel })}
-            onAvisar={(avisar) => cambiarAjustes({ avisar })}
-          />
         </aside>
       </div>
+      )}
 
-      <BotonCalma
-        enCalma={pausa === 'calma'}
-        onPausa={() => entrarEnPausa('calma')}
-        onReanudar={salirDePausa}
-      />
+      {iniciada && (
+        <BotonCalma
+          enCalma={pausa === 'calma'}
+          onPausa={() => entrarEnPausa('calma')}
+          onReanudar={salirDePausa}
+        />
+      )}
     </div>
   )
 }

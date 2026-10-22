@@ -325,9 +325,8 @@ class AyudaResponse(BaseModel):
 @app.post("/api/ayuda/preguntar", response_model=AyudaResponse)
 async def ayuda_preguntar(input_data: AyudaInput):
     """
-    Chat de dudas sobre citación, Pasaporte y Sala Previa.
-    Gemini si hay GEMINI_API_KEY; si no, respuestas mock calmadas.
-    Nunca diagnóstico médico ni datos sensibles de salud.
+    Chat de dudas de derecho. Si la pregunta no es legal, una frase corta.
+    En las respuestas de derecho, la fuente es el BOE (boe.es).
     """
     resultado = await responder_ayuda(input_data.pregunta)
     return AyudaResponse(**resultado)

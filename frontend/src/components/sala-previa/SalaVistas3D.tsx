@@ -1,7 +1,7 @@
 'use client'
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { ContactShadows, Environment, useGLTF, useTexture } from '@react-three/drei'
+import { ContactShadows, Environment, Html, useGLTF, useTexture } from '@react-three/drei'
 import {
   Suspense,
   useEffect,
@@ -461,6 +461,27 @@ interface FiguraProps {
   toga?: boolean
   /** Grupo con pivote en el cuello para girar o asentir con la cabeza. */
   cabezaRef?: Ref<THREE.Group>
+  /** Nombre corto encima de la figura. */
+  etiqueta?: string
+}
+
+function RotuloPapel({ texto, sentada }: { texto: string; sentada: boolean }) {
+  return (
+    <Html
+      position={[0, sentada ? 1.72 : 2.05, 0]}
+      center
+      distanceFactor={7}
+      zIndexRange={[12, 0]}
+      style={{ pointerEvents: 'none' }}
+    >
+      <span
+        aria-hidden="true"
+        className="pointer-events-none whitespace-nowrap rounded-md border border-court-300 bg-white/95 px-1.5 py-0.5 text-[11px] font-bold leading-none text-court-900"
+      >
+        {texto}
+      </span>
+    </Html>
+  )
 }
 
 function useOpacidadFigura(
@@ -514,6 +535,7 @@ function FiguraPersonaCapsula({
   sentada = false,
   toga = false,
   cabezaRef,
+  etiqueta,
 }: FiguraProps) {
   const group = useRef<THREE.Group>(null)
   const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
@@ -577,6 +599,7 @@ function FiguraPersonaCapsula({
           <meshStandardMaterial color="#2c241c" roughness={0.9} />
         </mesh>
       </group>
+      {etiqueta ? <RotuloPapel texto={etiqueta} sentada={sentada} /> : null}
     </group>
   )
 }
@@ -592,6 +615,7 @@ function FiguraPersonaHumanoide({
   sentada = false,
   toga = false,
   cabezaRef,
+  etiqueta,
 }: FiguraProps) {
   const group = useRef<THREE.Group>(null)
   const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
@@ -637,6 +661,7 @@ function FiguraPersonaHumanoide({
           <meshStandardMaterial color={ropa} roughness={0.84} metalness={0.02} />
         </mesh>
       )}
+      {etiqueta ? <RotuloPapel texto={etiqueta} sentada={sentada} /> : null}
     </group>
   )
 }
@@ -1380,11 +1405,13 @@ function PersonasEscena({
         scale={enfoque === 'juez' ? 1.18 : 1.1}
         sentada
         toga
+        etiqueta="Juez"
       />
 
       {/* Abogados en mesas */}
       <FiguraAnimada
         d={d}
+        etiqueta="Abogada"
         gesto={papel === 'investigado' ? gestoDe('abogado-susurra') : null}
         giro={0.8}
         reduced={reduced}
@@ -1399,6 +1426,7 @@ function PersonasEscena({
       />
       <FiguraAnimada
         d={d}
+        etiqueta={civil ? 'Abogado' : 'Fiscal'}
         gesto={civil ? gestoDe('abogado-susurra') : null}
         giro={0.8}
         reduced={reduced}
@@ -1419,6 +1447,7 @@ function PersonasEscena({
           ropa="#1a1a22"
           visible={aboVis * (enfoque === 'abogados' ? 1 : 0.9)}
           toga
+          etiqueta="Abogado"
         />
       )}
 
@@ -1429,11 +1458,13 @@ function PersonasEscena({
           tonoPiel="#c9a07e"
           ropa="#4b4b52"
           sentada
+          etiqueta="Persona acusada"
         />
       )}
       {penal && (
         <FiguraAnimada
           d={d}
+          etiqueta="Agente"
           gesto={papel === 'investigado' && d?.tipo === 'agente-postura' ? 'postura' : null}
           giro={0.7}
           reduced={reduced}
@@ -1458,6 +1489,7 @@ function PersonasEscena({
             tonoPiel="#e0b089"
             ropa="#5a6b7a"
             sentada
+            etiqueta="Acompañante"
           />
         </>
       )}

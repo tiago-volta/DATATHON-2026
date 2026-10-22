@@ -22,7 +22,6 @@ interface Props {
   ayudas: ContadoresAyuda
   nombre: string
   onRepetir: () => void
-  onCambiar: () => void
 }
 
 function frasesAyuda({ pausas, repeticiones, aclaraciones }: ContadoresAyuda): string[] {
@@ -33,7 +32,7 @@ function frasesAyuda({ pausas, repeticiones, aclaraciones }: ContadoresAyuda): s
   return frases
 }
 
-export function ResumenDeclaracion({ puntoVista, registro, ayudas, nombre, onRepetir, onCambiar }: Props) {
+export function ResumenDeclaracion({ puntoVista, registro, ayudas, nombre, onRepetir }: Props) {
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const guion = GUIONES[puntoVista]
   const respondidas = registro.filter((r) => r.respuesta.texto)
@@ -98,9 +97,6 @@ export function ResumenDeclaracion({ puntoVista, registro, ayudas, nombre, onRep
       <div className="flex flex-wrap gap-3">
         <button type="button" className="btn-primary min-h-[44px]" onClick={onRepetir}>
           Repetir esta simulación
-        </button>
-        <button type="button" className="btn-secondary min-h-[44px]" onClick={onCambiar}>
-          Cambiar de punto de vista
         </button>
         <Link href="/sala-previa" className="btn-ghost min-h-[44px] border border-court-200">
           Volver a la sala

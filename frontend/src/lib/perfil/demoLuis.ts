@@ -1,4 +1,5 @@
 import { guardarPerfil, type PerfilV2 } from '@/lib/perfil/perfil'
+import { sembrarToleranciaEjemplo } from '@/lib/perfil/ultimaTolerancia'
 import { guardarCitacion } from '@/lib/citaciones/almacen'
 import { buildPasaporteUrl } from '@/lib/pasaporte'
 import type { CitacionProcesada } from '@/lib/api'
@@ -88,6 +89,7 @@ export function cargarPerfilDemoLuis() {
   }
 
   guardarPerfil(perfilLuis)
+  sembrarToleranciaEjemplo()
 
   guardarCitacion({
     texto: 'JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA. Diligencias Previas 245/2026. Se cita a Luis García Fernández como TESTIGO para el día 14 de noviembre de 2026 a las 10:30 h en la Sala de Vistas 2.',

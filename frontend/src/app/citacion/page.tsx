@@ -1558,12 +1558,15 @@ export default function PaginaCitacion() {
                 El siguiente paso es la sala
               </h2>
               <p className="text-court-700 mb-4">
-                Entra en la sala y ensaya tu declaración antes del día.
+                Primero ves la sala. Luego simulas el juicio.
                 Puedes parar cuando quieras.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link href="/sala-previa" className="btn-primary">
-                  Entrar en la sala
+                  Ver la sala
+                </Link>
+                <Link href="/sala-previa/declaracion" className="btn-secondary">
+                  Simular el juicio
                 </Link>
                 <Link href="/pasaporte" className="btn-secondary">
                   Preparar mi ficha
