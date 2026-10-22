@@ -59,29 +59,50 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { pregunta, respuesta_usuario, nombre = 'Luis', rol = 'testigo', contexto } = body
     const texto = (respuesta_usuario || '').trim()
-    const minus = texto.toLowerCase()
+    const minus = texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
 
     // 1. Control inmediato de mentir o negarse a declarar como testigo
-    const seNiegaODiceMentir =
+    const esMentira =
       minus.includes('mentir') ||
       minus.includes('voy a mentir') ||
+      minus.includes('iba a mentir') ||
       minus.includes('pienso mentir') ||
       minus.includes('no voy a decir la verdad') ||
       minus.includes('no dire la verdad') ||
-      minus.includes('es mentira') ||
-      minus.includes('no digo nada') ||
-      minus.includes('no hablo') ||
-      minus.includes('no pienso hablar') ||
-      minus.includes('no quiero contestar')
+      minus.includes('mentira') ||
+      minus.includes('fals') ||
+      minus.includes('enganar') ||
+      minus.includes('engano')
 
-    if (seNiegaODiceMentir && rol === 'testigo') {
-      const esMentira = minus.includes('mentir') || minus.includes('mentira')
+    const seNiega =
+      minus.includes('no digo nada') ||
+      minus.includes('no voy a decir nada') ||
+      minus.includes('no dire nada') ||
+      minus.includes('no hablo') ||
+      minus.includes('no voy a hablar') ||
+      minus.includes('no pienso hablar') ||
+      minus.includes('no quiero contestar') ||
+      minus.includes('no contesto') ||
+      minus.includes('no voy a contestar') ||
+      minus.includes('me niego') ||
+      minus.includes('no declaro') ||
+      minus.includes('me callo') ||
+      minus.includes('silencio') ||
+      minus.includes('prefiero no contestar')
+
+    if ((esMentira || seNiega) && rol !== 'investigado') {
       const replica = esMentira
         ? 'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?'
-        : 'Luis, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). No tienes derecho a guardar silencio. Debes contestar.'
+        : `${nombre}, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). No tienes derecho a guardar silencio. Debes contestar a la pregunta.`
       const porQue = esMentira
         ? 'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.'
-        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar.'
+        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar (art. 410 LECrim).'
 
       return NextResponse.json({
         replica_juez: replica,

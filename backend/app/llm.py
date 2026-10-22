@@ -1037,13 +1037,15 @@ CONTEXTO DEL CASO:
 
 INSTRUCCIONES:
 1. "replica_juez": Lo que dice la jueza en voz alta al escuchar al declarante.
-   - Si pide agua: autorízalo con empatía ("Sí, por favor, beba un poco de agua. Tómese su tiempo.").
-   - Si pide una pausa o descanso: autorízalo ("De acuerdo. Hacemos una pausa breve.").
-   - Si dice que no lo sabe o no lo recuerda: valida su honestidad ("De acuerdo. Si no lo recuerda, es correcto decirlo. Seguimos.").
-   - Si aporta datos del hecho (móvil, parada, autobús, ropa, plaza, etc.): acusa recibo ("Queda anotado lo que usted observó. Muchas gracias.").
-   - Si responde cualquier otra cosa: confirma recepción con calma ("De acuerdo. Queda anotada su respuesta. Seguimos.").
-2. "por_que": Una explicación pedagógica corta dirigida al usuario en segunda persona ("tú") indicando por qué su respuesta es válida o cómo le ayuda.
-3. "avanzar": booleano (true para continuar al siguiente turno).
+   - Si el testigo dice que va a mentir, que mentirá, que no dirá la verdad o se niega a contestar/declarar (ej. "voy a mentir", "yo no digo nada", "no hablo", "no quiero contestar"): ADVIÉRTELE con firmeza institucional y calma de que como testigo tiene la obligación legal de decir la verdad y declarar (arts. 410 y 433 LECrim), y que mentir es delito de falso testimonio (art. 458 CP). Pon "avanzar": false y pídele que responda.
+   - Si pide agua: autorízalo con empatía ("Sí, por favor, beba un poco de agua. Tómese su tiempo."). Pon "avanzar": true y "esperar_listo": true.
+   - Si pide una pausa o descanso: autorízalo ("De acuerdo. Hacemos una pausa breve."). Pon "avanzar": false y "entrar_pausa": true.
+   - Si dice que no lo sabe o no lo recuerda: valida su honestidad ("De acuerdo. Si no lo recuerda, es correcto decirlo. Seguimos."). Pon "avanzar": true.
+   - Si aporta datos del hecho (móvil, parada, autobús, ropa, plaza, etc.): acusa recibo ("Queda anotado lo que usted observó en la parada. Seguimos."). Pon "avanzar": true.
+   - Si responde cualquier otra cosa pertinente: confirma recepción ("De acuerdo. Queda anotada su respuesta. Seguimos."). Pon "avanzar": true.
+   - Máximo 20 palabras. Voz activa, lenguaje claro y accesible.
+2. "por_que": Una explicación pedagógica corta dirigida al usuario en segunda persona ("tú") indicando por qué su respuesta es válida o la consecuencia legal.
+3. "avanzar": booleano (false si se niega a declarar o dice que mentirá; true si colabora normalmente).
 4. "entrar_pausa": booleano (true si pide pausa).
 5. "esperar_listo": booleano (true si pide agua).
 
@@ -1059,21 +1061,77 @@ async def evaluar_respuesta_declaracion(
     contexto_caso: Optional[str] = None,
 ) -> dict:
     """Evalúa la respuesta libre del usuario con Gemini y el contexto del caso judicial de Luis."""
-    texto_usuario = (respuesta_usuario or "").strip()
-    minus = texto_usuario.lower()
+    import unicodedata
 
-    # Patrones directos de control
-    if any(k in minus for k in ["mentir", "voy a mentir", "pienso mentir", "no diré la verdad", "no voy a decir la verdad", "es mentira"]):
+    texto_usuario = (respuesta_usuario or "").strip()
+
+    # Normalizar sin acentos ni signos para coincidencia robusta
+    texto_nfkd = unicodedata.normalize("NFKD", texto_usuario)
+    minus = "".join(c for c in texto_nfkd if not unicodedata.combining(c)).lower()
+    minus = re.sub(r"[^\w\s]", " ", minus)
+    minus = re.sub(r"\s+", " ", minus).strip()
+
+    # 1. Detección de mentira o falso testimonio
+    palabras_mentira = [
+        "mentir",
+        "mentira",
+        "mentiras",
+        "fals",
+        "no dire la verdad",
+        "no voy a decir la verdad",
+        "pienso mentir",
+        "iba a mentir",
+        "voy a mentir",
+        "enganar",
+        "engano",
+    ]
+    es_mentira = any(k in minus for k in palabras_mentira)
+
+    # 2. Detección de negarse a contestar o guardar silencio
+    palabras_niega = [
+        "no digo nada",
+        "no voy a decir nada",
+        "no dire nada",
+        "no hablo",
+        "no voy a hablar",
+        "no pienso hablar",
+        "no quiero contestar",
+        "no contesto",
+        "no voy a contestar",
+        "me niego",
+        "no declaro",
+        "me callo",
+        "silencio",
+        "prefiero no contestar",
+        "no me da la gana",
+    ]
+    se_niega = any(k in minus for k in palabras_niega)
+
+    if (es_mentira or se_niega) and rol != "investigado":
+        replica = (
+            "Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. "
+            "Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). "
+            "Le repito la pregunta: ¿promete decir la verdad?"
+            if es_mentira
+            else f"{nombre}, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). "
+            "No tienes derecho a guardar silencio. Debes contestar a la pregunta."
+        )
+        por_que = (
+            "Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión."
+            if es_mentira
+            else "A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar (art. 410 LECrim)."
+        )
         return {
-            "replica_juez": "Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?",
-            "por_que": "Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.",
+            "replica_juez": replica,
+            "por_que": por_que,
             "avanzar": False,
             "entrar_pausa": False,
             "esperar_listo": False,
             "fuente": "legal",
         }
 
-    if any(k in minus for k in ["beber agua", "un vaso de agua", "puedo beber", "un poco de agua"]):
+    # 3. Agua
+    if any(k in minus for k in ["agua", "beber", "vaso", "sed"]):
         return {
             "replica_juez": "Sí, por favor, beba un poco de agua. Tómese su tiempo.",
             "por_que": "Pedir agua está bien. Te ayuda a seguir con calma.",
@@ -1083,7 +1141,8 @@ async def evaluar_respuesta_declaracion(
             "fuente": "mock",
         }
 
-    if any(k in minus for k in ["pausa", "descanso", "un momento", "parar", "bloquead", "nervios"]):
+    # 4. Pausa
+    if any(k in minus for k in ["pausa", "descanso", "un momento", "parar", "bloque", "nervio", "ahog", "agobi"]):
         return {
             "replica_juez": "De acuerdo. Hacemos una pausa para que descanse.",
             "por_que": "Pedir una pausa es tu derecho procesal (art. 7 bis LEC).",

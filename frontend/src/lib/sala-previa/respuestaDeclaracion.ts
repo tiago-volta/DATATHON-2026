@@ -176,19 +176,35 @@ export function clasificarRespuestaLibre(
     }
   }
 
-  const seNiegaODiceMentir =
+  const esMentira =
     texto.includes('mentir') ||
     texto.includes('voy a mentir') ||
+    texto.includes('iba a mentir') ||
     texto.includes('pienso mentir') ||
     texto.includes('no voy a decir la verdad') ||
     texto.includes('no dire la verdad') ||
     texto.includes('mentira') ||
-    texto.includes('no digo nada') ||
-    texto.includes('no hablo') ||
-    texto.includes('no voy a hablar')
+    texto.includes('fals') ||
+    texto.includes('enganar') ||
+    texto.includes('engano')
 
-  if (seNiegaODiceMentir && !contexto.esInvestigado) {
-    const esMentira = texto.includes('mentir') || texto.includes('mentira')
+  const seNiega =
+    texto.includes('no digo nada') ||
+    texto.includes('no voy a decir nada') ||
+    texto.includes('no dire nada') ||
+    texto.includes('no hablo') ||
+    texto.includes('no voy a hablar') ||
+    texto.includes('no pienso hablar') ||
+    texto.includes('no quiero contestar') ||
+    texto.includes('no contesto') ||
+    texto.includes('no voy a contestar') ||
+    texto.includes('me niego') ||
+    texto.includes('no declaro') ||
+    texto.includes('me callo') ||
+    texto.includes('silencio') ||
+    texto.includes('prefiero no contestar')
+
+  if ((esMentira || seNiega) && !contexto.esInvestigado) {
     return {
       tipo: 'mentira',
       replicaJuez: esMentira
@@ -199,7 +215,7 @@ export function clasificarRespuestaLibre(
       esperarListo: false,
       porQue: esMentira
         ? 'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.'
-        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar.',
+        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar (art. 410 LECrim).',
     }
   }
 
