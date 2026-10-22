@@ -42,7 +42,6 @@ const MODELOS = {
   sillaJuez: '/sala-previa/modelos/WoodenChair_01.glb',
   sillon: '/sala-previa/modelos/modern_arm_chair_01.glb',
   mesa: '/sala-previa/modelos/wooden_table_02.glb',
-  banco: '/sala-previa/modelos/painted_wooden_bench.glb',
   lampara: '/sala-previa/modelos/modern_ceiling_lamp_01.glb',
   reloj: '/sala-previa/modelos/wall_clock.glb',
 } as const
@@ -261,8 +260,9 @@ function Modelo({
   )
 }
 
-const X_BANCOS = [-2.9, -1.74, -0.58, 0.58, 1.74, 2.9]
 const Z_FILAS = [1.85, 3.45, 5.05]
+const MADERA_BANCO = '#5c3d28'
+const MADERA_BANCO_OSCURA = '#4a3324'
 const LAMPARAS: [number, number][] = [
   [-2.2, -4.2],
   [2.2, -4.2],
@@ -271,8 +271,41 @@ const LAMPARAS: [number, number][] = [
   [0, 4.8],
 ]
 
-/** Orientación del banquillo: mira en diagonal hacia el estrado. */
+/** El asiento del banquillo mira en diagonal hacia el estrado. */
 const BANQUILLO = { x: -4.45, z: -1.95, rot: -0.6435 }
+
+/** Banco de madera de una fila del público. El respaldo queda hacia la entrada. */
+function BancoPublico({
+  x,
+  z,
+  ancho,
+  rotationY = 0,
+}: {
+  x: number
+  z: number
+  ancho: number
+  rotationY?: number
+}) {
+  const patas = ancho < 1.4 ? [-1, 1] : [-1, 0, 1]
+  return (
+    <group position={[x, 0, z]} rotation={[0, rotationY, 0]}>
+      <mesh position={[0, 0.42, 0]}>
+        <boxGeometry args={[ancho, 0.08, 0.46]} />
+        <meshStandardMaterial color={MADERA_BANCO} roughness={0.62} />
+      </mesh>
+      <mesh position={[0, 0.74, 0.2]}>
+        <boxGeometry args={[ancho, 0.52, 0.07]} />
+        <meshStandardMaterial color={MADERA_BANCO_OSCURA} roughness={0.68} />
+      </mesh>
+      {patas.map((lado) => (
+        <mesh key={lado} position={[(ancho / 2 - 0.14) * lado, 0.2, 0]}>
+          <boxGeometry args={[0.08, 0.4, 0.4]} />
+          <meshStandardMaterial color={MADERA_BANCO_OSCURA} roughness={0.7} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
 const PAPELES_PENALES: PapelSala[] = ['testigo', 'investigado', 'victima']
 
 function MueblesCC0({ papel }: { papel: PapelSala }) {
@@ -295,6 +328,7 @@ function MueblesCC0({ papel }: { papel: PapelSala }) {
             <Modelo
               url={MODELOS.sillon}
               position={[lado * 2.4, 0, -2.45]}
+              rotationY={Math.PI}
               scale={0.92}
             />
           )}
@@ -302,9 +336,10 @@ function MueblesCC0({ papel }: { papel: PapelSala }) {
       ))}
 
       {PAPELES_PENALES.includes(papel) && (
-        <Modelo
-          url={MODELOS.banco}
-          position={[BANQUILLO.x, 0, BANQUILLO.z]}
+        <BancoPublico
+          x={BANQUILLO.x}
+          z={BANQUILLO.z}
+          ancho={0.95}
           rotationY={BANQUILLO.rot}
         />
       )}
@@ -316,15 +351,12 @@ function MueblesCC0({ papel }: { papel: PapelSala }) {
         </>
       )}
 
-      {Z_FILAS.map((z) =>
-        X_BANCOS.map((x) => (
-          <Modelo
-            key={`${x}-${z}`}
-            url={MODELOS.banco}
-            position={[x, 0, z + 0.05]}
-          />
-        ))
-      )}
+      {Z_FILAS.map((z) => (
+        <group key={z}>
+          <BancoPublico x={-1.75} z={z} ancho={3.15} />
+          <BancoPublico x={1.75} z={z} ancho={3.15} />
+        </group>
+      ))}
 
       {[
         { x: -3.6, z: -0.2, rot: Math.PI * 0.15 },
@@ -336,7 +368,7 @@ function MueblesCC0({ papel }: { papel: PapelSala }) {
           key={`${s.x}-${s.z}`}
           url={MODELOS.sillon}
           position={[s.x, 0, s.z]}
-          rotationY={s.rot + Math.PI}
+          rotationY={s.rot}
           scale={0.9}
         />
       ))}
@@ -358,7 +390,7 @@ function MueblesCC0({ papel }: { papel: PapelSala }) {
 /** Atril de testigos con vaso de agua (delante de la cámara del papel testigo). */
 function AtrilTestigo() {
   return (
-    <group position={[0, 0, -3.45]}>
+    <group position={[0, 0, -3.45]} rotation={[0, Math.PI, 0]}>
       <mesh position={[0, 0.03, 0]}>
         <boxGeometry args={[0.7, 0.06, 0.5]} />
         <meshStandardMaterial color="#4a3324" roughness={0.6} />
@@ -1354,7 +1386,7 @@ const PUBLICO = [
   { x: 3.4, z: 0.9, piel: '#e0b089', ropa: '#5c4a3a', rot: -Math.PI * 0.1 },
   { x: -2.8, z: 1.85, piel: '#c6866a', ropa: '#3d4f5c', rot: Math.PI },
   { x: -1.4, z: 1.85, piel: '#8d5524', ropa: '#4a5560', rot: Math.PI },
-  { x: 0.2, z: 1.85, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI },
+  { x: -0.65, z: 1.85, piel: '#d4a574', ropa: '#2c3e50', rot: Math.PI },
   { x: 1.6, z: 1.85, piel: '#e0b089', ropa: '#5c4a3a', rot: Math.PI },
   { x: -2.2, z: 3.45, piel: '#a0674b', ropa: '#34495e', rot: Math.PI },
   { x: -0.6, z: 3.45, piel: '#c6866a', ropa: '#3a3a42', rot: Math.PI },
