@@ -87,7 +87,7 @@ export function PanelTurno({
           </span>
         </h2>
         {dialogo?.texto && (
-          <p className="min-w-0 flex-1 text-xs leading-tight text-white line-clamp-1">{dialogo.texto}</p>
+          <p className="min-w-0 flex-1 text-xs leading-normal text-white">{dialogo.texto}</p>
         )}
         <span className="shrink-0 text-[11px] font-bold text-white/80">
           {numero}/{total}
@@ -120,10 +120,10 @@ export function PanelTurno({
                   <button
                     key={r.texto}
                     type="button"
-                    className="inline-flex items-center max-w-[13rem] min-h-[36px] px-2.5 py-1 text-left text-xs font-semibold text-court-900 bg-white rounded-suave"
+                    className="inline-flex items-center min-h-[36px] px-3 py-1.5 text-left text-xs font-semibold text-court-900 bg-white hover:bg-calma-mist focus-visible:ring-2 focus-visible:ring-white rounded-suave transition-colors"
                     onClick={() => onResponder({ ...r, texto, origen: 'segura' })}
                   >
-                    <span className="line-clamp-1">«{texto}»</span>
+                    <span>«{texto}»</span>
                   </button>
                 )
               })}
