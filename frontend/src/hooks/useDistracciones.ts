@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   AVISO_PREVIO_MS,
   DISTRACCIONES,
+  DISTRACCIONES_TEMPORALMENTE_APAGADAS,
   crearDistraccion,
   elegirDistraccion,
   intervaloDistraccion,
@@ -32,6 +33,9 @@ interface Opciones {
 }
 
 export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: Opciones) {
+  const nivelActivo: NivelDistracciones = DISTRACCIONES_TEMPORALMENTE_APAGADAS
+    ? 'apagadas'
+    : nivel
   const [activa, setActiva] = useState<Distraccion | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [explicacion, setExplicacion] = useState('')
@@ -42,8 +46,8 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
   const activaRef = useRef<Distraccion | null>(null)
   const ultimoTipo = useRef<TipoDistraccion | null>(null)
   const timerFin = useRef<number | null>(null)
-  const estado = useRef({ numPublico, avisar, nivel })
-  estado.current = { numPublico, avisar, nivel }
+  const estado = useRef({ numPublico, avisar, nivel: nivelActivo })
+  estado.current = { numPublico, avisar, nivel: nivelActivo }
 
   const sonido = useCallback(() => {
     if (!sonidos.current) sonidos.current = new SonidosDistraccion()
@@ -93,7 +97,7 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
   }, [])
 
   useEffect(() => {
-    if (enCalma || nivel === 'apagadas') {
+    if (enCalma || nivelActivo === 'apagadas') {
       cortar()
       return
     }
@@ -113,7 +117,7 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
       const extra = elegirDistraccion({
         id: contador.current,
         papel,
-        nivel,
+        nivel: nivelActivo,
         numPublico: estado.current.numPublico,
         anterior: activaRef.current?.tipo ?? ultimoTipo.current,
         soloRapidas: true,
@@ -121,7 +125,7 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
       const sonar = () => {
         if (!vivo) return
         setAviso(null)
-        sonido().reproducir(extra, volumenDistraccion(nivel))
+        sonido().reproducir(extra, volumenDistraccion(nivelActivo))
         timersSolape.push(
           window.setTimeout(() => {
             if (!activaRef.current) setExplicacion(DISTRACCIONES[extra.tipo].explicacion)
@@ -140,15 +144,15 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
     const lanzar = () => {
       if (!vivo) return
       if (activaRef.current) {
-        if (Math.random() < probabilidadSolape(nivel)) solapar()
-        programar(nivel === 'muchas' ? intervaloDistraccion(nivel) : 1500)
+        if (Math.random() < probabilidadSolape(nivelActivo)) solapar()
+        programar(nivelActivo === 'muchas' ? intervaloDistraccion(nivelActivo) : 1500)
         return
       }
       contador.current += 1
       const d = elegirDistraccion({
         id: contador.current,
         papel,
-        nivel,
+        nivel: nivelActivo,
         numPublico: estado.current.numPublico,
         anterior: ultimoTipo.current,
       })
@@ -157,10 +161,12 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
       const arrancar = () => {
         if (!vivo) return
         empezar(d)
-        if (Math.random() < probabilidadSolape(nivel) * 0.5) {
+        if (Math.random() < probabilidadSolape(nivelActivo) * 0.5) {
           timersSolape.push(window.setTimeout(solapar, 700 + Math.random() * 1300))
         }
-        programar(Math.max(800, intervaloDistraccion(nivel) - (conAviso ? AVISO_PREVIO_MS : 0)))
+        programar(
+          Math.max(800, intervaloDistraccion(nivelActivo) - (conAviso ? AVISO_PREVIO_MS : 0))
+        )
       }
       if (conAviso) {
         setAviso(DISTRACCIONES[d.tipo].aviso)
@@ -170,7 +176,7 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
       arrancar()
     }
 
-    programar(nivel === 'muchas' ? 1500 : 3000)
+    programar(nivelActivo === 'muchas' ? 1500 : 3000)
 
     return () => {
       vivo = false
@@ -178,7 +184,7 @@ export function useDistracciones({ nivel, avisar, enCalma, papel, numPublico }: 
       for (const t of timersSolape) window.clearTimeout(t)
       cortar()
     }
-  }, [enCalma, nivel, papel, empezar, cortar, sonido, anotar])
+  }, [enCalma, nivelActivo, papel, empezar, cortar, sonido, anotar])
 
   useEffect(() => () => sonidos.current?.cerrar(), [])
 

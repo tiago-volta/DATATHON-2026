@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
-import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { ElegirPuntoVista } from '@/components/sala-previa/declaracion/ElegirPuntoVista'
 import { SimuladorDeclaracion } from '@/components/sala-previa/declaracion/SimuladorDeclaracion'
 import {
@@ -12,7 +10,6 @@ import {
   type ContadoresAyuda,
   type RegistroTurno,
 } from '@/components/sala-previa/declaracion/ResumenDeclaracion'
-import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import {
   NOMBRE_POR_DEFECTO,
   puntoVistaDesdeRol,
@@ -36,12 +33,6 @@ export default function PaginaDeclaracion() {
     repeticiones: 0,
     aclaraciones: 0,
   })
-  const {
-    conseguidas,
-    aviso,
-    desbloquear,
-    descartarAviso,
-  } = useInsigniasUtiles()
 
   useEffect(() => {
     const perfil = cargarPerfil()
@@ -61,7 +52,6 @@ export default function PaginaDeclaracion() {
   const terminar = (reg: RegistroTurno[], ay: ContadoresAyuda) => {
     setRegistro(reg)
     setAyudas(ay)
-    desbloquear('ensaye-declaracion')
     setFase('resumen')
   }
 
@@ -81,55 +71,47 @@ export default function PaginaDeclaracion() {
   }
 
   return (
-    <>
-      <main id="contenido-principal" className="page-shell-wide pb-24">
-        <nav aria-label="Volver" className="mb-6">
-          <Link href="/sala-previa" className="link-atras">
-            <Icono nombre="←" />
-            Volver a la sala
-          </Link>
-        </nav>
+    <main id="contenido-principal" className="page-shell-wide pb-24">
+      <nav aria-label="Volver" className="mb-6">
+        <Link href="/sala-previa" className="link-atras">
+          <Icono nombre="←" />
+          Volver a la sala
+        </Link>
+      </nav>
 
-        <header className="mb-8 max-w-3xl">
-          <h1 className="titulo-pagina mb-2">Simula tu declaración</h1>
-          <p className="entradilla mb-0">
-            Practica las preguntas del juicio desde tres sitios de la sala. El caso es inventado.
-            En un juicio real, di siempre lo que pasó de verdad.
-          </p>
-        </header>
+      <header className="mb-8 max-w-3xl">
+        <h1 className="titulo-pagina mb-2">Simula tu declaración</h1>
+        <p className="entradilla mb-0">
+          Practica las preguntas del juicio desde tres sitios de la sala. El caso es inventado.
+          En un juicio real, di siempre lo que pasó de verdad.
+        </p>
+      </header>
 
-        {fase === 'elegir' && (
-          <ElegirPuntoVista sugerido={sugerido} onElegir={empezar} />
-        )}
+      {fase === 'elegir' && (
+        <ElegirPuntoVista sugerido={sugerido} onElegir={empezar} />
+      )}
 
-        {fase === 'simular' && puntoVista && (
-          <SimuladorDeclaracion
-            key={`${puntoVista}-${sesion}`}
-            puntoVista={puntoVista}
-            nombre={nombre}
-            voz={voz}
-            onVoz={setVoz}
-            onTerminar={terminar}
-          />
-        )}
+      {fase === 'simular' && puntoVista && (
+        <SimuladorDeclaracion
+          key={`${puntoVista}-${sesion}`}
+          puntoVista={puntoVista}
+          nombre={nombre}
+          voz={voz}
+          onVoz={setVoz}
+          onTerminar={terminar}
+        />
+      )}
 
-        {fase === 'resumen' && puntoVista && (
-          <ResumenDeclaracion
-            puntoVista={puntoVista}
-            registro={registro}
-            ayudas={ayudas}
-            nombre={nombre}
-            onRepetir={repetir}
-            onCambiar={cambiar}
-          />
-        )}
-
-        <div className="mt-12 max-w-2xl">
-          <PanelInsignias conseguidas={conseguidas} apartado="sala-previa" />
-        </div>
-      </main>
-
-      <AvisoInsignia insignia={aviso} onDescartar={descartarAviso} />
-    </>
+      {fase === 'resumen' && puntoVista && (
+        <ResumenDeclaracion
+          puntoVista={puntoVista}
+          registro={registro}
+          ayudas={ayudas}
+          nombre={nombre}
+          onRepetir={repetir}
+          onCambiar={cambiar}
+        />
+      )}
+    </main>
   )
 }

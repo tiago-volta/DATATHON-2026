@@ -53,6 +53,9 @@ interface Props {
   aviso: string | null
   /** Quién habla y la frase actual, encima de la sala enfocada. */
   rotulo: RotuloEnfoque | null
+  /** Ambiente traído de Sala Previa (0–100). */
+  luz?: number
+  gente?: number
 }
 
 export function VistaDeclaracion3D({
@@ -63,6 +66,8 @@ export function VistaDeclaracion3D({
   distraccion,
   aviso,
   rotulo,
+  luz = VALORES_AMBIENTE_SALA.luz,
+  gente = VALORES_AMBIENTE_SALA.gente,
 }: Props) {
   const labelId = useId()
   const inicial = miradaTurno(puntoVista, 'jueza')
@@ -148,8 +153,8 @@ export function VistaDeclaracion3D({
         <SalaVistas3D
           yaw={yaw}
           pitch={pitch}
-          luz={pausa ? 12 : VALORES_AMBIENTE_SALA.luz}
-          gente={pausa ? 0 : VALORES_AMBIENTE_SALA.gente}
+          luz={pausa ? 12 : luz}
+          gente={pausa ? 0 : gente}
           enfoque={enfoque}
           animando={animando}
           destino={destino}

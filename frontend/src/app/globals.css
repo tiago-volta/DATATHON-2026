@@ -467,18 +467,34 @@
 }
 
 .sala-juzgado-fs-root:fullscreen .sala-fs-viewer,
-.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-viewer {
+.sala-juzgado-fs-root:-webkit-full-screen .sala-fs-viewer,
+.sala-juzgado-fs-root.is-fullscreen .sala-fs-viewer {
   flex: 1 1 auto;
   width: 100%;
   aspect-ratio: auto;
-  min-height: min(70vh, 100%);
-  height: calc(100vh - 7.5rem);
-  border-radius: 0.75rem;
+  min-height: 0;
+  height: 100%;
+  border-radius: 0;
 }
 
 .sala-juzgado-fs-root:fullscreen,
 .sala-juzgado-fs-root:-webkit-full-screen,
 .sala-juzgado-fs-root.is-fullscreen {
+  background: #000000 !important;
+}
+
+/* Fallback si el navegador deniega la Fullscreen API */
+.sala-juzgado-fs-fallback {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
   background: #000000 !important;
 }
 

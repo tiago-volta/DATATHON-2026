@@ -8,8 +8,10 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { MotorAudioSala } from '@/lib/sala-previa/audio'
 import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
 import type { NivelDistracciones } from '@/lib/sala-previa/distracciones'
+import { cargarAmbiente } from '@/lib/sala-previa/ambiente'
 import { VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
 import { numPublicoVisible } from '@/lib/sala-previa/salaVistasConfig'
+import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import {
   HABLANTES,
   PUNTOS_VISTA,
@@ -52,15 +54,14 @@ interface LineaVoz {
   texto: string
 }
 
-function leerAjustes(): { nivel: NivelDistracciones; avisar: boolean } {
+function leerAjustes(): { nivel: NivelDistracciones } {
   try {
     const v = JSON.parse(window.localStorage.getItem(CLAVE_AJUSTES) ?? '{}')
     return {
       nivel: v.nivel === 'apagadas' || v.nivel === 'muchas' ? v.nivel : 'pocas',
-      avisar: v.avisar !== false,
     }
   } catch {
-    return { nivel: 'pocas', avisar: true }
+    return { nivel: 'pocas' }
   }
 }
 
@@ -89,7 +90,8 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   const [lineas, setLineas] = useState<LineaSubtitulo[]>([])
   const [anuncio, setAnuncio] = useState('')
   const [objetivo, setObjetivo] = useState<ObjetivoCamara>({ id: 0, destino: 'jueza' })
-  const [ajustes, setAjustes] = useState({ nivel: 'pocas' as NivelDistracciones, avisar: true })
+  const [ajustes, setAjustes] = useState({ nivel: 'pocas' as NivelDistracciones })
+  const [ambiente, setAmbiente] = useState<ValoresEstimulo>(VALORES_AMBIENTE_SALA)
   const [esperandoListo, setEsperandoListo] = useState(false)
 
   const gen = useRef(0)
@@ -102,10 +104,11 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
 
   const { activa, aviso, explicacion, historial, disparar } = useDistracciones({
     nivel: ajustes.nivel,
-    avisar: ajustes.avisar,
+    // En la simulación final: sin anuncio previo.
+    avisar: false,
     enCalma: pausa !== null,
     papel,
-    numPublico: numPublicoVisible(VALORES_AMBIENTE_SALA.gente, papel),
+    numPublico: numPublicoVisible(ambiente.gente, papel),
   })
   const activaRef = useRef(activa)
   activaRef.current = activa
@@ -188,11 +191,13 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
 
   useEffect(() => {
     setAjustes(leerAjustes())
+    const valores = cargarAmbiente()
+    setAmbiente(valores)
     precargarVoces()
     const m = new MotorAudioSala()
     motor.current = m
     bancoSonidos().desbloquear()
-    void m.iniciar().then(() => m.actualizar(VALORES_AMBIENTE_SALA))
+    void m.iniciar().then(() => m.actualizar(valores))
     return () => {
       cortarTodo()
       m.detener(false)
@@ -380,6 +385,8 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
         distraccion={activa}
         aviso={aviso}
         rotulo={rotuloVisible}
+        luz={ambiente.luz}
+        gente={ambiente.gente}
       />
 
       <Subtitulos lineas={lineas} />
@@ -441,14 +448,13 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
             </button>
           </div>
           <ControlDistracciones
+            modo="simulacion"
             nivel={ajustes.nivel}
-            avisar={ajustes.avisar}
             enCalma={pausa !== null}
             aviso={aviso}
             explicacion={explicacion}
             historial={historial}
             onNivel={(nivel) => cambiarAjustes({ nivel })}
-            onAvisar={(avisar) => cambiarAjustes({ avisar })}
           />
         </aside>
       </div>
