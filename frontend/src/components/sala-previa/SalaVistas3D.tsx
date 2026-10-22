@@ -2,7 +2,16 @@
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ContactShadows, Environment, useGLTF, useTexture } from '@react-three/drei'
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject, type Ref } from 'react'
+import {
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  type MutableRefObject,
+  type Ref,
+  type RefObject,
+} from 'react'
 import * as THREE from 'three'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 import {
@@ -75,32 +84,71 @@ function urlPersona(toga: boolean, ropa: string): string {
 }
 
 /**
- * Quaternius modular: cada parte (Head/Body/Legs/Feet) puede traer su propio
- * Skin con huesos duplicados. Hay que rotar TODOS los bones con ese nombre.
+ * true = GLB Quaternius. false = cápsulas (fallback estable).
+ * Quaternius: rest pose con quaternions no triviales + armature scale 100.
+ * Deltas locales de sentado siguen inestables (estiraje / T-pose); cápsulas por defecto.
  */
-function huesosPorNombre(root: THREE.Object3D): Map<string, THREE.Bone[]> {
-  const map = new Map<string, THREE.Bone[]>()
+const USAR_HUMANOIDES = false
+
+const _deltaQ = new THREE.Quaternion()
+const _deltaE = new THREE.Euler()
+
+type RestPose = Map<string, THREE.Quaternion>
+
+/**
+ * Quaternius modular: 4 skins comparten el mismo armature.
+ * Deduplicamos por uuid; Three sanitiza UpperLeg.L → UpperLegL.
+ */
+function huesosUnicos(root: THREE.Object3D): Map<string, THREE.Bone> {
+  const map = new Map<string, THREE.Bone>()
+  const vistos = new Set<string>()
   root.traverse((obj) => {
     const mesh = obj as THREE.SkinnedMesh
     if (!mesh.isSkinnedMesh || !mesh.skeleton) return
     for (const b of mesh.skeleton.bones) {
-      if (!b.name) continue
-      const lista = map.get(b.name)
-      if (lista) lista.push(b)
-      else map.set(b.name, [b])
+      if (!b.name || vistos.has(b.uuid)) continue
+      vistos.add(b.uuid)
+      if (!map.has(b.name)) map.set(b.name, b)
     }
   })
   return map
 }
 
-function rotarTodos(
-  huesos: Map<string, THREE.Bone[]>,
+function capturarRestPose(root: THREE.Object3D): RestPose {
+  const rest: RestPose = new Map()
+  for (const b of huesosUnicos(root).values()) {
+    rest.set(b.uuid, b.quaternion.clone())
+  }
+  return rest
+}
+
+function restaurarRestPose(root: THREE.Object3D, rest: RestPose) {
+  for (const b of huesosUnicos(root).values()) {
+    const q = rest.get(b.uuid)
+    if (q) b.quaternion.copy(q)
+  }
+}
+
+function huesoPorAlias(huesos: Map<string, THREE.Bone>, nombreConPunto: string) {
+  return huesos.get(nombreConPunto) ?? huesos.get(nombreConPunto.replace(/\./g, ''))
+}
+
+/** Delta local sobre la rest pose (nunca rotation.set absoluto). */
+function deltaHueso(
+  huesos: Map<string, THREE.Bone>,
+  rest: RestPose,
   nombre: string,
   x: number,
   y = 0,
   z = 0
 ) {
-  for (const h of huesos.get(nombre) ?? []) h.rotation.set(x, y, z)
+  const h = huesoPorAlias(huesos, nombre)
+  if (!h) return
+  const base = rest.get(h.uuid)
+  if (!base) return
+  _deltaE.set(x, y, z, 'XYZ')
+  _deltaQ.setFromEuler(_deltaE)
+  h.quaternion.copy(base).multiply(_deltaQ)
 }
 
 function actualizarEsqueletos(root: THREE.Object3D) {
@@ -111,50 +159,36 @@ function actualizarEsqueletos(root: THREE.Object3D) {
   })
 }
 
-/**
- * Three.js quita el punto de nombres glTF (UpperLeg.L → UpperLegL).
- * Probamos ambas formas por si el loader cambia.
- */
-function rotarHuesoNombrado(
-  huesos: Map<string, THREE.Bone[]>,
-  nombreConPunto: string,
-  x: number,
-  y = 0,
-  z = 0
-) {
-  const sinPunto = nombreConPunto.replace(/\./g, '')
-  rotarTodos(huesos, nombreConPunto, x, y, z)
-  if (sinPunto !== nombreConPunto) rotarTodos(huesos, sinPunto, x, y, z)
+/** Baja brazos del T-pose con deltas relativos a la rest Quaternius. */
+function poseBrazosAbajo(huesos: Map<string, THREE.Bone>, rest: RestPose) {
+  deltaHueso(huesos, rest, 'UpperArm.L', 0, 0, 1.15)
+  deltaHueso(huesos, rest, 'UpperArm.R', 0, 0, -1.15)
+  deltaHueso(huesos, rest, 'LowerArm.L', 0.2, 0, 0.08)
+  deltaHueso(huesos, rest, 'LowerArm.R', 0.2, 0, -0.08)
 }
 
-/** Baja brazos del T-pose a un idle natural. */
-function poseBrazosAbajo(huesos: Map<string, THREE.Bone[]>) {
-  rotarHuesoNombrado(huesos, 'UpperArm.L', 0, 0, 1.35)
-  rotarHuesoNombrado(huesos, 'UpperArm.R', 0, 0, -1.35)
-  rotarHuesoNombrado(huesos, 'LowerArm.L', 0.15, 0, 0.1)
-  rotarHuesoNombrado(huesos, 'LowerArm.R', 0.15, 0, -0.1)
-}
-
-/** Aproxima sentarse sin clip de animación (exports sin animaciones). */
-function poseSentada(root: THREE.Object3D) {
-  const huesos = huesosPorNombre(root)
-  poseBrazosAbajo(huesos)
-  rotarHuesoNombrado(huesos, 'Hips', -0.2)
-  rotarHuesoNombrado(huesos, 'UpperLeg.L', 1.45)
-  rotarHuesoNombrado(huesos, 'UpperLeg.R', 1.45)
-  rotarHuesoNombrado(huesos, 'LowerLeg.L', -1.55)
-  rotarHuesoNombrado(huesos, 'LowerLeg.R', -1.55)
-  rotarHuesoNombrado(huesos, 'Foot.L', 0.25)
-  rotarHuesoNombrado(huesos, 'Foot.R', 0.25)
-  rotarHuesoNombrado(huesos, 'Abdomen', 0.1)
-  rotarHuesoNombrado(huesos, 'Torso', 0.06)
-  rotarHuesoNombrado(huesos, 'Chest', 0.04)
+/** Sentarse: deltas locales; luego bajar el grupo (~cadera a asiento). */
+function poseSentada(root: THREE.Object3D, rest: RestPose) {
+  restaurarRestPose(root, rest)
+  const huesos = huesosUnicos(root)
+  poseBrazosAbajo(huesos, rest)
+  // Muslos hacia delante / rodillas dobladas (ejes locales del armature Quaternius).
+  deltaHueso(huesos, rest, 'UpperLeg.L', 0, 0, -1.35)
+  deltaHueso(huesos, rest, 'UpperLeg.R', 0, 0, 1.35)
+  deltaHueso(huesos, rest, 'LowerLeg.L', 0, 0, 1.45)
+  deltaHueso(huesos, rest, 'LowerLeg.R', 0, 0, -1.45)
+  deltaHueso(huesos, rest, 'Foot.L', 0.35, 0, 0)
+  deltaHueso(huesos, rest, 'Foot.R', 0.35, 0, 0)
+  deltaHueso(huesos, rest, 'Hips', -0.12, 0, 0)
+  deltaHueso(huesos, rest, 'Abdomen', 0.08, 0, 0)
+  deltaHueso(huesos, rest, 'Torso', 0.05, 0, 0)
   actualizarEsqueletos(root)
 }
 
-function poseDePie(root: THREE.Object3D) {
-  const huesos = huesosPorNombre(root)
-  poseBrazosAbajo(huesos)
+function poseDePie(root: THREE.Object3D, rest: RestPose) {
+  restaurarRestPose(root, rest)
+  const huesos = huesosUnicos(root)
+  poseBrazosAbajo(huesos, rest)
   actualizarEsqueletos(root)
 }
 
@@ -429,43 +463,14 @@ interface FiguraProps {
   cabezaRef?: Ref<THREE.Group>
 }
 
-/** Humano low-poly (Quaternius CC0). Misma API que las antiguas cápsulas. */
-function FiguraPersona({
-  position,
-  rotationY = 0,
-  scale = 1,
-  tonoPiel = '#c6866a',
-  ropa = '#1a1a1e',
-  visible = 1,
-  sentada = false,
-  toga = false,
-  cabezaRef,
-}: FiguraProps) {
-  const group = useRef<THREE.Group>(null)
-  const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
-  const url = useMemo(() => urlPersona(toga, ropa), [toga, ropa])
-  const { scene } = useGLTF(url)
-
-  const copia = useMemo(() => {
-    const c = SkeletonUtils.clone(scene) as THREE.Group
-    tintarPersona(c, tonoPiel, ropa, toga)
-    return c
-  }, [scene, tonoPiel, ropa, toga])
-
-  const poseLista = useRef(false)
-  useLayoutEffect(() => {
-    poseLista.current = false
-    asignarRefCabeza(copia, cabezaRef)
-  }, [copia, sentada, cabezaRef])
-
+function useOpacidadFigura(
+  group: RefObject<THREE.Group | null>,
+  visible: number,
+  scale: number,
+  opacidad: MutableRefObject<number>
+) {
   useFrame((_, dt) => {
     if (!group.current) return
-    // Aplicar pose tras el primer frame (esqueletos ya en el grafo de escena).
-    if (!poseLista.current) {
-      if (sentada) poseSentada(copia)
-      else poseDePie(copia)
-      poseLista.current = true
-    }
     const objetivo = Math.max(0, Math.min(1, visible))
     opacidad.current = THREE.MathUtils.damp(
       opacidad.current,
@@ -496,9 +501,122 @@ function FiguraPersona({
       }
     })
   })
+}
 
-  // Sentada: pivote en los pies; tras doblar piernas el asiento queda ~0.45–0.5 m.
-  const yOffset = sentada ? -0.05 : 0
+/** Cápsulas geométricas (fallback estable). */
+function FiguraPersonaCapsula({
+  position,
+  rotationY = 0,
+  scale = 1,
+  tonoPiel = '#c6866a',
+  ropa = '#1a1a1e',
+  visible = 1,
+  sentada = false,
+  toga = false,
+  cabezaRef,
+}: FiguraProps) {
+  const group = useRef<THREE.Group>(null)
+  const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
+  useOpacidadFigura(group, visible, scale, opacidad)
+
+  const torsoY = sentada ? 0.58 : 0.92
+  const headY = sentada ? 1.22 : 1.62
+  const ancho = toga ? 0.28 : 0.2
+
+  return (
+    <group ref={group} position={position} rotation={[0, rotationY, 0]} scale={scale}>
+      {!sentada && (
+        <>
+          <mesh position={[-0.11, 0.38, 0]}>
+            <capsuleGeometry args={[0.08, 0.5, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+          <mesh position={[0.11, 0.38, 0]}>
+            <capsuleGeometry args={[0.08, 0.5, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+        </>
+      )}
+      {sentada && (
+        <>
+          <mesh position={[-0.12, 0.22, 0.12]}>
+            <capsuleGeometry args={[0.08, 0.35, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+          <mesh position={[0.12, 0.22, 0.12]}>
+            <capsuleGeometry args={[0.08, 0.35, 4, 8]} />
+            <meshStandardMaterial color="#222228" roughness={0.85} />
+          </mesh>
+        </>
+      )}
+      <mesh position={[0, torsoY, 0]}>
+        <capsuleGeometry args={[ancho, sentada ? 0.38 : 0.58, 6, 12]} />
+        <meshStandardMaterial color={ropa} roughness={0.72} metalness={0.04} />
+      </mesh>
+      {toga && (
+        <mesh position={[0, sentada ? 0.42 : 0.55, 0]}>
+          <cylinderGeometry args={[0.32, 0.38, sentada ? 0.55 : 0.85, 12]} />
+          <meshStandardMaterial color={ropa} roughness={0.78} />
+        </mesh>
+      )}
+      <mesh position={[0, torsoY + (sentada ? 0.2 : 0.26), 0]}>
+        <boxGeometry args={[toga ? 0.62 : 0.5, 0.14, 0.26]} />
+        <meshStandardMaterial color={ropa} roughness={0.75} />
+      </mesh>
+      <group ref={cabezaRef} position={[0, headY - 0.2, 0]}>
+        <mesh position={[0, 0.06, 0]}>
+          <cylinderGeometry args={[0.07, 0.08, 0.12, 10]} />
+          <meshStandardMaterial color={tonoPiel} roughness={0.7} />
+        </mesh>
+        <mesh position={[0, 0.2, 0]}>
+          <sphereGeometry args={[0.155, 18, 18]} />
+          <meshStandardMaterial color={tonoPiel} roughness={0.65} />
+        </mesh>
+        <mesh position={[0, 0.26, -0.02]}>
+          <sphereGeometry args={[0.14, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+          <meshStandardMaterial color="#2c241c" roughness={0.9} />
+        </mesh>
+      </group>
+    </group>
+  )
+}
+
+/** Humano low-poly (Quaternius CC0). Pose = rest + deltas locales. */
+function FiguraPersonaHumanoide({
+  position,
+  rotationY = 0,
+  scale = 1,
+  tonoPiel = '#c6866a',
+  ropa = '#1a1a1e',
+  visible = 1,
+  sentada = false,
+  toga = false,
+  cabezaRef,
+}: FiguraProps) {
+  const group = useRef<THREE.Group>(null)
+  const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
+  const url = useMemo(() => urlPersona(toga, ropa), [toga, ropa])
+  const { scene } = useGLTF(url)
+
+  const copia = useMemo(() => {
+    const c = SkeletonUtils.clone(scene) as THREE.Group
+    c.updateMatrixWorld(true)
+    tintarPersona(c, tonoPiel, ropa, toga)
+    return c
+  }, [scene, tonoPiel, ropa, toga])
+
+  const restPose = useMemo(() => capturarRestPose(copia), [copia])
+
+  useLayoutEffect(() => {
+    if (sentada) poseSentada(copia, restPose)
+    else poseDePie(copia, restPose)
+    asignarRefCabeza(copia, cabezaRef)
+  }, [copia, restPose, sentada, cabezaRef])
+
+  useOpacidadFigura(group, visible, scale, opacidad)
+
+  // Cadera en bind ~0.9 m; al sentar bajamos para apoyar en asiento (~0.45–0.5).
+  const yOffset = sentada ? -0.42 : 0
   const modeloScale = toga ? 0.97 : 0.95
 
   return (
@@ -509,7 +627,6 @@ function FiguraPersona({
       scale={scale}
     >
       <primitive object={copia} scale={modeloScale} />
-      {/* Saya de toga (volumen bajo el traje, sin segundo GLB) */}
       {toga && (
         <mesh
           position={[0, sentada ? 0.48 : 0.55, 0.04]}
@@ -521,6 +638,14 @@ function FiguraPersona({
         </mesh>
       )}
     </group>
+  )
+}
+
+function FiguraPersona(props: FiguraProps) {
+  return USAR_HUMANOIDES ? (
+    <FiguraPersonaHumanoide {...props} />
+  ) : (
+    <FiguraPersonaCapsula {...props} />
   )
 }
 
@@ -1583,4 +1708,6 @@ export function SalaVistas3D(props: SalaVistas3DProps) {
 }
 
 Object.values(MODELOS).forEach((url) => useGLTF.preload(url))
-Object.values(PERSONAS).forEach((url) => useGLTF.preload(url))
+if (USAR_HUMANOIDES) {
+  Object.values(PERSONAS).forEach((url) => useGLTF.preload(url))
+}
