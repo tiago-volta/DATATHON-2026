@@ -213,3 +213,66 @@ def test_obtener_rol_inexistente():
     res = client.get("/api/roles?rol=desconocido")
     assert res.status_code == 404
 
+
+
+def test_evaluar_respuesta_declaracion_mock():
+    res = client.post(
+        "/api/declaracion/evaluar-respuesta",
+        json={
+            "pregunta": "¿Qué vio usted en la parada?",
+            "respuesta_usuario": "Vi a alguien correr con un móvil hacia la plaza",
+            "nombre": "Luis",
+            "rol": "testigo",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "replica_juez" in data
+    assert data["avanzar"] is True
+    assert "parada" in data["replica_juez"].lower() or "anotado" in data["replica_juez"].lower()
+
+
+def test_evaluar_respuesta_declaracion_agua():
+    res = client.post(
+        "/api/declaracion/evaluar-respuesta",
+        json={
+            "pregunta": "¿Puede decirme su nombre?",
+            "respuesta_usuario": "¿Puedo beber un poco de agua antes?",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["esperar_listo"] is True
+    assert "agua" in data["replica_juez"].lower()
+
+
+def test_evaluar_respuesta_declaracion_mentira_testigo():
+    res = client.post(
+        "/api/declaracion/evaluar-respuesta",
+        json={
+            "pregunta": "¿Promete decir la verdad?",
+            "respuesta_usuario": "yo voy a mentir",
+            "nombre": "Luis",
+            "rol": "testigo",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["avanzar"] is False
+    assert "falso testimonio" in data["replica_juez"].lower() or "verdad" in data["replica_juez"].lower()
+
+
+def test_evaluar_respuesta_declaracion_niega_testigo():
+    res = client.post(
+        "/api/declaracion/evaluar-respuesta",
+        json={
+            "pregunta": "¿Promete decir la verdad?",
+            "respuesta_usuario": "yo no digo nada",
+            "nombre": "Luis",
+            "rol": "testigo",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["avanzar"] is False
+    assert "410" in data["replica_juez"] or "silencio" in data["replica_juez"].lower()

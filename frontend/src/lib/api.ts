@@ -225,3 +225,37 @@ export function descargarICS(plazos: Plazo[], titulo: string) {
       window.URL.revokeObjectURL(url)
     })
 }
+
+export interface EvaluacionRespuestaDeclaracion {
+  replica_juez: string
+  por_que: string
+  avanzar: boolean
+  entrar_pausa: boolean
+  esperar_listo: boolean
+  fuente: 'gemini' | 'mock' | string
+}
+
+export async function evaluarRespuestaDeclaracionAPI(params: {
+  pregunta: string
+  respuesta_usuario: string
+  nombre?: string
+  rol?: string
+  contexto?: string
+}): Promise<EvaluacionRespuestaDeclaracion> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 6500)
+  try {
+    const response = await fetch(`${API_URL}/api/declaracion/evaluar-respuesta`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+      signal: controller.signal,
+    })
+    clearTimeout(timeoutId)
+    if (!response.ok) throw new Error('Error al evaluar respuesta')
+    return await response.json()
+  } catch (e) {
+    clearTimeout(timeoutId)
+    throw e
+  }
+}

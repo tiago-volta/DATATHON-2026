@@ -591,3 +591,35 @@ async def demo_sentencia():
         "sentencia": MOCK_SENTENCIA,
         "respuesta": MOCK_RESPONSE_SENTENCIA,
     }
+
+
+class EvaluacionRespuestaInput(BaseModel):
+    pregunta: str
+    respuesta_usuario: str
+    nombre: Optional[str] = "Luis"
+    rol: Optional[str] = "testigo"
+    contexto: Optional[str] = None
+
+
+class EvaluacionRespuestaResponse(BaseModel):
+    replica_juez: str
+    por_que: str
+    avanzar: bool = True
+    entrar_pausa: bool = False
+    esperar_listo: bool = False
+    fuente: str = "mock"
+
+
+@app.post("/api/declaracion/evaluar-respuesta", response_model=EvaluacionRespuestaResponse)
+async def evaluar_respuesta(entrada: EvaluacionRespuestaInput):
+    """Evalúa con Gemini la respuesta escrita del usuario en la simulación del juicio con el contexto del caso."""
+    from .llm import evaluar_respuesta_declaracion
+
+    resultado = await evaluar_respuesta_declaracion(
+        pregunta=entrada.pregunta,
+        respuesta_usuario=entrada.respuesta_usuario,
+        nombre=entrada.nombre or "Luis",
+        rol=entrada.rol or "testigo",
+        contexto_caso=entrada.contexto,
+    )
+    return resultado

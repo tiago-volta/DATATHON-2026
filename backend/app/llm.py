@@ -6,7 +6,10 @@ con conexión opcional a Google Gemini (google-genai), OpenAI o Anthropic.
 
 import asyncio
 import json
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 import re
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -181,10 +184,9 @@ def _llamar_gemini_sync(system_prompt: str, user_content: str) -> dict:
     modelos = list(
         dict.fromkeys(
             [
-                os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
-                "gemini-3.7-flash",
-                "gemini-3.6-flash",
+                os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
                 "gemini-3.5-flash",
+                "gemini-3.8-flash",
             ]
         )
     )
@@ -951,10 +953,10 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
     modelos = list(
         dict.fromkeys(
             [
-                os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
-                "gemini-3.7-flash",
-                "gemini-3.6-flash",
+                os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
+                "gemini-3.5-flash-lite",
                 "gemini-3.5-flash",
+                "gemini-3.8-flash",
             ]
         )
     )
@@ -978,7 +980,7 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
             ultimo_error = e
             mensaje = str(e)
             if "429" in mensaje or "RESOURCE_EXHAUSTED" in mensaje:
-                break
+                continue
             continue
     raise ultimo_error or RuntimeError("No se pudo conectar con Gemini")
 
@@ -1021,3 +1023,196 @@ async def responder_ayuda(pregunta: str) -> dict:
 
     return {"respuesta": _respuesta_mock_ayuda(limpia), "fuente": "mock"}
 
+
+
+SYSTEM_PROMPT_DECLARACION = """Eres la Magistrada-Jueza que preside una vista penal en España.
+Diriges la declaración de una persona en calidad de testigo (o investigado) que cuenta con medidas de accesibilidad cognitiva (TEA, lenguaje claro según UNE 153101 y art. 7 bis LEC).
+Tus intervenciones deben ser breves (máximo 1 o 2 frases cortas, menos de 20 palabras en total), respetuosas, comprensivas y con autoridad institucional tranquila.
+
+CONTEXTO DEL CASO:
+- Juicio penal en el Juzgado de lo Penal.
+- Hechos: Un martes 3 de marzo sobre las 19:00 horas, en la parada de autobús de la calle Real, alguien arrebató un teléfono móvil de las manos a una mujer y huyó a la carrera hacia la plaza.
+- La persona que declara (habitualmente Luis) estaba en la parada esperando el autobús. No conoce a las partes y prometió decir la verdad.
+- Vio la ropa de quien corría pero no pudo ver bien la cara por la rapidez.
+
+INSTRUCCIONES:
+1. "replica_juez": Lo que dice la jueza en voz alta al escuchar al declarante.
+   - Si el testigo dice que va a mentir, que mentirá, que no dirá la verdad o se niega a contestar/declarar (ej. "voy a mentir", "yo no digo nada", "no hablo", "no quiero contestar"): ADVIÉRTELE con firmeza institucional y calma de que como testigo tiene la obligación legal de decir la verdad y declarar (arts. 410 y 433 LECrim), y que mentir es delito de falso testimonio (art. 458 CP). Pon "avanzar": false y pídele que responda.
+   - Si pide agua: autorízalo con empatía ("Sí, por favor, beba un poco de agua. Tómese su tiempo."). Pon "avanzar": true y "esperar_listo": true.
+   - Si pide una pausa o descanso: autorízalo ("De acuerdo. Hacemos una pausa breve."). Pon "avanzar": false y "entrar_pausa": true.
+   - Si dice que no lo sabe o no lo recuerda: valida su honestidad ("De acuerdo. Si no lo recuerda, es correcto decirlo. Seguimos."). Pon "avanzar": true.
+   - Si aporta datos del hecho (móvil, parada, autobús, ropa, plaza, etc.): acusa recibo ("Queda anotado lo que usted observó en la parada. Seguimos."). Pon "avanzar": true.
+   - Si responde cualquier otra cosa pertinente: confirma recepción ("De acuerdo. Queda anotada su respuesta. Seguimos."). Pon "avanzar": true.
+   - Máximo 20 palabras. Voz activa, lenguaje claro y accesible.
+2. "por_que": Una explicación pedagógica corta dirigida al usuario en segunda persona ("tú") indicando por qué su respuesta es válida o la consecuencia legal.
+3. "avanzar": booleano (false si se niega a declarar o dice que mentirá; true si colabora normalmente).
+4. "entrar_pausa": booleano (true si pide pausa).
+5. "esperar_listo": booleano (true si pide agua).
+
+Responde ÚNICAMENTE en JSON con los campos: "replica_juez", "por_que", "avanzar", "entrar_pausa", "esperar_listo".
+"""
+
+
+async def evaluar_respuesta_declaracion(
+    pregunta: str,
+    respuesta_usuario: str,
+    nombre: str = "Luis",
+    rol: str = "testigo",
+    contexto_caso: Optional[str] = None,
+) -> dict:
+    """Evalúa la respuesta libre del usuario con Gemini y el contexto del caso judicial de Luis."""
+    import unicodedata
+
+    texto_usuario = (respuesta_usuario or "").strip()
+
+    # Normalizar sin acentos ni signos para coincidencia robusta
+    texto_nfkd = unicodedata.normalize("NFKD", texto_usuario)
+    minus = "".join(c for c in texto_nfkd if not unicodedata.combining(c)).lower()
+    minus = re.sub(r"[^\w\s]", " ", minus)
+    minus = re.sub(r"\s+", " ", minus).strip()
+
+    # 1. Detección de mentira o falso testimonio
+    palabras_mentira = [
+        "mentir",
+        "mentira",
+        "mentiras",
+        "fals",
+        "no dire la verdad",
+        "no voy a decir la verdad",
+        "pienso mentir",
+        "iba a mentir",
+        "voy a mentir",
+        "enganar",
+        "engano",
+    ]
+    es_mentira = any(k in minus for k in palabras_mentira)
+
+    # 2. Detección de negarse a contestar o guardar silencio
+    palabras_niega = [
+        "no digo nada",
+        "no voy a decir nada",
+        "no dire nada",
+        "no hablo",
+        "no voy a hablar",
+        "no pienso hablar",
+        "no quiero contestar",
+        "no contesto",
+        "no voy a contestar",
+        "me niego",
+        "no declaro",
+        "me callo",
+        "silencio",
+        "prefiero no contestar",
+        "no me da la gana",
+    ]
+    se_niega = any(k in minus for k in palabras_niega)
+
+    if (es_mentira or se_niega) and rol != "investigado":
+        replica = (
+            "Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. "
+            "Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). "
+            "Le repito la pregunta: ¿promete decir la verdad?"
+            if es_mentira
+            else f"{nombre}, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). "
+            "No tienes derecho a guardar silencio. Debes contestar a la pregunta."
+        )
+        por_que = (
+            "Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión."
+            if es_mentira
+            else "A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar (art. 410 LECrim)."
+        )
+        return {
+            "replica_juez": replica,
+            "por_que": por_que,
+            "avanzar": False,
+            "entrar_pausa": False,
+            "esperar_listo": False,
+            "fuente": "legal",
+        }
+
+    # 3. Agua
+    if any(k in minus for k in ["agua", "beber", "vaso", "sed"]):
+        return {
+            "replica_juez": "Sí, por favor, beba un poco de agua. Tómese su tiempo.",
+            "por_que": "Pedir agua está bien. Te ayuda a seguir con calma.",
+            "avanzar": True,
+            "entrar_pausa": False,
+            "esperar_listo": True,
+            "fuente": "mock",
+        }
+
+    # 4. Pausa
+    if any(k in minus for k in ["pausa", "descanso", "un momento", "parar", "bloque", "nervio", "ahog", "agobi"]):
+        return {
+            "replica_juez": "De acuerdo. Hacemos una pausa para que descanse.",
+            "por_que": "Pedir una pausa es tu derecho procesal (art. 7 bis LEC).",
+            "avanzar": False,
+            "entrar_pausa": True,
+            "esperar_listo": False,
+            "fuente": "mock",
+        }
+
+    provider = os.getenv("LLM_PROVIDER", "mock").lower()
+    gemini_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+    gemini_ok = provider == "gemini" or (provider in ("mock", "") and len(gemini_key) >= 20)
+
+    if gemini_ok:
+        try:
+            user_content = (
+                f"Nombre del declarante: {nombre}\n"
+                f"Rol procesal: {rol}\n"
+                f"Pregunta formulada en sala: \"{pregunta}\"\n"
+                f"Respuesta escrita por {nombre}: \"{texto_usuario}\"\n"
+                f"Contexto adicional: {contexto_caso or 'Sin contexto adicional'}"
+            )
+            raw = await asyncio.to_thread(
+                _llamar_gemini_texto_sync,
+                SYSTEM_PROMPT_DECLARACION,
+                user_content,
+            )
+            # Limpiar posibles bloques markdown json
+            limpio = raw.strip()
+            if limpio.startswith("```"):
+                limpio = re.sub(r"^```[a-zA-Z]*\n?", "", limpio)
+                limpio = re.sub(r"\n?```$", "", limpio)
+            data = json.loads(limpio.strip())
+            return {
+                "replica_juez": data.get("replica_juez", "De acuerdo. Queda anotada su respuesta. Seguimos."),
+                "por_que": data.get("por_que", "Respondiste con tus palabras. Lo importante es no inventar."),
+                "avanzar": bool(data.get("avanzar", True)),
+                "entrar_pausa": bool(data.get("entrar_pausa", False)),
+                "esperar_listo": bool(data.get("esperar_listo", False)),
+                "fuente": "gemini",
+            }
+        except Exception as e:
+            logger.warning(f"Fallback local en simulacion por error Gemini: {e}")
+
+    # Fallback contextual inteligente sobre el caso de Luis
+    if any(k in minus for k in ["no sé", "no se", "no recuerdo", "no me acuerdo", "no me fijé"]):
+        return {
+            "replica_juez": "De acuerdo. Si no lo recuerda, es correcto decirlo. Seguimos.",
+            "por_que": "Decir que no recuerdas es ser sincero. No tienes que inventar.",
+            "avanzar": True,
+            "entrar_pausa": False,
+            "esperar_listo": False,
+            "fuente": "mock",
+        }
+
+    if any(k in minus for k in ["móvil", "movil", "parada", "autobús", "autobus", "calle real", "plaza", "correr", "ropa", "cara"]):
+        return {
+            "replica_juez": "Queda anotado lo que usted observó en la parada. Muchas gracias.",
+            "por_que": "Aportaste los datos del hecho que presenciaste de forma clara.",
+            "avanzar": True,
+            "entrar_pausa": False,
+            "esperar_listo": False,
+            "fuente": "mock",
+        }
+
+    return {
+        "replica_juez": "De acuerdo. Queda anotado en el acta. Seguimos.",
+        "por_que": "Respondiste con tus palabras. En un juicio lo esencial es decir la verdad.",
+        "avanzar": True,
+        "entrar_pausa": False,
+        "esperar_listo": False,
+        "fuente": "mock",
+    }

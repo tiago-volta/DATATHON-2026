@@ -10,6 +10,7 @@ export type TipoRespuestaLibre =
   | 'no_contestar'
   | 'fuera_tema'
   | 'al_tema'
+  | 'mentira'
 
 export interface ResultadoRespuestaLibre {
   tipo: TipoRespuestaLibre
@@ -172,6 +173,49 @@ export function clasificarRespuestaLibre(
       entrarPausa: false,
       esperarListo: false,
       porQue: 'Respondiste con tus palabras.',
+    }
+  }
+
+  const esMentira =
+    texto.includes('mentir') ||
+    texto.includes('voy a mentir') ||
+    texto.includes('iba a mentir') ||
+    texto.includes('pienso mentir') ||
+    texto.includes('no voy a decir la verdad') ||
+    texto.includes('no dire la verdad') ||
+    texto.includes('mentira') ||
+    texto.includes('fals') ||
+    texto.includes('enganar') ||
+    texto.includes('engano')
+
+  const seNiega =
+    texto.includes('no digo nada') ||
+    texto.includes('no voy a decir nada') ||
+    texto.includes('no dire nada') ||
+    texto.includes('no hablo') ||
+    texto.includes('no voy a hablar') ||
+    texto.includes('no pienso hablar') ||
+    texto.includes('no quiero contestar') ||
+    texto.includes('no contesto') ||
+    texto.includes('no voy a contestar') ||
+    texto.includes('me niego') ||
+    texto.includes('no declaro') ||
+    texto.includes('me callo') ||
+    texto.includes('silencio') ||
+    texto.includes('prefiero no contestar')
+
+  if ((esMentira || seNiega) && !contexto.esInvestigado) {
+    return {
+      tipo: 'mentira',
+      replicaJuez: esMentira
+        ? 'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?'
+        : 'Luis, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). No tienes derecho a guardar silencio. Debes contestar.',
+      avanzar: false,
+      entrarPausa: false,
+      esperarListo: false,
+      porQue: esMentira
+        ? 'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.'
+        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar (art. 410 LECrim).',
     }
   }
 
