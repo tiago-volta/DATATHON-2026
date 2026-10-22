@@ -8,7 +8,7 @@ import { LineaTiempo } from '@/components/LineaTiempo'
 import { TarjetaRol } from '@/components/TarjetaRol'
 import { FASES_TESTIGO, FASES_INVESTIGADO, ROLES } from '@/lib/contenido'
 import { extraerTextoDocumentoAPI, type CitacionProcesada, type Plazo } from '@/lib/api'
-import { fusionarResultado, guardarCitacion, obtenerCitacion } from '@/lib/citaciones/almacen'
+import { borrarCitacion, fusionarResultado, guardarCitacion, obtenerCitacion } from '@/lib/citaciones/almacen'
 import { diasNaturalesHasta, etiquetaDias, formatearFechaLarga, parsearFecha } from '@/lib/citaciones/fechas'
 import { calcularDiasHabilesRestantes } from '@/lib/plazos'
 
@@ -703,6 +703,7 @@ export default function PaginaCitacion() {
   const [mostrarOriginal, setMostrarOriginal] = useState(false)
   const [mostrarRoles, setMostrarRoles] = useState(false)
   const [resultado, setResultado] = useState<CitacionProcesada | null>(null)
+  const [idCitacionActiva, setIdCitacionActiva] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [errorCalendario, setErrorCalendario] = useState('')
   const [extrayendo, setExtrayendo] = useState(false)
@@ -725,6 +726,7 @@ export default function PaginaCitacion() {
     }
     setTexto(guardada.texto)
     setResultado(guardada.resultado)
+    setIdCitacionActiva(guardada.id)
     setPasoExplicacion(0)
     setError('')
     setPaso('resultado')
@@ -744,6 +746,7 @@ export default function PaginaCitacion() {
   const publicarResultado = (procesada: CitacionProcesada, textoOriginal: string) => {
     const guardada = guardarCitacion({ texto: textoOriginal, resultado: procesada })
     setResultado(guardada.resultado)
+    setIdCitacionActiva(guardada.id)
     setPaso('resultado')
     window.history.replaceState(null, '', `/citacion?id=${encodeURIComponent(guardada.id)}`)
   }
@@ -1611,22 +1614,45 @@ export default function PaginaCitacion() {
               </div>
             </details>
 
-            <button
-              type="button"
-              onClick={() => {
-                setPaso('entrada')
-                setResultado(null)
-                setTexto('')
-                setPasoExplicacion(0)
-                setNombreArchivo('')
-                setError('')
-                setErrorCalendario('')
-              }}
-              className="btn-ghost"
-            >
-              <Icono nombre="←" />
-              Transformar otro documento judicial
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setPaso('entrada')
+                  setResultado(null)
+                  setIdCitacionActiva(null)
+                  setTexto('')
+                  setPasoExplicacion(0)
+                  setNombreArchivo('')
+                  setError('')
+                  setErrorCalendario('')
+                  window.history.replaceState(null, '', '/citacion')
+                }}
+                className="btn-ghost"
+              >
+                <Icono nombre="←" />
+                Transformar otro documento judicial
+              </button>
+              {idCitacionActiva && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('¿Quieres borrar esta citación guardada de tu navegador?')) {
+                      borrarCitacion(idCitacionActiva)
+                      setPaso('entrada')
+                      setResultado(null)
+                      setIdCitacionActiva(null)
+                      setTexto('')
+                      setPasoExplicacion(0)
+                      window.history.replaceState(null, '', '/citacion')
+                    }
+                  }}
+                  className="btn-ghost text-red-700 hover:bg-red-50 hover:text-red-900 font-bold"
+                >
+                  Borrar esta citación
+                </button>
+              )}
+            </div>
             </div>
             </>
             )}

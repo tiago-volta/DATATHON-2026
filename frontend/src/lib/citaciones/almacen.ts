@@ -123,6 +123,45 @@ export function obtenerCitacion(id: string): CitacionGuardada | null {
   return leerCitaciones().find((cita) => cita.id === id) ?? null
 }
 
+export function borrarCitacion(id: string): boolean {
+  if (typeof window === 'undefined') return false
+  const previas = leerCitaciones()
+  const nuevas = previas.filter((cita) => cita.id !== id)
+  if (nuevas.length === previas.length) return false
+  escribir(nuevas)
+  return true
+}
+
+export function actualizarRolCitacion(id: string, nuevoRol: string): boolean {
+  if (typeof window === 'undefined') return false
+  const previas = leerCitaciones()
+  let modificado = false
+  const nuevas = previas.map((cita) => {
+    if (cita.id === id) {
+      modificado = true
+      return {
+        ...cita,
+        resultado: {
+          ...cita.resultado,
+          datos_clave: {
+            ...cita.resultado.datos_clave,
+            rol: nuevoRol,
+          },
+        },
+      }
+    }
+    return cita
+  })
+  if (!modificado) return false
+  escribir(nuevas)
+  return true
+}
+
+export function borrarTodasCitaciones(): void {
+  if (typeof window === 'undefined') return
+  escribir([])
+}
+
 export function fechasDeResultado(resultado: CitacionProcesada, hoy = new Date()): Date[] {
   const crudas = [resultado.datos_clave?.fecha, ...(resultado.plazos ?? []).map((plazo) => plazo.fecha)]
   const vistas = new Set<number>()

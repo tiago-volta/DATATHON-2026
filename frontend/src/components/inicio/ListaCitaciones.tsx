@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { EVENTO_CITACIONES, leerCitaciones } from '@/lib/citaciones/almacen'
+import { EVENTO_CITACIONES, borrarCitacion, leerCitaciones } from '@/lib/citaciones/almacen'
 import { resumirCitaciones, type ResumenCita } from '@/lib/citaciones/resumen'
 import { EVENTO_PERFIL } from '@/lib/perfil/perfil'
 
@@ -58,13 +58,27 @@ export function ListaCitaciones() {
                 </div>
                 <p className="text-xl font-bold text-court-900 numeros shrink-0">{cita.diasTexto}</p>
               </div>
-              <Link
-                href={`/citacion?id=${encodeURIComponent(cita.id)}`}
-                aria-label={`Consultar citación del ${cita.fechaTexto}`}
-                className="btn-secondary mt-4 inline-flex items-center justify-center min-h-[44px]"
-              >
-                Consultar citación
-              </Link>
+              <div className="flex flex-wrap items-center gap-3 mt-4">
+                <Link
+                  href={`/citacion?id=${encodeURIComponent(cita.id)}`}
+                  aria-label={`Consultar citación del ${cita.fechaTexto}`}
+                  className="btn-secondary inline-flex items-center justify-center min-h-[44px]"
+                >
+                  Consultar citación
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('¿Quieres borrar esta citación guardada en tu navegador?')) {
+                      borrarCitacion(cita.id)
+                    }
+                  }}
+                  aria-label={`Borrar citación del ${cita.fechaTexto}`}
+                  className="btn-ghost text-red-700 hover:bg-red-50 hover:text-red-900 inline-flex items-center justify-center min-h-[44px] text-sm font-bold"
+                >
+                  Borrar citación
+                </button>
+              </div>
             </article>
           </li>
         ))}

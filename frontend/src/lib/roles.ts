@@ -82,6 +82,17 @@ export function obtenerFaqsPorRol(id: RolPerfil): FaqRol[] {
 export function obtenerRolActivo(): RolPerfil {
   if (typeof window === 'undefined') return 'desconocido'
 
+  // 1. Elección explícita del usuario en su perfil
+  try {
+    const perfil = cargarPerfil()
+    if (perfil?.rol && perfil.rol !== 'desconocido') {
+      return perfil.rol
+    }
+  } catch {
+    /* ignore */
+  }
+
+  // 2. Rol extraído de la citación activa
   try {
     const lista = leerCitaciones()
     const id = resumirCitaciones(lista)[0]?.id
@@ -98,15 +109,6 @@ export function obtenerRolActivo(): RolPerfil {
     if (bruto === 'víctima') return 'victima'
     if (bruto === 'demandante' || bruto === 'demandado' || bruto === 'demandada') {
       return 'parte_civil'
-    }
-  } catch {
-    /* ignore */
-  }
-
-  try {
-    const perfil = cargarPerfil()
-    if (perfil?.rol && perfil.rol !== 'desconocido') {
-      return perfil.rol
     }
   } catch {
     /* ignore */

@@ -5,7 +5,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Icono } from '@/components/Icono'
 import { useAuth } from '@/lib/auth/AuthContext'
-import { leerCitaciones } from '@/lib/citaciones/almacen'
+import {
+  actualizarRolCitacion,
+  borrarCitacion,
+  borrarTodasCitaciones,
+  leerCitaciones,
+  type CitacionGuardada,
+} from '@/lib/citaciones/almacen'
 import {
   ESTIMULOS_PERFIL,
   NIVELES_TOLERANCIA,
@@ -40,6 +46,7 @@ export default function PaginaPerfil() {
   const [errorGuardar, setErrorGuardar] = useState<string | undefined>()
   const [yaExiste, setYaExiste] = useState(false)
   const [tieneCitacion, setTieneCitacion] = useState(false)
+  const [citaciones, setCitaciones] = useState<CitacionGuardada[]>([])
   const [guardado, setGuardado] = useState(false)
   const [listo, setListo] = useState(false)
 
@@ -58,7 +65,9 @@ export default function PaginaPerfil() {
     } else if (sesion?.perfil?.nombre) {
       setNombre(sesion.perfil.nombre)
     }
-    setTieneCitacion(leerCitaciones().length > 0)
+    const cits = leerCitaciones()
+    setCitaciones(cits)
+    setTieneCitacion(cits.length > 0)
     setListo(true)
   }, [sesion, cargandoSesion])
 
@@ -86,6 +95,12 @@ export default function PaginaPerfil() {
       setErrorGuardar('No se ha podido guardar el perfil en este dispositivo.')
       return
     }
+    // Sincronizar el rol elegido en las citaciones guardadas
+    const cits = leerCitaciones()
+    cits.forEach((c) => {
+      actualizarRolCitacion(c.id, rol)
+    })
+    setCitaciones(leerCitaciones())
     setErrorGuardar(undefined)
     if (!yaExiste) {
       router.push('/sala-previa')
@@ -294,6 +309,85 @@ export default function PaginaPerfil() {
           </div>
         </div>
       </form>
+
+      <section className="card mt-8 border border-court-200 p-6" aria-labelledby="titulo-citaciones-perfil">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div>
+            <h2 id="titulo-citaciones-perfil" className="text-lg font-bold text-court-900">
+              Tus citaciones guardadas
+            </h2>
+            <p className="text-xs text-court-700">
+              Puedes consultarlas o borrarlas de este dispositivo.
+            </p>
+          </div>
+          {citaciones.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm('¿Seguro que quieres borrar todas las citaciones guardadas en este dispositivo?')) {
+                  borrarTodasCitaciones()
+                  setCitaciones([])
+                  setTieneCitacion(false)
+                }
+              }}
+              className="text-xs text-red-700 hover:text-red-900 underline font-bold min-h-[36px]"
+            >
+              Borrar todas
+            </button>
+          )}
+        </div>
+
+        {citaciones.length === 0 ? (
+          <div className="rounded-suave bg-calma-sage p-4 text-center">
+            <p className="text-sm text-court-700">
+              No tienes ninguna citación guardada en este dispositivo.
+            </p>
+            <Link href="/citacion" className="btn-secondary text-xs mt-3 inline-flex min-h-[38px] px-4">
+              Añadir citación
+            </Link>
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {citaciones.map((c) => (
+              <li
+                key={c.id}
+                className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-calma-sage rounded-suave border border-court-200"
+              >
+                <div>
+                  <p className="font-bold text-court-900 text-sm">
+                    {c.resultado.datos_clave.organo || 'Juzgado'} · <span className="capitalize text-accent-navy">{c.resultado.datos_clave.rol}</span>
+                  </p>
+                  <p className="text-xs text-court-700 mt-0.5">
+                    {c.resultado.datos_clave.fecha} {c.resultado.datos_clave.hora ? `a las ${c.resultado.datos_clave.hora}` : ''}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/citacion?id=${encodeURIComponent(c.id)}`}
+                    className="btn-secondary text-xs min-h-[38px] px-3 font-medium"
+                  >
+                    Ver
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm('¿Quieres borrar esta citación?')) {
+                        borrarCitacion(c.id)
+                        const restantes = leerCitaciones()
+                        setCitaciones(restantes)
+                        setTieneCitacion(restantes.length > 0)
+                      }
+                    }}
+                    className="btn-ghost text-xs text-red-700 hover:bg-red-100 min-h-[38px] px-3 font-bold"
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {sesion && (
         <section
