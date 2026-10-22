@@ -3,7 +3,6 @@ import {
   CircleHelp,
   Compass,
   FileText,
-  UserCheck,
   ShieldCheck,
   MessageSquareQuote,
   type LucideIcon,
@@ -149,28 +148,6 @@ export default function Inicio() {
           </Link>
         </div>
       </section>
-
-      {/* Caso de referencia de demostración: Luis (Testigo con TEA) */}
-      <div className="card mb-8 bg-white border border-accent-info/30 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-accent-navy flex items-center gap-1.5">
-            <IconoInicio icono={UserCheck} className="text-accent-info" />
-            Caso de referencia • Testigo penal
-          </span>
-          <span className="text-xs bg-accent-info/15 text-accent-navy font-semibold px-2.5 py-0.5 rounded-suave border border-accent-info/25">
-            Luis, 28 años (TEA)
-          </span>
-        </div>
-        <h3 className="font-bold text-court-900 text-lg mb-1">
-          Preparación guiada de Luis
-        </h3>
-        <p className="text-sm text-court-700 mb-4 max-w-2xl leading-relaxed">
-          Recorrido de aclimatación sensorial progresiva, herramientas de regulación en sala y práctica de respuestas sin sobrecarga cognitiva.
-        </p>
-        <Link href="/demo/luis" className="btn-secondary text-sm inline-flex items-center gap-2">
-          Ver caso guiado de Luis
-        </Link>
-      </div>
 
       <p className="mb-8">
         <Link

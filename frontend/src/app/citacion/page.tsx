@@ -696,7 +696,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string, hora?: string) {
 
 export default function PaginaCitacion() {
   const [paso, setPaso] = useState<'pendiente' | 'entrada' | 'procesando' | 'resultado'>('pendiente')
-  const [texto, setTexto] = useState('')
+  const [texto, setTexto] = useState(EJEMPLO_LUIS)
   const [nombreArchivo, setNombreArchivo] = useState('')
   const [modoLectura, setModoLectura] = useState<'clara' | 'facil' | 'simple'>('clara')
   const [pasoExplicacion, setPasoExplicacion] = useState(0)

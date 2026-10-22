@@ -171,18 +171,6 @@ export async function analizarPreguntaAPI(
   return response.json()
 }
 
-export async function obtenerDemoLuis() {
-  const response = await fetch(`${API_URL}/api/demo/luis`)
-  if (!response.ok) throw new Error('Error al cargar datos')
-  return response.json()
-}
-
-export async function obtenerDemoJuan() {
-  const response = await fetch(`${API_URL}/api/demo/juan`)
-  if (!response.ok) throw new Error('Error al cargar datos')
-  return response.json()
-}
-
 export async function obtenerFases(orden: string): Promise<{ fases: Fase[] }> {
   const response = await fetch(`${API_URL}/api/fases-judiciales/${orden}`)
   if (!response.ok) throw new Error('Error al cargar fases')

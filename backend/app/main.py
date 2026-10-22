@@ -585,48 +585,6 @@ async def obtener_roles():
     return ROLES_JUDICIALES
 
 
-@app.get("/api/demo/luis")
-async def demo_luis():
-    """Devuelve los datos del caso de Luis (TEA, testigo)."""
-    return {
-        "citacion": MOCK_CITACION_LUIS,
-        "respuesta": MOCK_RESPONSE_LUIS,
-        "perfil": {
-            "nombre": "Luis",
-            "edad": 28,
-            "condicion": "TEA nivel 1",
-            "rol": "testigo",
-            "necesidades": [
-                "Lenguaje literal, sin metáforas",
-                "Anticipar cada paso",
-                "Ambiente tranquilo",
-                "Preguntas concretas",
-            ],
-        },
-    }
-
-
-@app.get("/api/demo/juan")
-async def demo_juan():
-    """Devuelve los datos del caso de Juan (TDAH + ceguera, investigado)."""
-    return {
-        "citacion": MOCK_CITACION_JUAN,
-        "respuesta": MOCK_RESPONSE_JUAN,
-        "perfil": {
-            "nombre": "Juan",
-            "edad": 32,
-            "condicion": "TDAH combinado y ceguera",
-            "rol": "investigado",
-            "necesidades": [
-                "Información por voz",
-                "Textos en bloques cortos",
-                "Pausas frecuentes",
-                "Descripción de documentos visuales",
-            ],
-        },
-    }
-
-
 @app.get("/api/demo/sentencia")
 async def demo_sentencia():
     """Devuelve un ejemplo de sentencia penal adaptada a lectura fácil."""

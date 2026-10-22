@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { FormEvent, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { preguntarAyudaAPI } from '@/lib/api'
 import { cargarPerfil } from '@/lib/perfil/perfil'
@@ -339,21 +338,6 @@ export default function PaginaAyuda() {
           })}
         </div>
       </section>
-
-      <nav aria-label="Atajos de ayuda" className="flex flex-wrap gap-4 text-court-800">
-        <Link href="/citacion" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
-          Citación
-        </Link>
-        <Link href="/pasaporte" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
-          Pasaporte
-        </Link>
-        <Link href="/sala-previa" className="underline underline-offset-4 font-bold min-h-[44px] inline-flex items-center">
-          Sala y ensayo
-        </Link>
-        <Link href="/" className="underline underline-offset-4 min-h-[44px] inline-flex items-center">
-          Inicio
-        </Link>
-      </nav>
     </main>
   )
 }
