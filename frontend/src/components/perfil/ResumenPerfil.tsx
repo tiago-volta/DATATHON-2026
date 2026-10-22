@@ -51,26 +51,30 @@ export function ResumenPerfil() {
     )
   }
 
+  // 1. SIN PERFIL: Botón principal único "Empieza: ¿para qué vas al juzgado?"
   if (!vista?.tienePerfil) {
     return (
       <section
-        className="card mb-8 border-2 border-accent-info/40 bg-white p-6"
+        className="card mb-8 border-2 border-accent-info/40 bg-white p-6 shadow-sm"
         aria-labelledby="titulo-empieza"
       >
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-suave bg-accent-info/15 text-accent-navy text-xs font-bold uppercase tracking-wider mb-3 border border-accent-info/25">
+          <span aria-hidden="true">🧭</span>
+          <span>Primer paso</span>
+        </div>
         <h2 id="titulo-empieza" className="text-2xl font-bold text-court-900 mb-2">
-          Empieza por tu perfil
+          ¿Para qué vas al juzgado?
         </h2>
         <p className="text-court-700 max-w-[48ch] mb-5 leading-relaxed">
-          Guarda cómo quieres que sea la sala.
-          Tu papel sale de la citación.
+          Cada papel en un juicio tiene derechos y obligaciones distintos. Descubre qué implica acudir como testigo, investigado o víctima y prepara tus ajustes con calma.
         </p>
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-3">
           <Link
-            href={sesion ? '/perfil' : '/registro'}
+            href="/perfil"
             className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
           >
-            Crear tu perfil
+            Empieza: ¿para qué vas al juzgado?
           </Link>
           <Link
             href="/citacion"
@@ -78,39 +82,48 @@ export function ResumenPerfil() {
           >
             Tengo una citación
           </Link>
-          <Link
-            href="/sala-previa"
-            className="btn-ghost text-base min-h-[44px] inline-flex items-center justify-center text-court-800"
-          >
-            Entrar en la sala
-          </Link>
         </div>
 
-        {!sesion && (
-          <p className="text-xs text-court-600 mt-4 pt-3 border-t border-court-200">
-            Puedes practicar sin registrarte. Si quieres conservar tu avance en otros dispositivos, puedes crear una cuenta arriba.
-          </p>
-        )}
+        <div className="mt-5 pt-4 border-t border-court-200 flex flex-wrap items-center justify-between gap-3 text-xs text-court-600">
+          <Link
+            href="/demo/luis"
+            className="text-accent-navy hover:text-accent-info underline decoration-accent-info/40 font-medium inline-flex items-center gap-1.5 min-h-[36px]"
+          >
+            <span aria-hidden="true">👤</span>
+            Ver el ejemplo de Luis (testigo con TEA)
+          </Link>
+          {!sesion && (
+            <span>Práctica libre sin registro. Puedes crear cuenta arriba si deseas sincronizarla.</span>
+          )}
+        </div>
       </section>
     )
   }
 
+  // 2. CON PERFIL: Botón principal "Sigue tu ensayo"
   return (
     <section
-      className="card mb-8 border-2 border-accent-info/40 bg-white p-6"
+      className="card mb-8 border-2 border-accent-info/40 bg-white p-6 shadow-sm"
       aria-labelledby="titulo-bienvenida"
     >
-      <span className="inline-flex text-xs font-bold uppercase tracking-wider text-accent-navy bg-accent-info/15 px-2.5 py-1 rounded-suave border border-accent-info/25 mb-2">
-        Tu preparación
-      </span>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span className="inline-flex text-xs font-bold uppercase tracking-wider text-accent-navy bg-accent-info/15 px-2.5 py-1 rounded-suave border border-accent-info/25">
+          Tu preparación
+        </span>
+        {sesion?.email && (
+          <span className="text-xs text-court-600 font-medium">
+            {sesion.email}
+          </span>
+        )}
+      </div>
 
       <h2 id="titulo-bienvenida" className="text-2xl font-bold text-court-900 mb-1">
         Hola{vista.nombre ? `, ${vista.nombre}` : ''}
       </h2>
       <p className="text-court-800 text-base mb-4 max-w-[48ch]">
         {idCitacionProxima
-          ? 'Puedes ensayar la sala, ver tu pasaporte o abrir la citación.'
-          : 'Aún no tienes una citación. Créala para ver la fecha, el lugar y tu papel.'}
+          ? 'Continúa preparando tu declaración en la sala 3D con tus ajustes de accesibilidad.'
+          : 'Ensayar en la sala 3D te permite anticipar las preguntas y regular los estímulos.'}
       </p>
 
       {/* Progreso del simulador */}
@@ -145,19 +158,11 @@ export function ResumenPerfil() {
       </div>
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-        {!idCitacionProxima && (
-          <Link
-            href="/citacion"
-            className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
-          >
-            Crear tu primera citación
-          </Link>
-        )}
         <Link
           href="/sala-previa?ensayo=1"
-          className={!idCitacionProxima ? 'btn-secondary text-base min-h-[44px] inline-flex items-center justify-center' : 'btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold'}
+          className="btn-primary text-base min-h-[44px] inline-flex items-center justify-center font-bold"
         >
-          Sigue tu ensayo de sala
+          Sigue tu ensayo
         </Link>
         <Link
           href="/pasaporte"
@@ -165,14 +170,37 @@ export function ResumenPerfil() {
         >
           Ver mi Pasaporte de ajustes
         </Link>
-        {idCitacionProxima && (
+        {idCitacionProxima ? (
           <Link
             href={`/citacion?id=${encodeURIComponent(idCitacionProxima)}`}
             className="btn-ghost text-base min-h-[44px] inline-flex items-center justify-center text-court-800"
           >
-            Consultar la citación más próxima
+            Consultar citación más próxima
+          </Link>
+        ) : (
+          <Link
+            href="/citacion"
+            className="btn-ghost text-base min-h-[44px] inline-flex items-center justify-center text-court-800"
+          >
+            Subir citación
           </Link>
         )}
+      </div>
+
+      <div className="mt-5 pt-4 border-t border-court-200 flex flex-wrap items-center justify-between gap-3 text-xs text-court-600">
+        <Link
+          href="/demo/luis"
+          className="text-accent-navy hover:text-accent-info underline decoration-accent-info/40 font-medium inline-flex items-center gap-1.5 min-h-[36px]"
+        >
+          <span aria-hidden="true">👤</span>
+          Ver el ejemplo de Luis
+        </Link>
+        <Link
+          href="/perfil"
+          className="text-court-600 hover:text-court-900 underline font-medium min-h-[36px] inline-flex items-center"
+        >
+          Cambiar perfil o papel
+        </Link>
       </div>
     </section>
   )

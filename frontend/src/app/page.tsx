@@ -20,7 +20,7 @@ function IconoInicio({
   return (
     <Dibujo
       aria-hidden="true"
-      className={`h-6 w-6 shrink-0 ${className}`}
+      className={`h-5 w-5 shrink-0 ${className}`}
       strokeWidth={1.75}
     />
   )
@@ -43,107 +43,98 @@ export default function Inicio() {
         </p>
       </section>
 
-      {/* Hilo conductor principal: perfil o paso inicial */}
+      {/* Acción principal única */}
       <ResumenPerfil />
       <ListaCitaciones />
 
-      {/* 4 accesos directos a las herramientas principales */}
-      <section aria-labelledby="titulo-herramientas" className="mb-8">
-        <h2 id="titulo-herramientas" className="text-xl font-bold text-court-900 mb-4">
-          Herramientas de preparación
+      {/* Fila secundaria: accesos directos compactos */}
+      <section aria-labelledby="titulo-herramientas" className="mb-8 pt-2">
+        <h2 id="titulo-herramientas" className="text-base font-bold text-court-800 mb-3 uppercase tracking-wider text-xs">
+          Otras herramientas
         </h2>
 
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {/* 1. Citación */}
           <Link
             href="/citacion"
-            className="card border-2 border-accent-info/25 hover:border-accent-info transition-colors duration-200 p-4 flex flex-col justify-between"
+            className="card border border-accent-info/20 hover:border-accent-info p-3.5 flex flex-col justify-between transition-colors duration-200"
           >
             <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-accent-info/15 rounded-suave text-accent-navy">
-                  <IconoInicio icono={FileText} className="text-accent-info" />
-                </div>
-                <h3 className="text-lg font-bold text-court-900">
-                  Comprender citación
+              <div className="flex items-center gap-2 mb-1.5">
+                <IconoInicio icono={FileText} className="text-accent-info" />
+                <h3 className="text-sm font-bold text-court-900">
+                  Citación
                 </h3>
               </div>
-              <p className="text-sm text-court-700 leading-relaxed">
-                Pasa tu citación a lectura fácil.
-                Verás la fecha, el juzgado, tu papel y qué pasa si no puedes ir.
+              <p className="text-xs text-court-700 leading-snug">
+                Pasa tu citación judicial a lectura fácil.
               </p>
             </div>
-            <span className="text-xs text-accent-navy font-bold underline decoration-accent-info/50 mt-3 inline-block">
-              Abrir citación →
+            <span className="text-[11px] text-accent-navy font-bold underline decoration-accent-info/40 mt-2 inline-block">
+              Abrir →
             </span>
           </Link>
 
           {/* 2. Pasaporte de ajustes */}
           <Link
             href="/pasaporte"
-            className="card border-2 border-accent-success/25 hover:border-accent-success transition-colors duration-200 p-4 flex flex-col justify-between"
+            className="card border border-accent-success/20 hover:border-accent-success p-3.5 flex flex-col justify-between transition-colors duration-200"
           >
             <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-accent-success/15 rounded-suave text-accent-success">
-                  <IconoInicio icono={ShieldCheck} className="text-accent-success" />
-                </div>
-                <h3 className="text-lg font-bold text-court-900">
-                  Pasaporte de ajustes
+              <div className="flex items-center gap-2 mb-1.5">
+                <IconoInicio icono={ShieldCheck} className="text-accent-success" />
+                <h3 className="text-sm font-bold text-court-900">
+                  Pasaporte
                 </h3>
               </div>
-              <p className="text-sm text-court-700 leading-relaxed">
-                Solicita pausas, luz tenue o preguntas directas amparado en el art. 7 bis de la LEC y CGPJ 2025, sin divulgar tu informe clínico.
+              <p className="text-xs text-court-700 leading-snug">
+                Pide pausas o luz tenue (art. 7 bis LEC).
               </p>
             </div>
-            <span className="text-xs text-accent-navy font-bold underline decoration-accent-success/50 mt-3 inline-block">
-              Ver o crear Pasaporte →
+            <span className="text-[11px] text-accent-navy font-bold underline decoration-accent-success/40 mt-2 inline-block">
+              Ver ajustes →
             </span>
           </Link>
 
           {/* 3. Sala Previa 3D */}
           <Link
             href="/sala-previa"
-            className="card border-2 border-accent-info/25 hover:border-accent-info transition-colors duration-200 p-4 flex flex-col justify-between"
+            className="card border border-accent-info/20 hover:border-accent-info p-3.5 flex flex-col justify-between transition-colors duration-200"
           >
             <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-calma-mist rounded-suave text-accent-navy">
-                  <IconoInicio icono={Compass} className="text-accent-navy" />
-                </div>
-                <h3 className="text-lg font-bold text-court-900">
-                  Sala de vistas 3D
+              <div className="flex items-center gap-2 mb-1.5">
+                <IconoInicio icono={Compass} className="text-accent-navy" />
+                <h3 className="text-sm font-bold text-court-900">
+                  Sala 3D
                 </h3>
               </div>
-              <p className="text-sm text-court-700 leading-relaxed">
-                Recorre la sala de vistas en 5 niveles: gradúa el volumen de toses, la luz, el aforo y prueba cascos antirruido o pausas de calma.
+              <p className="text-xs text-court-700 leading-snug">
+                Vista 3D y modulación de ruido y luz.
               </p>
             </div>
-            <span className="text-xs text-accent-navy font-bold underline decoration-accent-info/50 mt-3 inline-block">
-              Entrar en la sala 3D →
+            <span className="text-[11px] text-accent-navy font-bold underline decoration-accent-info/40 mt-2 inline-block">
+              Entrar →
             </span>
           </Link>
 
           {/* 4. Ensayo de declaración */}
           <Link
             href="/ensaya"
-            className="card border-2 border-accent-warm/25 hover:border-accent-warm transition-colors duration-200 p-4 flex flex-col justify-between"
+            className="card border border-accent-warm/20 hover:border-accent-warm p-3.5 flex flex-col justify-between transition-colors duration-200"
           >
             <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className="p-2 bg-accent-warm/10 rounded-suave text-accent-warm">
-                  <IconoInicio icono={MessageSquareQuote} className="text-accent-warm" />
-                </div>
-                <h3 className="text-lg font-bold text-court-900">
-                  Banco de preguntas
+              <div className="flex items-center gap-2 mb-1.5">
+                <IconoInicio icono={MessageSquareQuote} className="text-accent-warm" />
+                <h3 className="text-sm font-bold text-court-900">
+                  Banco preguntas
                 </h3>
               </div>
-              <p className="text-sm text-court-700 leading-relaxed">
-                Entrena preguntas con trampas habituales: preguntas compuestas, dobles negaciones y practica decir "No lo recuerdo" con serenidad.
+              <p className="text-xs text-court-700 leading-snug">
+                Entrena preguntas capciosas o dobles.
               </p>
             </div>
-            <span className="text-xs text-accent-navy font-bold underline decoration-accent-warm/50 mt-3 inline-block">
-              Practicar respuestas →
+            <span className="text-[11px] text-accent-navy font-bold underline decoration-accent-warm/40 mt-2 inline-block">
+              Practicar →
             </span>
           </Link>
         </div>
@@ -152,7 +143,7 @@ export default function Inicio() {
       <p className="mb-8">
         <Link
           href="/ayuda"
-          className="inline-flex items-center gap-3 min-h-[44px] text-accent-navy font-bold underline decoration-accent-info/50 underline-offset-4 transition-colors duration-200 hover:decoration-accent-info hover:text-accent-info"
+          className="inline-flex items-center gap-2 min-h-[44px] text-accent-navy font-bold underline decoration-accent-info/50 underline-offset-4 transition-colors duration-200 hover:decoration-accent-info hover:text-accent-info text-sm"
         >
           <IconoInicio icono={CircleHelp} className="text-accent-info" />
           Preguntas frecuentes y ayuda sobre el juzgado

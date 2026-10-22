@@ -14,9 +14,17 @@ import {
   guardarPerfil,
   type NivelTolerancia,
 } from '@/lib/perfil/perfil'
+import type { RolPerfil } from '@/lib/perfil/tipos'
 import { sanitizarNombre, validarNombre } from '@/lib/pasaporte'
 import type { IdEstimulo } from '@/lib/sala-previa/tipos'
 import { MedallasPerfil } from '@/components/perfil/MedallasPerfil'
+
+const ROLES_OPCIONES: { valor: RolPerfil; etiqueta: string; ayuda: string }[] = [
+  { valor: 'testigo', etiqueta: 'Testigo', ayuda: 'Vas a contar lo que sabes o viste. No te acusan de nada.' },
+  { valor: 'investigado', etiqueta: 'Investigado o acusado', ayuda: 'Hay una denuncia contra ti. Tienes derecho a guardar silencio.' },
+  { valor: 'victima', etiqueta: 'Víctima', ayuda: 'Has sufrido el delito. Tienes derecho a protección y acompañamiento.' },
+  { valor: 'parte_civil', etiqueta: 'Parte civil', ayuda: 'Demanda civil o laboral entre particulares.' },
+]
 
 export default function PaginaPerfil() {
   const router = useRouter()
@@ -24,6 +32,7 @@ export default function PaginaPerfil() {
   const [eliminando, setEliminando] = useState(false)
   const [mensajeBorrado, setMensajeBorrado] = useState('')
   const [nombre, setNombre] = useState('')
+  const [rol, setRol] = useState<RolPerfil>('testigo')
   const [tolerancia, setTolerancia] = useState<NivelTolerancia>(1)
   const [estimulos, setEstimulos] = useState<IdEstimulo[]>([])
   const [errorNombre, setErrorNombre] = useState<string | undefined>()
@@ -35,17 +44,17 @@ export default function PaginaPerfil() {
 
   useEffect(() => {
     if (cargandoSesion) return
-    if (!sesion) {
-      setListo(true)
-      return
-    }
+
     const perfilCargado = cargarPerfil()
     if (perfilCargado) {
       setNombre(perfilCargado.nombre)
+      if (perfilCargado.rol && perfilCargado.rol !== 'desconocido') {
+        setRol(perfilCargado.rol)
+      }
       setTolerancia(perfilCargado.tolerancia ?? 1)
       setEstimulos(perfilCargado.estimulosSensibles ?? [])
       setYaExiste(true)
-    } else if (sesion.perfil?.nombre) {
+    } else if (sesion?.perfil?.nombre) {
       setNombre(sesion.perfil.nombre)
     }
     setTieneCitacion(leerCitaciones().length > 0)
@@ -68,6 +77,7 @@ export default function PaginaPerfil() {
     setErrorNombre(undefined)
     const resultado = guardarPerfil({
       nombre,
+      rol,
       tolerancia,
       estimulosSensibles: estimulos,
     })
@@ -76,8 +86,8 @@ export default function PaginaPerfil() {
       return
     }
     setErrorGuardar(undefined)
-    if (!yaExiste && !tieneCitacion) {
-      router.push('/citacion')
+    if (!yaExiste) {
+      router.push('/sala-previa?ensayo=1')
       return
     }
     setGuardado(true)
@@ -89,25 +99,6 @@ export default function PaginaPerfil() {
         <p className="text-court-700" aria-live="polite">
           Cargando tu perfil…
         </p>
-      </main>
-    )
-  }
-
-  if (!sesion) {
-    return (
-      <main id="contenido-principal" className="page-shell">
-        <h1 className="titulo-pagina">Necesitas una cuenta</h1>
-        <p className="entradilla max-w-[42ch]">
-          Entra o crea una cuenta para guardar tu perfil en la base de datos.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/registro" className="btn-primary">
-            Crear cuenta
-          </Link>
-          <Link href="/login" className="btn-secondary">
-            Entrar
-          </Link>
-        </div>
       </main>
     )
   }
@@ -125,10 +116,15 @@ export default function PaginaPerfil() {
         {yaExiste ? 'Tu perfil' : 'Crea tu perfil'}
       </h1>
       <p className="entradilla max-w-[42ch]">
-        Aquí guardas cómo quieres que sea la sala.
-        Tu papel en el proceso sale de la citación.
+        Elige tu papel en el juicio y cómo quieres adaptar el entorno de la sala.
       </p>
-      <p className="text-court-700 mb-6 text-sm">{sesion.email}</p>
+      {sesion?.email ? (
+        <p className="text-court-700 mb-6 text-sm">{sesion.email}</p>
+      ) : (
+        <p className="text-xs text-court-600 mb-6 bg-calma-mist p-2.5 rounded-suave border border-accent-info/20">
+          Tu perfil se guarda en este dispositivo. Puedes crear una cuenta arriba si deseas sincronizarlo en otros dispositivos.
+        </p>
+      )}
 
       <form className="card" onSubmit={guardar} noValidate>
         <div className="space-y-8">
@@ -165,6 +161,46 @@ export default function PaginaPerfil() {
 
           <fieldset>
             <legend className="text-lg font-medium text-court-800 mb-2">
+              ¿Para qué vas al juzgado? (Tu papel)
+            </legend>
+            <p id="ayuda-rol" className="text-sm text-court-700 mb-4">
+              Adaptamos tus derechos y las preguntas del ensayo según tu papel.
+            </p>
+            <div className="space-y-2" role="radiogroup" aria-describedby="ayuda-rol">
+              {ROLES_OPCIONES.map((r) => {
+                const id = `rol-${r.valor}`
+                const seleccionado = rol === r.valor
+                return (
+                  <label
+                    key={r.valor}
+                    htmlFor={id}
+                    className={`flex items-start gap-3 min-h-[44px] p-4 rounded-suave border-2 cursor-pointer transition-[border-color,background-color] duration-200 ${
+                      seleccionado
+                        ? 'border-accent-info bg-calma-mist'
+                        : 'border-court-200 bg-white hover:border-court-300'
+                    }`}
+                  >
+                    <input
+                      id={id}
+                      type="radio"
+                      name="rol"
+                      value={r.valor}
+                      checked={seleccionado}
+                      onChange={() => setRol(r.valor)}
+                      className="mt-1 h-5 w-5 accent-accent-info"
+                    />
+                    <span>
+                      <span className="block font-bold text-court-900">{r.etiqueta}</span>
+                      <span className="block text-sm text-court-700 mt-1">{r.ayuda}</span>
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend className="text-lg font-medium text-court-800 mb-2">
               Tu tolerancia en la sala
             </legend>
             <p id="ayuda-tolerancia" className="text-sm text-court-700 mb-4">
@@ -180,7 +216,7 @@ export default function PaginaPerfil() {
                     htmlFor={id}
                     className={`flex items-start gap-3 min-h-[44px] p-4 rounded-suave border-2 cursor-pointer transition-[border-color,background-color] duration-200 ${
                       seleccionado
-                        ? 'border-court-500 bg-court-50'
+                        ? 'border-accent-info bg-calma-mist'
                         : 'border-court-200 bg-white hover:border-court-300'
                     }`}
                   >
@@ -191,7 +227,7 @@ export default function PaginaPerfil() {
                       value={nivel.valor}
                       checked={seleccionado}
                       onChange={() => setTolerancia(nivel.valor)}
-                      className="mt-1 h-5 w-5 accent-court-700"
+                      className="mt-1 h-5 w-5 accent-accent-info"
                     />
                     <span>
                       <span className="block font-bold text-court-900">{nivel.etiqueta}</span>
@@ -205,33 +241,33 @@ export default function PaginaPerfil() {
 
           <fieldset>
             <legend className="text-lg font-medium text-court-800 mb-2">
-              Qué te molesta más
+              Lo que más te molesta
             </legend>
             <p id="ayuda-estimulos" className="text-sm text-court-700 mb-4">
-              Marca lo que te cuesta. Puedes dejarlo vacío y actualizarlo después.
+              Puedes marcar varios. Así la sala empieza más suave en esos puntos.
             </p>
             <div className="space-y-2" role="group" aria-describedby="ayuda-estimulos">
-              {ESTIMULOS_PERFIL.map((id) => {
-                const seleccionado = estimulos.includes(id)
-                const inputId = `estimulo-${id}`
+              {ESTIMULOS_PERFIL.map((idEstimulo) => {
+                const id = `estimulo-${idEstimulo}`
+                const marcado = estimulos.includes(idEstimulo)
                 return (
                   <label
-                    key={id}
-                    htmlFor={inputId}
+                    key={idEstimulo}
+                    htmlFor={id}
                     className={`flex items-start gap-3 min-h-[44px] p-4 rounded-suave border-2 cursor-pointer transition-[border-color,background-color] duration-200 ${
-                      seleccionado
-                        ? 'border-court-500 bg-court-50'
+                      marcado
+                        ? 'border-accent-info bg-calma-mist'
                         : 'border-court-200 bg-white hover:border-court-300'
                     }`}
                   >
                     <input
-                      id={inputId}
+                      id={id}
                       type="checkbox"
-                      checked={seleccionado}
-                      onChange={() => toggleEstimulo(id)}
-                      className="mt-1 h-5 w-5 accent-court-700"
+                      checked={marcado}
+                      onChange={() => toggleEstimulo(idEstimulo)}
+                      className="mt-1 h-5 w-5 rounded accent-accent-info"
                     />
-                    <span className="font-bold text-court-900">{etiquetaEstimulo(id)}</span>
+                    <span className="font-bold text-court-900">{etiquetaEstimulo(idEstimulo)}</span>
                   </label>
                 )
               })}
@@ -244,83 +280,60 @@ export default function PaginaPerfil() {
             </p>
           )}
 
-          <button type="submit" className="btn-primary w-full" disabled={!nombre.trim()}>
-            {!yaExiste && !tieneCitacion ? 'Guardar y crear mi primera citación' : 'Guardar perfil'}
-          </button>
-          {guardado && (
-            <p className="text-sm font-medium text-court-800" role="status">
-              Perfil guardado.
-            </p>
-          )}
-          {(yaExiste || guardado) && !tieneCitacion && (
-            <div className="rounded-suave bg-calma-sage p-4">
-              <p className="font-bold text-court-900">Crea tu primera citación</p>
-              <p className="mt-1 text-court-700">
-                La carta te dice la fecha, el lugar y tu papel.
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-court-200">
+            <button type="submit" className="btn-primary min-h-[44px]">
+              {yaExiste ? 'Guardar cambios' : 'Guardar y empezar'}
+            </button>
+            {guardado && (
+              <p className="text-sm font-medium text-court-800 self-center" role="status">
+                Cambios guardados en tu perfil.
               </p>
-              <Link href="/citacion" className="btn-secondary mt-4">
-                Crear citación
-              </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </form>
 
-      <MedallasPerfil />
-
-      <section className="card max-w-lg mt-8 border-t-2 border-court-200 pt-6">
-        <h2 className="text-lg font-bold text-court-800 mb-2">
-          Privacidad y control de tus datos (Art. 17 RGPD)
-        </h2>
-        <p className="text-sm text-court-700 mb-4">
-          Puedes eliminar tu cuenta y todos los datos asociados (perfil, pasaporte, ajustes y progreso) en cualquier momento. El borrado es completo e irreversible.
-        </p>
-        {sesion ? (
-          <button
-            type="button"
-            disabled={eliminando}
-            onClick={async () => {
-              if (window.confirm('¿Seguro que quieres eliminar tu cuenta y todos tus datos definitivamente?')) {
-                setEliminando(true)
-                try {
-                  await eliminarCuenta()
-                  router.push('/')
-                } catch {
-                  setEliminando(false)
-                  setErrorGuardar('No se ha podido eliminar la cuenta en este momento.')
-                }
-              }
-            }}
-            className="btn text-sm text-red-700 border border-red-300 hover:bg-red-50"
-          >
-            {eliminando ? 'Eliminando cuenta…' : 'Eliminar mi cuenta y todos mis datos'}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {
-              if (window.confirm('¿Seguro que quieres borrar todos los datos guardados en este navegador?')) {
-                try {
-                  localStorage.clear()
-                  setNombre('')
-                  setEstimulos([])
-                  setYaExiste(false)
-                  setMensajeBorrado('Datos borrados de este dispositivo.')
-                  window.setTimeout(() => setMensajeBorrado(''), 3000)
-                } catch {}
-              }
-            }}
-            className="btn text-sm text-court-700 border border-court-300 hover:bg-court-100"
-          >
-            Borrar datos de este dispositivo
-          </button>
-        )}
-        {mensajeBorrado && (
-          <p className="text-sm text-emerald-800 font-medium mt-2" role="status">
-            {mensajeBorrado}
+      {sesion && (
+        <section
+          className="card mt-8 border-red-200 bg-red-50/40 p-6"
+          aria-labelledby="titulo-eliminar-cuenta"
+        >
+          <h2 id="titulo-eliminar-cuenta" className="text-lg font-bold text-red-900 mb-1">
+            Privacidad y control de tus datos (Art. 17 RGPD)
+          </h2>
+          <p className="text-court-700 text-sm mb-4">
+            Puedes borrar tu cuenta y todo tu historial de preparación en cualquier momento.
           </p>
-        )}
-      </section>
+          <button
+            type="button"
+            onClick={async () => {
+              if (!window.confirm('¿Seguro que quieres borrar tu cuenta? Se eliminarán todos tus datos.')) return
+              setEliminando(true)
+              try {
+                await eliminarCuenta()
+                router.push('/')
+              } catch {
+                setMensajeBorrado('No se pudo borrar la cuenta. Inténtalo de nuevo.')
+              } finally {
+                setEliminando(false)
+              }
+            }}
+            disabled={eliminando}
+            className="btn-ghost text-red-700 hover:bg-red-100 min-h-[44px] text-sm font-bold"
+          >
+            {eliminando ? 'Borrando…' : 'Borrar mi cuenta'}
+          </button>
+          {mensajeBorrado && (
+            <p className="text-sm text-red-700 font-medium mt-2" role="alert">
+              {mensajeBorrado}
+            </p>
+          )}
+        </section>
+      )}
+
+      <div className="mt-8">
+        <MedallasPerfil />
+      </div>
     </main>
   )
 }

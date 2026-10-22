@@ -51,30 +51,11 @@ import {
   registrarPractica,
 } from '@/lib/sala-previa/progreso'
 import type { ConfortCheckIn, IdEstimulo, ProgresoSala, ValoresEstimulo } from '@/lib/sala-previa/tipos'
+import { obtenerRolActivo } from '@/lib/roles'
 
 type Fase = 'intro' | 'simulacion' | 'checkin'
 
-function rolParaLaSala(): RolPerfil {
-  const lista = leerCitaciones()
-  const id = resumirCitaciones(lista)[0]?.id
-  const cita = lista.find((item) => item.id === id)
-  const bruto = cita?.resultado.datos_clave.rol?.trim().toLowerCase() ?? ''
-  if (
-    bruto === 'testigo' ||
-    bruto === 'investigado' ||
-    bruto === 'victima' ||
-    bruto === 'parte_civil'
-  ) {
-    return bruto
-  }
-  if (bruto === 'víctima') return 'victima'
-  if (bruto === 'demandante' || bruto === 'demandado' || bruto === 'demandada') {
-    return 'parte_civil'
-  }
-  const perfil = cargarPerfil()
-  if (perfil?.rol && perfil.rol !== 'desconocido') return perfil.rol
-  return 'testigo'
-}
+
 
 const PROGRESO_INICIAL: ProgresoSala = {
   nivelMaximo: 0,
@@ -132,7 +113,7 @@ export default function PaginaSalaPrevia() {
   } = usePractica()
 
   useEffect(() => {
-    setRolUsuario(rolParaLaSala())
+    setRolUsuario(obtenerRolActivo())
   }, [])
 
   const agenda = useMemo(() => generarAgendaEventos(cargarPerfil()), [])
@@ -486,10 +467,32 @@ export default function PaginaSalaPrevia() {
                       onToggleHerramienta={toggleHerramienta}
                     />
 
+                    {rolUsuario === 'desconocido' && (
+                      <div className="card border-2 border-accent-info p-4 mb-4 bg-calma-mist" role="region" aria-label="Elegir papel">
+                        <p className="font-bold text-accent-navy mb-2 text-sm">
+                          ¿Para qué vas al juzgado? Elige tu papel para adaptar el recorrido y las preguntas:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          <button type="button" onClick={() => setRolUsuario('testigo')} className="btn-secondary text-xs min-h-[38px]">
+                            Testigo
+                          </button>
+                          <button type="button" onClick={() => setRolUsuario('investigado')} className="btn-secondary text-xs min-h-[38px]">
+                            Investigado o acusado
+                          </button>
+                          <button type="button" onClick={() => setRolUsuario('victima')} className="btn-secondary text-xs min-h-[38px]">
+                            Víctima
+                          </button>
+                          <button type="button" onClick={() => setRolUsuario('parte_civil')} className="btn-secondary text-xs min-h-[38px]">
+                            Parte civil
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                     <RecorridoEscenas
                       indice={escenaIndice}
                       onCambiar={cambiarEscena}
-                      rol={rolUsuario}
+                      rol={rolUsuario === 'desconocido' ? 'testigo' : rolUsuario}
                       eventoSala={eventoSala}
                       valores={valores}
                       enCalma={enCalma}

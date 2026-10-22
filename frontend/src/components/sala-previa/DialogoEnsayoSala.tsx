@@ -19,6 +19,8 @@ import {
   type RolJuicio,
 } from '@/lib/ensaya/bancoPreguntas'
 import { cargarPerfil, registrarPreguntaDificil } from '@/lib/perfil/perfil'
+import { obtenerRolActivo } from '@/lib/roles'
+import type { RolPerfil } from '@/lib/perfil/tipos'
 
 export type { RolJuicio, FaqPregunta, PreguntaJuicio, NivelJuicio }
 export { BLOQUES_ENSAYO_SALA }
@@ -60,8 +62,15 @@ export function DialogoEnsayoSala({
   const liveAnuncioId = useId()
   const textareaId = useId()
 
-  const perfil = cargarPerfil()
-  const bloques = bloquesPorRol(perfil?.rol)
+  const [rolManual, setRolManual] = useState<RolPerfil | null>(null)
+  const [rolDetectado, setRolDetectado] = useState<RolPerfil>('desconocido')
+
+  useEffect(() => {
+    setRolDetectado(obtenerRolActivo())
+  }, [])
+
+  const rolEfectivo = rolManual ?? (rolDetectado !== 'desconocido' ? rolDetectado : null)
+  const bloques = bloquesPorRol(rolEfectivo ?? 'testigo')
   const nivelActual = bloques[nivelIndex] ?? bloques[0]
   const [aciertoDetectado, setAciertoDetectado] = useState<string | null>(null)
 
@@ -202,6 +211,52 @@ export function DialogoEnsayoSala({
     preguntaActual.rol === 'juez'
       ? 'border-court-700 bg-court-50/70'
       : 'border-accent-navy/80 bg-slate-50'
+
+  if (rolEfectivo === null) {
+    return (
+      <section
+        className="card border-2 border-accent-info/40 bg-white p-6 space-y-4"
+        aria-label="Elegir papel para el ensayo"
+      >
+        <p className="font-bold text-accent-navy text-lg">
+          Antes de empezar a ensayar, ¿cuál es tu papel en el juzgado?
+        </p>
+        <p className="text-sm text-court-700 max-w-[46ch]">
+          Adaptamos las preguntas difíciles y las respuestas seguras según acudas como testigo, investigado o víctima.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => setRolManual('testigo')}
+            className="btn-primary text-sm min-h-[44px]"
+          >
+            Testigo
+          </button>
+          <button
+            type="button"
+            onClick={() => setRolManual('investigado')}
+            className="btn-secondary text-sm min-h-[44px]"
+          >
+            Investigado o acusado
+          </button>
+          <button
+            type="button"
+            onClick={() => setRolManual('victima')}
+            className="btn-secondary text-sm min-h-[44px]"
+          >
+            Víctima
+          </button>
+          <button
+            type="button"
+            onClick={() => setRolManual('parte_civil')}
+            className="btn-secondary text-sm min-h-[44px]"
+          >
+            Parte civil
+          </button>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section
