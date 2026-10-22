@@ -2,8 +2,9 @@
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ContactShadows, Environment, useGLTF, useTexture } from '@react-three/drei'
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, type Ref } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject, type Ref } from 'react'
 import * as THREE from 'three'
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 import {
   PAPELES_SALA,
   PITCH_MAX,
@@ -36,7 +37,171 @@ const MODELOS = {
   reloj: '/sala-previa/modelos/wall_clock.glb',
 } as const
 
+/** Humanos low-poly Quaternius (CC0), meshopt ~150–165 KB. Pocos GLB, muchos clones. */
+const PERSONAS = {
+  hombreTraje: '/sala-previa/modelos/personas/hombre-traje.glb',
+  hombreCasual: '/sala-previa/modelos/personas/hombre-casual.glb',
+  hombreCasual2: '/sala-previa/modelos/personas/hombre-casual2.glb',
+  hombreTrabajador: '/sala-previa/modelos/personas/hombre-trabajador.glb',
+  mujerTraje: '/sala-previa/modelos/personas/mujer-traje.glb',
+  mujerCasual: '/sala-previa/modelos/personas/mujer-casual.glb',
+} as const
+
+const PERSONAS_CASUAL = [
+  PERSONAS.hombreCasual,
+  PERSONAS.hombreCasual2,
+  PERSONAS.hombreTrabajador,
+  PERSONAS.mujerCasual,
+] as const
+
+const PERSONAS_TRAJE = [PERSONAS.hombreTraje, PERSONAS.mujerTraje] as const
+
 const HDRI = '/sala-previa/hdri/sala-interior.hdr'
+
+const MAT_PIEL = /skin/i
+const MAT_FIJA = /eye|brow|hair|white|tie|shirt/i
+const MAT_ROPA = /suit|black|grey|gray|purple|blue|orange|casual|brown|green|worker|pants|jacket|hoodie/i
+
+function hashCorto(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h + s.charCodeAt(i) * (i + 3)) % 997
+  return h
+}
+
+function urlPersona(toga: boolean, ropa: string): string {
+  const h = hashCorto(ropa)
+  if (toga) return PERSONAS_TRAJE[h % PERSONAS_TRAJE.length]
+  return PERSONAS_CASUAL[h % PERSONAS_CASUAL.length]
+}
+
+/**
+ * Quaternius modular: cada parte (Head/Body/Legs/Feet) puede traer su propio
+ * Skin con huesos duplicados. Hay que rotar TODOS los bones con ese nombre.
+ */
+function huesosPorNombre(root: THREE.Object3D): Map<string, THREE.Bone[]> {
+  const map = new Map<string, THREE.Bone[]>()
+  root.traverse((obj) => {
+    const mesh = obj as THREE.SkinnedMesh
+    if (!mesh.isSkinnedMesh || !mesh.skeleton) return
+    for (const b of mesh.skeleton.bones) {
+      if (!b.name) continue
+      const lista = map.get(b.name)
+      if (lista) lista.push(b)
+      else map.set(b.name, [b])
+    }
+  })
+  return map
+}
+
+function rotarTodos(
+  huesos: Map<string, THREE.Bone[]>,
+  nombre: string,
+  x: number,
+  y = 0,
+  z = 0
+) {
+  for (const h of huesos.get(nombre) ?? []) h.rotation.set(x, y, z)
+}
+
+function actualizarEsqueletos(root: THREE.Object3D) {
+  root.updateMatrixWorld(true)
+  root.traverse((obj) => {
+    const mesh = obj as THREE.SkinnedMesh
+    if (mesh.isSkinnedMesh && mesh.skeleton) mesh.skeleton.update()
+  })
+}
+
+/**
+ * Three.js quita el punto de nombres glTF (UpperLeg.L → UpperLegL).
+ * Probamos ambas formas por si el loader cambia.
+ */
+function rotarHuesoNombrado(
+  huesos: Map<string, THREE.Bone[]>,
+  nombreConPunto: string,
+  x: number,
+  y = 0,
+  z = 0
+) {
+  const sinPunto = nombreConPunto.replace(/\./g, '')
+  rotarTodos(huesos, nombreConPunto, x, y, z)
+  if (sinPunto !== nombreConPunto) rotarTodos(huesos, sinPunto, x, y, z)
+}
+
+/** Baja brazos del T-pose a un idle natural. */
+function poseBrazosAbajo(huesos: Map<string, THREE.Bone[]>) {
+  rotarHuesoNombrado(huesos, 'UpperArm.L', 0, 0, 1.35)
+  rotarHuesoNombrado(huesos, 'UpperArm.R', 0, 0, -1.35)
+  rotarHuesoNombrado(huesos, 'LowerArm.L', 0.15, 0, 0.1)
+  rotarHuesoNombrado(huesos, 'LowerArm.R', 0.15, 0, -0.1)
+}
+
+/** Aproxima sentarse sin clip de animación (exports sin animaciones). */
+function poseSentada(root: THREE.Object3D) {
+  const huesos = huesosPorNombre(root)
+  poseBrazosAbajo(huesos)
+  rotarHuesoNombrado(huesos, 'Hips', -0.2)
+  rotarHuesoNombrado(huesos, 'UpperLeg.L', 1.45)
+  rotarHuesoNombrado(huesos, 'UpperLeg.R', 1.45)
+  rotarHuesoNombrado(huesos, 'LowerLeg.L', -1.55)
+  rotarHuesoNombrado(huesos, 'LowerLeg.R', -1.55)
+  rotarHuesoNombrado(huesos, 'Foot.L', 0.25)
+  rotarHuesoNombrado(huesos, 'Foot.R', 0.25)
+  rotarHuesoNombrado(huesos, 'Abdomen', 0.1)
+  rotarHuesoNombrado(huesos, 'Torso', 0.06)
+  rotarHuesoNombrado(huesos, 'Chest', 0.04)
+  actualizarEsqueletos(root)
+}
+
+function poseDePie(root: THREE.Object3D) {
+  const huesos = huesosPorNombre(root)
+  poseBrazosAbajo(huesos)
+  actualizarEsqueletos(root)
+}
+
+function tintarPersona(
+  root: THREE.Object3D,
+  tonoPiel: string,
+  ropa: string,
+  toga: boolean
+) {
+  const piel = new THREE.Color(tonoPiel)
+  const cloth = new THREE.Color(toga ? ropa || '#121218' : ropa)
+  root.traverse((obj) => {
+    const mesh = obj as THREE.Mesh
+    if (!mesh.isMesh || !mesh.material) return
+    mesh.castShadow = false
+    mesh.receiveShadow = false
+    const lista = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
+    const clonadas = lista.map((m) => {
+      const base = m as THREE.MeshStandardMaterial
+      const mat = base.clone()
+      const nombre = mat.name || ''
+      if (MAT_PIEL.test(nombre)) {
+        mat.color.copy(piel)
+      } else if (toga && MAT_ROPA.test(nombre)) {
+        mat.color.copy(cloth)
+      } else if (!MAT_FIJA.test(nombre) && MAT_ROPA.test(nombre)) {
+        mat.color.copy(cloth)
+      } else if (!MAT_FIJA.test(nombre) && !MAT_PIEL.test(nombre) && nombre !== 'White') {
+        // Materiales de ropa genéricos (Purple, LightBlue, Grey, Orange, Suit…)
+        if (!/eye|hair|brow|skin/i.test(nombre)) mat.color.copy(cloth)
+      }
+      mat.roughness = Math.max(mat.roughness ?? 0.7, 0.55)
+      mat.metalness = Math.min(mat.metalness ?? 0, 0.08)
+      mat.envMapIntensity = 0.28
+      return mat
+    })
+    mesh.material = clonadas.length === 1 ? clonadas[0] : clonadas
+  })
+}
+
+function asignarRefCabeza(root: THREE.Object3D, cabezaRef?: Ref<THREE.Group>) {
+  if (!cabezaRef) return
+  const head = root.getObjectByName('Head') as THREE.Group | null
+  if (!head) return
+  if (typeof cabezaRef === 'function') cabezaRef(head)
+  else (cabezaRef as MutableRefObject<THREE.Group | null>).current = head
+}
 
 function Modelo({
   url,
@@ -264,7 +429,7 @@ interface FiguraProps {
   cabezaRef?: Ref<THREE.Group>
 }
 
-/** Muñeco 3D estilizado (cápsulas y geometrías puras, 60+ FPS sin texturas pesadas). */
+/** Humano low-poly (Quaternius CC0). Misma API que las antiguas cápsulas. */
 function FiguraPersona({
   position,
   rotationY = 0,
@@ -278,9 +443,29 @@ function FiguraPersona({
 }: FiguraProps) {
   const group = useRef<THREE.Group>(null)
   const opacidad = useRef(Math.max(0.01, Math.min(1, visible)))
+  const url = useMemo(() => urlPersona(toga, ropa), [toga, ropa])
+  const { scene } = useGLTF(url)
+
+  const copia = useMemo(() => {
+    const c = SkeletonUtils.clone(scene) as THREE.Group
+    tintarPersona(c, tonoPiel, ropa, toga)
+    return c
+  }, [scene, tonoPiel, ropa, toga])
+
+  const poseLista = useRef(false)
+  useLayoutEffect(() => {
+    poseLista.current = false
+    asignarRefCabeza(copia, cabezaRef)
+  }, [copia, sentada, cabezaRef])
 
   useFrame((_, dt) => {
     if (!group.current) return
+    // Aplicar pose tras el primer frame (esqueletos ya en el grafo de escena).
+    if (!poseLista.current) {
+      if (sentada) poseSentada(copia)
+      else poseDePie(copia)
+      poseLista.current = true
+    }
     const objetivo = Math.max(0, Math.min(1, visible))
     opacidad.current = THREE.MathUtils.damp(
       opacidad.current,
@@ -299,79 +484,42 @@ function FiguraPersona({
     group.current.traverse((child) => {
       const mesh = child as THREE.Mesh
       if (mesh.isMesh && mesh.material && 'opacity' in (mesh.material as object)) {
-        const mat = mesh.material as THREE.MeshStandardMaterial
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
         const o = opacidad.current
         const semi = o < 0.98
-        mat.transparent = semi
-        mat.depthWrite = !semi
-        mat.opacity = semi ? o : 1
+        for (const m of mats) {
+          const mat = m as THREE.MeshStandardMaterial
+          mat.transparent = semi
+          mat.depthWrite = !semi
+          mat.opacity = semi ? o : 1
+        }
       }
     })
   })
 
-  const torsoY = sentada ? 0.58 : 0.92
-  const headY = sentada ? 1.22 : 1.62
-  const ancho = toga ? 0.28 : 0.2
+  // Sentada: pivote en los pies; tras doblar piernas el asiento queda ~0.45–0.5 m.
+  const yOffset = sentada ? -0.05 : 0
+  const modeloScale = toga ? 0.97 : 0.95
 
   return (
-    <group ref={group} position={position} rotation={[0, rotationY, 0]} scale={scale}>
-      {!sentada && (
-        <>
-          <mesh position={[-0.11, 0.38, 0]}>
-            <capsuleGeometry args={[0.08, 0.5, 4, 8]} />
-            <meshStandardMaterial color="#222228" roughness={0.85} />
-          </mesh>
-          <mesh position={[0.11, 0.38, 0]}>
-            <capsuleGeometry args={[0.08, 0.5, 4, 8]} />
-            <meshStandardMaterial color="#222228" roughness={0.85} />
-          </mesh>
-        </>
-      )}
-      {sentada && (
-        <>
-          <mesh position={[-0.12, 0.22, 0.12]}>
-            <capsuleGeometry args={[0.08, 0.35, 4, 8]} />
-            <meshStandardMaterial color="#222228" roughness={0.85} />
-          </mesh>
-          <mesh position={[0.12, 0.22, 0.12]}>
-            <capsuleGeometry args={[0.08, 0.35, 4, 8]} />
-            <meshStandardMaterial color="#222228" roughness={0.85} />
-          </mesh>
-        </>
-      )}
-      {/* Torso */}
-      <mesh position={[0, torsoY, 0]}>
-        <capsuleGeometry args={[ancho, sentada ? 0.38 : 0.58, 6, 12]} />
-        <meshStandardMaterial color={ropa} roughness={0.72} metalness={0.04} />
-      </mesh>
-      {/* Falda de toga si procede */}
+    <group
+      ref={group}
+      position={[position[0], position[1] + yOffset, position[2]]}
+      rotation={[0, rotationY, 0]}
+      scale={scale}
+    >
+      <primitive object={copia} scale={modeloScale} />
+      {/* Saya de toga (volumen bajo el traje, sin segundo GLB) */}
       {toga && (
-        <mesh position={[0, sentada ? 0.42 : 0.55, 0]}>
-          <cylinderGeometry args={[0.32, 0.38, sentada ? 0.55 : 0.85, 12]} />
-          <meshStandardMaterial color={ropa} roughness={0.78} />
+        <mesh
+          position={[0, sentada ? 0.48 : 0.55, 0.04]}
+          castShadow={false}
+          rotation={[sentada ? 0.08 : 0, 0, 0]}
+        >
+          <cylinderGeometry args={[0.2, sentada ? 0.36 : 0.32, sentada ? 0.55 : 0.95, 10]} />
+          <meshStandardMaterial color={ropa} roughness={0.84} metalness={0.02} />
         </mesh>
       )}
-      {/* Hombros */}
-      <mesh position={[0, torsoY + (sentada ? 0.2 : 0.26), 0]}>
-        <boxGeometry args={[toga ? 0.62 : 0.5, 0.14, 0.26]} />
-        <meshStandardMaterial color={ropa} roughness={0.75} />
-      </mesh>
-      {/* Cuello + cabeza */}
-      <group ref={cabezaRef} position={[0, headY - 0.2, 0]}>
-        <mesh position={[0, 0.06, 0]}>
-          <cylinderGeometry args={[0.07, 0.08, 0.12, 10]} />
-          <meshStandardMaterial color={tonoPiel} roughness={0.7} />
-        </mesh>
-        <mesh position={[0, 0.2, 0]}>
-          <sphereGeometry args={[0.155, 18, 18]} />
-          <meshStandardMaterial color={tonoPiel} roughness={0.65} />
-        </mesh>
-        {/* Cabello */}
-        <mesh position={[0, 0.26, -0.02]}>
-          <sphereGeometry args={[0.14, 14, 14, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
-          <meshStandardMaterial color="#2c241c" roughness={0.9} />
-        </mesh>
-      </group>
     </group>
   )
 }
@@ -1435,3 +1583,4 @@ export function SalaVistas3D(props: SalaVistas3DProps) {
 }
 
 Object.values(MODELOS).forEach((url) => useGLTF.preload(url))
+Object.values(PERSONAS).forEach((url) => useGLTF.preload(url))

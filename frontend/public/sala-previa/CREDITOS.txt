@@ -17,7 +17,7 @@ No redistribuir fuera del proyecto sin permiso del equipo.
 
 Sala de vistas en Three.js (@react-three/fiber + drei):
 habitación con estrado, mesas de abogados, bancos de público, puerta de
-entrada, iluminación de sala y figuras estilizadas (cápsulas, sin fotos).
+entrada, iluminación de sala y figuras humanas low-poly (Quaternius CC0).
 
 La vista 3D es opcional (interruptor «Sala 3D»).
 
@@ -47,6 +47,30 @@ Optimizados con gltf-transform (meshopt + texturas webp 512 px).
 No existe en GitHub una sala de juzgado 3D con licencia reutilizable;
 la escena se monta con estos muebles genéricos adaptados a una sala
 de vistas española.
+
+== Personas 3D (CC0) ==
+
+Carpeta: modelos/personas/
+Fuente: Quaternius — Ultimate Modular Men / Women Pack
+  https://quaternius.com/packs/ultimatemodularcharacters.html
+  https://quaternius.com/packs/ultimatemodularwomen.html
+Licencia: CC0 1.0 (dominio público; atribución apreciada, no obligatoria).
+Descarga intermedia (GLB listos): mirror comunitario trebeljahr/quaternius-showcase
+  (modelos © Quaternius; el código del mirror es MIT, no aplica a los GLB).
+Optimizados con gltf-transform (prune + dedup + meshopt; ~150–165 KB c/u).
+Sin texturas (solo materiales de color). Pose sentada/brazos por rotación
+de huesos (Three.js renombra UpperLeg.L → UpperLegL).
+
+- hombre-traje.glb       ← Suit (hombre) — juez / abogados (toga vía color)
+- mujer-traje.glb        ← Suit (mujer) — abogadas
+- hombre-casual.glb      ← Casual — público
+- hombre-casual2.glb     ← Casual2 — público
+- hombre-trabajador.glb  ← Worker — público / quien entra
+- mujer-casual.glb       ← Casual (mujer) — público
+
+Pocos GLB únicos, clonados con SkeletonUtils; pose sentada aproximada
+por rotación de huesos (los exports no traen clips Sitting).
+Sin sombras dinámicas en las figuras; frameloop sigue en «demand».
 
 == HDRI (CC0) ==
 
@@ -258,5 +282,6 @@ El antiguo «Voces y eco» se eliminó; su aporte se redistribuyó en ruido/gent
 == Rendimiento ==
 
 frameloop «demand» cuando no hay arrastre/animación;
-DPR acotado; texturas 512–768; HDRI 1K; sin sombras dinámicas
+DPR acotado; texturas 512–768; HDRI 1K; 6 GLB de personas meshopt
+(~150–165 KB) clonados con SkeletonUtils; sin sombras dinámicas
 (solo ContactShadows suaves en el suelo).
