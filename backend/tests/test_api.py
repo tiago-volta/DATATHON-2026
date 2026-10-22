@@ -213,3 +213,34 @@ def test_obtener_rol_inexistente():
     res = client.get("/api/roles?rol=desconocido")
     assert res.status_code == 404
 
+
+
+def test_evaluar_respuesta_declaracion_mock():
+    res = client.post(
+        "/api/declaracion/evaluar-respuesta",
+        json={
+            "pregunta": "¿Qué vio usted en la parada?",
+            "respuesta_usuario": "Vi a alguien correr con un móvil hacia la plaza",
+            "nombre": "Luis",
+            "rol": "testigo",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "replica_juez" in data
+    assert data["avanzar"] is True
+    assert "parada" in data["replica_juez"].lower() or "anotado" in data["replica_juez"].lower()
+
+
+def test_evaluar_respuesta_declaracion_agua():
+    res = client.post(
+        "/api/declaracion/evaluar-respuesta",
+        json={
+            "pregunta": "¿Puede decirme su nombre?",
+            "respuesta_usuario": "¿Puedo beber un poco de agua antes?",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["esperar_listo"] is True
+    assert "agua" in data["replica_juez"].lower()

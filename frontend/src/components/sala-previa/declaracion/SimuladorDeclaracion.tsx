@@ -13,6 +13,7 @@ import { VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
 import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import { numPublicoVisible } from '@/lib/sala-previa/salaVistasConfig'
 import {
+  CASO_INVENTADO,
   HABLANTES,
   PUNTOS_VISTA,
   conNombre,
@@ -24,6 +25,7 @@ import {
   type Turno,
 } from '@/lib/sala-previa/declaracion'
 import { GUIONES } from '@/lib/sala-previa/declaracionGuiones'
+import { evaluarRespuestaDeclaracionAPI } from '@/lib/api'
 import {
   clasificarRespuestaLibre,
   esPeticionPausa,
@@ -256,14 +258,41 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     aplicarAvance(pend.registro, pend.ayudas, pend.siguiente)
   }
 
-  const responderLibre = (textoLibre: string) => {
+  const responderLibre = async (textoLibre: string) => {
     cortarTodo()
     const g = gen.current
     const pregunta = conNombre(turno.claro ?? turno.texto, nombre)
-    const resultado: ResultadoRespuestaLibre = clasificarRespuestaLibre(textoLibre, {
+    let resultado: ResultadoRespuestaLibre = clasificarRespuestaLibre(textoLibre, {
       pregunta,
       esInvestigado: puntoVista === 'acusado',
     })
+
+    // Conexión con Gemini para evaluar la respuesta personalizada con todo el contexto del caso
+    try {
+      const contextoCaso = CASO_INVENTADO.join(' ')
+      const evaluacion = await evaluarRespuestaDeclaracionAPI({
+        pregunta,
+        respuesta_usuario: textoLibre,
+        nombre,
+        rol: puntoVista === 'acusado' ? 'investigado' : puntoVista === 'estrado' ? 'víctima' : 'testigo',
+        contexto: contextoCaso,
+      })
+      if (evaluacion && evaluacion.replica_juez) {
+        resultado = {
+          tipo: 'al_tema',
+          replicaJuez: evaluacion.replica_juez,
+          porQue: evaluacion.por_que || resultado.porQue,
+          avanzar: evaluacion.avanzar,
+          entrarPausa: evaluacion.entrar_pausa,
+          esperarListo: evaluacion.esperar_listo,
+        }
+      }
+    } catch {
+      // Fallback automático local si no hay red o cuota
+    }
+
+    if (g !== gen.current) return
+
     const r: Respuesta = {
       texto: textoLibre,
       porQue: resultado.porQue,

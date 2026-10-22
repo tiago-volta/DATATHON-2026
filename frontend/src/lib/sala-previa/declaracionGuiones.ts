@@ -117,21 +117,6 @@ const GUION_TESTIGO: Guion = {
       ],
     },
     {
-      id: 't-mas-alto',
-      hablante: 'jueza',
-      texto:
-        'Perdone, no le hemos oído bien. ¿Puede repetirlo un poco más alto, cerca del micrófono?',
-      explicacion:
-        'La jueza no está enfadada. Necesita oírte bien porque todo se graba. Puedes beber agua antes.',
-      respuestas: [
-        MAS_ALTO,
-        {
-          texto: '¿Puedo beber un poco de agua antes?',
-          porQue: 'Pedir agua está bien. En el atril tienes un vaso.',
-        },
-      ],
-    },
-    {
       id: 't-acusacion',
       hablante: 'acusacion',
       texto: 'Con la venia. ¿Hacia dónde se fue la persona que corría?',
@@ -141,29 +126,6 @@ const GUION_TESTIGO: Guion = {
         {
           texto: 'Se fue corriendo hacia la plaza.',
           porQue: 'Un dato concreto y corto. No hace falta adornarlo.',
-        },
-        NO_RECUERDO,
-      ],
-    },
-    {
-      id: 't-defensa-hora',
-      hablante: 'defensa',
-      texto:
-        'Con la venia. ¿Está usted seguro de que eran las siete? ¿No es verdad que ya era de noche y no se veía bien?',
-      claro: '¿Está seguro de la hora? ¿Había luz suficiente para ver?',
-      explicacion:
-        'La defensa comprueba si lo recuerdas bien. Es su trabajo. No quiere decir que piense que mientes.',
-      ley: 'Artículo 709 de la Ley de Enjuiciamiento Criminal: la jueza no permite preguntas con trampa',
-      interrupcion: {
-        tipo: 'entra-persona',
-        en: 1.5,
-        descripcion: 'Se abre la puerta del fondo y entra una persona. No tiene que ver contigo.',
-      },
-      respuestas: [
-        DE_UNA_EN_UNA,
-        {
-          texto: 'No estoy seguro de la hora exacta. Había luz de las farolas.',
-          porQue: 'Admitir lo que no sabes seguro te hace más creíble, no menos.',
         },
         NO_RECUERDO,
       ],
@@ -309,20 +271,6 @@ const GUION_ACUSADO: Guion = {
       ],
     },
     {
-      id: 'a-mas-alto',
-      hablante: 'jueza',
-      texto: 'Perdone, no se le oye bien. ¿Puede hablar más alto, cerca del micrófono?',
-      explicacion:
-        'La jueza no está enfadada. Todo se graba y necesita oírte bien.',
-      respuestas: [
-        MAS_ALTO,
-        {
-          texto: 'Necesito un momento, por favor.',
-          porQue: 'Pedir un momento está bien. No hay prisa por contestar.',
-        },
-      ],
-    },
-    {
       id: 'a-defensa-tarde',
       hablante: 'defensa',
       texto: 'Con la venia. Cuéntenos qué hizo usted esa tarde.',
@@ -341,21 +289,6 @@ const GUION_ACUSADO: Guion = {
         {
           texto: 'Estuve en casa toda la tarde.',
           porQue: 'Una respuesta corta también vale. En tu juicio, di siempre lo que pasó de verdad.',
-        },
-      ],
-    },
-    {
-      id: 'a-defensa-anadir',
-      hablante: 'defensa',
-      texto: '¿Quiere añadir algo sobre esa tarde?',
-      respuestas: [
-        {
-          texto: 'No, nada más.',
-          porQue: 'No hace falta hablar más de lo necesario.',
-        },
-        {
-          texto: 'Sí. Quiero decir que yo no fui.',
-          porQue: 'Puedes decir tu versión con tus palabras, de forma breve.',
         },
       ],
     },
@@ -501,24 +434,6 @@ const GUION_ESTRADO: Guion = {
       ],
     },
     {
-      id: 'v-mas-alto',
-      hablante: 'jueza',
-      texto: 'Perdone, no le hemos oído bien. ¿Puede repetirlo un poco más alto? Tómese su tiempo.',
-      explicacion: 'La jueza no está enfadada. Necesita oírte bien porque todo se graba.',
-      interrupcion: {
-        tipo: 'tos',
-        en: 1,
-        descripcion: 'Alguien tose en el público.',
-      },
-      respuestas: [
-        MAS_ALTO,
-        {
-          texto: '¿Puedo beber un poco de agua?',
-          porQue: 'Pedir agua está bien. Te ayuda a seguir con calma.',
-        },
-      ],
-    },
-    {
       id: 'v-defensa-privada',
       hablante: 'defensa',
       texto: 'Con la venia. ¿Con quién vive usted? ¿Sale mucho por las noches?',
@@ -534,26 +449,6 @@ const GUION_ESTRADO: Guion = {
         {
           texto: 'De acuerdo. Gracias.',
           porQue: 'La jueza te protege de preguntas sobre tu vida privada. No tienes que contestarlas.',
-        },
-      ],
-    },
-    {
-      id: 'v-defensa-gente',
-      hablante: 'defensa',
-      texto:
-        '¿Está usted seguro de la hora? ¿No es cierto que había mucha gente en la parada y todo fue muy confuso?',
-      claro: '¿Está seguro de la hora? ¿Había mucha gente en la parada?',
-      explicacion:
-        'La defensa comprueba si lo recuerdas bien. Es su trabajo. No quiere decir que piense que mientes.',
-      respuestas: [
-        DE_UNA_EN_UNA,
-        {
-          texto: 'Había gente, sí. Lo que me pasó lo recuerdo bien.',
-          porQue: 'Aceptaste lo que es cierto y mantuviste lo que recuerdas.',
-        },
-        {
-          texto: 'No recuerdo la hora exacta.',
-          porQue: '«No lo recuerdo» es una respuesta válida. Es mejor que inventar.',
         },
       ],
     },
