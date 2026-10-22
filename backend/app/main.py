@@ -1,11 +1,11 @@
 """
-InclusiveCourt Backend API
+TribunalInclusivo Backend API
 FastAPI backend para el DATAthon Justicia 2026 (Reto 3: Neurodiversidad).
 Enfoque determinista con soporte opcional de LLM (OpenAI / Anthropic).
 """
 
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
@@ -36,7 +36,7 @@ from .routers import estado as estado_router
 load_dotenv()
 
 app = FastAPI(
-    title="InclusiveCourt API",
+    title="TribunalInclusivo API",
     description="API para accesibilidad cognitiva en la justicia",
     version="0.3.0",
 )
@@ -258,7 +258,7 @@ class PasaporteResponse(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"mensaje": "InclusiveCourt API - Accesibilidad cognitiva para la justicia"}
+    return {"mensaje": "TribunalInclusivo API - Accesibilidad cognitiva para la justicia"}
 
 
 @app.get("/health")
@@ -496,7 +496,7 @@ async def generar_calendario(plazos: List[PlazoItem], titulo: str = "Citación J
     return Response(
         content=ics_content,
         media_type="text/calendar",
-        headers={"Content-Disposition": "attachment; filename=citacion_inclusivecourt.ics"},
+        headers={"Content-Disposition": "attachment; filename=citacion_tribunalinclusivo.ics"},
     )
 
 

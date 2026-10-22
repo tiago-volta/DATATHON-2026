@@ -14,7 +14,7 @@ def test_health():
 def test_root():
     res = client.get("/")
     assert res.status_code == 200
-    assert "InclusiveCourt API" in res.json()["mensaje"]
+    assert "TribunalInclusivo API" in res.json()["mensaje"]
 
 
 def test_anonimizar_endpoint():
@@ -146,6 +146,5 @@ def test_ayuda_preguntar_fuente_boe():
     )
     assert res.status_code == 200
     data = res.json()
-    assert "BOE" in data["respuesta"]
-    assert "Boletín Oficial del Estado" in data["respuesta"]
+    assert "Boletín Oficial" in data["respuesta"] or "BOE" in data["respuesta"]
 

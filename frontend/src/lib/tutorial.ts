@@ -17,7 +17,7 @@ export type PasoTutorial = {
 export const PASOS_TUTORIAL: PasoTutorial[] = [
   {
     id: 'bienvenida',
-    titulo: 'Hola, soy InclusiveCourt',
+    titulo: 'Hola, soy TribunalInclusivo',
     texto:
       'Te ayudo a entender el juzgado con frases cortas y pictogramas. Sin prisas.',
     pictoKeyword: 'hola',

@@ -1,7 +1,7 @@
 """
 Banco de casos de prueba y documentos judiciales anonimizados para evaluación objetiva.
 Cubre 10 casos diversos (penal, civil, faltas/delitos leves, sentencias y vistas telemáticas)
-para medir la precisión de extracción de InclusiveCourt en el DATAthon Justicia 2026.
+para medir la precisión de extracción de TribunalInclusivo en el DATAthon Justicia 2026.
 """
 
 CASOS_EVALUACION = [

@@ -149,7 +149,7 @@ export function rutaPasaporteDesdeTexto(texto: string): string | null {
   const candidato = recortado.slice(idx).split(/\s/)[0]
   if (!candidato.startsWith(MARCA_RUTA_FICHA) || candidato.length > 2000) return null
   try {
-    const url = new URL(candidato, 'https://inclusivecourt.local')
+    const url = new URL(candidato, 'https://tribunalinclusivo.local')
     if (url.pathname !== '/pasaporte/ver') return null
     if (url.search.length < 2) return null
     return `${url.pathname}${url.search}`

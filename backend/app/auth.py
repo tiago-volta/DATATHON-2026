@@ -34,7 +34,7 @@ def _jwt_secret() -> str:
         return secret
     if (os.getenv("ENV") or os.getenv("RENDER") or "").lower() in {"production", "prod", "true"}:
         raise RuntimeError("JWT_SECRET es obligatorio en producción.")
-    return "inclusivecourt-dev-secret-cambiar"
+    return "tribunalinclusivo-dev-secret-cambiar"
 
 
 def hash_password(password: str) -> str:

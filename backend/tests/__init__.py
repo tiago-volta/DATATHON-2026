@@ -1,2 +1,2 @@
-# Tests unitarios para InclusiveCourt backend
+# Tests unitarios para TribunalInclusivo backend
 

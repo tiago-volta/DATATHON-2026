@@ -148,7 +148,7 @@ export function insigniasDeApartado(apartado: ApartadoInsignias): InsigniaUtil[]
 }
 
 /** Evento en window cuando cambian las medallas (perfil y otras pestañas). */
-export const EVENTO_INSIGNIAS = 'InclusiveCourt:insignias-cambiadas'
+export const EVENTO_INSIGNIAS = 'TribunalInclusivo:insignias-cambiadas'
 
 export function avisarCambioInsignias(ids: IdInsigniaUtil[]) {
   if (typeof window === 'undefined') return

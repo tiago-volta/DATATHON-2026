@@ -32,7 +32,7 @@ export function Cabecera() {
           >
             <Marca className="w-9 h-9 shrink-0 text-accent-info" />
             <span className="text-xl sm:text-2xl font-bold tracking-tight truncate" translate="no">
-              InclusiveCourt
+              TribunalInclusivo
             </span>
           </Link>
 

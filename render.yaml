@@ -1,7 +1,7 @@
-# Blueprint Render: API FastAPI InclusiveCourt
+# Blueprint Render: API FastAPI TribunalInclusivo
 # https://render.com/docs/blueprint-spec
 databases:
-  - name: inclusivecourt-db
+  - name: tribunalinclusivo-db
     plan: free
 
 services:
@@ -24,7 +24,7 @@ services:
         value: "3.12.8"
       - key: DATABASE_URL
         fromDatabase:
-          name: inclusivecourt-db
+          name: tribunalinclusivo-db
           property: connectionString
       - key: JWT_SECRET
         generateValue: true

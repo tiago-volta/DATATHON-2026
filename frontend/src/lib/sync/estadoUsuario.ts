@@ -89,7 +89,7 @@ function aplicarEstadoServidor(estado: Record<string, unknown>) {
     }
   }
   window.dispatchEvent(new Event('court-perfil-cambio'))
-  window.dispatchEvent(new Event('InclusiveCourt:insignias-cambiadas'))
+  window.dispatchEvent(new Event('TribunalInclusivo:insignias-cambiadas'))
   window.dispatchEvent(new Event('court-preferencias-cambio'))
   window.dispatchEvent(new Event('court-citaciones-cambio'))
 }
@@ -110,7 +110,7 @@ export function limpiarEstadoLocal() {
     /* ignore */
   }
   window.dispatchEvent(new Event('court-perfil-cambio'))
-  window.dispatchEvent(new Event('InclusiveCourt:insignias-cambiadas'))
+  window.dispatchEvent(new Event('TribunalInclusivo:insignias-cambiadas'))
   window.dispatchEvent(new Event('court-preferencias-cambio'))
   window.dispatchEvent(new Event('court-citaciones-cambio'))
 }

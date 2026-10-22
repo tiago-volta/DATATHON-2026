@@ -2,7 +2,7 @@ export function Pie() {
   return (
     <footer className="mt-8 py-8 border-t border-accent-info/20">
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-10 text-court-700 text-sm">
-        <p className="mb-2 text-accent-navy font-medium">InclusiveCourt · DATAthon Justicia 2026</p>
+        <p className="mb-2 text-accent-navy font-medium">TribunalInclusivo · DATAthon Justicia 2026</p>
         <p>
           Pictogramas:{' '}
           <a

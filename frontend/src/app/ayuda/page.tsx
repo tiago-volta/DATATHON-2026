@@ -79,7 +79,7 @@ type Mensaje = {
 }
 
 /**
- * Pregunta a PUENTE: dudas por texto.
+ * Pregunta a TribunalInclusivo: dudas por texto.
  * Sin diagnóstico médico.
  */
 export default function PaginaAyuda() {
@@ -92,7 +92,7 @@ export default function PaginaAyuda() {
       id: 'saludo',
       rol: 'asistente',
       texto:
-        'Hola. Soy el asistente de PUENTE. Puedes preguntarme por la citación, el Pasaporte o la Sala Previa. Escribe tu duda. No pido datos de salud.',
+        'Hola. Soy el asistente de TribunalInclusivo. Puedes preguntarme por la citación, el Pasaporte o la Sala Previa. Escribe tu duda. No pido datos de salud.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
@@ -125,10 +125,10 @@ export default function PaginaAyuda() {
 
     try {
       const { respuesta } = await preguntarAyudaAPI(texto)
-      const idInclusiveCourt = `r-${Date.now()}`
+      const idTribunalInclusivo = `r-${Date.now()}`
       setMensajes((prev) => [
         ...prev,
-        { id: idInclusiveCourt, rol: 'asistente', texto: respuesta },
+        { id: idTribunalInclusivo, rol: 'asistente', texto: respuesta },
       ])
       setAnuncio('Respuesta lista.')
     } catch {
@@ -161,7 +161,7 @@ export default function PaginaAyuda() {
     <main id="contenido-principal" className="page-shell">
       <header className="mb-8">
         <p className="text-sm font-bold tracking-wide text-court-700 mb-2">
-          Pregunta a PUENTE
+          Pregunta a TribunalInclusivo
         </p>
         <h1 id={tituloId} className="titulo-pagina">
           Ayuda
@@ -189,7 +189,7 @@ export default function PaginaAyuda() {
             }
           >
             <p className="text-sm font-bold text-court-700 mb-1">
-              {m.rol === 'persona' ? 'Tú' : 'PUENTE'}
+              {m.rol === 'persona' ? 'Tú' : 'TribunalInclusivo'}
             </p>
             <p className="text-court-900 leading-relaxed">{m.texto}</p>
           </li>

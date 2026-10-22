@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-DEFAULT_SQLITE = f"sqlite:///{(DATA_DIR / 'inclusivecourt.db').as_posix()}"
+DEFAULT_SQLITE = f"sqlite:///{(DATA_DIR / 'tribunalinclusivo.db').as_posix()}"
 
 
 def _resolver_url() -> str:

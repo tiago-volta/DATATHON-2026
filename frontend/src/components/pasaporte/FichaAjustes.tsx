@@ -39,7 +39,7 @@ export function FichaAjustes({
         <header className="border-b-2 border-court-800 pb-6 mb-6">
           <div className="flex items-center gap-3 mb-4 text-court-800">
             <Marca className="w-8 h-8" />
-            <span className="text-xl font-bold" translate="no">InclusiveCourt</span>
+            <span className="text-xl font-bold" translate="no">TribunalInclusivo</span>
           </div>
           <p className="text-3xl font-bold text-court-900 mb-1">{nombre}</p>
           <p className="text-court-700">Pasaporte de Ajustes</p>

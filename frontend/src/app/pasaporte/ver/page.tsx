@@ -77,7 +77,7 @@ function ContenidoVerPasaporte() {
               <div className="flex items-center gap-3 mb-4 text-court-800">
                 <Marca className="w-8 h-8" />
                 <span className="text-xl font-bold" translate="no">
-                  InclusiveCourt
+                  TribunalInclusivo
                 </span>
               </div>
               <h1 id="titulo-pasaporte" className="text-3xl font-bold text-court-900 mb-1">

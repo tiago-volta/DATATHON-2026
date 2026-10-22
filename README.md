@@ -1,4 +1,4 @@
-# InclusiveCourt
+# TribunalInclusivo
 
 **De la citación a la sentencia, a tu manera.**
 

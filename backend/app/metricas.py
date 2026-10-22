@@ -1,5 +1,5 @@
 """
-Módulo de métricas de calidad y legibilidad objetiva para InclusiveCourt.
+Módulo de métricas de calidad y legibilidad objetiva para TribunalInclusivo.
 Implementa la fórmula científica de Fernández-Huerta (1959) adaptada para español,
 así como indicadores de accesibilidad cognitiva (UNE 153101 / W3C COGA).
 """
@@ -105,7 +105,7 @@ def calcular_legibilidad(texto: str) -> Dict[str, Any]:
 def comparar_legibilidad(texto_original: str, texto_adaptado: str) -> Dict[str, Any]:
     """
     Compara de forma cuantitativa y reproducible la legibilidad
-    del documento original frente a la versión procesada por InclusiveCourt.
+    del documento original frente a la versión procesada por TribunalInclusivo.
     """
     met_orig = calcular_legibilidad(texto_original)
     met_adap = calcular_legibilidad(texto_adaptado)

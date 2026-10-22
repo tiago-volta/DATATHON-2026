@@ -6,7 +6,7 @@ import { TutorialInicio } from '@/components/TutorialInicio'
 import { ProveedorAuth } from '@/lib/auth/AuthContext'
 
 export const metadata: Metadata = {
-  title: 'InclusiveCourt - Accesibilidad en la Justicia',
+  title: 'TribunalInclusivo - Accesibilidad en la Justicia',
   description: 'Crea tu perfil, prueba el juzgado y ensaya tu declaración antes del día.',
 }
 

@@ -121,7 +121,7 @@ async def ejecutar_evaluacion() -> Dict[str, Any]:
 
 def imprimir_tabla(informe: Dict[str, Any]):
     print("\n" + "=" * 70)
-    print("  InclusiveCourt — INFORME DE EVALUACIÓN Y CALIDAD OBJETIVA (Reto 3)")
+    print("  TribunalInclusivo — INFORME DE EVALUACIÓN Y CALIDAD OBJETIVA (Reto 3)")
     print("=" * 70)
     print(f"Casos evaluados: {informe['total_casos_evaluados']}")
     print(f"Precisión global ponderada: {informe['precision_global']}%\n")

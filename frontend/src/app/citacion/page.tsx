@@ -647,7 +647,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string, hora?: string) {
   const lineas = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//InclusiveCourt//Accesibilidad Judicial//ES',
+    'PRODID:-//TribunalInclusivo//Accesibilidad Judicial//ES',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VTIMEZONE',
@@ -680,7 +680,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string, hora?: string) {
       `SUMMARY:${titulo} - ${plazo.descripcion}`,
       `DTSTART;TZID=${tzid}:${fechaCompacta}T${hh}${mm}00`,
       `DTEND;TZID=${tzid}:${fechaCompacta}T${hhFin}${mm}00`,
-      `DESCRIPTION:${plazo.descripcion}. Recuerda acudir con tu DNI y tu Pasaporte de Ajustes InclusiveCourt.`,
+      `DESCRIPTION:${plazo.descripcion}. Recuerda acudir con tu DNI y tu Pasaporte de Ajustes TribunalInclusivo.`,
       'END:VEVENT'
     )
   }
@@ -689,7 +689,7 @@ function generarICSLocal(plazos: Plazo[], titulo: string, hora?: string) {
   const url = window.URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'citacion_inclusivecourt.ics'
+  a.download = 'citacion_tribunalinclusivo.ics'
   a.click()
   window.URL.revokeObjectURL(url)
 }
@@ -897,7 +897,7 @@ export default function PaginaCitacion() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? ''
-      const params = new URLSearchParams({ titulo: 'Cita Judicial InclusiveCourt' })
+      const params = new URLSearchParams({ titulo: 'Cita Judicial TribunalInclusivo' })
       const response = await fetch(`${apiUrl}/api/generar-ics?${params.toString()}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -910,11 +910,11 @@ export default function PaginaCitacion() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'citacion_inclusivecourt.ics'
+      a.download = 'citacion_tribunalinclusivo.ics'
       a.click()
       window.URL.revokeObjectURL(url)
     } catch {
-      generarICSLocal(plazosConHora, 'Cita Judicial InclusiveCourt', resultado.datos_clave.hora)
+      generarICSLocal(plazosConHora, 'Cita Judicial TribunalInclusivo', resultado.datos_clave.hora)
     }
   }
 

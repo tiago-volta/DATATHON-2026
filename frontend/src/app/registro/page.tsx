@@ -49,7 +49,7 @@ export default function PaginaRegistro() {
 
       <h1 className="titulo-pagina">Crear cuenta</h1>
       <p className="entradilla max-w-[42ch]">
-        Tu cuenta guarda el progreso en InclusiveCourt.
+        Tu cuenta guarda el progreso en TribunalInclusivo.
         No muestra ningún diagnóstico.
       </p>
 

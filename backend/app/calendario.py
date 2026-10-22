@@ -146,7 +146,7 @@ def generar_ics(
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//InclusiveCourt//Accesibilidad Justicia//ES",
+        "PRODID:-//TribunalInclusivo//Accesibilidad Justicia//ES",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
         "BEGIN:VTIMEZONE",
@@ -208,7 +208,7 @@ def generar_ics(
             f"DTSTAMP:{dtstamp}",
             f"DTSTART;TZID={tzid}:{fecha_inicio.strftime('%Y%m%dT%H%M%S')}",
             f"DTEND;TZID={tzid}:{fecha_fin.strftime('%Y%m%dT%H%M%S')}",
-            f"SUMMARY:InclusiveCourt: {descripcion}",
+            f"SUMMARY:TribunalInclusivo: {descripcion}",
             (
                 f"DESCRIPTION:{titulo_limpio} ({dias_habiles} días hábiles judiciales restantes). "
                 "Recuerda llevar tu DNI y tu Pasaporte de Ajustes."

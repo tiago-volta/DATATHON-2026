@@ -425,7 +425,7 @@ export default function PaginaPasaporte() {
                       required
                     />
                     <span className="text-sm text-court-800">
-                      Acepto que PUENTE procese y guarde los ajustes de apoyo que seleccione.
+                      Acepto que TribunalInclusivo procese y guarde los ajustes de apoyo que seleccione.
                       Entiendo que pueden reflejar necesidades de salud o accesibilidad sensorial,
                       y que puedo modificarlos o borrarlos cuando lo desee.
                     </span>
