@@ -4,9 +4,6 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { BotonDictar } from './BotonDictar'
 import { HABLANTES, conNombre, type Respuesta, type Turno } from '@/lib/sala-previa/declaracion'
 
-const POR_QUE_LIBRE =
-  'Respondiste con tus palabras. Lo importante es decir lo que sabes, sin inventar.'
-
 interface Props {
   turno: Turno
   numero: number
@@ -14,9 +11,21 @@ interface Props {
   nombre: string
   onResponder: (r: Respuesta) => void
   onCallar: () => void
+  /** Mientras la jueza responde a una petición (agua, etc.). */
+  esperandoListo?: boolean
+  onListo?: () => void
 }
 
-export function PanelTurno({ turno, numero, total, nombre, onResponder, onCallar }: Props) {
+export function PanelTurno({
+  turno,
+  numero,
+  total,
+  nombre,
+  onResponder,
+  onCallar,
+  esperandoListo = false,
+  onListo,
+}: Props) {
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const textareaId = useId()
   const [libre, setLibre] = useState('')
@@ -30,7 +39,28 @@ export function PanelTurno({ turno, numero, total, nombre, onResponder, onCallar
   const responderLibre = () => {
     const texto = libre.trim()
     if (!texto) return
-    onResponder({ texto, porQue: POR_QUE_LIBRE })
+    onResponder({ texto, porQue: '', origen: 'libre' })
+  }
+
+  if (esperandoListo && onListo) {
+    return (
+      <section className="card space-y-4" aria-labelledby={`titulo-${turno.id}`}>
+        <h2
+          id={`titulo-${turno.id}`}
+          ref={tituloRef}
+          tabIndex={-1}
+          className="text-xl font-bold text-court-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
+        >
+          Tómate un momento
+        </h2>
+        <p className="text-court-800">
+          Puedes beber agua. No hay prisa. Cuando quieras, seguimos con la declaración.
+        </p>
+        <button type="button" className="btn-primary min-h-[44px]" onClick={onListo}>
+          Ya estoy listo o lista
+        </button>
+      </section>
+    )
   }
 
   return (
@@ -69,7 +99,11 @@ export function PanelTurno({ turno, numero, total, nombre, onResponder, onCallar
       )}
 
       {turno.respuestas.length === 0 ? (
-        <button type="button" className="btn-primary min-h-[44px]" onClick={() => onResponder({ texto: '', porQue: '' })}>
+        <button
+          type="button"
+          className="btn-primary min-h-[44px]"
+          onClick={() => onResponder({ texto: '', porQue: '', origen: 'segura' })}
+        >
           Seguir
         </button>
       ) : (
@@ -84,7 +118,7 @@ export function PanelTurno({ turno, numero, total, nombre, onResponder, onCallar
                     key={r.texto}
                     type="button"
                     className="btn-secondary justify-start text-left min-h-[44px] py-3 font-semibold"
-                    onClick={() => onResponder({ ...r, texto })}
+                    onClick={() => onResponder({ ...r, texto, origen: 'segura' })}
                   >
                     «{texto}»
                   </button>

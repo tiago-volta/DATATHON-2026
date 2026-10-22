@@ -22,6 +22,10 @@ import {
   type Turno,
 } from '@/lib/sala-previa/declaracion'
 import { GUIONES } from '@/lib/sala-previa/declaracionGuiones'
+import {
+  clasificarRespuestaLibre,
+  type ResultadoRespuestaLibre,
+} from '@/lib/sala-previa/respuestaDeclaracion'
 import { callar, hablar, precargarVoces } from '@/lib/sala-previa/vozSala'
 import { PanelTurno } from './PanelTurno'
 import { Subtitulos, type LineaSubtitulo } from './Subtitulos'
@@ -31,8 +35,16 @@ import type { ContadoresAyuda, RegistroTurno } from './ResumenDeclaracion'
 const CLAVE_AJUSTES = 'sala-previa-distracciones-v2'
 const FRASE_PAUSA = 'De acuerdo. Hacemos una pausa de cinco minutos.'
 const FRASE_SEGUIMOS = 'Continuamos. Tómese su tiempo.'
+/** Beat corto de calma tras conceder agua, si la persona no pulsa «listo». */
+const MS_AGUA_AUTO = 4500
 
 type Pausa = null | 'jueza' | 'calma'
+
+interface PendienteAvance {
+  registro: RegistroTurno[]
+  ayudas: ContadoresAyuda
+  siguiente: number
+}
 
 interface LineaVoz {
   hablante: Hablante
@@ -77,12 +89,14 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   const [anuncio, setAnuncio] = useState('')
   const [objetivo, setObjetivo] = useState<ObjetivoCamara>({ id: 0, destino: 'jueza' })
   const [ajustes, setAjustes] = useState({ nivel: 'pocas' as NivelDistracciones, avisar: true })
+  const [esperandoListo, setEsperandoListo] = useState(false)
 
   const gen = useRef(0)
   const timers = useRef<number[]>([])
   const motor = useRef<MotorAudioSala | null>(null)
   const vozRef = useRef(voz)
   vozRef.current = voz
+  const pendienteRef = useRef<PendienteAvance | null>(null)
   const turno = guion.turnos[indice]
 
   const { activa, aviso, explicacion, historial, disparar } = useDistracciones({
@@ -124,11 +138,10 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
       timers.current.push(window.setTimeout(fin, msLectura(linea.texto)))
       return
     }
-    const h = HABLANTES[linea.hablante]
     motor.current?.atenuarParaVoz(true)
     // Algunos navegadores no avisan del final de frases largas.
     timers.current.push(window.setTimeout(fin, msLectura(linea.texto) * 2 + 4000))
-    hablar(linea.texto, { genero: h.voz, tono: h.tono, onFin: fin })
+    hablar(linea.texto, { rol: linea.hablante, onFin: fin })
   }
 
   const reproducirLineas = (secuencia: LineaVoz[], g: number) => {
@@ -186,7 +199,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
   }, [cortarTodo])
 
   useEffect(() => {
-    if (pausa) return
+    if (pausa || esperandoListo) return
     reproducirTurno(turno, { conInterrupcion: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- un arranque por turno nuevo
   }, [indice])
@@ -202,17 +215,101 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     }
   }
 
-  const responder = (r: Respuesta) => {
-    cortarTodo()
-    const nuevoRegistro = [...registro, { turno, respuesta: r }]
-    setRegistro(nuevoRegistro)
+  const resolverIndiceSiguiente = (r: Respuesta) => {
     const salto = r.saltaA ? guion.turnos.findIndex((t) => t.id === r.saltaA) : -1
-    const siguiente = salto >= 0 ? salto : indice + 1
+    return salto >= 0 ? salto : indice + 1
+  }
+
+  const aplicarAvance = (nuevoRegistro: RegistroTurno[], ayudasActuales: ContadoresAyuda, siguiente: number) => {
+    pendienteRef.current = null
+    setEsperandoListo(false)
+    setRegistro(nuevoRegistro)
+    setAyudas(ayudasActuales)
     if (siguiente >= guion.turnos.length) {
-      onTerminar(nuevoRegistro, ayudas)
+      onTerminar(nuevoRegistro, ayudasActuales)
       return
     }
     setIndice(siguiente)
+  }
+
+  const decirReplicaJueza = (texto: string, g: number, onFin: () => void) => {
+    setLineas([{ id: `${g}-replica`, tipo: 'voz', quien: HABLANTES.jueza.nombre, texto }])
+    setAnuncio(`${HABLANTES.jueza.nombre}: ${texto}`)
+    mirarA('jueza')
+    decir({ hablante: 'jueza', texto }, g, onFin)
+  }
+
+  const avanzarTrasRespuesta = (r: Respuesta, ayudasActuales: ContadoresAyuda = ayudas) => {
+    const nuevoRegistro = [...registro, { turno, respuesta: r }]
+    const siguiente = resolverIndiceSiguiente(r)
+    aplicarAvance(nuevoRegistro, ayudasActuales, siguiente)
+  }
+
+  const continuarTrasEspera = () => {
+    const pend = pendienteRef.current
+    if (!pend) return
+    cortarTodo()
+    aplicarAvance(pend.registro, pend.ayudas, pend.siguiente)
+  }
+
+  const responderLibre = (textoLibre: string) => {
+    cortarTodo()
+    const g = gen.current
+    const pregunta = conNombre(turno.claro ?? turno.texto, nombre)
+    const resultado: ResultadoRespuestaLibre = clasificarRespuestaLibre(textoLibre, {
+      pregunta,
+      esInvestigado: puntoVista === 'acusado',
+    })
+    const r: Respuesta = {
+      texto: textoLibre,
+      porQue: resultado.porQue,
+      origen: 'libre',
+    }
+    const nuevoRegistro = [...registro, { turno, respuesta: r }]
+
+    if (resultado.entrarPausa) {
+      setRegistro(nuevoRegistro)
+      entrarEnPausa('jueza')
+      return
+    }
+
+    if (resultado.esperarListo) {
+      const siguiente = resolverIndiceSiguiente(r)
+      pendienteRef.current = { registro: nuevoRegistro, ayudas, siguiente }
+      setRegistro(nuevoRegistro)
+      setEsperandoListo(true)
+      decirReplicaJueza(resultado.replicaJuez, g, () => {
+        if (g !== gen.current) return
+        timers.current.push(window.setTimeout(() => {
+          if (g !== gen.current || !pendienteRef.current) return
+          continuarTrasEspera()
+        }, MS_AGUA_AUTO))
+      })
+      return
+    }
+
+    if (!resultado.avanzar) {
+      setRegistro(nuevoRegistro)
+      decirReplicaJueza(resultado.replicaJuez, g, () => {
+        // Se queda en el mismo turno para que pueda contestar de nuevo.
+      })
+      return
+    }
+
+    const siguiente = resolverIndiceSiguiente(r)
+    decirReplicaJueza(resultado.replicaJuez, g, () => {
+      if (g !== gen.current) return
+      aplicarAvance(nuevoRegistro, ayudas, siguiente)
+    })
+  }
+
+  const responder = (r: Respuesta) => {
+    if (r.origen === 'libre') {
+      responderLibre(r.texto)
+      return
+    }
+    cortarTodo()
+    avanzarTrasRespuesta(r)
   }
 
   const entrarEnPausa = (origen: Exclude<Pausa, null>) => {
@@ -225,7 +322,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
       setLineas([{ id: 'pausa', tipo: 'voz', quien: HABLANTES.jueza.nombre, texto: FRASE_PAUSA }])
       setAnuncio(`${HABLANTES.jueza.nombre}: ${FRASE_PAUSA}`)
       mirarA('jueza')
-      if (vozRef.current) hablar(FRASE_PAUSA, { genero: 'mujer' })
+      if (vozRef.current) hablar(FRASE_PAUSA, { rol: 'jueza' })
     } else {
       setLineas([])
       setAnuncio('Modo calma. Todo está en silencio.')
@@ -284,6 +381,8 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
               nombre={nombre}
               onResponder={responder}
               onCallar={cortarTodo}
+              esperandoListo={esperandoListo}
+              onListo={continuarTrasEspera}
             />
           )}
         </div>
@@ -295,7 +394,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
               type="button"
               className="btn-secondary min-h-[44px] py-3"
               onClick={() => entrarEnPausa('jueza')}
-              disabled={pausa !== null}
+              disabled={pausa !== null || esperandoListo}
             >
               Pedir una pausa
             </button>
@@ -303,7 +402,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
               type="button"
               className="btn-ghost min-h-[44px] py-3 border border-court-200"
               onClick={pedirRepetir}
-              disabled={pausa !== null}
+              disabled={pausa !== null || esperandoListo}
             >
               Que lo repita
             </button>
@@ -312,7 +411,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
                 type="button"
                 className="btn-ghost min-h-[44px] py-3 border border-court-200"
                 onClick={pedirClaro}
-                disabled={pausa !== null}
+                disabled={pausa !== null || esperandoListo}
               >
                 Que lo diga más claro
               </button>

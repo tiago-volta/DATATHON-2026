@@ -19,6 +19,8 @@ export interface Respuesta {
   porQue: string
   /** Id del turno al que salta la simulación (por ejemplo, si decides no declarar). */
   saltaA?: string
+  /** Origen: las seguras avanzan al momento; las libres pasan por la réplica de la jueza. */
+  origen?: 'segura' | 'libre'
 }
 
 /** Algo que pasa en la sala mientras alguien habla. */
