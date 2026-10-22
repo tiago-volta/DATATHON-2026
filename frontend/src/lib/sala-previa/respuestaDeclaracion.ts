@@ -10,6 +10,7 @@ export type TipoRespuestaLibre =
   | 'no_contestar'
   | 'fuera_tema'
   | 'al_tema'
+  | 'mentira'
 
 export interface ResultadoRespuestaLibre {
   tipo: TipoRespuestaLibre
@@ -172,6 +173,26 @@ export function clasificarRespuestaLibre(
       entrarPausa: false,
       esperarListo: false,
       porQue: 'Respondiste con tus palabras.',
+    }
+  }
+
+  if (
+    texto.includes('mentir') ||
+    texto.includes('voy a mentir') ||
+    texto.includes('pienso mentir') ||
+    texto.includes('no voy a decir la verdad') ||
+    texto.includes('no dire la verdad') ||
+    texto.includes('mentira')
+  ) {
+    return {
+      tipo: 'mentira',
+      replicaJuez:
+        'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?',
+      avanzar: false,
+      entrarPausa: false,
+      esperarListo: false,
+      porQue:
+        'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.',
     }
   }
 

@@ -184,10 +184,9 @@ def _llamar_gemini_sync(system_prompt: str, user_content: str) -> dict:
     modelos = list(
         dict.fromkeys(
             [
-                os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
-                "gemini-3.7-flash",
-                "gemini-3.6-flash",
+                os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
                 "gemini-3.5-flash",
+                "gemini-3.8-flash",
             ]
         )
     )
@@ -954,10 +953,10 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
     modelos = list(
         dict.fromkeys(
             [
-                os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
-                "gemini-3.7-flash",
-                "gemini-3.6-flash",
+                os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
+                "gemini-3.5-flash-lite",
                 "gemini-3.5-flash",
+                "gemini-3.8-flash",
             ]
         )
     )
@@ -981,7 +980,7 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
             ultimo_error = e
             mensaje = str(e)
             if "429" in mensaje or "RESOURCE_EXHAUSTED" in mensaje:
-                break
+                continue
             continue
     raise ultimo_error or RuntimeError("No se pudo conectar con Gemini")
 
@@ -1064,6 +1063,16 @@ async def evaluar_respuesta_declaracion(
     minus = texto_usuario.lower()
 
     # Patrones directos de control
+    if any(k in minus for k in ["mentir", "voy a mentir", "pienso mentir", "no diré la verdad", "no voy a decir la verdad", "es mentira"]):
+        return {
+            "replica_juez": "Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?",
+            "por_que": "Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.",
+            "avanzar": False,
+            "entrar_pausa": False,
+            "esperar_listo": False,
+            "fuente": "legal",
+        }
+
     if any(k in minus for k in ["beber agua", "un vaso de agua", "puedo beber", "un poco de agua"]):
         return {
             "replica_juez": "Sí, por favor, beba un poco de agua. Tómese su tiempo.",
