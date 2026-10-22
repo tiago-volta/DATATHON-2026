@@ -248,7 +248,7 @@ export function VistaDeclaracion3D({
         />
         {acciones && (
           <div
-            className="absolute bottom-16 inset-x-3 z-[5] pointer-events-auto touch-auto"
+            className="absolute bottom-16 inset-x-3 z-[5] max-h-[calc(100%-5.5rem)] overflow-y-auto pointer-events-auto touch-auto"
             data-sala-ui
           >
             {acciones}

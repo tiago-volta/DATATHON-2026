@@ -82,7 +82,7 @@ export function BotonDictar({ onTexto, onEmpezar }: Props) {
       >
         {escuchando ? 'Parar el dictado' : 'Dictar mi respuesta'}
       </button>
-      <p className="text-sm text-court-700" role="status" aria-live="polite">
+      <p className="text-sm text-white" role="status" aria-live="polite">
         {escuchando ? 'Te escucho. Habla cuando quieras.' : error}
       </p>
     </div>

@@ -130,11 +130,17 @@ export function PanelTurno({
             </div>
           </fieldset>
 
-          <details className="text-white">
-            <summary className="cursor-pointer font-bold min-h-[32px] flex items-center text-xs">
+          <details
+            className="text-white"
+            onToggle={(e) => {
+              if (!e.currentTarget.open) return
+              e.currentTarget.querySelector('textarea')?.scrollIntoView({ block: 'nearest' })
+            }}
+          >
+            <summary className="cursor-pointer font-bold min-h-[44px] flex items-center text-xs">
               Responder con mis palabras
             </summary>
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               <label htmlFor={textareaId} className="block text-sm font-bold text-white">
                 Tu respuesta
               </label>
@@ -144,7 +150,7 @@ export function PanelTurno({
                 onChange={(e) => setLibre(e.target.value.slice(0, 400))}
                 rows={2}
                 maxLength={400}
-                className="textarea-accesible w-full"
+                className="w-full resize-none rounded-suave border border-court-300 bg-white px-3 py-2 text-base leading-snug text-court-900 caret-court-900 placeholder:text-court-600 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
                 placeholder="Por ejemplo: No lo recuerdo bien."
               />
               <div className="flex flex-wrap items-start gap-2">

@@ -148,9 +148,10 @@ export default function PaginaPasaporte() {
   }
 
   useEffect(() => {
-    if (paso !== 'ajustes') return
+    if (paso !== 'ajustes' && paso !== 'resultado') return
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-    document.getElementById('titulo-ajustes')?.focus({ preventScroll: true })
+    const tituloId = paso === 'resultado' ? 'titulo-ficha' : 'titulo-ajustes'
+    document.getElementById(tituloId)?.focus({ preventScroll: true })
   }, [paso])
 
   const toggleAjuste = (id: string) => {

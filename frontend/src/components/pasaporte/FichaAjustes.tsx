@@ -28,7 +28,13 @@ export function FichaAjustes({
 }: FichaAjustesProps) {
   return (
     <section>
-      <h1 className="titulo-pagina text-center">Tu ficha de ajustes</h1>
+      <h1
+        id="titulo-ficha"
+        tabIndex={-1}
+        className="titulo-pagina text-center focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
+      >
+        Tu ficha de ajustes
+      </h1>
       <p className="entradilla text-center max-w-md mx-auto">
         Muestra esta ficha. Quien te atiende escanea el código y abre tus ajustes en su móvil.
       </p>
