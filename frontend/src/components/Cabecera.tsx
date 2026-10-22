@@ -20,7 +20,6 @@ function estaActivo(pathname: string, href: string) {
 
 export function Cabecera() {
   const pathname = usePathname()
-  const panelActivo = estaActivo(pathname, '/profesional')
   const flotante = useCabeceraFlotante()
 
   return (
@@ -55,17 +54,6 @@ export function Cabecera() {
                 </Link>
               )
             })}
-            <Link
-              href="/profesional"
-              aria-current={panelActivo ? 'page' : undefined}
-              className={`inline-flex items-center min-h-[44px] px-3 lg:px-4 rounded-suave transition-colors duration-200 ${
-                panelActivo
-                  ? 'font-bold text-accent-navy underline decoration-accent-info decoration-2 underline-offset-8 bg-calma-mist'
-                  : 'text-court-700 hover:bg-calma-mist hover:text-accent-navy'
-              }`}
-            >
-              Para el juzgado
-            </Link>
           </nav>
 
           <div className="cabecera-cuenta">
