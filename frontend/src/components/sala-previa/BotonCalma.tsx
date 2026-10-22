@@ -4,21 +4,27 @@ interface Props {
   enCalma: boolean
   onPausa: () => void
   onReanudar: () => void
+  nota?: string
 }
 
 /**
  * Fijo en móvil y escritorio, encima de overlays (z alto).
  * Siempre a mano: intro, escenas y check-in.
  */
-export function BotonCalma({ enCalma, onPausa, onReanudar }: Props) {
+export function BotonCalma({ enCalma, onPausa, onReanudar, nota }: Props) {
   const etiqueta = enCalma ? 'Seguir explorando' : 'Pausa / Volver a la calma'
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center pointer-events-none px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
+      className="fixed bottom-0 left-0 right-0 z-[60] flex flex-col items-center gap-1 pointer-events-none px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
       role="region"
       aria-label="Control de calma"
     >
+      {nota && !enCalma && (
+        <p className="pointer-events-auto text-xs text-court-800 bg-white/95 border border-court-200 rounded-suave px-3 py-1 max-w-md text-center">
+          {nota}
+        </p>
+      )}
       <button
         type="button"
         onClick={enCalma ? onReanudar : onPausa}

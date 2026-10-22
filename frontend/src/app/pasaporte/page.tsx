@@ -451,6 +451,7 @@ export default function PaginaPasaporte() {
             <p className="entradilla">
               Marca las adaptaciones que necesitas. Puedes elegir varias.
             </p>
+            <p className="text-sm text-court-700 mb-4">Estos ajustes son una petición. Quien decide es el juez.</p>
 
             <div className="space-y-3 mb-8" role="group" aria-label="Lista de ajustes">
               {AJUSTES_DISPONIBLES.map((ajuste) => {

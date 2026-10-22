@@ -80,6 +80,7 @@ export function FichaAjustes({
         <p className="border-t border-court-200 pt-4 mt-6 text-court-800">
           Esta ficha no muestra ningún diagnóstico. Solo indica qué adaptaciones necesitas.
         </p>
+        <p className="mt-2 text-court-800">Estos ajustes son una petición. Quien decide es el juez.</p>
         <p className="mt-2 text-sm text-court-700">
           Base legal: artículo 7 bis de la Ley de Enjuiciamiento Civil, artículos 109 y 118 de la Ley de Enjuiciamiento Criminal, y Ley 15/2022.
         </p>
