@@ -4,11 +4,17 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { BotonDictar } from './BotonDictar'
 import { HABLANTES, conNombre, type Respuesta, type Turno } from '@/lib/sala-previa/declaracion'
 
+interface Dialogo {
+  quien: string
+  texto: string
+}
+
 interface Props {
   turno: Turno
   numero: number
   total: number
   nombre: string
+  dialogo?: Dialogo | null
   onResponder: (r: Respuesta) => void
   onCallar: () => void
   /** Mientras la jueza responde a una petición (agua, etc.). */
@@ -21,6 +27,7 @@ export function PanelTurno({
   numero,
   total,
   nombre,
+  dialogo = null,
   onResponder,
   onCallar,
   esperandoListo = false,
@@ -46,16 +53,16 @@ export function PanelTurno({
 
   if (esperandoListo && onListo) {
     return (
-      <section className="space-y-3" aria-labelledby={`titulo-${turno.id}`}>
+      <section className="space-y-2" aria-labelledby={`titulo-${turno.id}`}>
         <h2
           id={`titulo-${turno.id}`}
           ref={tituloRef}
           tabIndex={-1}
-          className="text-xl font-bold text-court-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
+          className="text-base font-bold text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
         >
           Tómate un momento
         </h2>
-        <p className="text-court-800">
+        <p className="text-sm text-white">
           Puedes beber agua. No hay prisa. Cuando quieras, seguimos con la declaración.
         </p>
         <button type="button" className="btn-primary min-h-[44px]" onClick={onListo}>
@@ -66,75 +73,69 @@ export function PanelTurno({
   }
 
   return (
-    <section className="space-y-3" aria-labelledby={`titulo-${turno.id}`}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <section className="space-y-1" aria-labelledby={`titulo-${turno.id}`}>
+      <div className="flex items-baseline gap-2">
         <h2
           id={`titulo-${turno.id}`}
           ref={tituloRef}
           tabIndex={-1}
-          className="text-xl font-bold text-court-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
+          className="shrink-0 text-xs font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-suave"
         >
-          Habla: {hablante.nombre}
+          {dialogo?.quien ?? hablante.nombre}
+          <span className="sr-only">
+            . Momento {numero} de {total}
+          </span>
         </h2>
-        <span className="text-sm font-bold text-court-700 bg-court-100 px-3 py-1 rounded-full">
-          Momento {numero} de {total}
+        {dialogo?.texto && (
+          <p className="min-w-0 flex-1 text-xs leading-tight text-white line-clamp-1">{dialogo.texto}</p>
+        )}
+        <span className="shrink-0 text-[11px] font-bold text-white/80">
+          {numero}/{total}
         </span>
       </div>
 
-      <div
-        className="h-2 w-full rounded-full bg-court-100 overflow-hidden"
-        role="progressbar"
-        aria-label="Avance de la simulación"
-        aria-valuemin={1}
-        aria-valuemax={total}
-        aria-valuenow={numero}
-      >
-        <div className="h-full bg-accent-info" style={{ width: `${(numero / total) * 100}%` }} />
-      </div>
-
       {turno.explicacion && (
-        <div className="rounded-suave bg-calma-mist border border-court-100 p-3 text-court-800">
-          <p className="font-bold text-sm text-court-900">Qué está pasando</p>
-          <p>{turno.explicacion}</p>
-          {turno.ley && <p className="mt-1 text-sm text-court-700">{turno.ley}.</p>}
-        </div>
+        <p className="sr-only">
+          Qué está pasando. {turno.explicacion}
+          {turno.ley ? ` ${turno.ley}.` : ''}
+        </p>
       )}
 
       {turno.respuestas.length === 0 ? (
         <button
           type="button"
-          className="btn-primary min-h-[44px]"
+          className="inline-flex items-center min-h-[36px] px-3 py-1 text-xs font-bold text-white bg-accent-navy rounded-suave"
           onClick={() => onResponder({ texto: '', porQue: '', origen: 'segura' })}
         >
           Seguir
         </button>
       ) : (
         <>
-          <fieldset className="space-y-2">
-            <legend className="font-bold text-court-900 mb-2">Respuestas seguras</legend>
-            <div className="grid gap-2">
+          <fieldset>
+            <legend className="sr-only">Respuestas seguras</legend>
+            <div className="flex flex-wrap gap-1">
               {turno.respuestas.map((r) => {
                 const texto = conNombre(r.texto, nombre)
                 return (
                   <button
                     key={r.texto}
                     type="button"
-                    className="btn-secondary justify-start text-left min-h-[44px] py-3 font-semibold"
+                    className="inline-flex items-center max-w-[13rem] min-h-[36px] px-2.5 py-1 text-left text-xs font-semibold text-court-900 bg-white rounded-suave"
                     onClick={() => onResponder({ ...r, texto, origen: 'segura' })}
                   >
-                    «{texto}»
+                    <span className="line-clamp-1">«{texto}»</span>
                   </button>
                 )
               })}
             </div>
           </fieldset>
 
-          <details className="rounded-suave border border-court-200 p-3">
-            <summary className="cursor-pointer font-bold text-court-800 min-h-[44px] flex items-center">
+          <details className="text-white">
+            <summary className="cursor-pointer font-bold min-h-[32px] flex items-center text-xs">
               Responder con mis palabras
             </summary>
             <div className="space-y-2 pt-2">
-              <label htmlFor={textareaId} className="block text-sm font-bold text-court-800">
+              <label htmlFor={textareaId} className="block text-sm font-bold text-white">
                 Tu respuesta
               </label>
               <textarea

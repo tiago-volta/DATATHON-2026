@@ -307,6 +307,63 @@
     @apply rounded-tarjeta bg-calma-sage border border-accent-success/25 p-6 md:p-8;
   }
 
+  .sello-exito-halo,
+  .sello-exito-disco {
+    transform-origin: 60px 60px;
+  }
+
+  .sello-exito-halo {
+    fill: none;
+    stroke: #0f766e;
+    stroke-width: 2;
+    opacity: 0.4;
+    animation: sello-halo 640ms var(--ease-out) both;
+  }
+
+  .sello-exito-disco {
+    fill: #0f766e;
+    animation: sello-disco 460ms var(--ease-out) both;
+  }
+
+  .sello-exito-check {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 58;
+    stroke-dashoffset: 58;
+    animation: sello-check 420ms var(--ease-out) 240ms forwards;
+  }
+
+  @keyframes sello-disco {
+    from {
+      transform: scale(0.72);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes sello-halo {
+    from {
+      transform: scale(0.86);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes sello-check {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
   .link-atras {
     @apply inline-flex items-center gap-2 text-accent-navy font-medium mb-6 rounded-suave px-3 -mx-3;
     min-height: 44px;

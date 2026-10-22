@@ -34,46 +34,84 @@ function lineaAyuda({ pausas, repeticiones, aclaraciones }: ContadoresAyuda): st
   return `Durante el ensayo ${texto}. Eso te ayuda a seguir.`
 }
 
-export function ResumenDeclaracion({ puntoVista, ayudas, onRepetir }: Props) {
+function SelloExito() {
+  return (
+    <div className="mx-auto mb-5 h-28 w-28" aria-hidden="true">
+      <svg viewBox="0 0 120 120" className="h-full w-full">
+        <circle className="sello-exito-halo" cx="60" cy="60" r="54" />
+        <circle className="sello-exito-disco" cx="60" cy="60" r="40" />
+        <path className="sello-exito-check" d="M42 62 54 74 79 47" />
+      </svg>
+    </div>
+  )
+}
+
+export function ResumenDeclaracion({ puntoVista, ayudas, nombre, onRepetir }: Props) {
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const claves = GUIONES[puntoVista].claves.slice(0, 3)
   const extra = lineaAyuda(ayudas)
+  const quien = nombre.trim()
+  const titulo = quien ? `${quien}, has terminado` : 'Has terminado'
 
   useEffect(() => {
-    tituloRef.current?.focus()
+    const titulo = tituloRef.current
+    if (!titulo) return
+    titulo.focus({ preventScroll: true })
+    const seccion = titulo.closest('section')
+    const main = seccion?.closest('main')
+    if (!seccion || !main) return
+    const arriba =
+      seccion.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop
+    main.scrollTo({ top: Math.max(0, arriba - 12), behavior: 'auto' })
   }, [])
 
   return (
-    <section className="mx-auto my-auto max-w-lg space-y-6 text-center" aria-labelledby="titulo-resumen">
-      <div className="card bg-calma-sage border-2 border-accent-success space-y-2">
-        <h2
-          id="titulo-resumen"
-          ref={tituloRef}
-          tabIndex={-1}
-          className="text-2xl font-bold text-court-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
-        >
-          Lo has hecho
-        </h2>
-        <p className="text-court-800">
-          Has terminado la simulación {PUNTOS_VISTA[puntoVista].titulo.toLowerCase()}.
-        </p>
+    <section className="mx-auto my-auto w-full max-w-xl" aria-labelledby="titulo-resumen">
+      <div className="overflow-hidden rounded-tarjeta border border-court-200 bg-white shadow-[0_8px_28px_rgb(13_31_26_/_0.06)]">
+        <div className="bg-calma-sage px-6 pb-8 pt-9 text-center sm:px-10">
+          <SelloExito />
+          <p className="text-base font-bold text-accent-navy">Simulación terminada</p>
+          <h2
+            id="titulo-resumen"
+            ref={tituloRef}
+            tabIndex={-1}
+            className="mt-1 text-3xl font-bold text-court-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave sm:text-4xl"
+          >
+            {titulo}
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-lg leading-relaxed text-court-800">
+            Has acabado la simulación {PUNTOS_VISTA[puntoVista].titulo.toLowerCase()}.
+          </p>
+        </div>
+
+        <div className="px-6 py-7 sm:px-8">
+          <h3 className="text-xl font-bold text-court-900">Qué recordar</h3>
+          <ol className="mt-4 space-y-4">
+            {claves.map((clave, indice) => (
+              <li key={clave} className="flex items-start gap-4 text-left text-lg leading-relaxed text-court-800">
+                <span
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-calma-sage text-lg font-bold text-accent-navy"
+                  aria-hidden="true"
+                >
+                  {indice + 1}
+                </span>
+                <span className="pt-1.5">{clave}</span>
+              </li>
+            ))}
+          </ol>
+          {extra && (
+            <p className="mt-6 rounded-suave bg-calma-mist px-4 py-3 text-left text-lg leading-relaxed text-court-800">
+              {extra}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="card space-y-3">
-        <h3 className="text-lg font-bold text-court-900">Para llevarte</h3>
-        <ul className="space-y-2 text-court-800">
-          {claves.map((c) => (
-            <li key={c}>{c}</li>
-          ))}
-          {extra && <li>{extra}</li>}
-        </ul>
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-3">
-        <button type="button" className="btn-primary min-h-[44px]" onClick={onRepetir}>
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+        <button type="button" className="btn-primary min-h-[44px] flex-1" onClick={onRepetir}>
           Repetir esta simulación
         </button>
-        <Link href="/sala-previa" className="btn-ghost min-h-[44px] border border-court-200">
+        <Link href="/sala-previa" className="btn-ghost min-h-[44px] flex-1 border border-court-200 bg-white">
           Volver a la sala
         </Link>
       </div>

@@ -450,12 +450,11 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
         reduced={reduced}
         pausa={pausa !== null}
         distraccion={activa}
-        rotulo={rotuloVisible}
         luz={valores.luz}
         gente={valores.gente}
         acciones={
           iniciada ? (
-            <div className="space-y-3 rounded-suave bg-white/95 p-3 shadow-lg border border-court-200">
+            <div className="space-y-1 rounded-suave border border-white/20 bg-court-900/75 px-2.5 py-1.5 text-white shadow-lg backdrop-blur-sm">
               {pausa ? (
                 <PanelPausa origen={pausa} onSeguir={salirDePausa} />
               ) : (
@@ -464,17 +463,18 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
                   numero={indice + 1}
                   total={guion.turnos.length}
                   nombre={nombre}
+                  dialogo={rotuloVisible}
                   onResponder={responder}
                   onCallar={cortarTodo}
                   esperandoListo={esperandoListo}
                   onListo={continuarTrasEspera}
                 />
               )}
-              <div className="flex flex-wrap gap-2" role="group" aria-label="Ayudas durante la declaración">
+              <div className="flex flex-wrap gap-1" role="group" aria-label="Ayudas durante la declaración">
                 <p className="sr-only">{PUNTOS_VISTA[puntoVista].dondeEstas}</p>
                 <button
                   type="button"
-                  className="btn-secondary min-h-[44px] py-2"
+                  className="inline-flex items-center min-h-[36px] px-2.5 py-1 text-xs font-bold text-court-900 bg-white rounded-suave"
                   onClick={() => entrarEnPausa('jueza')}
                   disabled={pausa !== null || esperandoListo}
                 >
@@ -482,7 +482,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
                 </button>
                 <button
                   type="button"
-                  className="btn-ghost min-h-[44px] py-2 border border-court-200"
+                  className="inline-flex items-center min-h-[36px] px-2.5 py-1 text-xs font-bold text-white border border-white/40 rounded-suave hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50"
                   onClick={pedirRepetir}
                   disabled={pausa !== null || esperandoListo}
                 >
@@ -491,7 +491,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
                 {turno.claro && (
                   <button
                     type="button"
-                    className="btn-ghost min-h-[44px] py-2 border border-court-200"
+                    className="inline-flex items-center min-h-[36px] px-2.5 py-1 text-xs font-bold text-white border border-white/40 rounded-suave hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50"
                     onClick={pedirClaro}
                     disabled={pausa !== null || esperandoListo}
                   >
@@ -500,7 +500,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
                 )}
                 <button
                   type="button"
-                  className="btn-ghost min-h-[44px] py-2 border border-court-200"
+                  className="inline-flex items-center min-h-[36px] px-2.5 py-1 text-xs font-bold text-white border border-white/40 rounded-suave hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50"
                   onClick={alternarVoz}
                   aria-pressed={voz}
                 >

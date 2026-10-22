@@ -22,6 +22,15 @@ import {
 } from '@/lib/sala-previa/declaracion'
 import { PITCH_MAX, wrapDeg, type MiradaSala, type MiradaTarget } from '@/lib/sala-previa/salaVistasConfig'
 
+function IconoPantallaCompleta({ salir }: { salir?: boolean }) {
+  const d = salir ? 'M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6' : 'M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5'
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d={d} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 const SalaVistas3D = dynamic(
   () => import('@/components/sala-previa/SalaVistas3D').then((m) => m.SalaVistas3D),
   {
@@ -39,20 +48,13 @@ export interface ObjetivoCamara {
   destino: Hablante | 'entrada'
 }
 
-export interface RotuloEnfoque {
-  quien: string
-  texto: string
-}
-
 interface Props {
   puntoVista: PuntoVista
   objetivo: ObjetivoCamara
   reduced: boolean
   pausa: boolean
   distraccion: Distraccion | null
-  /** Quién habla y la frase actual, encima de la sala enfocada. */
-  rotulo: RotuloEnfoque | null
-  /** Respuestas y ayudas, dentro de la escena, para no salir de la simulación. */
+  /** Respuestas, diálogo y ayudas, dentro de la escena. */
   acciones?: ReactNode
   luz: number
   gente: number
@@ -64,12 +66,14 @@ export function VistaDeclaracion3D({
   reduced,
   pausa,
   distraccion,
-  rotulo,
   acciones,
   luz,
   gente,
 }: Props) {
   const labelId = useId()
+  const fsRootRef = useRef<HTMLDivElement>(null)
+  const [enPantallaCompleta, setEnPantallaCompleta] = useState(false)
+  const [fsCss, setFsCss] = useState(false)
   const inicial = miradaTurno(puntoVista, 'jueza')
   const [yaw, setYaw] = useState(inicial.yaw)
   const [pitch, setPitch] = useState(inicial.pitch)
@@ -129,15 +133,90 @@ export function VistaDeclaracion3D({
     setArrastrando(false)
   }
 
+  useEffect(() => {
+    const syncFs = () => {
+      const el = fsRootRef.current
+      const nativo = Boolean(document.fullscreenElement) && document.fullscreenElement === el
+      if (nativo) {
+        setFsCss(false)
+        setEnPantallaCompleta(true)
+        return
+      }
+      if (!fsCss) setEnPantallaCompleta(false)
+    }
+    document.addEventListener('fullscreenchange', syncFs)
+    document.addEventListener('webkitfullscreenchange', syncFs as EventListener)
+    return () => {
+      document.removeEventListener('fullscreenchange', syncFs)
+      document.removeEventListener('webkitfullscreenchange', syncFs as EventListener)
+    }
+  }, [fsCss])
+
+  useEffect(() => {
+    if (!enPantallaCompleta && !fsCss) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (document.fullscreenElement) {
+        void document.exitFullscreen?.()
+      } else if (fsCss) {
+        setFsCss(false)
+        setEnPantallaCompleta(false)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [enPantallaCompleta, fsCss])
+
+  const alternarPantallaCompleta = async () => {
+    const el = fsRootRef.current
+    if (!el) return
+    const doc = document as Document & { webkitExitFullscreen?: () => Promise<void> | void }
+    const nodo = el as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }
+    try {
+      if (document.fullscreenElement === el || fsCss) {
+        if (document.fullscreenElement) {
+          await (document.exitFullscreen?.() ?? doc.webkitExitFullscreen?.())
+        }
+        setFsCss(false)
+        setEnPantallaCompleta(false)
+        return
+      }
+      if (nodo.requestFullscreen) {
+        await nodo.requestFullscreen()
+        setEnPantallaCompleta(true)
+        return
+      }
+      if (nodo.webkitRequestFullscreen) {
+        await nodo.webkitRequestFullscreen()
+        setEnPantallaCompleta(true)
+        return
+      }
+      setFsCss(true)
+      setEnPantallaCompleta(true)
+    } catch {
+      setFsCss(true)
+      setEnPantallaCompleta(true)
+    }
+  }
+
+  const enFs = enPantallaCompleta || fsCss
+
   const nombreObjetivo =
     objetivo.destino === 'entrada' ? 'la puerta' : HABLANTES[objetivo.destino].nombre.toLowerCase()
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
       <div
-        className={`relative min-h-[280px] flex-1 w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
-          reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'
+        ref={fsRootRef}
+        className={`sala-juzgado-fs-root flex min-h-0 flex-1 flex-col ${enFs ? 'is-fullscreen' : ''} ${
+          fsCss ? 'sala-juzgado-fs-fallback' : ''
         }`}
+      >
+      <div className="sala-fs-columna flex min-h-0 flex-1 flex-col gap-2">
+      <div
+        className={`sala-fs-viewer relative min-h-[280px] flex-1 w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
+          enFs ? 'h-full !rounded-none !border-0' : ''
+        } ${reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'}`}
         role="img"
         aria-labelledby={labelId}
         onPointerDown={onPointerDown}
@@ -150,6 +229,7 @@ export function VistaDeclaracion3D({
           Sala de vistas en 3D, en primera persona. {PUNTOS_VISTA[puntoVista].dondeEstas}{' '}
           Encima de cada persona está su nombre: juez, abogada, fiscal, abogado, persona acusada
           y agente. Ahora miras hacia {nombreObjetivo}.
+          {enFs ? ' Pantalla completa activa. Pulsa Escape o el botón para salir.' : ''}
         </p>
         <SalaVistas3D
           yaw={yaw}
@@ -166,28 +246,33 @@ export function VistaDeclaracion3D({
           distraccion={pausa ? null : distraccion}
           enCalma={pausa}
         />
-        {rotulo && (
-          <div
-            className="absolute top-0 inset-x-0 z-[4] px-4 py-2 bg-court-900/95 text-white pointer-events-none"
-            aria-hidden="true"
-          >
-            <p className="text-sm font-bold text-court-100">Miras a {rotulo.quien}</p>
-            <p className="text-base leading-snug line-clamp-2">{rotulo.texto}</p>
-          </div>
-        )}
         {acciones && (
           <div
-            className="absolute bottom-24 inset-x-0 z-[5] max-h-[46%] overflow-y-auto p-3 pointer-events-auto touch-auto"
+            className="absolute bottom-16 inset-x-3 z-[5] pointer-events-auto touch-auto"
             data-sala-ui
           >
             {acciones}
           </div>
         )}
+        <div className="absolute top-2 right-2 z-[7]" data-sala-ui>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-suave bg-white text-court-800 border border-court-200 hover:bg-calma-mist focus-visible:ring-4 focus-visible:ring-court-400"
+            onClick={(e) => {
+              e.stopPropagation()
+              void alternarPantallaCompleta()
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            aria-label={enFs ? 'Salir de pantalla completa' : 'Ampliar a pantalla completa'}
+            aria-pressed={enFs}
+            title={enFs ? 'Salir (Esc)' : 'Pantalla completa'}
+          >
+            <IconoPantallaCompleta salir={enFs} />
+          </button>
+        </div>
         {!reduced && (
           <p
-            className={`absolute right-2 z-[3] text-sm text-court-800 bg-white px-2 py-1 rounded-suave border border-court-200 pointer-events-none ${
-              rotulo ? 'top-16' : 'top-2'
-            }`}
+            className="absolute left-2 top-2 z-[3] text-sm text-court-800 bg-white px-2 py-1 rounded-suave border border-court-200 pointer-events-none"
             aria-hidden="true"
           >
             Arrastra para mirar
@@ -195,7 +280,7 @@ export function VistaDeclaracion3D({
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Mirar en la sala" data-sala-ui>
+      <div className="sala-fs-miradas flex flex-wrap gap-2" role="group" aria-label="Mirar en la sala" data-sala-ui>
         <button
           type="button"
           className="btn-secondary text-sm min-h-[44px] py-2"
@@ -234,6 +319,8 @@ export function VistaDeclaracion3D({
             </button>
           </>
         )}
+      </div>
+      </div>
       </div>
     </div>
   )
