@@ -729,6 +729,21 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
         ),
     ),
     (
+        re.compile(
+            r"obligar\w* a (ir|acudir|venir)|obligad[oa] a (ir|acudir)|obligatori\w* (ir|acudir)"
+            r"|tengo que (ir|acudir)|debo (ir|acudir)|\bacudir\b|comparec|ir al (juzgado|juicio)"
+            r"|aunque no quiera|no voy|no acudo|no puedo ir",
+            re.I,
+        ),
+        _cerrar_derecho(
+            "Sí. Si te citan como testigo, tienes que ir. Es un deber. "
+            "Si no vas sin una causa justificada, pueden multarte de 200 a 5.000 euros "
+            "y ordenar que la policía te lleve al juzgado. "
+            "Si no puedes ir, avisa antes y lleva un justificante.",
+            "art. 410 y art. 420 LECrim",
+        ),
+    ),
+    (
         re.compile(r"mentir|falso testimonio|verdad|recordar|no lo s[eé]|testigo|declar", re.I),
         _cerrar_derecho(
             "Si eres testigo, dices lo que viste. "

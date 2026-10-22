@@ -126,6 +126,20 @@ def test_ayuda_ir_al_juzgado_aunque_no_quiera(monkeypatch):
     assert "Solo contesto dudas legales" not in texto
 
 
+def test_ayuda_obligar_a_ir_testigo(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    res = client.post(
+        "/api/ayuda/preguntar",
+        json={"pregunta": "¿Me pueden obligar a ir si soy testigo?"},
+    )
+    assert res.status_code == 200
+    texto = res.json()["respuesta"]
+    assert "410" in texto
+    assert "420" in texto
+    assert "458" not in texto
+
+
 def test_ayuda_preguntar_fuente_boe(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "mock")
     monkeypatch.setenv("GEMINI_API_KEY", "")
