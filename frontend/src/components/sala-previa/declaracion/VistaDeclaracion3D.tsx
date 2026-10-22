@@ -39,6 +39,11 @@ export interface ObjetivoCamara {
   destino: Hablante | 'entrada'
 }
 
+export interface RotuloEnfoque {
+  quien: string
+  texto: string
+}
+
 interface Props {
   puntoVista: PuntoVista
   objetivo: ObjetivoCamara
@@ -46,9 +51,19 @@ interface Props {
   pausa: boolean
   distraccion: Distraccion | null
   aviso: string | null
+  /** Quién habla y la frase actual, encima de la sala enfocada. */
+  rotulo: RotuloEnfoque | null
 }
 
-export function VistaDeclaracion3D({ puntoVista, objetivo, reduced, pausa, distraccion, aviso }: Props) {
+export function VistaDeclaracion3D({
+  puntoVista,
+  objetivo,
+  reduced,
+  pausa,
+  distraccion,
+  aviso,
+  rotulo,
+}: Props) {
   const labelId = useId()
   const inicial = miradaTurno(puntoVista, 'jueza')
   const [yaw, setYaw] = useState(inicial.yaw)
@@ -147,15 +162,26 @@ export function VistaDeclaracion3D({ puntoVista, objetivo, reduced, pausa, distr
         />
         {aviso && !pausa && (
           <p
-            className="absolute top-2 left-2 right-2 sm:right-auto sm:max-w-sm z-[4] text-sm font-bold text-court-800 bg-white px-3 py-2 rounded-suave border-2 border-accent-info pointer-events-none"
+            className="absolute top-2 left-2 z-[4] max-w-[70%] text-sm font-bold text-court-800 bg-white px-3 py-2 rounded-suave border-2 border-accent-info pointer-events-none"
             aria-hidden="true"
           >
             Aviso: {aviso}
           </p>
         )}
+        {rotulo && (
+          <div
+            className="absolute bottom-0 inset-x-0 z-[4] px-4 py-3 bg-court-900/95 text-white pointer-events-none"
+            aria-hidden="true"
+          >
+            <p className="text-sm font-bold text-court-100">Miras a {rotulo.quien}</p>
+            <p className="text-base sm:text-lg leading-snug line-clamp-4">{rotulo.texto}</p>
+          </div>
+        )}
         {!reduced && (
           <p
-            className="absolute bottom-2 right-2 z-[3] text-sm text-court-800 bg-white px-2 py-1 rounded-suave border border-court-200 pointer-events-none"
+            className={`absolute right-2 z-[3] text-sm text-court-800 bg-white px-2 py-1 rounded-suave border border-court-200 pointer-events-none ${
+              rotulo ? 'top-2' : 'bottom-2'
+            }`}
             aria-hidden="true"
           >
             Arrastra para mirar

@@ -351,6 +351,11 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     onVoz(!voz)
   }
 
+  const lineaEnFoco = [...lineas].reverse().find((l) => l.tipo === 'voz' && l.quien)
+  const rotuloVisible = lineaEnFoco?.quien
+    ? { quien: lineaEnFoco.quien, texto: lineaEnFoco.texto }
+    : null
+
   return (
     <div className="space-y-4">
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
@@ -365,6 +370,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
         pausa={pausa !== null}
         distraccion={activa}
         aviso={aviso}
+        rotulo={rotuloVisible}
       />
 
       <Subtitulos lineas={lineas} />
