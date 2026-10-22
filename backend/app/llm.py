@@ -729,8 +729,7 @@ def _respuesta_mock_ayuda(pregunta: str) -> str:
         "TribunalInclusivo te ayuda a entender el juzgado con frases cortas. "
         "Puedes ir a Citación (explicar la carta), Pasaporte (pedir apoyos), "
         "Ensaya (practicar) o Sala Previa (probar el ambiente). "
-        "Si quieres, reformula tu duda con otras palabras. "
-        "No pido datos de salud ni hago diagnósticos."
+        "Si quieres, reformula tu duda con otras palabras."
     )
 
 

@@ -92,7 +92,7 @@ export default function PaginaAyuda() {
       id: 'saludo',
       rol: 'asistente',
       texto:
-        'Hola. Soy el asistente de TribunalInclusivo. Puedes preguntarme por la citación, el Pasaporte o la Sala Previa. Escribe tu duda. No pido datos de salud.',
+        'Hola. Soy el asistente de TribunalInclusivo. Puedes preguntarme por la citación, el Pasaporte o la Sala Previa. Escribe tu duda.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
@@ -167,8 +167,7 @@ export default function PaginaAyuda() {
           Ayuda
         </h1>
         <p className="entradilla max-w-[40ch]">
-          Escribe tu duda. Te respondo con frases cortas. No hago diagnósticos ni
-          pido datos de salud.
+          Escribe tu duda. Te respondo con frases cortas y claras sobre el proceso judicial.
         </p>
       </header>
 
