@@ -130,7 +130,7 @@ export function VistaDeclaracion3D({
   return (
     <div className="space-y-2">
       <div
-        className={`relative aspect-[4/3] sm:aspect-video max-h-[62vh] w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
+        className={`relative h-[52vh] min-h-[280px] max-h-[70vh] sm:h-[58vh] w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
           reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         role="img"

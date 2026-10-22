@@ -412,6 +412,7 @@ const GUION_ESTRADO: Guion = {
         {
           texto: '¿Puedo pedir una pausa si la necesito?',
           porQue: 'Sí. Puedes pedir una pausa cuando la necesites. La jueza decide cuándo.',
+          pidePausa: true,
         },
       ],
     },

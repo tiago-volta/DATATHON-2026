@@ -24,6 +24,7 @@ import {
 import { GUIONES } from '@/lib/sala-previa/declaracionGuiones'
 import {
   clasificarRespuestaLibre,
+  esPeticionPausa,
   type ResultadoRespuestaLibre,
 } from '@/lib/sala-previa/respuestaDeclaracion'
 import { callar, hablar, precargarVoces } from '@/lib/sala-previa/vozSala'
@@ -33,7 +34,7 @@ import { VistaDeclaracion3D, type ObjetivoCamara } from './VistaDeclaracion3D'
 import type { ContadoresAyuda, RegistroTurno } from './ResumenDeclaracion'
 
 const CLAVE_AJUSTES = 'sala-previa-distracciones-v2'
-const FRASE_PAUSA = 'De acuerdo. Hacemos una pausa de cinco minutos.'
+const FRASE_PAUSA = 'Sí. Podemos hacer una pausa. Cuando quieras, seguimos.'
 const FRASE_SEGUIMOS = 'Continuamos. Tómese su tiempo.'
 /** Beat corto de calma tras conceder agua, si la persona no pulsa «listo». */
 const MS_AGUA_AUTO = 4500
@@ -309,6 +310,12 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
       return
     }
     cortarTodo()
+    // Botón seguro que pide pausa: misma ruta que «Pedir una pausa» / texto libre.
+    if (r.pidePausa || esPeticionPausa(r.texto)) {
+      setRegistro((prev) => [...prev, { turno, respuesta: r }])
+      entrarEnPausa('jueza')
+      return
+    }
     avanzarTrasRespuesta(r)
   }
 
@@ -316,6 +323,8 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     cortarTodo()
     motor.current?.detener(true)
     bancoSonidos().cancelar()
+    pendienteRef.current = null
+    setEsperandoListo(false)
     setPausa(origen)
     if (origen === 'jueza') {
       setAyudas((a) => ({ ...a, pausas: a.pausas + 1 }))
@@ -466,7 +475,7 @@ function PanelPausa({ origen, onSeguir }: { origen: Exclude<Pausa, null>; onSegu
         tabIndex={-1}
         className="text-xl font-bold text-court-900 focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
       >
-        {origen === 'jueza' ? 'Pausa de cinco minutos' : 'Modo calma'}
+        {origen === 'jueza' ? 'Pausa concedida' : 'Modo calma'}
       </h2>
       {origen === 'jueza' && (
         <p className="text-court-800">
