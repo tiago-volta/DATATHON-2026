@@ -1,7 +1,6 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { CREDITO_AUDIO } from '@/lib/sala-previa/audio'
 
 const PASOS = [
   {
@@ -111,7 +110,6 @@ export function IntroSalaPrevia({ onEmpezar }: Props) {
         )}
       </div>
 
-      <p className="text-sm text-court-700 mt-4">{CREDITO_AUDIO}</p>
     </section>
   )
 }

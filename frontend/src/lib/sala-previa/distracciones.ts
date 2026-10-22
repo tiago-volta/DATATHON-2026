@@ -1,5 +1,11 @@
 import type { PapelSala } from './salaVistasConfig'
 
+/**
+ * TEMPORAL: sin ruiditos ni interrupciones de sala.
+ * Pon a `false` (o bórralo del hook) cuando quieras reactivarlas.
+ */
+export const DISTRACCIONES_TEMPORALMENTE_APAGADAS = false
+
 export type NivelDistracciones = 'apagadas' | 'pocas' | 'muchas'
 
 export type TipoDistraccion =

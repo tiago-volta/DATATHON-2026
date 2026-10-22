@@ -1,4 +1,4 @@
-import type { Distraccion } from './distracciones'
+import { DISTRACCIONES_TEMPORALMENTE_APAGADAS, type Distraccion } from './distracciones'
 import { bancoSonidos, type GrupoSonido, type OpcionesToque } from './bancoSonidos'
 
 /**
@@ -27,7 +27,7 @@ export class SonidosDistraccion {
   }
 
   reproducir(d: Distraccion, volumen: number) {
-    if (d.silenciosa) return
+    if (DISTRACCIONES_TEMPORALMENTE_APAGADAS || d.silenciosa) return
     const v = Math.max(0.1, Math.min(1.2, volumen))
     const dur = d.duracion
     const lado = Math.random() < 0.5 ? -1 : 1

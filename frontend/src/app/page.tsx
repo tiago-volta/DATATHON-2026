@@ -29,18 +29,23 @@ function IconoInicio({
 export default function Inicio() {
   return (
     <main id="contenido-principal" className="page-shell">
-      <section className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-suave bg-accent-info/15 text-accent-navy text-xs font-bold uppercase tracking-wider mb-3 border border-accent-info/25">
-          <span aria-hidden="true">🏛️</span>
-          <span>Anticipación cognitiva y sensorial</span>
+      <section className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-gradient-to-r from-calma-mist via-calma-sage/40 to-transparent p-6 rounded-tarjeta border border-accent-info/20 shadow-sm">
+        <div className="max-w-[48ch]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-suave bg-white text-accent-navy text-xs font-bold uppercase tracking-wider mb-3 border border-accent-info/25 shadow-2xs">
+            <span aria-hidden="true">🏛️</span>
+            <span>Anticipación cognitiva y sensorial</span>
+          </div>
+          <h1 className="titulo-pagina max-w-[18ch] !mb-2">
+            Prueba el juzgado antes del día
+          </h1>
+          <p className="entradilla max-w-[46ch] !mb-0">
+            Añade tu citación, prepara tus apoyos y recorre la sala previa antes del juicio.
+            Puedes parar cuando quieras.
+          </p>
         </div>
-        <h1 className="titulo-pagina max-w-[18ch]">
-          Prueba el juzgado antes del día
-        </h1>
-        <p className="entradilla max-w-[46ch]">
-          Añade tu citación, recorre la sala en 3D y ensaya lo que vas a decir.
-          Puedes parar cuando quieras.
-        </p>
+        <div className="hidden sm:flex shrink-0 p-3 bg-white rounded-2xl border border-accent-info/20 shadow-sm">
+          <img src="/logo-icon.png" alt="" aria-hidden="true" className="w-24 h-24 object-contain" />
+        </div>
       </section>
 
       {/* Acción principal única */}
