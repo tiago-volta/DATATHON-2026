@@ -150,10 +150,8 @@ function tocaCaso(respuesta: string): boolean {
   return PALABRAS_CASO.some((p) => respuesta.includes(p))
 }
 
-function acortarPregunta(pregunta: string, max = 120): string {
-  const limpia = pregunta.replace(/\s+/g, ' ').trim()
-  if (limpia.length <= max) return limpia
-  return `${limpia.slice(0, max - 1).trim()}…`
+function limpiarPregunta(pregunta: string): string {
+  return pregunta.replace(/\s+/g, ' ').trim()
 }
 
 /**
@@ -164,7 +162,7 @@ export function clasificarRespuestaLibre(
   contexto: ContextoClasificacion
 ): ResultadoRespuestaLibre {
   const texto = normalizar(textoUsuario)
-  const preguntaCorta = acortarPregunta(contexto.pregunta)
+  const preguntaCompleta = limpiarPregunta(contexto.pregunta)
 
   if (!texto) {
     return {
@@ -239,10 +237,10 @@ export function clasificarRespuestaLibre(
 
   return {
     tipo: 'fuera_tema',
-    replicaJuez: `Eso lo anotamos. Ahora volvemos a la pregunta: ${preguntaCorta}`,
-    avanzar: false,
+    replicaJuez: 'De acuerdo. Queda anotado. Si no entiendes una pregunta, puedes pedir que te la repitan. Seguimos.',
+    avanzar: true,
     entrarPausa: false,
     esperarListo: false,
-    porQue: 'La jueza te devolvió a la pregunta. En un juicio, responde a lo que te preguntan.',
+    porQue: 'Respuesta guardada. Recuerda: si no entiendes la pregunta, puedes pedir que te la repitan.',
   }
 }

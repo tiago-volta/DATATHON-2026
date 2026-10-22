@@ -517,6 +517,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
           enCalma={pausa === 'calma'}
           onPausa={() => entrarEnPausa('calma')}
           onReanudar={salirDePausa}
+          nota="En el juicio real, la pausa la decide el juez. Pídela con esta frase: «¿Puedo hacer una pausa, por favor?»"
         />
       )}
     </div>

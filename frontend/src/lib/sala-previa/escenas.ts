@@ -82,6 +82,10 @@ export const ESCENAS_JUZGADO: EscenaJuzgado[] = [
         nombre: 'Abogado/a',
         explicacion: 'Te defiende, habla por ti cuando hace falta y te ayuda a entender.',
       },
+      {
+        nombre: 'Procurador/a',
+        explicacion: 'Representa a una de las partes ante el juzgado y lleva los papeles del caso. Normalmente no te hace preguntas.',
+      },
     ],
     nivelTipicoId: 4,
     audioguia:

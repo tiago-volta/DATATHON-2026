@@ -87,7 +87,7 @@ export function PanelTurno({
           </span>
         </h2>
         {dialogo?.texto && (
-          <p className="min-w-0 flex-1 text-xs leading-tight text-white line-clamp-1">{dialogo.texto}</p>
+          <p className="min-w-0 flex-1 text-xs leading-normal text-white">{dialogo.texto}</p>
         )}
         <span className="shrink-0 text-[11px] font-bold text-white/80">
           {numero}/{total}
@@ -120,10 +120,10 @@ export function PanelTurno({
                   <button
                     key={r.texto}
                     type="button"
-                    className="inline-flex items-center max-w-[13rem] min-h-[36px] px-2.5 py-1 text-left text-xs font-semibold text-court-900 bg-white rounded-suave"
+                    className="inline-flex items-center min-h-[36px] px-3 py-1.5 text-left text-xs font-semibold text-court-900 bg-white hover:bg-calma-mist focus-visible:ring-2 focus-visible:ring-white rounded-suave transition-colors"
                     onClick={() => onResponder({ ...r, texto, origen: 'segura' })}
                   >
-                    <span className="line-clamp-1">«{texto}»</span>
+                    <span>«{texto}»</span>
                   </button>
                 )
               })}
@@ -148,11 +148,18 @@ export function PanelTurno({
                 id={textareaId}
                 value={libre}
                 onChange={(e) => setLibre(e.target.value.slice(0, 400))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault()
+                    responderLibre()
+                  }
+                }}
                 rows={2}
                 maxLength={400}
                 className="w-full resize-none rounded-suave border border-court-300 bg-white px-3 py-2 text-base leading-snug text-court-900 caret-court-900 placeholder:text-court-600 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]"
                 placeholder="Por ejemplo: No lo recuerdo bien."
               />
+              <p className="text-xs text-white/80">Pulsa Enter para enviar.</p>
               <div className="flex flex-wrap items-start gap-2">
                 <button
                   type="button"
