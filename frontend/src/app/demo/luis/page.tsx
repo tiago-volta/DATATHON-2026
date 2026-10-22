@@ -25,12 +25,15 @@ export default function PaginaDemoLuis() {
           Se ha cargado en tu navegador el perfil de <strong>Luis</strong> como <strong>testigo</strong> en un proceso penal, junto con sus ajustes de partida (tolerancia media-baja a ruido y luz, descanso cada 20 minutos, acompañante y preguntas cortas) y su citación judicial activa para el 14 de noviembre en A Coruña.
         </p>
         <p className="text-sm text-court-600">
-          Tanto la Sala Previa 3D como el Ensayo de preguntas mostrarán ahora su papel de testigo de forma coherente.
+          La sala y la simulación usan su papel de testigo.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-3">
-          <Link href="/sala-previa?ensayo=1" className="btn-primary text-center">
-            Sigue tu ensayo de sala
+          <Link href="/sala-previa" className="btn-primary text-center">
+            Ver la sala
+          </Link>
+          <Link href="/sala-previa/declaracion" className="btn-secondary text-center">
+            Simular el juicio
           </Link>
           <Link href="/pasaporte" className="btn-secondary text-center">
             Ver Pasaporte de ajustes

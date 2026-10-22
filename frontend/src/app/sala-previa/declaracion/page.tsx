@@ -3,28 +3,23 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { ElegirPuntoVista } from '@/components/sala-previa/declaracion/ElegirPuntoVista'
 import { SimuladorDeclaracion } from '@/components/sala-previa/declaracion/SimuladorDeclaracion'
 import {
   ResumenDeclaracion,
   type ContadoresAyuda,
   type RegistroTurno,
 } from '@/components/sala-previa/declaracion/ResumenDeclaracion'
-import {
-  NOMBRE_POR_DEFECTO,
-  puntoVistaDesdeRol,
-  type PuntoVista,
-} from '@/lib/sala-previa/declaracion'
 import { hayVoz } from '@/lib/sala-previa/vozSala'
-import { cargarPerfil } from '@/lib/perfil/perfil'
+import { marcarJuicioEnsayado } from '@/lib/preparacion'
 
-type Fase = 'elegir' | 'simular' | 'resumen'
+const NOMBRE_LUIS = 'Luis'
+const PUNTO_VISTA = 'testigo' as const
+
+type Fase = 'simular' | 'resumen'
 
 export default function PaginaDeclaracion() {
-  const [fase, setFase] = useState<Fase>('elegir')
-  const [puntoVista, setPuntoVista] = useState<PuntoVista | null>(null)
-  const [sugerido, setSugerido] = useState<PuntoVista | null>(null)
-  const [nombre, setNombre] = useState(NOMBRE_POR_DEFECTO)
+  const [listo, setListo] = useState(false)
+  const [fase, setFase] = useState<Fase>('simular')
   const [voz, setVoz] = useState(false)
   const [registro, setRegistro] = useState<RegistroTurno[]>([])
   const [sesion, setSesion] = useState(0)
@@ -35,14 +30,11 @@ export default function PaginaDeclaracion() {
   })
 
   useEffect(() => {
-    const perfil = cargarPerfil()
-    if (perfil?.nombre) setNombre(perfil.nombre)
-    setSugerido(puntoVistaDesdeRol(perfil?.rol))
     setVoz(hayVoz())
+    setListo(true)
   }, [])
 
-  const empezar = (pv: PuntoVista) => {
-    setPuntoVista(pv)
+  const empezar = () => {
     setRegistro([])
     setAyudas({ pausas: 0, repeticiones: 0, aclaraciones: 0 })
     setSesion((n) => n + 1)
@@ -52,64 +44,45 @@ export default function PaginaDeclaracion() {
   const terminar = (reg: RegistroTurno[], ay: ContadoresAyuda) => {
     setRegistro(reg)
     setAyudas(ay)
+    marcarJuicioEnsayado()
     setFase('resumen')
   }
 
-  const repetir = () => {
-    if (!puntoVista) return
-    setRegistro([])
-    setAyudas({ pausas: 0, repeticiones: 0, aclaraciones: 0 })
-    setSesion((n) => n + 1)
-    setFase('simular')
-  }
-
-  const cambiar = () => {
-    setPuntoVista(null)
-    setRegistro([])
-    setAyudas({ pausas: 0, repeticiones: 0, aclaraciones: 0 })
-    setFase('elegir')
-  }
-
   return (
-    <main id="contenido-principal" className="page-shell-wide pb-24">
-      <nav aria-label="Volver" className="mb-6">
+    <main id="contenido-principal" className="page-shell-wide pb-8">
+      <nav aria-label="Volver" className="mb-3">
         <Link href="/sala-previa" className="link-atras">
           <Icono nombre="←" />
           Volver a la sala
         </Link>
       </nav>
 
-      <header className="mb-8 max-w-3xl">
-        <h1 className="titulo-pagina mb-2">Simula tu declaración</h1>
-        <p className="entradilla mb-0">
-          Practica las preguntas del juicio desde tres sitios de la sala. El caso es inventado.
-          En un juicio real, di siempre lo que pasó de verdad.
-        </p>
-      </header>
+      <h1 className="sr-only">Simulación del juicio</h1>
 
-      {fase === 'elegir' && (
-        <ElegirPuntoVista sugerido={sugerido} onElegir={empezar} />
+      {!listo && (
+        <p className="text-court-800" aria-live="polite">
+          Preparando la simulación…
+        </p>
       )}
 
-      {fase === 'simular' && puntoVista && (
+      {listo && fase === 'simular' && (
         <SimuladorDeclaracion
-          key={`${puntoVista}-${sesion}`}
-          puntoVista={puntoVista}
-          nombre={nombre}
+          key={`${PUNTO_VISTA}-${sesion}`}
+          puntoVista={PUNTO_VISTA}
+          nombre={NOMBRE_LUIS}
           voz={voz}
           onVoz={setVoz}
           onTerminar={terminar}
         />
       )}
 
-      {fase === 'resumen' && puntoVista && (
+      {listo && fase === 'resumen' && (
         <ResumenDeclaracion
-          puntoVista={puntoVista}
+          puntoVista={PUNTO_VISTA}
           registro={registro}
           ayudas={ayudas}
-          nombre={nombre}
-          onRepetir={repetir}
-          onCambiar={cambiar}
+          nombre={NOMBRE_LUIS}
+          onRepetir={empezar}
         />
       )}
     </main>

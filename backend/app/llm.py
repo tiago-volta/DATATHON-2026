@@ -649,89 +649,155 @@ async def _llamar_anthropic(
         return adaptar_documento_personalizado(texto_anonimizado, elementos_protegidos)
 
 
-# ── Chat de ayuda (dudas sobre TribunalInclusivo / proceso) ─────────────────────────────
-# Nunca diagnóstico médico. Sin datos sensibles de salud. Lectura fácil, tuteo.
+# ── Chat de ayuda: solo dudas de derecho, con artículo ────────────────────────
+# Cita la ley y el artículo. Informa: no asesora. Textos ya corregidos.
 
-SYSTEM_PROMPT_AYUDA = """Eres TribunalInclusivo, una guía calmada de accesibilidad cognitiva en la justicia española.
-Ayudas a personas neurodivergentes (y a quien lo necesite) a entender citaciones, el juzgado,
-el Pasaporte de ajustes, Ensaya y la Sala Previa.
+FRASE_FUERA_DE_DERECHO = "Solo contesto dudas legales."
+AVISO_NO_ASESORA = "Esto es información. No es asesoramiento."
+
+SYSTEM_PROMPT_AYUDA = """Eres TribunalInclusivo. Solo respondes dudas de derecho sobre la justicia española.
 
 Reglas OBLIGATORIAS:
 - Español de España, tuteo, lectura fácil: frases cortas, una idea por frase.
-- NUNCA des diagnóstico médico ni preguntes por enfermedades, tratamientos o datos de salud.
-- NUNCA pidas DNI, número de expediente real, ni datos personales sensibles.
-- Si preguntan por salud o discapacidad clínica, di con calma que no eres médica y que pueden
-  pedir apoyos en el Pasaporte sin escribir ningún diagnóstico.
-- Habla solo de TribunalInclusivo y del proceso judicial accesible (citación, plazos, pasaporte, sala previa y ensayo).
-- Si te preguntan por las leyes, fuentes o si vas al BOE: responde con claridad que toda la información legal se basa en las leyes oficiales del Boletín Oficial del Estado (BOE) como la Ley de Enjuiciamiento Civil (artículo 7 bis), la Ley de Enjuiciamiento Criminal (LECrim) y el Código Penal, así como en las guías del CGPJ. Señala que en la aplicación hay enlaces directos a boe.es para ver el texto íntegro.
-- Si no sabes algo concreto del caso, dilo y sugiere ir a «Mi citación» o hablar con su abogado/a.
-- Responde en texto plano (sin JSON, sin markdown denso). Máximo 8 frases cortas.
+- Si la pregunta no es de derecho, responde solo: «Solo contesto dudas legales.»
+- No es de derecho: la aplicación, el Pasaporte, la sala previa, la simulación, la salud, el diagnóstico ni una charla.
+- Si la pregunta es de derecho, cita la ley y el artículo. Ejemplo: «art. 420 LECrim, en boe.es». No basta con decir «fuente: BOE».
+- Cierra siempre con: «Esto es información. No es asesoramiento.»
+- Falso testimonio: art. 433 LECrim y art. 458 del Código Penal. Si no recuerda, puede decirlo. No inventa.
+- Abogado en delito leve: no digas «abogado gratis» ni que esté garantizado. Es optativo (art. 967.1 LECrim). Puede pedir justicia gratuita y el juzgado decide (art. 6.3.b Ley 1/1996).
+- Si no comparece como testigo sin causa justificada: art. 420 LECrim.
+- NUNCA des diagnóstico médico ni pidas DNI, expediente o datos de salud.
+- Texto plano, sin JSON y sin markdown. Máximo 6 frases cortas.
 """
 
 
+def _cerrar_derecho(cuerpo: str, cita: str) -> str:
+    return f"{cuerpo} Fuente: {cita}, en boe.es. {AVISO_NO_ASESORA}"
+
+
+RESPUESTA_ABOGADO = _cerrar_derecho(
+    "En un delito leve el abogado no es obligatorio. "
+    "Puedes ir con uno si quieres. "
+    "Si no tienes dinero, puedes pedir justicia gratuita. "
+    "El juzgado decide si te la concede.",
+    "art. 967.1 LECrim y art. 6.3.b de la Ley 1/1996",
+)
+
 RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
     (
-        re.compile(r"citaci[oó]n|carta|documento|fecha|hora|plazos?", re.I),
-        "En «Mi citación» puedes pegar el texto de la carta del juzgado. "
-        "Te la explicamos con frases cortas: qué día, a qué hora y dónde. "
-        "Si quieres, ve a Citación en el menú de arriba.",
+        re.compile(r"abogad|justicia gratuita|oficio|gratis", re.I),
+        RESPUESTA_ABOGADO,
     ),
     (
-        re.compile(r"pasaporte|ajustes?|adaptaciones?", re.I),
-        "El Pasaporte es una lista de lo que te ayuda en el juzgado. "
-        "Tú eliges los apoyos. No hace falta escribir ningún diagnóstico. "
-        "Puedes generar un código QR para enseñarlo. "
-        "Entra en Pasaporte desde el menú.",
+        re.compile(r"delito leve.*(no (voy|acudo)|ausencia|multa)|multa.*delito leve", re.I),
+        _cerrar_derecho(
+            "En un delito leve, si no vas y no justificas, el juicio puede hacerse sin ti. "
+            "La multa puede ser de 200 a 2.000 euros.",
+            "art. 967.2 y art. 971 LECrim",
+        ),
     ),
     (
-        re.compile(r"ensaya|declaraci[oó]n|preguntas?|testigo", re.I),
-        "En la Sala Previa practicas preguntas antes del día. "
-        "Puedes parar cuando quieras. "
-        "Hay pictogramas y ayuda si una pregunta te confunde. "
-        "Entra en Sala desde el menú.",
+        re.compile(r"pausa|bloque|nervios|descans", re.I),
+        _cerrar_derecho(
+            "Puedes pedir una pausa en el juicio. "
+            "El juez decide cuándo paras y cuándo sigues.",
+            "art. 7 bis LEC",
+        ),
     ),
     (
-        re.compile(r"sala\s*previa|ruido|luz|juzgado|sala\s*3d|estimul", re.I),
-        "La Sala Previa te deja probar el ambiente del juzgado a tu ritmo: "
-        "ruido, luz y gente. "
-        "Puedes bajar estímulos y usar el botón de calma. "
-        "Entra en Sala desde el menú.",
+        re.compile(r"mentir|falso testimonio|verdad|recordar|no lo s[eé]|testigo|declar", re.I),
+        _cerrar_derecho(
+            "Si eres testigo, dices lo que viste. "
+            "Mentir puede ser un delito de falso testimonio. "
+            "Si no recuerdas un dato, dilo. No inventes.",
+            "art. 433 LECrim y art. 458 CP",
+        ),
     ),
     (
-        re.compile(r"boe|leyes?|fuentes?|normas?|art[ií]culos?|de\s+d[oó]nde\s+sacas", re.I),
-        "Toda la información legal se basa en las leyes oficiales publicadas en el Boletín Oficial del Estado (BOE), "
-        "como el artículo 7 bis de la Ley de Enjuiciamiento Civil y la Ley de Enjuiciamiento Criminal, "
-        "además de las guías del Consejo General del Poder Judicial (CGPJ). "
-        "En la aplicación tienes enlaces directos para consultar cada artículo en el BOE.",
+        re.compile(r"no voy|no acudo|incomparec|conducci[oó]n|multa", re.I),
+        _cerrar_derecho(
+            "Si eres testigo y no vas sin una causa justificada, pueden multarte de 200 a 5.000 euros. "
+            "También pueden ordenar que la policía te lleve al juzgado. "
+            "Si no puedes ir, avisa y lleva un justificante.",
+            "art. 420 LECrim",
+        ),
     ),
     (
-        re.compile(r"medic[oa]|diagn[oó]stico|enfermedad|trastorno|salud|tdah|autismo|ciego", re.I),
-        "No soy médica y no hago diagnósticos. "
-        "En TribunalInclusivo no hace falta decir tu diagnóstico. "
-        "Puedes marcar «Necesito más apoyos de lectura y anticipación» en el Pasaporte "
-        "y elegir los ajustes que te ayudan. "
-        "Si tienes dudas de salud, habla con tu profesional de confianza.",
+        re.compile(r"repet|m[aá]s claro|lenguaje claro|palabras sencillas|entender la pregunta", re.I),
+        _cerrar_derecho(
+            "Puedes pedir que repitan una pregunta. "
+            "Puedes pedir que la digan con palabras más claras. "
+            "Decide quien preside la sala.",
+            "art. 7 bis LEC y art. 709 LECrim",
+        ),
+    ),
+    (
+        re.compile(r"silencio|no declarar|no contestar|no confes", re.I),
+        _cerrar_derecho(
+            "Si estás investigado, puedes guardar silencio. "
+            "No tienes que declararte culpable.",
+            "art. 118 LECrim",
+        ),
+    ),
+    (
+        re.compile(r"citaci[oó]n", re.I),
+        _cerrar_derecho(
+            "Una citación es el aviso del juzgado para que vayas. "
+            "Te dice el día y el lugar. "
+            "Si te citan como testigo, ir es un deber.",
+            "art. 410 LECrim",
+        ),
+    ),
+    (
+        re.compile(r"\bboe\b|fuente|leyes?|normas?|art[ií]culos?|\blec\b|lecrim|c[oó]digo penal|bolet[ií]n", re.I),
+        _cerrar_derecho(
+            "Cito la ley y el artículo, no solo el boletín. "
+            "Por ejemplo, si un testigo no va sin causa justificada, mira el art. 420 LECrim.",
+            "art. 420 LECrim",
+        ),
+    ),
+    (
+        re.compile(r"jue[cz]|fiscal|juicio|derechos?|pena|recurso", re.I),
+        _cerrar_derecho(
+            "En el juicio hablan el juez, el fiscal y los abogados. "
+            "Tú contestas cuando te toca. "
+            "Si no entiendes, puedes pedir que lo repitan.",
+            "art. 7 bis LEC",
+        ),
     ),
 ]
+
+_PATRON_ABOGADO_GRATIS = re.compile(
+    r"abogado gratis|gratis garantiz|de oficio gratuito garant|te lo dan gratis",
+    re.I,
+)
+
+
+def _es_pregunta_de_derecho(pregunta: str) -> bool:
+    return any(patron.search(pregunta) for patron, _ in RESPUESTAS_MOCK_AYUDA)
 
 
 def _respuesta_mock_ayuda(pregunta: str) -> str:
     limpia = re.sub(r"\s+", " ", (pregunta or "").strip())
-    if len(limpia) < 2:
-        return (
-            "Escribe o dicta tu duda. "
-            "Puedo ayudarte con la citación, el Pasaporte, Ensaya o la Sala Previa."
-        )
+    if _PATRON_ABOGADO_GRATIS.search(limpia):
+        return RESPUESTA_ABOGADO
+    if not _es_pregunta_de_derecho(limpia):
+        return FRASE_FUERA_DE_DERECHO
     for patron, texto in RESPUESTAS_MOCK_AYUDA:
         if patron.search(limpia):
             return texto
-    return (
-        "TribunalInclusivo te ayuda a entender el juzgado con frases cortas. "
-        "Puedes ir a Citación (explicar la carta), Pasaporte (pedir apoyos), "
-        "Ensaya (practicar) o Sala Previa (probar el ambiente). "
-        "Si quieres, reformula tu duda con otras palabras. "
-        "No pido datos de salud ni hago diagnósticos."
-    )
+    return FRASE_FUERA_DE_DERECHO
+
+
+def _sanear_respuesta_derecho(texto: str, pregunta: str) -> str:
+    if _PATRON_ABOGADO_GRATIS.search(texto) or _PATRON_ABOGADO_GRATIS.search(pregunta):
+        return RESPUESTA_ABOGADO
+    limpio = (texto or "").strip()
+    if limpio == FRASE_FUERA_DE_DERECHO:
+        return limpio
+    if AVISO_NO_ASESORA not in limpio:
+        limpio = f"{limpio.rstrip()} {AVISO_NO_ASESORA}"
+    return limpio
 
 
 def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
@@ -777,23 +843,32 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
 
 async def responder_ayuda(pregunta: str) -> dict:
     """
-    Responde dudas sobre TribunalInclusivo / proceso judicial.
-    Usa Gemini si hay GEMINI_API_KEY (o LLM_PROVIDER=gemini); si no, mock calmado.
+    Solo responde dudas de derecho.
+    Si encaja con un texto ya corregido, usa ese texto (artículo y aviso).
     """
     limpia = re.sub(r"\s+", " ", (pregunta or "").strip())[:800]
+    if not _es_pregunta_de_derecho(limpia):
+        return {"respuesta": FRASE_FUERA_DE_DERECHO, "fuente": "mock"}
+
+    concreta = _respuesta_mock_ayuda(limpia)
+    if concreta != FRASE_FUERA_DE_DERECHO:
+        return {"respuesta": concreta, "fuente": "mock"}
+
     provider = os.getenv("LLM_PROVIDER", "mock").lower()
     gemini_key = (os.getenv("GEMINI_API_KEY") or "").strip()
-    fuente = "mock"
 
     if provider == "gemini" or (provider in ("mock", "") and len(gemini_key) >= 20):
         try:
             texto = await asyncio.to_thread(
                 _llamar_gemini_texto_sync,
                 SYSTEM_PROMPT_AYUDA,
-                f"Pregunta de la persona (responde en lectura fácil, tuteo):\n{limpia}",
+                (
+                    "Pregunta de derecho. Cita la ley y el artículo, en boe.es. "
+                    "No digas que el abogado es gratis. "
+                    f"Cierra con: {AVISO_NO_ASESORA}\n{limpia}"
+                ),
             )
-            fuente = "gemini"
-            return {"respuesta": texto, "fuente": fuente}
+            return {"respuesta": _sanear_respuesta_derecho(texto, limpia), "fuente": "gemini"}
         except Exception:
             pass
 

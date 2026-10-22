@@ -1,12 +1,10 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { AvisoInsignia } from '@/components/insignias/AvisoInsignia'
-import { PanelInsignias } from '@/components/insignias/PanelInsignias'
 import { FichaAjustes } from '@/components/pasaporte/FichaAjustes'
 import { useConfianza } from '@/hooks/useConfianza'
-import { useInsigniasUtiles } from '@/hooks/useInsigniasUtiles'
 import { AJUSTES_DISPONIBLES } from '@/lib/contenido'
 import {
   buildPasaporteUrl,
@@ -45,12 +43,6 @@ export default function PaginaPasaporte() {
   const [avisoCopia, setAvisoCopia] = useState('')
   /** Apoyo local opcional (no va al QR). Ver preferencias.ts — integración organismos [PENDIENTE]. */
   const [necesitoApoyos, setNecesitoApoyos] = useState(false)
-  const {
-    conseguidas: insigniasUtiles,
-    aviso: avisoInsignia,
-    desbloquear,
-    descartarAviso,
-  } = useInsigniasUtiles()
   const { registrar: registrarConfianza } = useConfianza()
 
   useEffect(() => {
@@ -113,11 +105,7 @@ export default function PaginaPasaporte() {
       setPaso('ajustes')
     }
 
-    // Abrir Pasaporte con ajustes (query o ya guardados) → insignia útil.
-    if (idsUrl.length > 0 || ajustesGuardados.length > 0) {
-      desbloquear('pedi-ajustes')
-    }
-  }, [desbloquear])
+  }, [])
 
   const handleNombreChange = (raw: string) => {
     const limpio = sanitizarNombre(raw)
@@ -197,8 +185,6 @@ export default function PaginaPasaporte() {
     setPasaporteId(id)
     setQrUrl(url)
     setPaso('resultado')
-    desbloquear('pedi-ajustes')
-    // Confianza en paralelo: generar Pasaporte (con ajustes) suma una vez.
     registrarConfianza('pasaporte')
     try {
       localStorage.setItem(
@@ -538,36 +524,50 @@ export default function PaginaPasaporte() {
         )}
 
         {paso === 'resultado' && (
-          <FichaAjustes
-            nombre={datos.nombre}
-            ajustes={ajustesSeleccionados}
-            contacto={datos.contacto}
-            codigo={pasaporteId}
-            url={qrUrl}
-            avisoCopia={avisoCopia}
-            onCopiar={() => void copiarEnlace()}
-            onNueva={() => {
-              setPaso('datos')
-              setDatos({ nombre: '', ajustes: [], contacto: '' })
-              setErrores({})
-              setPasaporteId('')
-              setQrUrl('')
-              setAvisoCopia('')
-              try {
-                localStorage.removeItem('court-pasaporte')
-              } catch {
-                /* ignore */
-              }
-            }}
-          />
+          <div className="space-y-6">
+            <FichaAjustes
+              nombre={datos.nombre}
+              ajustes={ajustesSeleccionados}
+              contacto={datos.contacto}
+              codigo={pasaporteId}
+              url={qrUrl}
+              avisoCopia={avisoCopia}
+              onCopiar={() => void copiarEnlace()}
+              onNueva={() => {
+                setPaso('datos')
+                setDatos({ nombre: '', ajustes: [], contacto: '' })
+                setErrores({})
+                setPasaporteId('')
+                setQrUrl('')
+                setAvisoCopia('')
+                try {
+                  localStorage.removeItem('court-pasaporte')
+                } catch {
+                  /* ignore */
+                }
+              }}
+            />
+
+            <div className="card no-imprimir border-2 border-accent-success bg-calma-sage/40 p-6 max-w-lg mx-auto text-center space-y-3">
+              <h2 className="text-xl font-bold text-court-900">
+                El siguiente paso es la sala previa
+              </h2>
+              <p className="text-court-700 text-sm">
+                Recorre la sala de vistas y adapta el entorno antes del juicio con los ajustes que acabas de elegir.
+              </p>
+              <div>
+                <Link
+                  href="/sala-previa"
+                  className="btn-primary inline-flex items-center gap-2 min-h-[44px] px-6 text-base font-bold"
+                >
+                  <span>Continuar a la sala previa</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
         )}
-
-        <div className="no-imprimir mt-12 max-w-lg mx-auto">
-          <PanelInsignias conseguidas={insigniasUtiles} apartado="pasaporte" />
-        </div>
       </main>
-
-      <AvisoInsignia insignia={avisoInsignia} onDescartar={descartarAviso} />
     </>
   )
 }

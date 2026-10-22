@@ -16,6 +16,32 @@ export const VALORES_AMBIENTE_SALA: ValoresEstimulo = {
   gente: 45,
 }
 
+/** La sala guarda aquí gente, ruido y luz. La simulación los lee al iniciar. */
+export const CLAVE_VALORES_SALA = 'sala-previa-valores'
+
+function numeroEstimulo(valor: unknown): number | null {
+  if (typeof valor !== 'number' || Number.isNaN(valor)) return null
+  return Math.min(100, Math.max(0, valor))
+}
+
+export function leerValoresSala(): ValoresEstimulo {
+  if (typeof window === 'undefined') return { ...VALORES_AMBIENTE_SALA }
+  try {
+    const raw = JSON.parse(window.localStorage.getItem(CLAVE_VALORES_SALA) ?? '') as {
+      ruido?: unknown
+      luz?: unknown
+      gente?: unknown
+    }
+    const ruido = numeroEstimulo(raw?.ruido)
+    const luz = numeroEstimulo(raw?.luz)
+    const gente = numeroEstimulo(raw?.gente)
+    if (ruido === null || luz === null || gente === null) return { ...VALORES_AMBIENTE_SALA }
+    return { ruido, luz, gente }
+  } catch {
+    return { ...VALORES_AMBIENTE_SALA }
+  }
+}
+
 export const ESTIMULOS_META: Record<
   IdEstimulo,
   {

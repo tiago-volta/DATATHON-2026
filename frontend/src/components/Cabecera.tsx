@@ -9,12 +9,16 @@ import { useCabeceraFlotante } from '@/hooks/useCabeceraFlotante'
 const ENLACES = [
   { href: '/citacion', etiqueta: 'Citación' },
   { href: '/pasaporte', etiqueta: 'Pasaporte' },
-  { href: '/sala-previa', etiqueta: 'Sala' },
+  { href: '/sala-previa', etiqueta: 'La sala' },
+  { href: '/sala-previa/declaracion', etiqueta: 'Simulación' },
   { href: '/ayuda', etiqueta: 'Ayuda' },
 ] as const
 
 function estaActivo(pathname: string, href: string) {
-  if (href === '/sala-previa' && pathname.startsWith('/ensaya')) return true
+  if (href === '/sala-previa') return pathname === '/sala-previa'
+  if (href === '/sala-previa/declaracion') {
+    return pathname.startsWith('/sala-previa/declaracion') || pathname.startsWith('/ensaya')
+  }
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
