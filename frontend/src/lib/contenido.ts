@@ -104,6 +104,13 @@ export const ROLES = [
     icono: '👔',
   },
   {
+    nombre: 'Procurador/a',
+    descripcion: 'Representa a una de las partes ante el juzgado.',
+    queHace: 'Lleva los papeles del caso y recibe las notificaciones. Normalmente no te hace preguntas.',
+    comoReconocerlo: 'Lleva toga negra y se sienta cerca del abogado de su parte.',
+    icono: '📁',
+  },
+  {
     nombre: 'Facilitador/a',
     descripcion: 'Una persona que te ayuda a entender y comunicarte.',
     queHace: 'Adapta las preguntas, te explica las cosas y te ayuda si te bloqueas.',

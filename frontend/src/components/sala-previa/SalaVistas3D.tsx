@@ -1469,6 +1469,17 @@ function PersonasEscena({
           etiqueta="Abogado"
         />
       )}
+      {papel !== 'investigado' && (
+        <FiguraPersona
+          position={[3.5, 0, -2.8]}
+          rotationY={-Math.PI * 0.85}
+          tonoPiel="#b98a6a"
+          ropa="#1a1a22"
+          visible={aboVis * (enfoque === 'abogados' ? 1 : 0.9)}
+          toga
+          etiqueta="Procurador/a"
+        />
+      )}
 
       {penal && papel !== 'investigado' && (
         <FiguraPersona

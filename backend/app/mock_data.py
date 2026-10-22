@@ -788,6 +788,14 @@ ROLES_JUDICIALES = [
         "pictograma": "abogado",
     },
     {
+        "nombre": "Procurador/a",
+        "descripcion": "Representa a una de las partes ante el juzgado.",
+        "que_hace": "Lleva los papeles del caso y recibe las notificaciones. Normalmente no te hace preguntas.",
+        "como_reconocerlo": "Lleva toga negra y se sienta cerca del abogado de su parte.",
+        "icono": "📁",
+        "pictograma": "abogado",
+    },
+    {
         "nombre": "Facilitador/a judicial",
         "descripcion": "Profesional neutral que apoya tu comprensión y comunicación.",
         "que_hace": "Adapta las preguntas, explica qué pasa en cada momento y avisa al juez si necesitas una pausa.",

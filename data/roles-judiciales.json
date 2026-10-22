@@ -45,6 +45,15 @@
     "pictograma_keyword": "abogado"
   },
   {
+    "id": "procurador",
+    "nombre": "Procurador/a",
+    "descripcion": "Representa a una de las partes ante el juzgado.",
+    "que_hace": "Lleva los papeles del caso y recibe las notificaciones. Normalmente no te hace preguntas.",
+    "como_reconocerlo": "Lleva toga negra y se sienta cerca del abogado de su parte.",
+    "icono": "📁",
+    "pictograma_keyword": "abogado"
+  },
+  {
     "id": "facilitador",
     "nombre": "Facilitador/a",
     "descripcion": "Una persona que te ayuda a entender y comunicarte.",
