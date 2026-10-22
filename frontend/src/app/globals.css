@@ -8,11 +8,11 @@
   :root {
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --papel: #ffffff;
-    --tinta: #1d1d1f;
-    --accion: #0369a1;
-    --accion-hover: #0c4a6e;
-    --accion-activa: #075985;
-    --foco: #0369a1;
+    --tinta: #0d1f1a;
+    --accion: #0f766e;
+    --accion-hover: #115e59;
+    --accion-activa: #134e4a;
+    --foco: #0d9488;
     --marco-ancho: 90rem;
     --marco-lectura: 60rem;
   }
@@ -166,7 +166,7 @@
     }
 
     .card:hover {
-      border-color: #0369a1;
+      border-color: #0f766e;
       box-shadow: 0 6px 18px rgb(3 105 161 / 0.08);
     }
 
@@ -175,11 +175,11 @@
     }
 
     .fila-enlace:hover {
-      background-color: #f0f5f8;
+      background-color: #eaf6f2;
     }
 
     .input-accesible:hover {
-      border-color: #0369a1;
+      border-color: #0f766e;
     }
   }
 
@@ -317,8 +317,8 @@
   }
 
   .link-atras:hover {
-    background-color: #f0f5f8;
-    text-decoration-color: #0369a1;
+    background-color: #eaf6f2;
+    text-decoration-color: #0f766e;
   }
 
   .avatar-inicial {
@@ -404,7 +404,7 @@
   height: 28px;
   margin-top: -10px;
   border-radius: 999px;
-  background: #0369a1;
+  background: #0f766e;
   border: 3px solid #ffffff;
   cursor: pointer;
   transition: transform 200ms var(--ease-out);
@@ -425,7 +425,7 @@
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: #0369a1;
+  background: #0f766e;
   border: 3px solid #ffffff;
   cursor: pointer;
 }
@@ -552,7 +552,7 @@ button.hoja:active {
 @media (hover: hover) and (pointer: fine) {
   a.hoja:hover,
   button.hoja:hover {
-    border-color: #0369a1;
+    border-color: #0f766e;
     box-shadow: 0 6px 18px rgb(3 105 161 / 0.1);
     transform: translateY(-1px);
   }

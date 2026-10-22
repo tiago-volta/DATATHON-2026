@@ -32,11 +32,12 @@ export function Cabecera() {
         <div className="cabecera-interior">
           <Link
             href="/"
-            className="cabecera-marca flex items-center gap-2 sm:gap-3 text-accent-navy min-h-[44px] min-w-0 rounded-suave px-2 -mx-2 transition-colors duration-200 hover:bg-calma-mist"
+            className="cabecera-marca flex items-center gap-2.5 sm:gap-3 text-accent-navy min-h-[44px] min-w-0 rounded-suave px-2 -mx-2 transition-colors duration-200 hover:bg-calma-mist"
           >
-            <Marca className="w-9 h-9 shrink-0 text-accent-info" />
+            <Marca className="w-9 h-9 sm:w-10 sm:h-10 shrink-0" />
             <span className="text-xl sm:text-2xl font-bold tracking-tight truncate" translate="no">
-              TribunalInclusivo
+              <span className="text-slate-800">Tribunal</span>
+              <span className="text-[#0f766e]">Inclusivo</span>
             </span>
           </Link>
 

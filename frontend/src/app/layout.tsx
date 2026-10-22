@@ -8,6 +8,10 @@ import { ProveedorAuth } from '@/lib/auth/AuthContext'
 export const metadata: Metadata = {
   title: 'TribunalInclusivo - Accesibilidad en la Justicia',
   description: 'Crea tu perfil, prueba el juzgado y ensaya tu declaración antes del día.',
+  icons: {
+    icon: '/logo-icon.png',
+    apple: '/logo-icon.png',
+  },
 }
 
 export const viewport: Viewport = {
