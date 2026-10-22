@@ -14,6 +14,7 @@ export type IdInsigniaUtil =
   | 'ensaye-con-calma'
   | 'casi-listo'
   | 'testigo-en-forma'
+  | 'ensaye-declaracion'
 
 export interface InsigniaUtil {
   id: IdInsigniaUtil
@@ -101,6 +102,14 @@ export const INSIGNIAS_UTILES: InsigniaUtil[] = [
       'En Sala Previa, llega al nivel 5 (vista real) cuando te sientas listo.',
     pictograma: 'testigo',
   },
+  {
+    id: 'ensaye-declaracion',
+    nombre: 'Ensayé mi declaración',
+    porQueImporta: 'Ya sabes cómo son las preguntas en la sala. Saberlo da tranquilidad.',
+    comoConseguirla:
+      'En Sala Previa, termina «Simula tu declaración» desde cualquier punto de vista.',
+    pictograma: 'declaracion',
+  },
 ]
 
 export const TOTAL_INSIGNIAS = INSIGNIAS_UTILES.length
@@ -118,7 +127,13 @@ export const INSIGNIAS_POR_APARTADO: Record<ApartadoInsignias, IdInsigniaUtil[]>
     'ensaya-nivel-3',
     'ensaye-con-calma',
   ],
-  'sala-previa': ['primera-calma', 'ensaye-1-nivel', 'casi-listo', 'testigo-en-forma'],
+  'sala-previa': [
+    'primera-calma',
+    'ensaye-1-nivel',
+    'casi-listo',
+    'testigo-en-forma',
+    'ensaye-declaracion',
+  ],
 }
 
 export const TITULO_INSIGNIAS_APARTADO: Record<ApartadoInsignias, string> = {

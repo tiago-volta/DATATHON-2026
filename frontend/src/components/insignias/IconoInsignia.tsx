@@ -91,6 +91,9 @@ export function IconoInsignia({
       {id === 'testigo-en-forma' && (
         <PictogramaTestigo desbloqueada={desbloqueada} />
       )}
+      {id === 'ensaye-declaracion' && (
+        <PictogramaDeclaracion desbloqueada={desbloqueada} />
+      )}
     </svg>
   )
 }
@@ -260,6 +263,30 @@ function PictogramaCasiListo({ desbloqueada }: { desbloqueada: boolean }) {
         strokeWidth="2"
         strokeLinecap="round"
         opacity="0.5"
+      />
+    </g>
+  )
+}
+
+/** Simula tu declaración: bocadillo de diálogo con marca. */
+function PictogramaDeclaracion({ desbloqueada }: { desbloqueada: boolean }) {
+  const c = desbloqueada ? '#1A5566' : '#7A8F96'
+  const ok = desbloqueada ? '#5EA37A' : '#9AADB5'
+  return (
+    <g>
+      <path
+        d="M22 28h20a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H31l-6 5v-5h-3a3 3 0 0 1-3-3V31a3 3 0 0 1 3-3z"
+        stroke={c}
+        strokeWidth="2"
+        strokeLinejoin="round"
+        fill={desbloqueada ? '#FFFFFF' : '#F5F7F8'}
+      />
+      <path
+        d="M27 36.5 30.5 40 37 33"
+        stroke={ok}
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </g>
   )

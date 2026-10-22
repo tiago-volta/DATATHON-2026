@@ -418,11 +418,17 @@ export default function PaginaSalaPrevia() {
             <h1 className="titulo-pagina mb-2">
               Sala Previa
             </h1>
-            <p className="entradilla max-w-2xl mb-0">
+            <p className="entradilla max-w-2xl mb-4">
               Recorre las fases del día en el juzgado: entrada, control, espera y
               sala de vistas. El ambiente es estable; practicas interrupciones reales
               (móvil, tos, puerta, martillo…) cuando tú quieras.
             </p>
+            <Link
+              href="/sala-previa/declaracion"
+              className="btn-primary inline-flex min-h-[44px] items-center"
+            >
+              Simula tu declaración
+            </Link>
           </header>
 
             {mensaje && (
