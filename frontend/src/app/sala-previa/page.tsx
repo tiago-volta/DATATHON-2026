@@ -387,19 +387,19 @@ export default function PaginaSalaPrevia() {
   return (
     <>
       <main id="contenido-principal" className="page-shell-wide pb-32">
-        <nav aria-label="Volver">
-          <Link href="/" className="link-atras">
-            <Icono nombre="←" />
-            Volver al inicio
-          </Link>
-        </nav>
+        <div className={`min-w-0 transition-all ${fase === 'intro' ? 'max-w-2xl mx-auto' : 'max-w-5xl mx-auto'}`}>
+          <nav aria-label="Volver" className="mb-6">
+            <Link href="/" className="link-atras">
+              <Icono nombre="←" />
+              Volver al inicio
+            </Link>
+          </nav>
 
-        <div className="min-w-0">
           <header className="mb-8">
             <h1 className="titulo-pagina mb-2">
               Sala Previa
             </h1>
-            <p className="entradilla max-w-2xl mb-4">
+            <p className="entradilla mb-4">
               Recorre las fases del día en el juzgado: entrada, control, espera y
               sala de vistas. El ambiente es estable; practicas interrupciones reales
               (móvil, tos, puerta, murmullos…) cuando tú quieras.
@@ -412,29 +412,29 @@ export default function PaginaSalaPrevia() {
             </Link>
           </header>
 
-            {mensaje && (
-              <p
-                className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-court-900 max-w-2xl"
-                role="status"
-                aria-live="polite"
-              >
-                {mensaje}
-              </p>
-            )}
+          {mensaje && (
+            <p
+              className="mb-4 bg-accent-success/15 border border-accent-success rounded-lg p-3 text-court-900"
+              role="status"
+              aria-live="polite"
+            >
+              {mensaje}
+            </p>
+          )}
 
-            {fase === 'intro' && (
-              <div className="space-y-6 max-w-2xl">
-                <IntroSalaPrevia onEmpezar={empezarNivel0} />
-                <PanelDiasPractica
-                  semana={semanaPractica}
-                  total={totalDiasPractica}
-                  estaSemana={diasPracticaSemana}
-                  bienvenida={bienvenidaPractica}
-                  onDescartarBienvenida={descartarBienvenidaPractica}
-                />
-                {progresoListo && <PanelLoQueTeAyuda dato={loQueTeAyuda} />}
-              </div>
-            )}
+          {fase === 'intro' && (
+            <div className="space-y-6">
+              <IntroSalaPrevia onEmpezar={empezarNivel0} />
+              <PanelDiasPractica
+                semana={semanaPractica}
+                total={totalDiasPractica}
+                estaSemana={diasPracticaSemana}
+                bienvenida={bienvenidaPractica}
+                onDescartarBienvenida={descartarBienvenidaPractica}
+              />
+              {progresoListo && <PanelLoQueTeAyuda dato={loQueTeAyuda} />}
+            </div>
+          )}
 
             {fase !== 'intro' && (
               <>
