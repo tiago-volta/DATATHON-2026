@@ -1555,18 +1555,15 @@ export default function PaginaCitacion() {
 
             <div className="bg-accent-success/10 border-2 border-accent-success rounded-tarjeta p-6 mb-8">
               <h2 className="text-xl font-bold text-court-800 mb-2">
-                El siguiente paso es la sala
+                El siguiente paso: tu Pasaporte de ajustes
               </h2>
               <p className="text-court-700 mb-4">
-                Entra en la sala y ensaya tu declaración antes del día.
-                Puedes parar cuando quieras.
+                Elige los apoyos y adaptaciones que necesitas para el juicio (pausas, sala tranquila, acompañante o preguntas claras).
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Link href="/sala-previa" className="btn-primary">
-                  Entrar en la sala
-                </Link>
-                <Link href="/pasaporte" className="btn-secondary">
-                  Preparar mi ficha
+              <div>
+                <Link href="/pasaporte" className="btn-primary inline-flex items-center gap-2">
+                  <span>Preparar mi Pasaporte de ajustes</span>
+                  <span aria-hidden="true">→</span>
                 </Link>
               </div>
             </div>
