@@ -357,6 +357,15 @@
     white-space: nowrap;
     border-width: 0;
   }
+
+  .chat-escribiendo {
+    animation: chat-pulso 1.4s var(--ease-out) infinite;
+  }
+
+  @keyframes chat-pulso {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -366,7 +375,8 @@
 
   .explicacion-etapa,
   .explicacion-panel,
-  .barra-progreso > span {
+  .barra-progreso > span,
+  .chat-escribiendo {
     animation: none;
     transition: none;
   }

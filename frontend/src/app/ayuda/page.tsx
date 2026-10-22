@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useCallback, useEffect, useId, useRef, useState } from 'react'
+import { FormEvent, KeyboardEvent, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { preguntarAyudaAPI } from '@/lib/api'
 import { cargarPerfil } from '@/lib/perfil/perfil'
 import { TarjetasFaq } from '@/components/faq/TarjetasFaq'
@@ -78,6 +78,64 @@ type Mensaje = {
   texto: string
 }
 
+const SUGERENCIAS = [
+  '¿Puedo pedir una pausa si me bloqueo?',
+  '¿Tengo que decir mi diagnóstico?',
+  '¿Puedo ir con una persona de apoyo?',
+] as const
+
+const AVISO_INFORMACION = 'Esto es información. No es asesoramiento.'
+
+function separarFuentes(cita: string): string[] {
+  const tieneBoe = /boe\.es/i.test(cita)
+  const sinBoe = cita.replace(/,?\s*en boe\.es\.?$/i, '').trim()
+  if (!sinBoe) return []
+
+  const partes = sinBoe.split(/\s+y\s+(?=art\.)/i).map((parte) => parte.trim()).filter(Boolean)
+  return partes.map((parte) => (tieneBoe ? `${parte}, en boe.es.` : `${parte}.`))
+}
+
+function partirRespuesta(texto: string): { cuerpo: string; fuentes: string[] } {
+  const sinAviso = texto.replaceAll(AVISO_INFORMACION, ' ').replace(/\s+/g, ' ').trim()
+  const indice = sinAviso.search(/fuente:/i)
+  if (indice < 0) {
+    return { cuerpo: sinAviso, fuentes: [] }
+  }
+
+  const cita = sinAviso.slice(indice).replace(/^fuente:\s*/i, '').trim()
+  return {
+    cuerpo: sinAviso.slice(0, indice).trim(),
+    fuentes: separarFuentes(cita),
+  }
+}
+
+function TextoAsistente({ texto }: { texto: string }) {
+  const { cuerpo, fuentes } = partirRespuesta(texto)
+  const varias = fuentes.length > 1
+
+  return (
+    <>
+      {cuerpo && <p className="whitespace-pre-wrap leading-relaxed">{cuerpo}</p>}
+      {fuentes.length === 1 && (
+        <p className="mt-3 text-sm leading-snug text-court-500">
+          <span className="font-bold">Fuente. </span>
+          {fuentes[0]}
+        </p>
+      )}
+      {varias && (
+        <div className="mt-3 text-sm leading-snug text-court-500">
+          <p className="font-bold">Fuentes.</p>
+          <ul className="mt-1 list-disc pl-5">
+            {fuentes.map((fuente) => (
+              <li key={fuente}>{fuente}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
+  )
+}
+
 /**
  * Pregunta a TribunalInclusivo: dudas por texto.
  * Sin diagnóstico médico.
@@ -92,14 +150,15 @@ export default function PaginaAyuda() {
       id: 'saludo',
       rol: 'asistente',
       texto:
-        'Hola. Solo contesto dudas legales. Cito la ley y el artículo, en boe.es. Esto es información. No es asesoramiento.',
+        'Hola. Pregúntame por el juicio, tus derechos y los ajustes. Cito la ley y el artículo.',
     },
   ])
   const [enviando, setEnviando] = useState(false)
   const [faqAbierta, setFaqAbierta] = useState<string | null>(null)
   const [rolUsuario, setRolUsuario] = useState<RolPerfil | null>(null)
   const [anuncio, setAnuncio] = useState('')
-  const listaRef = useRef<HTMLUListElement>(null)
+  const listaRef = useRef<HTMLDivElement>(null)
+  const campoRef = useRef<HTMLTextAreaElement>(null)
   const enviandoRef = useRef(false)
 
   useEffect(() => {
@@ -146,98 +205,155 @@ export default function PaginaAyuda() {
   }, [])
 
   useEffect(() => {
-    listaRef.current?.lastElementChild?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
+    const campo = campoRef.current
+    if (!campo || pregunta.length > 0) return
+    campo.style.height = 'auto'
+  }, [pregunta])
+
+  useEffect(() => {
+    if (mensajes.length <= 1 && !enviando) return
+    const lista = listaRef.current
+    if (!lista) return
+    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    lista.scrollTo({
+      top: lista.scrollHeight,
+      behavior: reducido ? 'auto' : 'smooth',
     })
-  }, [mensajes])
+  }, [mensajes, enviando])
+
+  const enfocarCampo = (texto: string) => {
+    setPregunta(texto.slice(0, 800))
+    campoRef.current?.focus()
+  }
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     void enviarPregunta(pregunta)
   }
 
+  const onTecla = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key !== 'Enter' || e.shiftKey) return
+    e.preventDefault()
+    void enviarPregunta(pregunta)
+  }
+
+  const ajustarAlto = (el: HTMLTextAreaElement) => {
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`
+  }
+
   return (
     <main id="contenido-principal" className="page-shell">
-      <header className="mb-8">
+      <header className="mb-6">
         <p className="text-sm font-bold tracking-wide text-court-700 mb-2">
           Pregunta a TribunalInclusivo
         </p>
-        <h1 id={tituloId} className="titulo-pagina">
+        <h1 id={tituloId} className="titulo-pagina mb-2">
           Ayuda
         </h1>
-        <p className="entradilla max-w-[40ch]">
+        <p className="text-lg text-court-800 max-w-[42ch]">
           Escribe una duda legal. Te cito la ley y el artículo.
-          Esto es información. No es asesoramiento.
         </p>
       </header>
 
-      <ul
-        ref={listaRef}
-        className="space-y-4 mb-8"
-        aria-label="Conversación"
-        aria-live="polite"
-        aria-relevant="additions"
+      <section
+        className="mb-10 flex h-[min(34rem,calc(100svh-20.5rem))] min-h-[16rem] flex-col overflow-hidden rounded-tarjeta border border-court-200 bg-white shadow-sm"
+        aria-labelledby={tituloId}
       >
-        {mensajes.map((m) => (
-          <li
-            key={m.id}
-            className={
-              m.rol === 'persona'
-                ? 'ml-4 md:ml-12 p-4 rounded-tarjeta bg-court-50 border border-court-200'
-                : 'mr-4 md:mr-12 p-4 rounded-tarjeta bg-calma-sage border border-court-200'
-            }
-          >
-            <p className="text-sm font-bold text-court-700 mb-1">
-              {m.rol === 'persona' ? 'Tú' : 'TribunalInclusivo'}
-            </p>
-            <p className="text-court-900 leading-relaxed">{m.texto}</p>
-          </li>
-        ))}
-      </ul>
+        <div className="border-b border-court-200 bg-calma-mist px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent-success"
+              aria-hidden="true"
+            />
+            <p className="text-sm font-bold text-court-900">TribunalInclusivo</p>
+          </div>
+          <p className="mt-1 pl-5 text-sm text-court-500">{AVISO_INFORMACION}</p>
+        </div>
 
-      <p id={liveId} className="sr-only" role="status" aria-live="polite">
-        {anuncio}
-      </p>
-
-      {anuncio && (
-        <p
-          className="mb-4 text-court-800 bg-court-50 border border-court-200 rounded-lg p-3"
-          role="status"
-          aria-live="polite"
+        <div
+          ref={listaRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4"
         >
+          <ul className="space-y-3" aria-label="Conversación">
+            {mensajes.map((m) => {
+              const propio = m.rol === 'persona'
+              return (
+                <li key={m.id} className={propio ? 'flex justify-end' : 'flex justify-start'}>
+                  <div
+                    className={
+                      propio
+                        ? 'max-w-[85%] rounded-2xl rounded-br-md bg-accent-info px-4 py-3 text-white'
+                        : 'max-w-[85%] rounded-2xl rounded-bl-md border border-court-200 bg-calma-sage px-4 py-3 text-court-900'
+                    }
+                  >
+                    <p className="sr-only">{propio ? 'Tú' : 'TribunalInclusivo'}</p>
+                    {propio ? (
+                      <p className="whitespace-pre-wrap leading-relaxed">{m.texto}</p>
+                    ) : (
+                      <TextoAsistente texto={m.texto} />
+                    )}
+                  </div>
+                </li>
+              )
+            })}
+            {enviando && (
+              <li className="flex justify-start">
+                <p className="chat-escribiendo rounded-2xl rounded-bl-md border border-court-200 bg-calma-sage px-4 py-3 text-sm font-medium text-court-700">
+                  Escribiendo…
+                </p>
+              </li>
+            )}
+          </ul>
+        </div>
+
+        <p id={liveId} className="sr-only" role="status" aria-live="polite">
           {anuncio}
         </p>
-      )}
 
-      <form onSubmit={onSubmit} className="card mb-6" aria-labelledby={tituloId}>
-        <label htmlFor={campoId} className="block text-lg font-medium text-court-800 mb-2">
-          Tu pregunta
-        </label>
-        <textarea
-          id={campoId}
-          value={pregunta}
-          onChange={(e) => setPregunta(e.target.value.slice(0, 800))}
-          className="textarea-accesible min-h-[120px] mb-4"
-          placeholder="Ejemplo: ¿Puedo pedir una pausa en el juicio?"
-          maxLength={800}
-          disabled={enviando}
-          aria-describedby="ayuda-pregunta-hint"
-        />
-        <p id="ayuda-pregunta-hint" className="text-sm text-court-700 mb-4">
-          Escribe tu duda con el teclado. Máximo 800 caracteres.
-        </p>
-
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="submit"
-            className="btn-primary min-h-[44px]"
-            disabled={enviando || pregunta.trim().length < 2}
-          >
-            {enviando ? 'Enviando…' : 'Enviar'}
-          </button>
-        </div>
-      </form>
+        <form onSubmit={onSubmit} className="border-t border-court-200 bg-white p-3 sm:p-4">
+          <div className="mb-2 flex flex-wrap gap-2" aria-label="Preguntas de ejemplo">
+            {SUGERENCIAS.map((texto) => (
+              <button
+                key={texto}
+                type="button"
+                onClick={() => void enviarPregunta(texto)}
+                disabled={enviando}
+                className="min-h-[44px] shrink-0 rounded-full border border-court-200 bg-calma-mist px-3 py-2 text-left text-sm font-medium text-court-800 hover:border-accent-info disabled:opacity-50"
+              >
+                {texto}
+              </button>
+            ))}
+          </div>
+          <label htmlFor={campoId} className="sr-only">
+            Tu pregunta
+          </label>
+          <div className="flex items-end gap-2">
+            <textarea
+              ref={campoRef}
+              id={campoId}
+              value={pregunta}
+              rows={1}
+              onChange={(e) => {
+                setPregunta(e.target.value.slice(0, 800))
+                ajustarAlto(e.target)
+              }}
+              onKeyDown={onTecla}
+              className="input-accesible max-h-[7.5rem] min-h-[56px] flex-1 py-3"
+              placeholder="Escribe tu duda"
+              maxLength={800}
+              disabled={enviando}
+            />
+            <button
+              type="submit"
+              className="btn-primary shrink-0 px-5"
+              disabled={enviando || pregunta.trim().length < 2}
+            >
+              {enviando ? 'Enviando…' : 'Enviar'}
+            </button>
+          </div>
+        </form>
+      </section>
 
       <section className="mb-8 space-y-6" aria-labelledby="seccion-faqs">
         <div className="border-t border-court-200 pt-6">
@@ -252,10 +368,7 @@ export default function PaginaAyuda() {
 
         <TarjetasFaq
           rolInicial={rolUsuario}
-          onSeleccionarPregunta={(txt) => {
-            setPregunta(txt)
-            window.scrollTo({ top: 250, behavior: 'smooth' })
-          }}
+          onSeleccionarPregunta={enfocarCampo}
         />
 
         <div className="border-t border-court-200 pt-6">
@@ -323,10 +436,7 @@ export default function PaginaAyuda() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        setPregunta(faq.pregunta)
-                        window.scrollTo({ top: 250, behavior: 'smooth' })
-                      }}
+                      onClick={() => enfocarCampo(faq.pregunta)}
                       className="text-xs text-court-600 hover:text-court-900 underline font-medium min-h-[38px] inline-flex items-center"
                     >
                       Usar en mi pregunta

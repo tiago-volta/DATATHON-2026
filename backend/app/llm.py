@@ -8,6 +8,7 @@ import asyncio
 import json
 import os
 import re
+from pathlib import Path
 from typing import Dict, List, Optional
 import httpx
 
@@ -655,24 +656,29 @@ async def _llamar_anthropic(
 FRASE_FUERA_DE_DERECHO = "Solo contesto dudas legales."
 AVISO_NO_ASESORA = "Esto es información. No es asesoramiento."
 
-SYSTEM_PROMPT_AYUDA = """Eres TribunalInclusivo. Solo respondes dudas de derecho sobre la justicia española.
+SYSTEM_PROMPT_AYUDA = """Eres TribunalInclusivo. Ayudas a una persona a preparar su cita con el juzgado en España.
 
-Reglas OBLIGATORIAS:
-- Español de España, tuteo, lectura fácil: frases cortas, una idea por frase.
-- Si la pregunta no es de derecho, responde solo: «Solo contesto dudas legales.»
-- No es de derecho: la aplicación, el Pasaporte, la sala previa, la simulación, la salud, el diagnóstico ni una charla.
-- Si la pregunta es de derecho, cita la ley y el artículo. Ejemplo: «art. 420 LECrim, en boe.es». No basta con decir «fuente: BOE».
-- Cierra siempre con: «Esto es información. No es asesoramiento.»
+Responde siempre que la pregunta trate de esta aplicación o del proceso:
+el juicio, ir o no ir, la citación, declarar, el silencio, el abogado, las pausas, la persona de apoyo, el facilitador, el diagnóstico, el Pasaporte de Ajustes, la sala previa y el simulador.
+También si pregunta por su papel: testigo, investigado, víctima o parte civil.
+
+Reglas:
+- Español de España, tuteo, frases cortas, una idea por frase.
+- No respondas «Solo contesto dudas legales» si la pregunta es del juzgado, de los derechos, de los ajustes o de esta aplicación.
+- Esa frase solo vale si el tema es ajeno, como el tiempo, un partido o una receta.
+- Si preguntan si tienen que ir al juzgado como testigo: sí, es un deber. Cita el art. 410 LECrim. Si no van sin causa justificada, cita el art. 420 LECrim.
+- Si preguntan si tienen que decir su diagnóstico: no. Es un dato privado. El Pasaporte dice los ajustes, no la enfermedad. Cita el art. 9 del RGPD y el art. 7 bis de la LEC.
+- No des un diagnóstico médico. No pidas DNI, expediente ni datos de salud.
+- Si preguntan por una persona de apoyo o un facilitador: pueden pedirlo. El juez decide. Cita el art. 7 bis de la LEC.
+- Cita la ley y el artículo. Ejemplo: «art. 420 LECrim, en boe.es». No basta con decir «fuente: BOE».
 - Falso testimonio: art. 433 LECrim y art. 458 del Código Penal. Si no recuerda, puede decirlo. No inventa.
 - Abogado en delito leve: no digas «abogado gratis» ni que esté garantizado. Es optativo (art. 967.1 LECrim). Puede pedir justicia gratuita y el juzgado decide (art. 6.3.b Ley 1/1996).
-- Si no comparece como testigo sin causa justificada: art. 420 LECrim.
-- NUNCA des diagnóstico médico ni pidas DNI, expediente o datos de salud.
 - Texto plano, sin JSON y sin markdown. Máximo 6 frases cortas.
 """
 
 
 def _cerrar_derecho(cuerpo: str, cita: str) -> str:
-    return f"{cuerpo} Fuente: {cita}, en boe.es. {AVISO_NO_ASESORA}"
+    return f"{cuerpo} Fuente: {cita}, en boe.es."
 
 
 RESPUESTA_ABOGADO = _cerrar_derecho(
@@ -687,6 +693,24 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
     (
         re.compile(r"abogad|justicia gratuita|oficio|gratis", re.I),
         RESPUESTA_ABOGADO,
+    ),
+    (
+        re.compile(r"diagn[oó]stic|informe m[eé]dico", re.I),
+        _cerrar_derecho(
+            "No tienes que decir tu diagnóstico en público. "
+            "Es un dato privado. "
+            "El Pasaporte explica los ajustes que necesitas, no tu enfermedad.",
+            "art. 9 RGPD y art. 7 bis LEC",
+        ),
+    ),
+    (
+        re.compile(r"persona de apoyo|facilitador|acompa[nñ]|persona de confianza", re.I),
+        _cerrar_derecho(
+            "Puedes pedir ir con una persona de apoyo o un facilitador. "
+            "Esa persona te ayuda a entender. "
+            "El juez decide si puede entrar en la sala.",
+            "art. 7 bis LEC",
+        ),
     ),
     (
         re.compile(r"delito leve.*(no (voy|acudo)|ausencia|multa)|multa.*delito leve", re.I),
@@ -757,6 +781,34 @@ RESPUESTAS_MOCK_AYUDA: List[tuple[re.Pattern, str]] = [
         ),
     ),
     (
+        re.compile(r"ir al juzgado|aunque no quiera|tengo que ir|obligatorio ir", re.I),
+        _cerrar_derecho(
+            "Sí. Si te citan como testigo, ir al juzgado es un deber. "
+            "No depende de si quieres. "
+            "Si no puedes ir, avisa antes y lleva un justificante.",
+            "art. 410 LECrim",
+        ),
+    ),
+    (
+        re.compile(r"simulador|ver la sala|sala previa|antes del juicio", re.I),
+        _cerrar_derecho(
+            "En la sala previa ves quién hay y qué se oye. "
+            "Después puedes ensayar preguntas. "
+            "Puedes parar cuando quieras. "
+            "Sirve para llegar con menos sorpresa.",
+            "art. 7 bis LEC",
+        ),
+    ),
+    (
+        re.compile(r"pasaporte", re.I),
+        _cerrar_derecho(
+            "El Pasaporte dice los ajustes que necesitas, como pausas o preguntas claras. "
+            "No dice tu diagnóstico. "
+            "Así el juzgado sabe cómo ayudarte sin ver tu historial.",
+            "art. 7 bis LEC y art. 9 RGPD",
+        ),
+    ),
+    (
         re.compile(r"jue[cz]|fiscal|juicio|derechos?|pena|recurso", re.I),
         _cerrar_derecho(
             "En el juicio hablan el juez, el fiscal y los abogados. "
@@ -771,6 +823,82 @@ _PATRON_ABOGADO_GRATIS = re.compile(
     r"abogado gratis|gratis garantiz|de oficio gratuito garant|te lo dan gratis",
     re.I,
 )
+
+_FAQS_APP: List[tuple[str, str]] = [
+    (
+        "¿Cómo me ayuda el simulador de la sala antes de ir al juzgado?",
+        _cerrar_derecho(
+            "Primero ves la sala: quién hay y qué se oye. "
+            "Después ensayas un juicio con preguntas. "
+            "Puedes parar cuando quieras.",
+            "art. 7 bis LEC",
+        ),
+    ),
+    (
+        "¿Cómo funciona el Pasaporte de ajustes?",
+        _cerrar_derecho(
+            "El Pasaporte dice los ajustes que necesitas, como pausas o preguntas claras. "
+            "No dice tu diagnóstico.",
+            "art. 7 bis LEC y art. 9 RGPD",
+        ),
+    ),
+]
+
+
+def _normalizar_pregunta(texto: str) -> str:
+    limpio = (texto or "").lower().strip()
+    limpio = re.sub(r"[¿?¡!.,;:\"'«»]", "", limpio)
+    return re.sub(r"\s+", " ", limpio)
+
+
+def _formato_faq(respuesta: str, articulo: str, enlace: str) -> str:
+    cuerpo = re.sub(r"\s+", " ", (respuesta or "").strip())
+    cita = (articulo or "").strip()
+    if not cita:
+        return cuerpo
+    if enlace and "boe.es" in enlace:
+        return f"{cuerpo} Fuente: {cita}, en boe.es."
+    return f"{cuerpo} Fuente: {cita}."
+
+
+def _indice_faqs_ayuda() -> Dict[str, str]:
+    base = Path(__file__).resolve().parent
+    candidatos = [
+        base.parents[1] / "data" / "roles.json",
+        base.parent / "data" / "roles.json",
+        base / "data" / "roles.json",
+    ]
+    indice: Dict[str, str] = {}
+    for ruta in candidatos:
+        if not ruta.exists():
+            continue
+        with ruta.open(encoding="utf-8") as archivo:
+            roles = json.load(archivo)
+        for rol in roles:
+            for faq in rol.get("faq", []):
+                clave = _normalizar_pregunta(faq.get("pregunta", ""))
+                if not clave:
+                    continue
+                indice[clave] = _formato_faq(
+                    faq.get("respuesta", ""),
+                    faq.get("articulo", ""),
+                    faq.get("enlace_boe", ""),
+                )
+        break
+    for pregunta, respuesta in _FAQS_APP:
+        indice.setdefault(_normalizar_pregunta(pregunta), respuesta)
+    return indice
+
+
+_INDICE_FAQS_AYUDA = _indice_faqs_ayuda()
+
+
+def _es_rechazo(texto: str) -> bool:
+    limpio = re.sub(r"\s+", " ", (texto or "").strip())
+    if not limpio:
+        return True
+    frase = FRASE_FUERA_DE_DERECHO.rstrip(".")
+    return frase in limpio and len(limpio) < 140
 
 
 def _es_pregunta_de_derecho(pregunta: str) -> bool:
@@ -792,12 +920,8 @@ def _respuesta_mock_ayuda(pregunta: str) -> str:
 def _sanear_respuesta_derecho(texto: str, pregunta: str) -> str:
     if _PATRON_ABOGADO_GRATIS.search(texto) or _PATRON_ABOGADO_GRATIS.search(pregunta):
         return RESPUESTA_ABOGADO
-    limpio = (texto or "").strip()
-    if limpio == FRASE_FUERA_DE_DERECHO:
-        return limpio
-    if AVISO_NO_ASESORA not in limpio:
-        limpio = f"{limpio.rstrip()} {AVISO_NO_ASESORA}"
-    return limpio
+    limpio = (texto or "").replace(AVISO_NO_ASESORA, " ").strip()
+    return re.sub(r"\s+", " ", limpio)
 
 
 def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
@@ -837,38 +961,46 @@ def _llamar_gemini_texto_sync(system_prompt: str, user_content: str) -> str:
                 return texto
         except Exception as e:
             ultimo_error = e
+            mensaje = str(e)
+            if "429" in mensaje or "RESOURCE_EXHAUSTED" in mensaje:
+                break
             continue
     raise ultimo_error or RuntimeError("No se pudo conectar con Gemini")
 
 
 async def responder_ayuda(pregunta: str) -> dict:
     """
-    Solo responde dudas de derecho.
-    Si encaja con un texto ya corregido, usa ese texto (artículo y aviso).
+    Responde dudas del juzgado, de los ajustes y de esta aplicación.
+    Primero usa las preguntas ya escritas. Si no hay una, llama al modelo.
     """
     limpia = re.sub(r"\s+", " ", (pregunta or "").strip())[:800]
-    if not _es_pregunta_de_derecho(limpia):
-        return {"respuesta": FRASE_FUERA_DE_DERECHO, "fuente": "mock"}
+    if _PATRON_ABOGADO_GRATIS.search(limpia):
+        return {"respuesta": RESPUESTA_ABOGADO, "fuente": "mock"}
 
-    concreta = _respuesta_mock_ayuda(limpia)
-    if concreta != FRASE_FUERA_DE_DERECHO:
-        return {"respuesta": concreta, "fuente": "mock"}
+    de_catalogo = _INDICE_FAQS_AYUDA.get(_normalizar_pregunta(limpia))
+    if de_catalogo:
+        return {"respuesta": de_catalogo, "fuente": "mock"}
 
     provider = os.getenv("LLM_PROVIDER", "mock").lower()
     gemini_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+    gemini_ok = provider == "gemini" or (provider in ("mock", "") and len(gemini_key) >= 20)
 
-    if provider == "gemini" or (provider in ("mock", "") and len(gemini_key) >= 20):
+    if gemini_ok:
         try:
             texto = await asyncio.to_thread(
                 _llamar_gemini_texto_sync,
                 SYSTEM_PROMPT_AYUDA,
                 (
-                    "Pregunta de derecho. Cita la ley y el artículo, en boe.es. "
-                    "No digas que el abogado es gratis. "
-                    f"Cierra con: {AVISO_NO_ASESORA}\n{limpia}"
+                    "Responde la pregunta. Si trata del juzgado, de los derechos, "
+                    "de los ajustes o de esta aplicación, contéstala y cita la ley y el artículo, en boe.es. "
+                    "No uses «Solo contesto dudas legales» en ese caso. "
+                    "No digas que el abogado es gratis.\n"
+                    f"{limpia}"
                 ),
             )
-            return {"respuesta": _sanear_respuesta_derecho(texto, limpia), "fuente": "gemini"}
+            saneado = _sanear_respuesta_derecho(texto, limpia)
+            if not _es_rechazo(saneado):
+                return {"respuesta": saneado, "fuente": "gemini"}
         except Exception:
             pass
 
