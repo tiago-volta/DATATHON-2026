@@ -414,7 +414,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
     : null
 
   return (
-    <div className="space-y-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {anuncio}
       </p>
@@ -453,68 +453,64 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
         rotulo={rotuloVisible}
         luz={valores.luz}
         gente={valores.gente}
+        acciones={
+          iniciada ? (
+            <div className="space-y-3 rounded-suave bg-white/95 p-3 shadow-lg border border-court-200">
+              {pausa ? (
+                <PanelPausa origen={pausa} onSeguir={salirDePausa} />
+              ) : (
+                <PanelTurno
+                  turno={turno}
+                  numero={indice + 1}
+                  total={guion.turnos.length}
+                  nombre={nombre}
+                  onResponder={responder}
+                  onCallar={cortarTodo}
+                  esperandoListo={esperandoListo}
+                  onListo={continuarTrasEspera}
+                />
+              )}
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Ayudas durante la declaración">
+                <p className="sr-only">{PUNTOS_VISTA[puntoVista].dondeEstas}</p>
+                <button
+                  type="button"
+                  className="btn-secondary min-h-[44px] py-2"
+                  onClick={() => entrarEnPausa('jueza')}
+                  disabled={pausa !== null || esperandoListo}
+                >
+                  Pedir una pausa
+                </button>
+                <button
+                  type="button"
+                  className="btn-ghost min-h-[44px] py-2 border border-court-200"
+                  onClick={pedirRepetir}
+                  disabled={pausa !== null || esperandoListo}
+                >
+                  Que lo repita
+                </button>
+                {turno.claro && (
+                  <button
+                    type="button"
+                    className="btn-ghost min-h-[44px] py-2 border border-court-200"
+                    onClick={pedirClaro}
+                    disabled={pausa !== null || esperandoListo}
+                  >
+                    Que lo diga más claro
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="btn-ghost min-h-[44px] py-2 border border-court-200"
+                  onClick={alternarVoz}
+                  aria-pressed={voz}
+                >
+                  {voz ? 'Voz activada' : 'Voz apagada (solo texto)'}
+                </button>
+              </div>
+            </div>
+          ) : undefined
+        }
       />
-
-      {iniciada && (
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          {pausa ? (
-            <PanelPausa origen={pausa} onSeguir={salirDePausa} />
-          ) : (
-            <PanelTurno
-              turno={turno}
-              numero={indice + 1}
-              total={guion.turnos.length}
-              nombre={nombre}
-              onResponder={responder}
-              onCallar={cortarTodo}
-              esperandoListo={esperandoListo}
-              onListo={continuarTrasEspera}
-            />
-          )}
-        </div>
-
-        <aside className="space-y-3" aria-label="Ayudas durante la declaración">
-          <p className="text-sm text-court-700">{PUNTOS_VISTA[puntoVista].dondeEstas}</p>
-          <div className="grid gap-2">
-            <button
-              type="button"
-              className="btn-secondary min-h-[44px] py-3"
-              onClick={() => entrarEnPausa('jueza')}
-              disabled={pausa !== null || esperandoListo}
-            >
-              Pedir una pausa
-            </button>
-            <button
-              type="button"
-              className="btn-ghost min-h-[44px] py-3 border border-court-200"
-              onClick={pedirRepetir}
-              disabled={pausa !== null || esperandoListo}
-            >
-              Que lo repita
-            </button>
-            {turno.claro && (
-              <button
-                type="button"
-                className="btn-ghost min-h-[44px] py-3 border border-court-200"
-                onClick={pedirClaro}
-                disabled={pausa !== null || esperandoListo}
-              >
-                Que lo diga más claro
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn-ghost min-h-[44px] py-3 border border-court-200"
-              onClick={alternarVoz}
-              aria-pressed={voz}
-            >
-              {voz ? 'Voz activada' : 'Voz apagada (solo texto)'}
-            </button>
-          </div>
-        </aside>
-      </div>
-      )}
 
       {iniciada && (
         <BotonCalma
@@ -530,7 +526,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
 function PanelPausa({ origen, onSeguir }: { origen: Exclude<Pausa, null>; onSeguir: () => void }) {
   const ref = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
-    ref.current?.focus()
+    ref.current?.focus({ preventScroll: true })
   }, [])
   return (
     <section className="card bg-calma-sage border-2 border-accent-success space-y-3" aria-labelledby="titulo-pausa">

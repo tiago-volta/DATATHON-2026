@@ -38,7 +38,6 @@ export default function PaginaPasaporte() {
     nombre?: string
     contacto?: string
   }>({})
-  const [pasaporteId, setPasaporteId] = useState('')
   const [qrUrl, setQrUrl] = useState('')
   const [avisoCopia, setAvisoCopia] = useState('')
   /** Apoyo local opcional (no va al QR). Ver preferencias.ts — integración organismos [PENDIENTE]. */
@@ -182,7 +181,6 @@ export default function PaginaPasaporte() {
       ...datosLimpios,
     })
     setDatos(datosLimpios)
-    setPasaporteId(id)
     setQrUrl(url)
     setPaso('resultado')
     registrarConfianza('pasaporte')
@@ -529,7 +527,6 @@ export default function PaginaPasaporte() {
               nombre={datos.nombre}
               ajustes={ajustesSeleccionados}
               contacto={datos.contacto}
-              codigo={pasaporteId}
               url={qrUrl}
               avisoCopia={avisoCopia}
               onCopiar={() => void copiarEnlace()}
@@ -537,7 +534,6 @@ export default function PaginaPasaporte() {
                 setPaso('datos')
                 setDatos({ nombre: '', ajustes: [], contacto: '' })
                 setErrores({})
-                setPasaporteId('')
                 setQrUrl('')
                 setAvisoCopia('')
                 try {

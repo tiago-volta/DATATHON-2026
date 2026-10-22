@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useRef } from 'react'
-import { HABLANTES, PUNTOS_VISTA, conNombre, type PuntoVista, type Respuesta, type Turno } from '@/lib/sala-previa/declaracion'
+import { PUNTOS_VISTA, type PuntoVista, type Respuesta, type Turno } from '@/lib/sala-previa/declaracion'
 import { GUIONES } from '@/lib/sala-previa/declaracionGuiones'
 
 export interface RegistroTurno {
@@ -24,26 +24,27 @@ interface Props {
   onRepetir: () => void
 }
 
-function frasesAyuda({ pausas, repeticiones, aclaraciones }: ContadoresAyuda): string[] {
-  const frases: string[] = []
-  if (pausas > 0) frases.push('Pediste una pausa. Pedir pausas es un derecho y te ayuda a seguir.')
-  if (repeticiones > 0) frases.push('Pediste que repitieran. Así te aseguras de entender la pregunta.')
-  if (aclaraciones > 0) frases.push('Pediste que lo dijeran más claro. Tienes derecho a entender lo que te preguntan.')
-  return frases
+function lineaAyuda({ pausas, repeticiones, aclaraciones }: ContadoresAyuda): string | null {
+  const partes: string[] = []
+  if (pausas > 0) partes.push('pediste una pausa')
+  if (repeticiones > 0) partes.push('pediste que repitieran')
+  if (aclaraciones > 0) partes.push('pediste que lo dijeran más claro')
+  if (partes.length === 0) return null
+  const texto = partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} y ${partes.at(-1)}`
+  return `Durante el ensayo ${texto}. Eso te ayuda a seguir.`
 }
 
-export function ResumenDeclaracion({ puntoVista, registro, ayudas, nombre, onRepetir }: Props) {
+export function ResumenDeclaracion({ puntoVista, ayudas, onRepetir }: Props) {
   const tituloRef = useRef<HTMLHeadingElement>(null)
-  const guion = GUIONES[puntoVista]
-  const respondidas = registro.filter((r) => r.respuesta.texto)
-  const extras = frasesAyuda(ayudas)
+  const claves = GUIONES[puntoVista].claves.slice(0, 3)
+  const extra = lineaAyuda(ayudas)
 
   useEffect(() => {
     tituloRef.current?.focus()
   }, [])
 
   return (
-    <section className="space-y-6 max-w-3xl" aria-labelledby="titulo-resumen">
+    <section className="mx-auto my-auto max-w-lg space-y-6 text-center" aria-labelledby="titulo-resumen">
       <div className="card bg-calma-sage border-2 border-accent-success space-y-2">
         <h2
           id="titulo-resumen"
@@ -56,45 +57,19 @@ export function ResumenDeclaracion({ puntoVista, registro, ayudas, nombre, onRep
         <p className="text-court-800">
           Has terminado la simulación {PUNTOS_VISTA[puntoVista].titulo.toLowerCase()}.
         </p>
-        <p className="text-court-800">
-          <strong>{HABLANTES[guion.cierre.hablante].nombre}:</strong> «{guion.cierre.texto}»
-        </p>
-        <p className="text-court-700">{guion.cierre.explicacion}</p>
       </div>
 
-      <div className="card space-y-2">
+      <div className="card space-y-3">
         <h3 className="text-lg font-bold text-court-900">Para llevarte</h3>
-        <ul className="list-disc pl-5 space-y-1 text-court-800">
-          {guion.claves.map((c) => (
+        <ul className="space-y-2 text-court-800">
+          {claves.map((c) => (
             <li key={c}>{c}</li>
           ))}
-          {extras.map((c) => (
-            <li key={c}>{c}</li>
-          ))}
+          {extra && <li>{extra}</li>}
         </ul>
       </div>
 
-      {respondidas.length > 0 && (
-        <div className="card space-y-3">
-          <h3 className="text-lg font-bold text-court-900">Tus respuestas y por qué valen</h3>
-          <ol className="space-y-4">
-            {respondidas.map(({ turno, respuesta }) => (
-              <li key={turno.id} className="border-l-4 border-accent-success pl-3 space-y-1">
-                <p className="text-sm text-court-700">
-                  <strong>{HABLANTES[turno.hablante].nombre}:</strong> «{conNombre(turno.texto, nombre)}»
-                </p>
-                <p className="font-semibold text-court-900">Tú: «{respuesta.texto}»</p>
-                <p className="text-court-800">
-                  <span className="font-bold text-accent-success">Respuesta válida.</span>{' '}
-                  {respuesta.porQue}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         <button type="button" className="btn-primary min-h-[44px]" onClick={onRepetir}>
           Repetir esta simulación
         </button>

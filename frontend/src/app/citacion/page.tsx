@@ -19,40 +19,15 @@ CÉDULA DE CITACIÓN
 
 Se cita a D. LUIS GARCÍA FERNÁNDEZ, con DNI 32.XXX.XXX-Y, domiciliado en C/ Ejemplo, 15, 15001 A Coruña, para que comparezca ante este Juzgado el día 10 de noviembre de 2026, a las 10:00 horas, en calidad de TESTIGO, a fin de prestar declaración en las Diligencias Previas arriba referenciadas.
 
-Se le apercibe de que, si no comparece sin causa justificada, podrá ser sancionado con multa de 200 a 5.000 euros. Deberá acudir provisto de su documento nacional de identidad.`
+Se le apercibe de que, si no comparece sin causa justificada, podrá ser sancionado con multa de 200 a 5.000 euros. Deberá acudir provisto de su documento nacional de identidad.
 
-const EJEMPLO_SENTENCIA = `JUZGADO DE LO PENAL Nº 2 DE A CORUÑA
-Procedimiento Abreviado 114/2026 — Sentencia nº 318/2026
+Como testigo tiene la obligación de decir la verdad (artículo 433 de la Ley de Enjuiciamiento Criminal). Si el investigado es un familiar directo, puede no declarar contra él (artículo 416). Puede pedir pausas y adaptaciones para entender las preguntas (artículo 7 bis de la Ley de Enjuiciamiento Civil).`
 
-FALLO
-
-Que debo ABSOLVER Y ABSUELVO libremente a Dña. MARÍA CARMEN R. V. del delito de hurto continuado del artículo 234.1 del Código Penal por el que venía siendo acusada, con declaración de las costas procesales de oficio y alzamiento de cuantas medidas cautelares se hubieran adoptado contra su persona.
-
-Contra la presente resolución cabe interponer recurso de apelación ante la Audiencia Provincial de A Coruña en el plazo de DIEZ DÍAS hábiles contados desde el siguiente al de su notificación.`
-
-/** Modelos públicos (COET, Aula Judicial León, estilo MJusticia). Datos anonimizados. Ver /pruebas/citaciones/FUENTES.md */
-const CITACIONES_PRUEBA = [
-  {
-    id: 'coet-testigo',
-    etiqueta: 'COET · Testigo (juicios rápidos)',
-    archivo: '/pruebas/citaciones/01-testigo-juicios-rapidos-coet.txt',
-  },
-  {
-    id: 'coet-investigado',
-    etiqueta: 'COET · Investigado / denunciado',
-    archivo: '/pruebas/citaciones/02-investigado-juicio-rapido-coet.txt',
-  },
-  {
-    id: 'leon-demandada',
-    etiqueta: 'León · Demandada (vista civil)',
-    archivo: '/pruebas/citaciones/03-demandada-vista-leon-aula-judicial.txt',
-  },
-  {
-    id: 'mjusticia-lf',
-    etiqueta: 'MJusticia · Testigo (lectura fácil)',
-    archivo: '/pruebas/citaciones/04-testigo-lectura-facil-estilo-mjusticia.txt',
-  },
-] as const
+const DERECHOS_TESTIGO_LUIS = [
+  'Obligación de decir la verdad (art. 433 LECrim)',
+  'No declarar contra familiares directos (art. 416 LECrim)',
+  'Solicitar adaptaciones y pausas de tranquilidad (art. 7 bis LEC)',
+]
 
 const TERMINOS_JUDICIALES =
   /\b(juzgado|citaci[oó]n|cita|comparezca|comparecer|procedimiento|diligencias|juicio|testigo|investigad[oa]|demandad[oa]|demandante|vista|declaraci[oó]n|tribunal|audiencia|letrad[oa]|fiscal|sentencia|fallo|absuelvo|absolver|condeno|hurto|notificaci[oó]n|c[eé]dula|autos|expediente|delito|instrucci[oó]n|penal|civil|denuncia|querella|recurso)\b/i
@@ -519,6 +494,7 @@ QUÉ DEBES HACER:
       lugar: 'Juzgado de Instrucción nº 3, A Coruña',
       numero_procedimiento: '245/2026',
       que_llevar: ['DNI o documento de identidad'],
+      derechos: DERECHOS_TESTIGO_LUIS,
       puedo_pedir_ajustes: true,
       base_legal_ajustes: 'Artículo 7 bis de la Ley de Enjuiciamiento Civil',
       apoyo_numerico: [
@@ -594,7 +570,7 @@ QUÉ TIENES QUE HACER: Ir al juzgado y contar lo que viste o sabes sobre unos he
 
 QUÉ LLEVAR: Tu DNI o carné de identidad.
 
-SI NO PUEDES IR ESE DÍA: Tienes obligación de acudir. Si estás enfermo o tienes una causa justificada, avisa antes al juzgado con un justificante para que cambien la fecha sin multa.`,
+TUS DERECHOS: Tienes que decir la verdad. Si el investigado es un familiar directo, puedes no declarar contra él. Puedes pedir pausas y que te hagan las preguntas de una en una.`,
     lectura_facil: `Te llaman para ir al juzgado.
 
 Eres TESTIGO.
@@ -607,8 +583,12 @@ Al Juzgado número 3 de A Coruña.
 
 LLEVA tu DNI.
 
-Si estás enfermo ese día,
-avisa antes al juzgado con un justificante médico.`,
+Tienes que decir la verdad.
+Si no te acuerdas, puedes decirlo.
+Si es un familiar directo,
+puedes no declarar contra él.
+Puedes pedir pausas
+y preguntas de una en una.`,
     plazos: [
       {
         descripcion: 'Día de la declaración como testigo',
@@ -708,7 +688,6 @@ export default function PaginaCitacion() {
   const [errorCalendario, setErrorCalendario] = useState('')
   const [extrayendo, setExtrayendo] = useState(false)
   const [mensajeExitoArchivo, setMensajeExitoArchivo] = useState('')
-  const [cargandoPrueba, setCargandoPrueba] = useState<string | null>(null)
   const [progresoProcesamiento, setProgresoProcesamiento] = useState(0)
   const [arrastrandoArchivo, setArrastrandoArchivo] = useState(false)
 
@@ -777,29 +756,6 @@ export default function PaginaCitacion() {
     frame = window.requestAnimationFrame(actualizarProgreso)
     return () => window.cancelAnimationFrame(frame)
   }, [paso])
-
-  const cargarCitacionPrueba = async (archivo: string, etiqueta: string) => {
-    setCargandoPrueba(archivo)
-    setError('')
-    setMensajeExitoArchivo('')
-    try {
-      const res = await fetch(archivo)
-      if (!res.ok) throw new Error(`No se pudo cargar ${archivo}`)
-      const contenido = (await res.text()).trim()
-      if (contenido.length < 20) throw new Error('El archivo de prueba está vacío.')
-      setTexto(contenido.slice(0, 8000))
-      setNombreArchivo(etiqueta)
-      setMensajeExitoArchivo(
-        `Cargada citación de prueba «${etiqueta}» (modelo público anonimizado). Revisa el texto o pulsa «Transformar documento».`
-      )
-    } catch {
-      setError(
-        'No se pudo cargar la citación de prueba. Comprueba que el servidor sirve /pruebas/citaciones/ o pega el texto a mano.'
-      )
-    } finally {
-      setCargandoPrueba(null)
-    }
-  }
 
   const cargarArchivo = async (archivo: File) => {
     setNombreArchivo(archivo.name)
@@ -929,7 +885,6 @@ export default function PaginaCitacion() {
   const esSentencia = resultado?.datos_clave.tipo_documento === 'sentencia'
   const pasosSimples = resultado?.datos_clave.pasos_super_simples || []
   const apoyoNumerico = resultado?.datos_clave.apoyo_numerico || []
-  const quePasaSiNoVoy = resultado?.datos_clave.que_pasa_si_no_voy
   const pipelineIA = resultado?.datos_clave.pipeline_ia || PIPELINE_POR_DEFECTO
   const pasosExplicacion = [
     { titulo: 'Lo importante', descripcion: 'Fecha, lugar y tu papel' },
@@ -1041,18 +996,6 @@ export default function PaginaCitacion() {
                 <button type="button" onClick={procesarCitacion} className="btn-primary">
                   Transformar documento
                 </button>
-                {CITACIONES_PRUEBA.map((prueba) => (
-                  <button
-                    key={prueba.id}
-                    type="button"
-                    disabled={cargandoPrueba !== null}
-                    onClick={() => void cargarCitacionPrueba(prueba.archivo, prueba.etiqueta)}
-                    className="btn-ghost"
-                    aria-busy={cargandoPrueba === prueba.archivo}
-                  >
-                    {cargandoPrueba === prueba.archivo ? 'Cargando…' : prueba.etiqueta}
-                  </button>
-                ))}
                 <button
                   type="button"
                   onClick={() => {
@@ -1064,18 +1007,6 @@ export default function PaginaCitacion() {
                   className="btn-ghost"
                 >
                   Ejemplo Luis (citación testigo)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTexto(EJEMPLO_SENTENCIA)
-                    setNombreArchivo('')
-                    setError('')
-                    setMensajeExitoArchivo('')
-                  }}
-                  className="btn-ghost"
-                >
-                  Ejemplo Sentencia (lectura fácil)
                 </button>
               </div>
             </div>
@@ -1474,28 +1405,6 @@ export default function PaginaCitacion() {
                     {errorCalendario}
                   </p>
                 )}
-              </div>
-            )}
-
-            {/* Bloque ¿Qué pasa si no voy o no puedo ir ese día? (C07) */}
-            {quePasaSiNoVoy && (
-              <div className="card mb-6 border-l-4 border-l-court-600">
-                <div className="flex flex-wrap justify-between items-start gap-3 mb-3">
-                  <h2 className="text-xl font-bold text-court-800">
-                    {esSentencia
-                      ? '¿Tengo que ir al juzgado después de esta carta?'
-                      : '¿Qué pasa si ese día estoy enfermo o no puedo ir?'}
-                  </h2>
-                </div>
-                <p className="text-court-700 mb-3">{quePasaSiNoVoy.resumen}</p>
-                <ol className="list-decimal pl-5 space-y-1 text-court-700 mb-3">
-                  {quePasaSiNoVoy.pasos_si_no_puedes.map((pasoItem, idx) => (
-                    <li key={idx}>{pasoItem}</li>
-                  ))}
-                </ol>
-                <p className="text-sm font-medium text-court-800 bg-calma-sage p-3 rounded-lg">
-                  {quePasaSiNoVoy.mensaje_calma}
-                </p>
               </div>
             )}
 

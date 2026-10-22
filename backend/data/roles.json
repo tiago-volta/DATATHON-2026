@@ -76,6 +76,12 @@
         "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a410"
       },
       {
+        "pregunta": "¿Qué pasa si ese día estoy enfermo o no puedo ir?",
+        "respuesta": "Avisa al juzgado en cuanto sepas que no puedes ir. Lleva un justificante, por ejemplo un parte médico. El juez puede cambiar la fecha. Si avisas a tiempo, no hay multa.",
+        "articulo": "Art. 410 y 420 LECrim",
+        "enlace_boe": "https://www.boe.es/buscar/act.php?id=BOE-A-1882-6036#a420"
+      },
+      {
         "pregunta": "¿Qué pasa si no voy a declarar?",
         "respuesta": "Si no compareces sin causa justificada, la ley prevé multa de 200 a 5.000 € y el juez puede ordenar a la policía que te conduzca al juzgado. El juez siempre valora si tenías una justificación válida como enfermedad o fuerza mayor.",
         "articulo": "Art. 420 LECrim",

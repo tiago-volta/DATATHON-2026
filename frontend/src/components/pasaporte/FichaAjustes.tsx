@@ -11,7 +11,6 @@ interface FichaAjustesProps {
   nombre: string
   ajustes: AjusteFicha[]
   contacto: string
-  codigo: string
   url: string
   avisoCopia: string
   onCopiar: () => void
@@ -22,7 +21,6 @@ export function FichaAjustes({
   nombre,
   ajustes,
   contacto,
-  codigo,
   url,
   avisoCopia,
   onCopiar,
@@ -70,11 +68,6 @@ export function FichaAjustes({
             )}
           </div>
         </div>
-
-        <p className="text-center text-court-800 mt-4">
-          <span className="block text-court-700 mb-1">Código para dictar</span>
-          <span className="block text-3xl font-bold tracking-widest numeros">{codigo}</span>
-        </p>
 
         {contacto && (
           <div className="border-t border-court-200 pt-4 mt-6">

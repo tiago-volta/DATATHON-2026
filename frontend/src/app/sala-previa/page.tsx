@@ -56,7 +56,7 @@ export default function PaginaSalaPrevia() {
   return (
     <main id="contenido-principal" className="page-shell-wide pb-32">
         <div className="mx-auto w-full max-w-6xl flex flex-col items-center text-center">
-        <nav aria-label="Volver" className="w-full flex justify-center">
+        <nav aria-label="Volver" className="w-full self-start text-left">
           <Link href="/" className="link-atras">
             <Icono nombre="←" />
             Volver al inicio

@@ -33,7 +33,9 @@ export function PanelTurno({
 
   useEffect(() => {
     setLibre('')
-    tituloRef.current?.focus()
+    const panel = tituloRef.current?.closest('[data-sala-ui]')
+    if (panel instanceof HTMLElement) panel.scrollTo({ top: 0 })
+    tituloRef.current?.focus({ preventScroll: true })
   }, [turno.id])
 
   const responderLibre = () => {
@@ -44,7 +46,7 @@ export function PanelTurno({
 
   if (esperandoListo && onListo) {
     return (
-      <section className="card space-y-4" aria-labelledby={`titulo-${turno.id}`}>
+      <section className="space-y-3" aria-labelledby={`titulo-${turno.id}`}>
         <h2
           id={`titulo-${turno.id}`}
           ref={tituloRef}
@@ -64,7 +66,7 @@ export function PanelTurno({
   }
 
   return (
-    <section className="card space-y-4" aria-labelledby={`titulo-${turno.id}`}>
+    <section className="space-y-3" aria-labelledby={`titulo-${turno.id}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id={`titulo-${turno.id}`}

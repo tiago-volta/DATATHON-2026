@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type ReactNode,
 } from 'react'
 import type { Distraccion } from '@/lib/sala-previa/distracciones'
 import {
@@ -51,6 +52,8 @@ interface Props {
   distraccion: Distraccion | null
   /** Quién habla y la frase actual, encima de la sala enfocada. */
   rotulo: RotuloEnfoque | null
+  /** Respuestas y ayudas, dentro de la escena, para no salir de la simulación. */
+  acciones?: ReactNode
   luz: number
   gente: number
 }
@@ -62,6 +65,7 @@ export function VistaDeclaracion3D({
   pausa,
   distraccion,
   rotulo,
+  acciones,
   luz,
   gente,
 }: Props) {
@@ -129,9 +133,9 @@ export function VistaDeclaracion3D({
     objetivo.destino === 'entrada' ? 'la puerta' : HABLANTES[objetivo.destino].nombre.toLowerCase()
 
   return (
-    <div className="space-y-2">
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
       <div
-        className={`relative h-[calc(100dvh-9rem)] min-h-[320px] w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
+        className={`relative min-h-[280px] flex-1 w-full rounded-tarjeta overflow-hidden border-2 border-court-200 bg-court-100 select-none touch-none ${
           reduced ? 'cursor-default' : arrastrando ? 'cursor-grabbing' : 'cursor-grab'
         }`}
         role="img"
@@ -164,17 +168,25 @@ export function VistaDeclaracion3D({
         />
         {rotulo && (
           <div
-            className="absolute bottom-0 inset-x-0 z-[4] px-4 py-3 bg-court-900/95 text-white pointer-events-none"
+            className="absolute top-0 inset-x-0 z-[4] px-4 py-2 bg-court-900/95 text-white pointer-events-none"
             aria-hidden="true"
           >
             <p className="text-sm font-bold text-court-100">Miras a {rotulo.quien}</p>
-            <p className="text-base sm:text-lg leading-snug line-clamp-4">{rotulo.texto}</p>
+            <p className="text-base leading-snug line-clamp-2">{rotulo.texto}</p>
+          </div>
+        )}
+        {acciones && (
+          <div
+            className="absolute bottom-24 inset-x-0 z-[5] max-h-[46%] overflow-y-auto p-3 pointer-events-auto touch-auto"
+            data-sala-ui
+          >
+            {acciones}
           </div>
         )}
         {!reduced && (
           <p
             className={`absolute right-2 z-[3] text-sm text-court-800 bg-white px-2 py-1 rounded-suave border border-court-200 pointer-events-none ${
-              rotulo ? 'top-2' : 'bottom-2'
+              rotulo ? 'top-16' : 'top-2'
             }`}
             aria-hidden="true"
           >

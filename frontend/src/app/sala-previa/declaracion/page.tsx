@@ -49,15 +49,15 @@ export default function PaginaDeclaracion() {
   }
 
   return (
-    <main id="contenido-principal" className="page-shell-wide pb-8">
-      <nav aria-label="Volver" className="mb-3">
+    <main id="contenido-principal" className="page-shell-wide !py-3 flex flex-col h-[calc(100dvh-4.75rem)] overflow-y-auto">
+      <nav aria-label="Volver" className="mb-2 shrink-0">
         <Link href="/sala-previa" className="link-atras">
           <Icono nombre="←" />
           Volver a la sala
         </Link>
       </nav>
 
-      <h1 className="sr-only">Simulación del juicio</h1>
+      <h1 className="titulo-pagina !mb-2 shrink-0">Simulación del juicio</h1>
 
       {!listo && (
         <p className="text-court-800" aria-live="polite">

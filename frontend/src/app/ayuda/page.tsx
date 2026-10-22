@@ -17,6 +17,15 @@ interface FaqItem {
 
 const FAQS_RECURRENTES: FaqItem[] = [
   {
+    id: 'no-puedo-ir',
+    categoria: 'El día del juicio',
+    icono: '📅',
+    pregunta: '¿Qué pasa si ese día estoy enfermo o no puedo ir?',
+    respuesta:
+      'Avisa al juzgado en cuanto sepas que no puedes ir. Lleva un justificante, por ejemplo un parte médico. El juez puede cambiar la fecha. Si avisas a tiempo, no hay multa.',
+    fundamentoLegal: 'Artículos 410 y 420 de la Ley de Enjuiciamiento Criminal',
+  },
+  {
     id: 'pausas',
     categoria: 'Sobrecarga y nervios',
     icono: '⏸️',

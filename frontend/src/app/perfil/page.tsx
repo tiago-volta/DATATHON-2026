@@ -297,10 +297,14 @@ export default function PaginaPerfil() {
             </p>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-court-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-4 border-t border-court-200">
             <button type="submit" className="btn-primary min-h-[44px]">
               {yaExiste ? 'Guardar cambios' : 'Guardar y empezar'}
             </button>
+            <Link href="/" className="link-atras min-h-[44px]">
+              <Icono nombre="←" />
+              Volver al inicio
+            </Link>
             {guardado && (
               <p className="text-sm font-medium text-court-800 self-center" role="status">
                 Cambios guardados en tu perfil.

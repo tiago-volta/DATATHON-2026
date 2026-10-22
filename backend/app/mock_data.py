@@ -114,6 +114,11 @@ MOCK_RESPONSE_LUIS = {
         "lugar": "Juzgado de Instrucción nº 3, A Coruña",
         "numero_procedimiento": "245/2026",
         "que_llevar": ["DNI o documento de identidad"],
+        "derechos": [
+            "Obligación de decir la verdad (art. 433 LECrim)",
+            "No declarar contra familiares directos (art. 416 LECrim)",
+            "Solicitar adaptaciones y pausas de tranquilidad (art. 7 bis LEC)",
+        ],
         "puedo_pedir_ajustes": True,
         "base_legal_ajustes": "Artículo 7 bis de la Ley de Enjuiciamiento Civil",
         "apoyo_numerico": [
@@ -187,8 +192,6 @@ MOCK_RESPONSE_LUIS = {
 
 🛡️ DISPENSA POR PARENTESCO: Si la persona investigada es tu cónyuge o familiar directo, la ley te dispensa de declarar contra ella (art. 416 LECrim).
 
-⚠️ OBLIGACIÓN DE ACUDIR: Comparecer es obligatorio por ley. Si no vas ni justiprecisas tu ausencia, el juez puede imponer multa de 200 a 5.000 € y ordenar conducción policial (art. 420 LECrim). Si estás enfermo o impedido, avisa de inmediato aportando justificante.
-
 ✅ DERECHO A APOYOS: Puedes pedir sala de espera tranquila, pausas y preguntas comprensibles de una en una (artículo 7 bis LEC y art. 109 LECrim).""",
     "lectura_facil": """Te llaman para ir al juzgado.
 
@@ -205,11 +208,6 @@ OBLIGACIÓN DE DECIR LA VERDAD:
 2. Mentir en el juicio es un delito de falso testimonio (art. 458 del Código Penal).
 3. Si no te acuerdas de algo, puedes decir tranquilamente "no me acuerdo".
 4. Si el investigado es tu familiar cercano, la ley te permite no declarar contra él (artículo 416).
-
-SI NO PUEDES IR:
-- Avisa con urgencia al juzgado y entrega un justificante médico.
-- El juez valorará el justificante para fijar otro día sin multa.
-- Si no vas y no avisas, la multa es de 200 a 5.000 euros y la policía puede ir a buscarte (artículo 420).
 
 PUEDES PEDIR AYUDA (artículo 7 bis):
 - Esperar en una sala tranquila.
