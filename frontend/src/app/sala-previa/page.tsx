@@ -3,120 +3,86 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Icono } from '@/components/Icono'
-import { BotonCalma } from '@/components/sala-previa/BotonCalma'
-import { SalaJuzgado360 } from '@/components/sala-previa/SalaJuzgado360'
-import { BarraPreparacion } from '@/components/preparacion/BarraPreparacion'
+import {
+  PasosSalaPrevia,
+  type IdPasoSala,
+} from '@/components/sala-previa/PasosSalaPrevia'
 import { MotorAudioSala } from '@/lib/sala-previa/audio'
 import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
-import { ESCENAS_JUZGADO } from '@/lib/sala-previa/escenas'
+import { cargarAmbiente, guardarAmbiente } from '@/lib/sala-previa/ambiente'
 import { VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
-import { papelDesdeRol } from '@/lib/sala-previa/salaVistasConfig'
-import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
-import { cargarPerfil } from '@/lib/perfil/perfil'
+import { obtenerRolActivo } from '@/lib/roles'
 import type { RolPerfil } from '@/lib/perfil/tipos'
-import { marcarVistaSala } from '@/lib/preparacion'
+import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
 
-const SALA = ESCENAS_JUZGADO.find((escena) => escena.id === 'sala-vistas') ?? ESCENAS_JUZGADO[0]
-const SILENCIO: ValoresEstimulo = { ruido: 0, luz: 12, gente: 0 }
-
-export default function PaginaSala() {
+export default function PaginaSalaPrevia() {
   const motorRef = useRef<MotorAudioSala | null>(null)
-  const [rol, setRol] = useState<RolPerfil>('testigo')
+  const [rolUsuario, setRolUsuario] = useState<RolPerfil>('testigo')
   const [valores, setValores] = useState<ValoresEstimulo>(VALORES_AMBIENTE_SALA)
-  const [enCalma, setEnCalma] = useState(false)
-  const [sonido, setSonido] = useState(false)
+  const [listo, setListo] = useState(false)
+  const [pasoInicial, setPasoInicial] = useState<IdPasoSala>('intro')
 
   useEffect(() => {
-    setRol(cargarPerfil()?.rol ?? 'testigo')
-    marcarVistaSala()
+    setRolUsuario(obtenerRolActivo())
+    const ambiente = cargarAmbiente()
+    setValores(ambiente)
     motorRef.current = new MotorAudioSala()
+    motorRef.current.actualizar(ambiente)
+    void bancoSonidos().desbloquear()
+    setListo(true)
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      if (
+        params.get('ensayo') === '1' ||
+        params.get('modo') === 'ensayo' ||
+        params.get('desde') === 'ensaya'
+      ) {
+        setPasoInicial('sala')
+      }
+    }
+
     return () => {
       motorRef.current?.detener(false)
     }
   }, [])
 
-  const escuchar = async () => {
-    bancoSonidos().precargar()
-    await motorRef.current?.iniciar()
-    setEnCalma(false)
-    setValores(VALORES_AMBIENTE_SALA)
-    motorRef.current?.actualizar(VALORES_AMBIENTE_SALA)
-    setSonido(true)
-  }
-
-  const pausar = useCallback(() => {
-    setEnCalma(true)
-    motorRef.current?.volverACalma()
-    bancoSonidos().cancelar()
-    setValores(SILENCIO)
+  const aplicarValores = useCallback((nuevos: ValoresEstimulo) => {
+    setValores(nuevos)
+    guardarAmbiente(nuevos)
+    motorRef.current?.actualizar(nuevos)
   }, [])
 
-  const reanudar = useCallback(() => {
-    setEnCalma(false)
-    if (sonido) {
-      setValores(VALORES_AMBIENTE_SALA)
-      motorRef.current?.actualizar(VALORES_AMBIENTE_SALA)
-    }
-  }, [sonido])
-
   return (
-    <>
-      <main id="contenido-principal" className="page-shell-wide pb-28">
-        <nav aria-label="Volver">
+    <main id="contenido-principal" className="page-shell-wide pb-32">
+        <div className="mx-auto w-full max-w-6xl flex flex-col items-center text-center">
+        <nav aria-label="Volver" className="w-full flex justify-center">
           <Link href="/" className="link-atras">
             <Icono nombre="←" />
             Volver al inicio
           </Link>
         </nav>
 
-        <header className="mb-6 max-w-2xl">
-          <h1 className="titulo-pagina mb-2">La sala</h1>
-          <p className="entradilla mb-4">
-            Esta es la sala del juzgado. Aquí ves quién hay y qué se oye.
-            La simulación del juicio es el paso siguiente.
+        <header className="mb-8 mt-4 w-full">
+          <h1 className="titulo-pagina mb-2">Sala Previa</h1>
+          <p className="entradilla mx-auto">
+            Prepara el día en el juzgado paso a paso. Poca información en cada
+            pantalla.
           </p>
-          <BarraPreparacion />
-          <div className="flex flex-wrap gap-3 mt-5">
-            <Link href="/sala-previa/declaracion" className="btn-primary min-h-[44px]">
-              Simular el juicio
-            </Link>
-            <button type="button" className="btn-secondary min-h-[44px]" onClick={escuchar}>
-              {sonido ? 'Sonido de la sala activo' : 'Escuchar la sala'}
-            </button>
-          </div>
         </header>
 
-        <SalaJuzgado360
-          escenaId="sala-vistas"
-          titulo="Sala del juzgado"
-          valores={valores}
-          enCalma={enCalma}
-          papel={papelDesdeRol(rol, 'sala-vistas')}
-        />
+        {listo && (
+            <PasosSalaPrevia
+              key={pasoInicial}
+              valores={valores}
+              onValores={aplicarValores}
+              rol={rolUsuario}
+              enCalma={false}
+              pasoInicial={pasoInicial}
+            />
+        )}
 
-        <section className="card mt-6 max-w-2xl" aria-labelledby="titulo-quien">
-          <h2 id="titulo-quien" className="text-xl font-bold text-court-900 mb-3">
-            Quién hay
-          </h2>
-          <ul className="space-y-3">
-            {SALA.roles.map((persona) => (
-              <li key={persona.nombre}>
-                <span className="font-bold text-court-900">{persona.nombre}.</span>{' '}
-                <span className="text-court-800">{persona.explicacion}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="text-court-800 mt-4">
-            Puedes oír murmullos, una puerta o un móvil. Debajo de la sala eliges
-            si hay pocos ruidos, muchos o ninguno.
-          </p>
-        </section>
-
-        <p className="text-sm text-court-700 mt-6 max-w-2xl">
-          Esto es un ensayo. No sustituye a tu citación ni a un abogado.
-        </p>
-      </main>
-      <BotonCalma enCalma={enCalma} onPausa={pausar} onReanudar={reanudar} />
-    </>
+      </div>
+    </main>
   )
 }

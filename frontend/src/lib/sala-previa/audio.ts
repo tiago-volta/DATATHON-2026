@@ -1,5 +1,6 @@
 import type { ValoresEstimulo } from './tipos'
 import { bancoSonidos } from './bancoSonidos'
+import { DISTRACCIONES_TEMPORALMENTE_APAGADAS } from './distracciones'
 
 const FADE_NORMAL = 2.2
 const FADE_CALMA = 0.9
@@ -228,6 +229,14 @@ export class MotorAudioSala {
       return
     }
 
+    if (DISTRACCIONES_TEMPORALMENTE_APAGADAS) {
+      rampGain(this.ambienteGain.gain, 0.0001, segundos, this.ctx)
+      rampGain(this.murmullosSalaGain.gain, 0.0001, segundos, this.ctx)
+      rampGain(this.genteGain.gain, 0.0001, segundos, this.ctx)
+      rampGain(this.impulsosGain.gain, 0.0001, segundos, this.ctx)
+      return
+    }
+
     const r = valores.ruido / 100
     const g = valores.gente / 100
 
@@ -255,9 +264,11 @@ export class MotorAudioSala {
 
   private programarImpulsos() {
     if (!this.ctx || !this.impulsosGain) return
+    if (DISTRACCIONES_TEMPORALMENTE_APAGADAS) return
 
     const tick = () => {
       if (!this.activo || !this.ctx || !this.impulsosGain) return
+      if (DISTRACCIONES_TEMPORALMENTE_APAGADAS) return
       const intensidad = Math.max(this.valores.ruido, this.valores.gente) / 100
       if (intensidad > 0.12 && Math.random() < 0.45 + intensidad * 0.3) {
         this.dispararPaso()

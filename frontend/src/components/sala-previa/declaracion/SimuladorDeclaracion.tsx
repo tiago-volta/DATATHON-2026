@@ -8,7 +8,8 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { MotorAudioSala } from '@/lib/sala-previa/audio'
 import { bancoSonidos } from '@/lib/sala-previa/bancoSonidos'
 import type { NivelDistracciones } from '@/lib/sala-previa/distracciones'
-import { leerValoresSala, VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
+import { cargarAmbiente } from '@/lib/sala-previa/ambiente'
+import { VALORES_AMBIENTE_SALA } from '@/lib/sala-previa/niveles'
 import type { ValoresEstimulo } from '@/lib/sala-previa/tipos'
 import { numPublicoVisible } from '@/lib/sala-previa/salaVistasConfig'
 import {
@@ -201,7 +202,7 @@ export function SimuladorDeclaracion({ puntoVista, nombre, voz, onVoz, onTermina
 
   useEffect(() => {
     setAjustes(leerAjustes())
-    setValores(leerValoresSala())
+    setValores(cargarAmbiente())
     precargarVoces()
     const m = new MotorAudioSala()
     motor.current = m
