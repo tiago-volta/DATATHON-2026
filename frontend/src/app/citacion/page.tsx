@@ -355,9 +355,9 @@ Durante diez días hábiles, la acusación puede recurrir la decisión.`,
           '1. Te citan para aclarar una venta por internet de menos de cuatrocientos euros.',
           '2. Día: jueves 12 de noviembre a las nueve y media de la mañana.',
           '3. Lugar: Juzgado de Instrucción número 7 de A Coruña.',
-          '4. Tienes derecho a un abogado gratis y a que te lean todos los documentos en voz alta.',
+          '4. Puedes ir con abogado. Si no tienes dinero, puedes pedir justicia gratuita. Decide el juzgado (art. 6.3.b Ley 1/1996).',
           '5. Lleva tus pruebas: mensajes, Bizum y resguardo de Correos.',
-          '6. Puedes pedir pausas cada quince minutos durante la vista.',
+          '6. Puedes pedir pausas. Decide el juez.',
         ],
         pipeline_ia: PIPELINE_POR_DEFECTO,
         privacidad_rgpd: {
@@ -397,7 +397,7 @@ TUS DERECHOS PRINCIPALES:
 1. Puedes guardar silencio o contestar solo a las preguntas que quieras.
 2. Tienes derecho a acudir con abogado (art. 967.1). Si careces de recursos, puedes solicitar justicia gratuita y el juzgado valorará si procede concederla (art. 6.3.b Ley 1/1996).
 3. Puedes llevar pruebas que demuestren tu versión hasta el mismo día del juicio.
-4. Tienes derecho a que te describan por voz todas las pruebas visuales y documentos.`,
+4. Puedes pedir que te describan las pruebas visuales (art. 109 LECrim). Decide el juez.`,
       lectura_facil: `Te llaman para ir a un juicio.
 
 Eres INVESTIGADO.
@@ -411,7 +411,7 @@ TIENES DERECHOS:
 1. Puedes NO hablar si no quieres.
 2. Puedes ir con un ABOGADO.
    En este juicio el abogado no es obligatorio.
-   Si no tienes dinero, puedes pedir abogado gratis y el juzgado decidirá.
+   Si no tienes dinero, puedes pedir justicia gratuita. Decide el juzgado (art. 6.3.b Ley 1/1996).
 3. Puedes llevar PRUEBAS hasta el día del juicio.
 4. Si no vas y no avisas con causa justa, el juicio se hace sin ti y la multa es de 200 a 2.000 euros.
 

@@ -282,8 +282,8 @@ export const BLOQUE_COLETILLAS: NivelJuicio = {
       respuestaSegura: 'Prefiero explicar yo lo que percibí en lugar de responder a su coletilla',
       faq: {
         titulo: '¿Son legales las preguntas que sugieren la respuesta?',
-        queSignifica: 'El artículo 439 de la LECrim prohíbe terminantemente las preguntas capciosas o sugestivas dirigidas a testigos.',
-        derechoTestigo: 'Puedes pedir que no te condicionen. Quien preside el juicio debe reprender al letrado si insiste.',
+        queSignifica: 'En el juicio, quien preside no permitirá que contestes preguntas sugestivas o capciosas (art. 709 LECrim).',
+        derechoTestigo: 'En el juicio, quien preside no permitirá que contestes preguntas sugestivas o capciosas (art. 709 LECrim).',
         articuloLey: 'Art. 439 y Art. 709 Ley de Enjuiciamiento Criminal',
         consejos: [
           'No digas sí por complacer.',

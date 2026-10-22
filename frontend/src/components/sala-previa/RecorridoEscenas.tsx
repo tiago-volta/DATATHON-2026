@@ -147,7 +147,7 @@ export function RecorridoEscenas({
             >
               En un día real, esta zona suele parecerse al nivel «{tipico}».
               Aquí el ambiente es estable; el realismo viene de interrupciones
-              (móvil, tos, puerta, martillo…). Puedes apagarlas o poner pocas o muchas.
+              (móvil, tos, puerta, murmullos…). Puedes apagarlas o poner pocas o muchas.
             </p>
           )}
         </div>

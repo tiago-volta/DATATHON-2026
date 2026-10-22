@@ -24,7 +24,6 @@ export type TipoDistraccion =
   | 'agente-postura'
   | 'acompanante-susurra'
   | 'abogado-susurra'
-  | 'martillo'
   | 'shh'
   | 'pasos-lejanos'
   | 'nombre-llamado'
@@ -238,14 +237,6 @@ export const DISTRACCIONES: Record<TipoDistraccion, DefDistraccion> = {
     explicacion:
       'Tu abogado o abogada te ha dicho algo bajito. Si no lo entiendes, puedes pedir que te lo repita.',
     registro: 'Tu abogado te habló bajito',
-  },
-  martillo: {
-    duracion: 3,
-    peso: 2,
-    aviso: 'El juez va a golpear el martillo.',
-    explicacion:
-      'El juez ha golpeado el martillo. Es para llamar la atención o marcar un momento. Puedes seguir.',
-    registro: 'El juez golpeó el martillo',
   },
   shh: {
     duracion: 2.2,

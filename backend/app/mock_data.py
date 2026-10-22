@@ -202,7 +202,7 @@ Al Juzgado número 3 de A Coruña.
 
 OBLIGACIÓN DE DECIR LA VERDAD:
 1. Tienes la obligación legal de decir la verdad.
-2. Mentir en el juicio es delito de falso testimonio (artículo 433 de la ley penal).
+2. Mentir en el juicio es un delito de falso testimonio (art. 458 del Código Penal).
 3. Si no te acuerdas de algo, puedes decir tranquilamente "no me acuerdo".
 4. Si el investigado es tu familiar cercano, la ley te permite no declarar contra él (artículo 416).
 
@@ -344,8 +344,8 @@ TIENES DERECHOS:
 1. Puedes NO hablar si no quieres.
 2. Puedes ir con un ABOGADO.
    En este tipo de juicio el abogado no es obligatorio.
-   Si no tienes dinero, puedes pedir abogado gratis
-   y el juez decidirá si te lo concede.
+   Si no tienes dinero, puedes pedir justicia gratuita.
+   Decide el juzgado (art. 6.3.b Ley 1/1996).
 3. Puedes llevar PRUEBAS hasta el día del juicio.
 4. Si no vas y no avisas con justificante,
    el juicio se hará sin ti y la multa es de 200 a 2.000 euros.

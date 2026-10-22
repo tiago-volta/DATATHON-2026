@@ -107,9 +107,6 @@ export class SonidosDistraccion {
       case 'abogado-susurra':
         this.voz(0.4, d.frase ?? 'Vamos bien.', 0.85 * v, 0.95)
         break
-      case 'martillo':
-        t('martillo', 0.25, 1.15, { pan: 0 })
-        break
       case 'shh':
         t('shh', 0.3, 1)
         break

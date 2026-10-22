@@ -334,13 +334,9 @@ export class MotorAudioSala {
     bancoSonidos().tocar('telefono', { en: 0.2 })
   }
 
-  reproducirMartillo() {
-    bancoSonidos().tocar('martillo', { en: 0.25, volumen: 1.15, pan: 0 })
-  }
-
   /** Aviso sonoro breve (sin síntesis de voz): el nombre se muestra en pantalla. */
   reproducirNombreEnAlto(_nombre = 'Luis García') {
-    this.reproducirMartillo()
+    this.reproducirPuerta()
   }
 
   reproducirTosMurmullo() {

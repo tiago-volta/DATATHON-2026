@@ -421,7 +421,7 @@ export default function PaginaSalaPrevia() {
             <p className="entradilla max-w-2xl mb-4">
               Recorre las fases del día en el juzgado: entrada, control, espera y
               sala de vistas. El ambiente es estable; practicas interrupciones reales
-              (móvil, tos, puerta, martillo…) cuando tú quieras.
+              (móvil, tos, puerta, murmullos…) cuando tú quieras.
             </p>
             <Link
               href="/sala-previa/declaracion"

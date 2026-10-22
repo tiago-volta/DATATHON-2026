@@ -179,11 +179,9 @@ mono 44,1 kHz, MP3 80 kbps. Se parte de la preview HQ de Freesound.
     «door_close» — wjtaylor
     https://freesound.org/people/wjtaylor/sounds/266682/
     Licencia: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- distracciones/martillo-1.mp3
     «wood hammer, gavel, knock, pound, jury, court.mp3» — JohnsonBrandEditing
     https://freesound.org/people/JohnsonBrandEditing/sounds/173941/
     Licencia: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
-- distracciones/martillo-2.mp3
     «S09-12 Gavel tapping & hitting.wav» — craigsmith
     https://freesound.org/people/craigsmith/sounds/675980/
     Licencia: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)

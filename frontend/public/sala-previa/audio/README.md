@@ -34,8 +34,6 @@ aquí se documentan por transparencia.
 | `distracciones/puerta-cruje.mp3` | [Door - Creak.wav](https://freesound.org/people/JarredGibb/sounds/219499/) — JarredGibb | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `distracciones/portazo-1.mp3` | [Door slamming hard](https://freesound.org/people/NachtmahrTV/sounds/571797/) — NachtmahrTV | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `distracciones/portazo-2.mp3` | [door_close](https://freesound.org/people/wjtaylor/sounds/266682/) — wjtaylor | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| `distracciones/martillo-1.mp3` | [wood hammer, gavel, knock, pound, jury, court.mp3](https://freesound.org/people/JohnsonBrandEditing/sounds/173941/) — JohnsonBrandEditing | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| `distracciones/martillo-2.mp3` | [S09-12 Gavel tapping & hitting.wav](https://freesound.org/people/craigsmith/sounds/675980/) — craigsmith | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `distracciones/llaves-1.mp3` | [Dropping keys on the floor ](https://freesound.org/people/davidkyoku/sounds/152898/) — davidkyoku | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `distracciones/llaves-2.mp3` | [dropping keys on solid wood counter 2](https://freesound.org/people/FOSSarts/sounds/740407/) — FOSSarts | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | `distracciones/llaves-3.mp3` | [key_drop 04.wav](https://freesound.org/people/Ayavaron/sounds/126492/) — Ayavaron | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
@@ -56,5 +54,5 @@ aquí se documentan por transparencia.
 Los MP3 del repo son recortes normalizados de las previews HQ de Freesound (sin re-exportar el WAV original), salvo `recompensa-medalla.mp3` (procedural).
 El eco/reverb se genera en el navegador (impulso sintético + ConvolverNode), no es un sample externo.
 
-Los sonidos de `distracciones/` (bolígrafo, tos, papeles, teléfono, puerta, martillo, etc.) son grabaciones reales CC0 de Freesound,
+Los sonidos de `distracciones/` (bolígrafo, tos, papeles, teléfono, puerta, etc.) son grabaciones reales CC0 de Freesound,
 recortadas y normalizadas con ffmpeg (~-14 LUFS, pico ≤ -1 dBFS, mono MP3 80 kbps). Se cargan con WebAudio en `bancoSonidos.ts`.

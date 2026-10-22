@@ -17,7 +17,6 @@ export const MUESTRAS = {
   puertaAbre: ['puerta-abre', 'puerta-cruje'],
   puertaAbreCierra: ['puerta-abre-cierra'],
   portazo: ['portazo-1', 'portazo-2'],
-  martillo: ['martillo-1', 'martillo-2'],
   llaves: ['llaves-1', 'llaves-2', 'llaves-3'],
   sillaArrastra: ['silla-arrastra-1', 'silla-arrastra-2'],
   sillaCruje: ['silla-cruje'],

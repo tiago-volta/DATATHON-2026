@@ -7,7 +7,7 @@ const PASOS = [
   {
     titulo: 'Qué vas a ver y oír',
     cuerpo:
-      'Vas a practicar el ambiente de un juzgado. La sala tiene un ambiente estable; el realismo viene de interrupciones aleatorias (móvil, tos, puerta, martillo…).',
+      'Vas a practicar el ambiente de un juzgado. La sala tiene un ambiente estable; el realismo viene de interrupciones aleatorias (móvil, tos, puerta, murmullos…).',
   },
   {
     titulo: 'Tú mandas el ritmo',

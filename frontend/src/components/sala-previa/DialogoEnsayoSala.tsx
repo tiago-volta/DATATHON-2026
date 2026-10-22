@@ -402,6 +402,7 @@ export function DialogoEnsayoSala({
               >
                 <p className="font-bold">Pausa concedida:</p>
                 <p>{pausaPedidaMensaje}</p>
+                <p className="text-xs text-court-700 mt-1 font-medium">En el juicio real, lo decide el juez.</p>
               </div>
             )}
           </div>
