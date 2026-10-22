@@ -1,29 +1,58 @@
 import { NextResponse } from 'next/server'
+import fs from 'fs'
+import path from 'path'
 
 const SYSTEM_PROMPT_DECLARACION = `Eres la Magistrada-Jueza que preside una vista penal en España.
-Diriges la declaración de una persona en calidad de testigo (o investigado) que cuenta con medidas de accesibilidad cognitiva (TEA, lenguaje claro según UNE 153101 y art. 7 bis LEC).
+Diriges la declaración de Luis (testigo con medidas de accesibilidad cognitiva TEA, lenguaje claro según UNE 153101 y art. 7 bis LEC).
 Tus intervenciones deben ser breves (máximo 1 o 2 frases cortas, menos de 20 palabras en total), respetuosas, comprensivas y con autoridad institucional tranquila.
 
 CONTEXTO DEL CASO DE LUIS:
 - Juicio penal en el Juzgado de lo Penal de A Coruña.
 - Hechos: Un martes 3 de marzo sobre las 19:00 horas, en la parada de autobús de la calle Real, alguien arrebató un teléfono móvil de las manos a una mujer y huyó a la carrera hacia la plaza.
-- La persona que declara (habitualmente Luis) estaba en la parada esperando el autobús. No conoce a las partes y prometió decir la verdad.
+- Luis estaba en la parada esperando el autobús. No conoce a las partes y prometió decir la verdad.
 - Vio la ropa de quien corría pero no pudo ver bien la cara por la rapidez.
 
 INSTRUCCIONES:
 1. "replica_juez": Lo que dice la jueza en voz alta al escuchar al declarante.
-   - Si dice que va a mentir o no dirá la verdad: adviértele severamente de que es delito de falso testimonio (art. 458 CP y 433 LECrim) y pon "avanzar": false ("Atención, testigo. Mentir en juicio es delito de falso testimonio. Le repito: ¿promete decir la verdad?").
-   - Si pide agua: autorízalo con empatía ("Sí, por favor, beba un poco de agua. Tómese su tiempo.").
-   - Si pide una pausa o descanso: autorízalo ("De acuerdo. Hacemos una pausa para que descanse.").
-   - Si dice que no lo sabe o no lo recuerda: valida su honestidad ("De acuerdo. Si no lo recuerda, es correcto decirlo. Seguimos.").
-   - Si aporta datos del hecho (móvil, parada, autobús, ropa, plaza, etc.): acusa recibo ("Queda anotado lo que usted observó. Muchas gracias.").
-   - Si responde cualquier otra cosa: confirma recepción con calma ("De acuerdo. Queda anotada su respuesta. Seguimos.").
+   - Si el testigo dice que va a mentir o se niega a jurar/declarar (ej. "yo no digo nada", "no voy a hablar", "no quiero declarar"): adviértele seriamente de que como testigo tiene la obligación legal de declarar y decir la verdad (art. 410 y 433 LECrim). No tiene derecho a guardar silencio como un acusado. Pon "avanzar": false y pídele que conteste.
+   - Si pide agua o pausa: concédela con amabilidad.
+   - Si dice que no lo sabe o no lo recuerda: valida su honestidad y continúa ("avanzar": true).
+   - Si aporta datos del hecho (móvil, parada, autobús, ropa, plaza, etc.): acusa recibo y continúa ("avanzar": true).
+   - Máximo 20 palabras. Voz activa, lenguaje sencillo y claro.
 2. "por_que": Una explicación pedagógica corta dirigida al usuario en segunda persona ("tú") indicando por qué su respuesta es válida o cómo le ayuda.
-3. "avanzar": booleano (true para continuar al siguiente turno, false si dice que va a mentir o solicita parar).
+3. "avanzar": booleano (false si se niega a declarar o mentirá, true si colabora).
 4. "entrar_pausa": booleano (true si pide pausa).
 5. "esperar_listo": booleano (true si pide agua).
 
 Responde ÚNICAMENTE en JSON válido con los campos: "replica_juez", "por_que", "avanzar", "entrar_pausa", "esperar_listo".`
+
+function obtenerApiKey(): string {
+  let apiKey = (process.env.GEMINI_API_KEY || '').trim()
+  if (apiKey && apiKey.length > 20) return apiKey
+
+  try {
+    const envPaths = [
+      path.resolve(process.cwd(), '../backend/.env'),
+      path.resolve(process.cwd(), 'backend/.env'),
+      path.resolve(process.cwd(), '.env.local'),
+      path.resolve(process.cwd(), 'frontend/.env.local'),
+      path.resolve(process.cwd(), '.env'),
+    ]
+    for (const p of envPaths) {
+      if (fs.existsSync(p)) {
+        const raw = fs.readFileSync(p, 'utf8')
+        const m = raw.match(/GEMINI_API_KEY=([^\r\n]+)/)
+        if (m && m[1].trim()) {
+          apiKey = m[1].trim()
+          process.env.GEMINI_API_KEY = apiKey
+          return apiKey
+        }
+      }
+    }
+  } catch {}
+
+  return apiKey
+}
 
 export async function POST(req: Request) {
   try {
@@ -32,20 +61,31 @@ export async function POST(req: Request) {
     const texto = (respuesta_usuario || '').trim()
     const minus = texto.toLowerCase()
 
-    // Control inmediato de mentir
-    if (
+    // 1. Control inmediato de mentir o negarse a declarar como testigo
+    const seNiegaODiceMentir =
       minus.includes('mentir') ||
       minus.includes('voy a mentir') ||
       minus.includes('pienso mentir') ||
       minus.includes('no voy a decir la verdad') ||
       minus.includes('no dire la verdad') ||
-      minus.includes('es mentira')
-    ) {
+      minus.includes('es mentira') ||
+      minus.includes('no digo nada') ||
+      minus.includes('no hablo') ||
+      minus.includes('no pienso hablar') ||
+      minus.includes('no quiero contestar')
+
+    if (seNiegaODiceMentir && rol === 'testigo') {
+      const esMentira = minus.includes('mentir') || minus.includes('mentira')
+      const replica = esMentira
+        ? 'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?'
+        : 'Luis, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). No tienes derecho a guardar silencio. Debes contestar.'
+      const porQue = esMentira
+        ? 'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.'
+        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar.'
+
       return NextResponse.json({
-        replica_juez:
-          'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?',
-        por_que:
-          'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.',
+        replica_juez: replica,
+        por_que: porQue,
         avanzar: false,
         entrar_pausa: false,
         esperar_listo: false,
@@ -53,7 +93,7 @@ export async function POST(req: Request) {
       })
     }
 
-    // Control inmediato de agua
+    // 2. Control inmediato de agua
     if (minus.includes('agua') || minus.includes('beber')) {
       return NextResponse.json({
         replica_juez: 'Sí, por favor, beba un poco de agua. Tómese su tiempo.',
@@ -65,7 +105,7 @@ export async function POST(req: Request) {
       })
     }
 
-    // Control inmediato de pausa
+    // 3. Control inmediato de pausa
     if (
       minus.includes('pausa') ||
       minus.includes('descanso') ||
@@ -83,15 +123,15 @@ export async function POST(req: Request) {
       })
     }
 
-    // Conexión directa con Gemini usando GEMINI_API_KEY
-    const apiKey = (process.env.GEMINI_API_KEY || '').trim()
+    // 4. Conexión con Gemini (gemini-3.5-flash-lite)
+    const apiKey = obtenerApiKey()
     if (apiKey && apiKey.length > 20) {
       try {
         const userContent = `Nombre del declarante: ${nombre}
 Rol procesal: ${rol}
 Pregunta formulada en sala: "${pregunta}"
 Respuesta escrita por ${nombre}: "${texto}"
-Contexto adicional: ${contexto || 'Sin contexto adicional'}`
+Contexto adicional: ${contexto || 'Juicio penal por hurto de móvil en parada de autobús.'}`
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`,
@@ -108,7 +148,7 @@ Contexto adicional: ${contexto || 'Sin contexto adicional'}`
                 },
               ],
               generationConfig: {
-                temperature: 0.3,
+                temperature: 0.2,
                 maxOutputTokens: 300,
               },
             }),
@@ -132,12 +172,12 @@ Contexto adicional: ${contexto || 'Sin contexto adicional'}`
             fuente: 'gemini',
           })
         }
-      } catch {
+      } catch (e) {
         // Fallback a respuesta local contextual
       }
     }
 
-    // Fallback contextual sobre el caso de Luis
+    // 5. Fallback contextual sobre el caso de Luis
     if (
       minus.includes('no sé') ||
       minus.includes('no se') ||

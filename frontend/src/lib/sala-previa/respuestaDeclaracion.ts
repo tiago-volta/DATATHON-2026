@@ -176,23 +176,30 @@ export function clasificarRespuestaLibre(
     }
   }
 
-  if (
+  const seNiegaODiceMentir =
     texto.includes('mentir') ||
     texto.includes('voy a mentir') ||
     texto.includes('pienso mentir') ||
     texto.includes('no voy a decir la verdad') ||
     texto.includes('no dire la verdad') ||
-    texto.includes('mentira')
-  ) {
+    texto.includes('mentira') ||
+    texto.includes('no digo nada') ||
+    texto.includes('no hablo') ||
+    texto.includes('no voy a hablar')
+
+  if (seNiegaODiceMentir && !contexto.esInvestigado) {
+    const esMentira = texto.includes('mentir') || texto.includes('mentira')
     return {
       tipo: 'mentira',
-      replicaJuez:
-        'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?',
+      replicaJuez: esMentira
+        ? 'Atención, testigo. Como testigo tiene la obligación legal de decir la verdad. Mentir ante el tribunal es un delito de falso testimonio (artículo 458 del Código Penal). Le repito la pregunta: ¿promete decir la verdad?'
+        : 'Luis, como testigo la ley te obliga a declarar y decir la verdad (artículo 410 de la LECrim). No tienes derecho a guardar silencio. Debes contestar.',
       avanzar: false,
       entrarPausa: false,
       esperarListo: false,
-      porQue:
-        'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.',
+      porQue: esMentira
+        ? 'Como testigo estás obligado por ley a decir la verdad (art. 433 LECrim). Faltar a la verdad conlleva penas de prisión.'
+        : 'A diferencia de la persona acusada, quien acude como testigo tiene el deber inexcusable de declarar.',
     }
   }
 
