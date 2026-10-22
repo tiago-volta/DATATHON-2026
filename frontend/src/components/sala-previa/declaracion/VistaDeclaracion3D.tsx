@@ -227,8 +227,8 @@ export function VistaDeclaracion3D({
       >
         <p id={labelId} className="sr-only">
           Sala de vistas en 3D, en primera persona. {PUNTOS_VISTA[puntoVista].dondeEstas}{' '}
-          Encima de cada persona está su nombre: juez, abogada, fiscal, abogado, persona acusada
-          y agente. Ahora miras hacia {nombreObjetivo}.
+          Encima de cada persona está su nombre: juez, letrado de la Administración de Justicia,
+          abogada, fiscal, abogado, persona acusada y agente. Ahora miras hacia {nombreObjetivo}.
           {enFs ? ' Pantalla completa activa. Pulsa Escape o el botón para salir.' : ''}
         </p>
         <SalaVistas3D
@@ -280,46 +280,30 @@ export function VistaDeclaracion3D({
         )}
       </div>
 
-      <div className="sala-fs-miradas flex flex-wrap gap-2" role="group" aria-label="Mirar en la sala" data-sala-ui>
-        <button
-          type="button"
-          className="btn-secondary text-sm min-h-[44px] py-2"
-          onClick={() => mirar(objetivo.destino)}
-        >
-          Mirar a quien habla
-        </button>
-        <button
-          type="button"
-          className="btn-ghost text-sm min-h-[44px] py-2 border border-court-200"
-          onClick={() => mirar('jueza')}
-        >
-          Mirar a la jueza
-        </button>
-        {reduced && (
-          <>
-            <button
-              type="button"
-              className="btn-ghost text-sm min-h-[44px] py-2 border border-court-200"
-              onClick={() => {
-                setEnfoque(null)
-                setYaw((y) => wrapDeg(y + 35))
-              }}
-            >
-              Mirar izquierda
-            </button>
-            <button
-              type="button"
-              className="btn-ghost text-sm min-h-[44px] py-2 border border-court-200"
-              onClick={() => {
-                setEnfoque(null)
-                setYaw((y) => wrapDeg(y - 35))
-              }}
-            >
-              Mirar derecha
-            </button>
-          </>
-        )}
-      </div>
+      {reduced && (
+        <div className="sala-fs-miradas flex flex-wrap gap-2" role="group" aria-label="Mirar en la sala" data-sala-ui>
+          <button
+            type="button"
+            className="btn-ghost text-sm min-h-[44px] py-2 border border-court-200"
+            onClick={() => {
+              setEnfoque(null)
+              setYaw((y) => wrapDeg(y + 35))
+            }}
+          >
+            Mirar izquierda
+          </button>
+          <button
+            type="button"
+            className="btn-ghost text-sm min-h-[44px] py-2 border border-court-200"
+            onClick={() => {
+              setEnfoque(null)
+              setYaw((y) => wrapDeg(y - 35))
+            }}
+          >
+            Mirar derecha
+          </button>
+        </div>
+      )}
       </div>
       </div>
     </div>

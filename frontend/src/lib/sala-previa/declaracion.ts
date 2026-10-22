@@ -1,5 +1,6 @@
 import type { TipoDistraccion } from './distracciones'
 import {
+  LAJ,
   PAPELES_SALA,
   miradaHacia,
   type MiradaSala,
@@ -85,7 +86,7 @@ export const HABLANTES: Record<Hablante, DatosHablante> = {
   },
   laj: {
     nombre: 'Letrado de la Administración de Justicia',
-    posicion: [-1.5, 1.7, -6.3],
+    posicion: LAJ,
     enfoque: 'juez',
     voz: 'hombre',
     tono: 0.9,

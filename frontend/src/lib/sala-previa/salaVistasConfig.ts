@@ -56,6 +56,13 @@ interface ConfigPapel {
 const PUERTA: Punto3D = [0, 1.5, 7.78]
 const JUEZ: Punto3D = [0, 1.95, -6.6]
 
+/**
+ * Cabeza del letrado de la Administración de Justicia.
+ * Se sienta en el estrado, a la izquierda de quien preside (quien mira a la sala)
+ * y a la misma altura. Art. 187.2 LOPJ.
+ */
+export const LAJ: Punto3D = [1.15, 1.95, -6.6]
+
 export const PAPELES_SALA: Record<PapelSala, ConfigPapel> = {
   publico: {
     camara: [0, 1.55, 0.8],

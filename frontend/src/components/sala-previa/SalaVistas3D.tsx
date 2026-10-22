@@ -15,6 +15,7 @@ import {
 import * as THREE from 'three'
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js'
 import {
+  LAJ,
   PAPELES_SALA,
   PITCH_MAX,
   TOTAL_PUBLICO,
@@ -279,6 +280,7 @@ function MueblesCC0({ papel }: { papel: PapelSala }) {
   return (
     <group>
       <Modelo url={MODELOS.sillaJuez} position={[0, 0.7, -6.85]} scale={1} />
+      <Modelo url={MODELOS.sillaJuez} position={[LAJ[0], 0.7, -6.85]} scale={1} />
 
       {[-1, 1].map((lado) => (
         <group key={lado}>
@@ -476,7 +478,11 @@ function RotuloPapel({ texto, sentada }: { texto: string; sentada: boolean }) {
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none whitespace-nowrap rounded-md border border-court-300 bg-white/95 px-1.5 py-0.5 text-[11px] font-bold leading-none text-court-900"
+        className={`pointer-events-none rounded-md border border-court-300 bg-white/95 px-1.5 py-0.5 text-[11px] font-bold leading-tight text-court-900 ${
+          texto.length > 16
+            ? 'block max-w-[9.5rem] whitespace-normal text-center'
+            : 'whitespace-nowrap'
+        }`}
       >
         {texto}
       </span>
@@ -812,11 +818,11 @@ function Mobiliario({ distraccion }: { distraccion: Distraccion | null }) {
           {matMadera}
         </mesh>
       ))}
-      <mesh position={[-1.4, 1.53, -5.9]} rotation={[0, 0.15, 0]}>
+      <mesh position={[1.05, 1.53, -5.9]} rotation={[0, -0.12, 0]}>
         <boxGeometry args={[0.32, 0.04, 0.24]} />
         <meshStandardMaterial color="#efe9dc" roughness={0.9} />
       </mesh>
-      <mesh position={[1.3, 1.55, -5.95]}>
+      <mesh position={[-0.85, 1.55, -5.95]}>
         <boxGeometry args={[0.24, 0.08, 0.3]} />
         <meshStandardMaterial color="#7a1f2b" roughness={0.7} />
       </mesh>
@@ -1406,6 +1412,19 @@ function PersonasEscena({
         sentada
         toga
         etiqueta="Juez"
+      />
+
+      {/* Misma mesa y misma altura que el juez, a su izquierda. */}
+      <FiguraPersona
+        position={[LAJ[0], 0.95, LAJ[2]]}
+        rotationY={0}
+        tonoPiel="#a67c52"
+        ropa="#121218"
+        visible={juezVis}
+        scale={enfoque === 'juez' ? 1.12 : 1.05}
+        sentada
+        toga
+        etiqueta="Letrado de la Administración de Justicia"
       />
 
       {/* Abogados en mesas */}
