@@ -28,9 +28,9 @@ export const CITACION_DEMO_LUIS: CitacionProcesada = {
         en_palabras: 'Las diez y media de la mañana.',
       },
       {
-        etiqueta: 'Posible multa si no acudes ni avisas',
+        etiqueta: 'Multa si no acudes ni avisas',
         cifra: '200 € a 5.000 €',
-        en_palabras: 'De doscientos a cinco mil euros (art. 420 LECrim).',
+        en_palabras: 'De doscientos a cinco mil euros solo si faltas al juzgado sin motivo ni aviso previo (art. 420 LECrim).',
       },
     ],
     que_pasa_si_no_voy: {

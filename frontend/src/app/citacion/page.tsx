@@ -533,9 +533,9 @@ QUÉ DEBES HACER:
           en_palabras: 'Faltan unas tres semanas hasta el martes diez de noviembre.',
         },
         {
-          etiqueta: 'Posible multa si no avisas',
+          etiqueta: 'Multa si no acudes ni avisas',
           cifra: '200 € a 5.000 €',
-          en_palabras: 'Entre doscientos euros y cinco mil euros solo si faltas sin motivo ni aviso.',
+          en_palabras: 'Entre doscientos euros y cinco mil euros solo si faltas al juzgado sin motivo ni aviso previo (art. 420 LECrim).',
         },
       ],
       que_pasa_si_no_voy: {
@@ -1358,14 +1358,14 @@ export default function PaginaCitacion() {
                 </div>
                 <dl className="grid gap-3 sm:grid-cols-3">
                   {apoyoNumerico.map((item, i) => (
-                    <div key={i} className="p-4 rounded-lg bg-calma-sage flex flex-col justify-between">
-                      <div>
+                    <div key={i} className="p-4 rounded-lg bg-calma-sage flex flex-col">
+                      <div className="min-h-[4.75rem]">
                         <dt className="text-xs font-bold uppercase tracking-wide text-court-600">
                           {item.etiqueta}
                         </dt>
                         <dd className="text-lg font-bold text-court-800 mt-1">{item.cifra}</dd>
                       </div>
-                      <p className="text-sm text-court-700 mt-2 pt-2 border-t border-court-200">
+                      <p className="text-sm text-court-700 pt-3 border-t border-court-200/80 flex-1">
                         {item.en_palabras}
                       </p>
                     </div>

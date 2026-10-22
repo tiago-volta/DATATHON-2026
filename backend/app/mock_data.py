@@ -128,9 +128,9 @@ MOCK_RESPONSE_LUIS = {
                 "en_palabras": "Faltan tres semanas completas desde hoy hasta el martes diez de noviembre.",
             },
             {
-                "etiqueta": "Posible multa si no avisas",
+                "etiqueta": "Multa si no acudes ni avisas",
                 "cifra": "200 € a 5.000 €",
-                "en_palabras": "Entre doscientos euros y cinco mil euros solo si faltas sin motivo ni aviso.",
+                "en_palabras": "Entre doscientos euros y cinco mil euros solo si faltas al juzgado sin motivo ni aviso previo (art. 420 LECrim).",
             },
         ],
         "que_pasa_si_no_voy": {
