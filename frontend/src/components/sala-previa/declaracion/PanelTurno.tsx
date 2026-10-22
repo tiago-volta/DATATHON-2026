@@ -142,11 +142,18 @@ export function PanelTurno({
                 id={textareaId}
                 value={libre}
                 onChange={(e) => setLibre(e.target.value.slice(0, 400))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault()
+                    responderLibre()
+                  }
+                }}
                 rows={2}
                 maxLength={400}
                 className="textarea-accesible w-full"
                 placeholder="Por ejemplo: No lo recuerdo bien."
               />
+              <p className="text-xs text-white/80">Pulsa Enter para enviar.</p>
               <div className="flex flex-wrap items-start gap-2">
                 <button
                   type="button"

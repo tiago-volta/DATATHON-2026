@@ -237,10 +237,10 @@ export function clasificarRespuestaLibre(
 
   return {
     tipo: 'fuera_tema',
-    replicaJuez: `Eso lo anotamos. Ahora volvemos a la pregunta: ${preguntaCompleta}`,
-    avanzar: false,
+    replicaJuez: 'De acuerdo. Queda anotado. Si no entiendes una pregunta, puedes pedir que te la repitan. Seguimos.',
+    avanzar: true,
     entrarPausa: false,
     esperarListo: false,
-    porQue: 'La jueza te devolvió a la pregunta. En un juicio, responde a lo que te preguntan.',
+    porQue: 'Respuesta guardada. Recuerda: si no entiendes la pregunta, puedes pedir que te la repitan.',
   }
 }
