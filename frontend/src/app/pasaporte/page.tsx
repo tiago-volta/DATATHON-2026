@@ -1,6 +1,7 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Icono } from '@/components/Icono'
 import { FichaAjustes } from '@/components/pasaporte/FichaAjustes'
 import { useConfianza } from '@/hooks/useConfianza'
@@ -523,30 +524,49 @@ export default function PaginaPasaporte() {
         )}
 
         {paso === 'resultado' && (
-          <FichaAjustes
-            nombre={datos.nombre}
-            ajustes={ajustesSeleccionados}
-            contacto={datos.contacto}
-            codigo={pasaporteId}
-            url={qrUrl}
-            avisoCopia={avisoCopia}
-            onCopiar={() => void copiarEnlace()}
-            onNueva={() => {
-              setPaso('datos')
-              setDatos({ nombre: '', ajustes: [], contacto: '' })
-              setErrores({})
-              setPasaporteId('')
-              setQrUrl('')
-              setAvisoCopia('')
-              try {
-                localStorage.removeItem('court-pasaporte')
-              } catch {
-                /* ignore */
-              }
-            }}
-          />
-        )}
+          <div className="space-y-6">
+            <FichaAjustes
+              nombre={datos.nombre}
+              ajustes={ajustesSeleccionados}
+              contacto={datos.contacto}
+              codigo={pasaporteId}
+              url={qrUrl}
+              avisoCopia={avisoCopia}
+              onCopiar={() => void copiarEnlace()}
+              onNueva={() => {
+                setPaso('datos')
+                setDatos({ nombre: '', ajustes: [], contacto: '' })
+                setErrores({})
+                setPasaporteId('')
+                setQrUrl('')
+                setAvisoCopia('')
+                try {
+                  localStorage.removeItem('court-pasaporte')
+                } catch {
+                  /* ignore */
+                }
+              }}
+            />
 
+            <div className="card no-imprimir border-2 border-accent-success bg-calma-sage/40 p-6 max-w-lg mx-auto text-center space-y-3">
+              <h2 className="text-xl font-bold text-court-900">
+                El siguiente paso es la sala previa
+              </h2>
+              <p className="text-court-700 text-sm">
+                Recorre la sala de vistas y adapta el entorno antes del juicio con los ajustes que acabas de elegir.
+              </p>
+              <div>
+                <Link
+                  href="/sala-previa"
+                  className="btn-primary inline-flex items-center gap-2 min-h-[44px] px-6 text-base font-bold"
+                >
+                  <span>Continuar a la sala previa</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </>
   )

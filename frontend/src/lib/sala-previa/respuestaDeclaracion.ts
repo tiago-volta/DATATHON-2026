@@ -60,6 +60,11 @@ const PATRONES_PAUSA = [
   /\bhacemos?\s+una\s+pausa\b/,
 ]
 
+/** True si el texto pide pausa / calma (respuestas libres o botones seguros). */
+export function esPeticionPausa(textoUsuario: string): boolean {
+  return coincide(normalizar(textoUsuario), PATRONES_PAUSA)
+}
+
 const PATRONES_NO_SE = [
   /\bno\s+lo\s+se\b/,
   /\bno\s+se\b/,
@@ -183,10 +188,10 @@ export function clasificarRespuestaLibre(
     }
   }
 
-  if (coincide(texto, PATRONES_PAUSA)) {
+  if (esPeticionPausa(textoUsuario)) {
     return {
       tipo: 'pausa',
-      replicaJuez: 'De acuerdo. Hacemos una pausa de cinco minutos.',
+      replicaJuez: 'Sí. Podemos hacer una pausa. Cuando quieras, seguimos.',
       avanzar: false,
       entrarPausa: true,
       esperarListo: false,

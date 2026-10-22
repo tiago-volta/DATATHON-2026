@@ -21,6 +21,8 @@ export interface Respuesta {
   saltaA?: string
   /** Origen: las seguras avanzan al momento; las libres pasan por la réplica de la jueza. */
   origen?: 'segura' | 'libre'
+  /** Si es true, la jueza concede pausa y no se avanza de momento. */
+  pidePausa?: boolean
 }
 
 /** Algo que pasa en la sala mientras alguien habla. */
