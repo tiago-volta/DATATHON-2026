@@ -147,6 +147,12 @@ export default function PaginaPasaporte() {
     setPaso('ajustes')
   }
 
+  useEffect(() => {
+    if (paso !== 'ajustes') return
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    document.getElementById('titulo-ajustes')?.focus({ preventScroll: true })
+  }, [paso])
+
   const toggleAjuste = (id: string) => {
     setDatos((prev) => ({
       ...prev,
@@ -435,7 +441,11 @@ export default function PaginaPasaporte() {
 
         {paso === 'ajustes' && (
           <section>
-            <h1 className="titulo-pagina">
+            <h1
+              id="titulo-ajustes"
+              tabIndex={-1}
+              className="titulo-pagina focus:outline-none focus-visible:ring-4 focus-visible:ring-court-400 rounded-suave"
+            >
               ¿Qué te ayudaría?
             </h1>
             <p className="entradilla">
