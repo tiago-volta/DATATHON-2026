@@ -10,9 +10,9 @@ export const CITACION_DEMO_LUIS: CitacionProcesada = {
     rol: 'testigo',
     tipo_procedimiento: 'Diligencias Previas 245/2026',
     organo: 'Juzgado de Instrucción nº 3 de A Coruña',
-    fecha: '14 de noviembre de 2026',
-    hora: '10:30',
-    lugar: 'Juzgado de Instrucción nº 3 de A Coruña, Sala de Vistas 2',
+    fecha: '10 de noviembre de 2026',
+    hora: '10:00',
+    lugar: 'Juzgado de Instrucción nº 3, A Coruña',
     numero_procedimiento: '245/2026',
     que_llevar: ['DNI o documento de identidad'],
     derechos: [
@@ -25,8 +25,8 @@ export const CITACION_DEMO_LUIS: CitacionProcesada = {
     apoyo_numerico: [
       {
         etiqueta: 'Hora de la cita',
-        cifra: '10:30 h',
-        en_palabras: 'Las diez y media de la mañana.',
+        cifra: '10:00 h',
+        en_palabras: 'Las diez en punto de la mañana (te recomendamos llegar a las diez menos cuarto).',
       },
       {
         etiqueta: 'Multa si no acudes ni avisas',
@@ -45,23 +45,31 @@ export const CITACION_DEMO_LUIS: CitacionProcesada = {
     },
     pasos_super_simples: [
       '1. Te llaman como testigo: NO te acusan de nada.',
-      '2. Día: sábado 14 de noviembre a las 10:30 h en Sala de Vistas 2.',
+      '2. Día: martes 10 de noviembre a las 10 de la mañana.',
       '3. Lugar: Juzgado de Instrucción número 3 de A Coruña.',
-      '4. Lleva tu DNI.',
+      '4. Lleva tu carné de identidad (DNI).',
       '5. Cuenta lo que viste o sabes con tranquilidad.',
+      '6. Puedes llevar tu Pasaporte de Ajustes para esperar en una sala tranquila.',
     ],
   },
-  lectura_clara: 'Te citan como TESTIGO en un proceso penal. Día 14 de noviembre de 2026 a las 10:30 h en el Juzgado de Instrucción nº 3 de A Coruña, Sala de Vistas 2. No te acusan de nada: solo acudes a contar lo que sabes.',
-  lectura_facil: 'Te llaman para ir al juzgado.\n\nEres TESTIGO.\nEso significa que no te acusan de nada.\n\nEl juicio es el 14 de noviembre a las diez y media de la mañana en la Sala de Vistas 2.',
+  lectura_clara: 'Te citan como TESTIGO en un proceso penal (Diligencias Previas 245/2026). Día 10 de noviembre de 2026 a las 10:00 h en el Juzgado de Instrucción nº 3 de A Coruña. No te acusan de nada: solo acudes a contar lo que sabes.',
+  lectura_facil: 'Te llaman para ir al juzgado.\n\nEres TESTIGO.\nEso significa que no te acusan de nada.\n\nEl juicio es el martes 10 de noviembre a las diez de la mañana en el Juzgado de Instrucción número 3 de A Coruña.',
   plazos: [
     {
       descripcion: 'Día de la declaración como testigo',
-      fecha: '2026-11-14',
-      dias_restantes: 23,
+      fecha: '2026-11-10',
+      dias_restantes: 18,
     },
   ],
-  pictogram_keywords: ['juzgado', 'hablar', 'escuchar', 'calendario'],
-  pictogramas: [],
+  pictogram_keywords: ['juzgado', 'hablar', 'escuchar', 'calendario', 'tranquilo', 'ayuda'],
+  pictogramas: [
+    { keyword: 'juzgado', id: 11524, url: 'https://static.arasaac.org/pictograms/11524/11524_500.png' },
+    { keyword: 'hablar', id: 2439, url: 'https://static.arasaac.org/pictograms/2439/2439_500.png' },
+    { keyword: 'escuchar', id: 6572, url: 'https://static.arasaac.org/pictograms/6572/6572_500.png' },
+    { keyword: 'calendario', id: 2623, url: 'https://static.arasaac.org/pictograms/2623/2623_500.png' },
+    { keyword: 'tranquilo', id: 32568, url: 'https://static.arasaac.org/pictograms/32568/32568_500.png' },
+    { keyword: 'ayuda', id: 7087, url: 'https://static.arasaac.org/pictograms/7087/7087_500.png' },
+  ],
 }
 
 export function cargarPerfilDemoLuis() {
@@ -92,7 +100,7 @@ export function cargarPerfilDemoLuis() {
   sembrarToleranciaEjemplo()
 
   guardarCitacion({
-    texto: 'JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA. Diligencias Previas 245/2026. Se cita a Luis García Fernández como TESTIGO para el día 14 de noviembre de 2026 a las 10:30 h en la Sala de Vistas 2.',
+    texto: 'JUZGADO DE INSTRUCCIÓN Nº 3 DE A CORUÑA. Diligencias Previas 245/2026. Se cita a Luis García Fernández como TESTIGO para el día 10 de noviembre de 2026 a las 10:00 h en la Sala de Vistas 2.',
     resultado: CITACION_DEMO_LUIS,
   })
 

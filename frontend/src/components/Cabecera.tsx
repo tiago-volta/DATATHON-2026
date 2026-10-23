@@ -15,6 +15,9 @@ const ENLACES = [
 ] as const
 
 function estaActivo(pathname: string, href: string) {
+  if (href === '/citacion') {
+    return pathname === '/citacion' || pathname.startsWith('/citacion/') || pathname.startsWith('/demo/luis')
+  }
   if (href === '/sala-previa') return pathname === '/sala-previa'
   if (href === '/sala-previa/declaracion') {
     return pathname.startsWith('/sala-previa/declaracion') || pathname.startsWith('/ensaya')
