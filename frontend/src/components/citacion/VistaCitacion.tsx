@@ -407,9 +407,9 @@ En el Juzgado número 7 de A Coruña.`,
       ],
       pictogram_keywords: ['juzgado', 'abogado', 'derechos', 'prueba', 'escuchar', 'ayuda'],
       pictogramas: [
-        { keyword: 'juzgado', id: 11524, url: 'https://static.arasaac.org/pictograms/11524/11524_500.png' },
-        { keyword: 'abogado', id: 11177, url: 'https://static.arasaac.org/pictograms/11177/11177_500.png' },
-        { keyword: 'derechos', id: 36685, url: 'https://static.arasaac.org/pictograms/36685/36685_500.png' },
+        { keyword: 'juzgado', id: 8147, url: 'https://static.arasaac.org/pictograms/8147/8147_500.png' },
+        { keyword: 'abogado', id: 2636, url: 'https://static.arasaac.org/pictograms/2636/2636_500.png' },
+        { keyword: 'derechos', id: 11247, url: 'https://static.arasaac.org/pictograms/11247/11247_500.png' },
         { keyword: 'escuchar', id: 6572, url: 'https://static.arasaac.org/pictograms/6572/6572_500.png' },
       ],
     }
@@ -505,8 +505,8 @@ QUÉ DEBES HACER:
         },
         {
           etiqueta: 'Tiempo que falta',
-          cifra: '20 días',
-          en_palabras: 'Faltan unas tres semanas hasta el martes diez de noviembre.',
+          cifra: '21 días',
+          en_palabras: 'Faltan tres semanas completas desde hoy hasta el martes diez de noviembre.',
         },
         {
           etiqueta: 'Multa si no acudes ni avisas',
@@ -516,23 +516,22 @@ QUÉ DEBES HACER:
       ],
       que_pasa_si_no_voy: {
         resumen:
-          'Como testigo tienes la obligación legal de acudir (art. 410 LECrim). Si ese día estás enfermo o tienes causa grave justificada, debes avisar al juzgado de inmediato aportando justificante.',
+          'Como testigo tienes la obligación legal de acudir (art. 410 LECrim). Si tienes un impedimento médico o de fuerza mayor justificado, debes avisar al juzgado de inmediato aportando justificante.',
         pasos_si_no_puedes: [
-          'Avisa de inmediato al Juzgado de Instrucción nº 3 de A Coruña en cuanto conozcas el impedimento.',
-          'Presenta un justificante oficial (por ejemplo, un parte médico).',
-          'El juez valorará la justificación para acordar una nueva fecha de citación sin sanción.',
-          'Si faltas sin justificar, la ley prevé multa de 200 a 5.000 € y conducción policial (art. 420 LECrim).',
+          'Llama o escribe al Juzgado de Instrucción nº 3 de A Coruña en cuanto sepas que no puedes ir.',
+          'Presenta un justificante (por ejemplo, un parte médico o certificado de trabajo).',
+          'El juez valorará la causa justificada para acordar una nueva fecha de citación sin sanción (art. 420 LECrim).',
         ],
         mensaje_calma:
-          'Justificar a tiempo permite al juzgado reprogramar la declaración sin ninguna sanción.',
+          'La ley prevé multa de 200 a 5.000 € y conducción policial si faltas sin causa justificada (art. 420 LECrim). Justificar a tiempo protege tus derechos.',
       },
       pasos_super_simples: [
         '1. Te llaman como testigo: NO te acusan de nada.',
         '2. Día: martes 10 de noviembre a las 10 de la mañana.',
         '3. Lugar: Juzgado de Instrucción número 3 de A Coruña.',
         '4. Lleva tu carné de identidad (DNI).',
-        '5. Solo tienes que contar lo que viste o escuchaste.',
-        '6. Puedes llevar tu Pasaporte de Ajustes para esperar en una sala tranquila.',
+        "5. Tienes la obligación legal de decir la verdad (art. 433 LECrim). Si no recuerdas algo, responder 'no me acuerdo' es válido. Si eres pariente directo del investigado, puedes no declarar contra él (art. 416 LECrim).",
+        '6. Puedes llevar tu Pasaporte de Ajustes para esperar en un lugar tranquilo.',
       ],
       pipeline_ia: PIPELINE_POR_DEFECTO,
       privacidad_rgpd: {
@@ -560,48 +559,56 @@ QUÉ DEBES HACER:
         ],
       },
     },
-    lectura_clara: `Te citan como TESTIGO en un proceso penal.
+    lectura_clara: `Te citan como TESTIGO en un proceso penal (Diligencias Previas).
 
-CUÁNDO: Martes 10 de noviembre de 2026, a las 10:00 de la mañana.
+🗓️ CUÁNDO: Martes 10 de noviembre de 2026, a las 10:00 horas.
 
-DÓNDE: Juzgado de Instrucción número 3 de A Coruña.
+📍 DÓNDE: Juzgado de Instrucción número 3 de A Coruña.
 
-QUÉ TIENES QUE HACER: Ir al juzgado y contar lo que viste o sabes sobre unos hechos. No te acusan de nada, solo quieren escuchar tu versión.
+🎯 QUÉ TIENES QUE HACER: Ir al juzgado y declarar sobre los hechos. No estás acusado de ningún delito.
 
-QUÉ LLEVAR: Tu DNI o carné de identidad.
+⚖️ DEBER DE DECIR LA VERDAD: Prestarás juramento o promesa de decir la verdad. Mentir conscientemente es delito de falso testimonio (art. 433 LECrim). Si dudas o no recuerdas algo con exactitud, responder "no lo recuerdo" o "no lo sé" es plenamente legítimo.
 
-TUS DERECHOS: Tienes que decir la verdad. Si el investigado es un familiar directo, puedes no declarar contra él. Puedes pedir pausas y que te hagan las preguntas de una en una.`,
+🛡️ DISPENSA POR PARENTESCO: Si la persona investigada es tu cónyuge o familiar directo, la ley te dispensa de declarar contra ella (art. 416 LECrim).
+
+✅ DERECHO A APOYOS: Puedes pedir sala de espera tranquila, pausas y preguntas comprensibles de una en una (artículo 7 bis LEC y art. 109 LECrim).`,
     lectura_facil: `Te llaman para ir al juzgado.
 
 Eres TESTIGO.
 Eso significa que no te acusan de nada.
-Solo quieren que cuentes lo que sabes.
+Solo quieren que cuentes con la verdad lo que sabes.
 
 TIENES QUE IR el martes 10 de noviembre.
 A las diez de la mañana.
 Al Juzgado número 3 de A Coruña.
 
-LLEVA tu DNI.
+OBLIGACIÓN DE DECIR LA VERDAD:
+1. Tienes la obligación legal de decir la verdad.
+2. Mentir en el juicio es un delito de falso testimonio (art. 458 del Código Penal).
+3. Si no te acuerdas de algo, puedes decir tranquilamente "no me acuerdo".
+4. Si el investigado es tu familiar cercano, la ley te permite no declarar contra él (artículo 416).
 
-Tienes que decir la verdad.
-Si no te acuerdas, puedes decirlo.
-Si es un familiar directo,
-puedes no declarar contra él.
-Puedes pedir pausas
-y preguntas de una en una.`,
+PUEDES PEDIR AYUDA (artículo 7 bis):
+- Esperar en una sala tranquila.
+- Más tiempo para contestar.
+- Preguntas claras, una a una.`,
     plazos: [
       {
         descripcion: 'Día de la declaración como testigo',
         fecha: '2026-11-10',
-        dias_restantes: 20,
+        dias_restantes: 18,
       },
     ],
-    pictogram_keywords: ['juzgado', 'testigo', 'hablar', 'calendario', 'ayuda', 'tranquilo'],
+    pictogram_keywords: ['juzgado', 'testigo', 'hablar', 'escuchar', 'documento', 'calendario', 'ayuda', 'tranquilo'],
     pictogramas: [
-      { keyword: 'juzgado', id: 11524, url: 'https://static.arasaac.org/pictograms/11524/11524_500.png' },
-      { keyword: 'testigo', id: 2475, url: 'https://static.arasaac.org/pictograms/2475/2475_500.png' },
+      { keyword: 'juzgado', id: 8147, url: 'https://static.arasaac.org/pictograms/8147/8147_500.png' },
+      { keyword: 'testigo', id: 12339, url: 'https://static.arasaac.org/pictograms/12339/12339_500.png' },
       { keyword: 'hablar', id: 6517, url: 'https://static.arasaac.org/pictograms/6517/6517_500.png' },
-      { keyword: 'ayuda', id: 37178, url: 'https://static.arasaac.org/pictograms/37178/37178_500.png' },
+      { keyword: 'escuchar', id: 6572, url: 'https://static.arasaac.org/pictograms/6572/6572_500.png' },
+      { keyword: 'documento', id: 21802, url: 'https://static.arasaac.org/pictograms/21802/21802_500.png' },
+      { keyword: 'calendario', id: 32488, url: 'https://static.arasaac.org/pictograms/32488/32488_500.png' },
+      { keyword: 'ayuda', id: 12252, url: 'https://static.arasaac.org/pictograms/12252/12252_500.png' },
+      { keyword: 'tranquilo', id: 31310, url: 'https://static.arasaac.org/pictograms/31310/31310_500.png' },
     ],
   }
 }
