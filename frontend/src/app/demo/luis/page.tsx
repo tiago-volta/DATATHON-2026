@@ -3,14 +3,11 @@
 import { useEffect, Suspense } from 'react'
 import {
   VistaCitacion,
-  construirRespaldoLocal,
   EJEMPLO_LUIS,
 } from '@/components/citacion/VistaCitacion'
-import { cargarPerfilDemoLuis } from '@/lib/perfil/demoLuis'
+import { cargarPerfilDemoLuis, CITACION_DEMO_LUIS } from '@/lib/perfil/demoLuis'
 
 function ContenidoDemoLuis() {
-  const citacionLuis = construirRespaldoLocal(EJEMPLO_LUIS)
-
   useEffect(() => {
     cargarPerfilDemoLuis()
   }, [])
@@ -18,7 +15,7 @@ function ContenidoDemoLuis() {
   return (
     <VistaCitacion
       modoFijado="resultado"
-      citacionInicial={citacionLuis}
+      citacionInicial={CITACION_DEMO_LUIS}
       textoInicial={EJEMPLO_LUIS}
       esDemoLuis
     />

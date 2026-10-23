@@ -58,6 +58,52 @@ export const CITACION_DEMO_LUIS: CitacionProcesada = {
       "5. Tienes la obligación legal de decir la verdad (art. 433 LECrim). Si no recuerdas algo, responder 'no me acuerdo' es válido. Si eres pariente directo del investigado, puedes no declarar contra él (art. 416 LECrim).",
       '6. Puedes llevar tu Pasaporte de Ajustes para esperar en un lugar tranquilo.',
     ],
+    pipeline_ia: [
+      {
+        paso: 1,
+        nombre: 'Extracción y estructura documental',
+        detalle: 'Identifica juzgado, rol de la persona, fecha, hora, importes y artículos legales.',
+      },
+      {
+        paso: 2,
+        nombre: 'Traducción jurídica a lenguaje claro (ISO 24495-1)',
+        detalle: 'Sustituye tecnicismos procesales por frases directas en voz activa.',
+      },
+      {
+        paso: 3,
+        nombre: 'Adaptación orientada a lectura fácil y discalculia',
+        detalle: 'Divide en una idea por línea y convierte cifras y plazos en palabras comprensibles.',
+      },
+      {
+        paso: 4,
+        nombre: 'Síntesis multimodal (Pictogramas ARASAAC + Voz)',
+        detalle: 'Enlaza conceptos visuales validados y prepara la lectura por voz.',
+      },
+    ],
+    privacidad_rgpd: {
+      anonimizado_antes_de_ia: true,
+      art_rgpd: 'Artículo 25 RGPD (Privacidad desde el diseño)',
+      garantia:
+        'Tus datos personales (nombre, DNI, dirección) se detectaron y anonimizaron en local antes de cualquier llamada a la IA.',
+      total_protegidos: 3,
+      elementos_protegidos: [
+        {
+          tipo: 'Nombre y apellidos de la persona',
+          marcador: '[PERSONA_1]',
+          valor_protegido: 'L*** G*** F***',
+        },
+        {
+          tipo: 'DNI / Documento de Identidad',
+          marcador: '[DNI_1]',
+          valor_protegido: '32.***-Y',
+        },
+        {
+          tipo: 'Dirección postal / Domicilio',
+          marcador: '[DOMICILIO_1]',
+          valor_protegido: 'C/ E***, 15, 15001 A Coruña',
+        },
+      ],
+    },
   },
   lectura_clara: `Te citan como TESTIGO en un proceso penal (Diligencias Previas).
 

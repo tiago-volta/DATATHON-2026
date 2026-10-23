@@ -76,14 +76,22 @@ export function construirRespaldoLocal(textoEntrada: string): CitacionProcesada 
     minus.includes('juicio verbal') ||
     minus.includes('juicio ordinario') ||
     minus.includes('emplazamiento')
-  const esTestigo =
-    minus.includes('testigo') || minus.includes('testifical') || minus.includes('luis')
-  const esJuan =
-    minus.includes('investigad') ||
-    minus.includes('imputad') ||
+  const esLuisExplicito =
+    minus.includes('en calidad de testigo') ||
+    minus.includes('como testigo') ||
+    minus.includes('luis') ||
+    minus.includes('245/2026')
+  const esJuanExplicito =
+    minus.includes('en calidad de investigad') ||
+    minus.includes('como investigad') ||
+    minus.includes('juan') ||
+    minus.includes('892/2026') ||
     minus.includes('estafa') ||
-    minus.includes('delito leve') ||
-    minus.includes('juan')
+    minus.includes('delito leve')
+  const esTestigo =
+    esLuisExplicito || (!esJuanExplicito && (minus.includes('testigo') || minus.includes('testifical')))
+  const esJuan =
+    !esTestigo && (esJuanExplicito || minus.includes('investigad') || minus.includes('imputad'))
 
   if (esSentencia && esCondena) {
     return {
